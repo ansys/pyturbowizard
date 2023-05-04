@@ -1,41 +1,49 @@
 # TurboTest
 
+
+external = True
+import os
 import json
-
-#from importlib.machinery import SourceFileLoader
-#test = SourceFileLoader("test", "/lus01/agantner/4_AFT/Fluent_Turbo/Hannover_Compressor/3_Fluent_Rotor_NoTip/test.py").load_module()
-
-try:
+if external:
     import ansys.fluent.core as pyfluent
-    flglobals = pyfluent.setup_for_fluent(product_version="23.2.0", mode="solver", version="3d", precision="double", processor_count=32)
-    globals().update(flglobals)
-except Exception:
-    pass
+    #import utilities import writeExpressionFile
+    import utilities
+else:
+    from importlib.machinery import SourceFileLoader
+    utilities = SourceFileLoader("utilities", "./utilities.py").load_module()
 
-def writeExpressionFile(locationEl, expressionEl, templateName, fileName=None):
-    if fileName is None:
-        fileName = "expressions.tsv"
+######################################################################################################################
+#### Start up Fluent #################################################################################################
+######################################################################################################################
 
-    with open(fileName, "w") as sf:
-        with open(templateName, "r") as templateFile:
-            tempData = templateFile.read()
-            templateFile.close()
-        helperDict = locationEl
-        helperDict.update(expressionEl)
-        sf.write(tempData.format(**helperDict))
-        sf.close()
+
+if not external:    # pyConsole in Fluent
+    try:
+        import ansys.fluent.core as pyfluent
+        flglobals = pyfluent.setup_for_fluent(product_version="23.2.0", mode="solver", version="3d", precision="double", processor_count=32)
+        globals().update(flglobals)
+    except Exception:
+        pass
+
 
 json_file = open('turboSetupConfig.json')
 turboData = json.load(json_file)
 # solver.tui.define.parameters.input_parameters.edit('"BC_Pout"', '"BC_Pout"', '50000')
 caseList = turboData.get("cases")
+myLaunch = turboData.get("launching")
+
+if external:    # Fluent without pyConsole
+    solver = pyfluent.launch_fluent(precision=myLaunch.get("precision"), processor_count=myLaunch.get("noCore"),
+                                    mode="solver", show_gui=True,
+                                   product_version=myLaunch.get("fl_version"), cwd=myLaunch.get("workingDir"))
+
 
 for caseEl in caseList:
     #Getting all input data from jason file
     caseFilename = caseEl.get("caseFilename")
     meshFilename = caseEl.get("meshFilename")
     profileName = caseEl.get("profileName")
-    expressionFilename = caseEl.get("expressionFilename")
+    expressionFilename = myLaunch.get("workingDir") + "\\" + caseEl.get("expressionFilename")
     expressionTemplate = caseEl.get("expressionTemplate")
 
        #Locations Names
@@ -72,16 +80,22 @@ for caseEl in caseList:
 
     print("Running Case: " + caseFilename + "\n")
     trnFileName = caseFilename + ".trn"
+
+
+
     solver.file.start_transcript(file_name=trnFileName)
 
     #Mesh import
     solver.file.import_.read(file_type = "cfx-definition", file_name = meshFilename)
 
     #Enable Beta-Features
-    solver.tui.define.beta_feature_access("ok yes")
+    if not external:
+        solver.tui.define.beta_feature_access("ok yes")
+    else:
+        #solver.tui.define.beta_feature_access("yes", '"ok"')
+        solver.scheme_eval.exec(('(ti-menu-load-string (format #f "~%/define/beta-feature-access yes ok"))',))
 
-    #Models
-    solver.setup.models.energy = {"enabled" : True, "viscous_dissipation" : True}
+    solver.setup.models.energy = {"enabled" : True, "viscous_dissipation": True}
 
     #Materials
     solver.setup.materials.fluid.rename("air-cfx", "air")
@@ -89,11 +103,11 @@ for caseEl in caseList:
 
     #Adjust Fluent Expressions & Load File
     expressionEl = caseEl.get("expressions")
-    writeExpressionFile(locationEl=locationsEl, expressionEl=expressionEl, templateName=expressionTemplate, fileName=expressionFilename)
+    utilities.writeExpressionFile(locationEl=locationsEl, expressionEl=expressionEl, templateName=expressionTemplate, fileName=expressionFilename)
     solver.tui.define.named_expressions.import_from_tsv(expressionFilename)
 
     #Cell Zone Conditions
-    solver.setup.cell_zone_conditions.fluid[cz_name] = {"mrf_motion" : True, "mrf_omega" : "BC_RPM"}
+    solver.setup.cell_zone_conditions.fluid[cz_name] = {"mrf_motion": True, "mrf_omega": "BC_RPM"}
 
     #Boundary Conditions
     solver.setup.general.operating_conditions.operating_pressure = "BC_Pref"

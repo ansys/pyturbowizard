@@ -1,4 +1,11 @@
 {
+  "launching":
+    {
+      "workingDir": "D:\\TestTurbo",
+      "fl_version": "23.2.0",
+      "noCore": 2,
+      "precision": "double"
+    },
   "cases": [
     {
       "datapath": "./",
