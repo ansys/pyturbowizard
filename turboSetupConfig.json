@@ -6,63 +6,62 @@
       "noCore": 2,
       "precision": "double"
     },
-  "cases": [
-    {
-      "datapath": "./",
-      "caseFilename": "HannoverRotor_NoTip_0.6M",
-      "meshFilename": "HannoverRotor_NoTip_0.6M.def",
-      "profileName": "InletBC_fluent_Blend.csv",
-      "expressionFilename": "hr_exp.tsv",
-      "expressionTemplate": "turboExpressionTemplate.tsv",
-      "expressions": {
-        "GEO_No_Blades":	"1",
-        "BC_Pref":	"0[Pa]",
-        "BC_RPM":	"1790.71 [rad / s]",
-        "BC_Pt_In":	"-",
-        "BC_P_In_gauge": 	"58000[Pa]",
-        "BC_Tt_In":	"-",
-        "BC_P_Out":	"60000[Pa]"
-      },
-      "locations": {
-        "cz_name": "b-rotor-1",
-        "bz_inlet_name": "inlet",
-        "bz_outlet_name": "outlet",
-        "bz_walls_shroud_name": "b-rotor-1-shroud",
-        "bz_walls_hub_name": "b-rotor-1-hub",
-        "bz_walls_blade_name": "b-rotor-1-blade",
-        "bz_walls_counterrotating_names": [
-
-        ],
-        "bz_walls_freeslip_names": [
-          "b-rotor-1-free-slip-inlet",
-          "b-rotor-1-free-slip-outlet"
-        ],
-        "bz_interfaces_periodic_names": {
-          "b-rotor-1-periodic-side-1": "b-rotor-1-periodic-side-2"
+  "cases": {
+      "HannoverRotor_NoTip_0.6M": {
+        "datapath": "./",
+        "caseFilename": "HannoverRotor_NoTip_0.6M",
+        "meshFilename": "HannoverRotor_NoTip_0.6M.def",
+        "profileName": "InletBC_fluent_Blend.csv",
+        "expressionFilename": "hr_exp.tsv",
+        "expressionTemplate": "turboExpressionTemplate.tsv",
+        "expressions": {
+          "GEO_No_Blades":	"1",
+          "BC_Pref":	"0[Pa]",
+          "BC_RPM":	"1790.71 [rad / s]",
+          "BC_Pt_In":	"1",
+          "BC_P_In_gauge": 	"58000[Pa]",
+          "BC_Tt_In":	"1",
+          "BC_P_Out":	"60000[Pa]"
         },
-        "bz_eval_ip1_name": "plane_eval_ip1",
-        "bz_eval_op1_name": "plane_eval_op1"
-      },
-      "setup": {
-        "BC_pout_pbf": 0.05,
-        "BC_pout_numbins": 65
-      },
-      "solution": {
-        "reportlist": ["MP_MassFlow_In","MP_MassFlow_Out","MP_Isentropic_Efficiency","MP_PR_tot","MP_Torque"],
-        "res_crit": 1.0e-7,
-        "cov_list": [
-          "MP_Isentropic_Efficiency"
-        ],
-        "cov_crit": 1.0e-4,
-        "tsn": true,
-        "iter_count": 1000,
-        "runSolver": false
-      },
-      "results": {
-        "filename_inputParameter_pf": "inputParameters.out",
-        "filename_outputParameter_pf": "outParameters.out",
-        "filename_summary_pf": "report.sum"
+        "locations": {
+          "cz_name": "b-rotor-1",
+          "bz_inlet_name": "inlet",
+          "bz_outlet_name": "outlet",
+          "bz_walls_shroud_name": "b-rotor-1-shroud",
+          "bz_walls_hub_name": "b-rotor-1-hub",
+          "bz_walls_blade_name": "b-rotor-1-blade",
+          "bz_walls_counterrotating_names": [],
+          "bz_walls_freeslip_names": [
+            "b-rotor-1-free-slip-inlet",
+            "b-rotor-1-free-slip-outlet"
+          ],
+          "bz_interfaces_periodic_names": {
+            "b-rotor-1-periodic-side-1": "b-rotor-1-periodic-side-2"
+          },
+          "bz_eval_ip1_name": "plane_eval_ip1",
+          "bz_eval_op1_name": "plane_eval_op1"
+        },
+        "setup": {
+          "BC_pout_pbf": 0.05,
+          "BC_pout_numbins": 65
+        },
+        "solution": {
+          "reportlist": ["MP_MassFlow_In","MP_MassFlow_Out","MP_Isentropic_Efficiency","MP_PR_tot","MP_Torque"],
+          "res_crit": 1.0e-7,
+          "cov_list": [
+            "MP_Isentropic_Efficiency"
+          ],
+          "cov_crit": 1.0e-4,
+          "tsn": true,
+          "iter_count": 1000,
+          "runSolver": false
+        },
+        "results": {
+          "filename_inputParameter_pf": "inputParameters.out",
+          "filename_outputParameter_pf": "outParameters.out",
+          "filename_summary_pf": "report.sum"
+        }
       }
     }
-  ]
 }
+

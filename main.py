@@ -4,89 +4,65 @@
 external = True
 import os
 import json
+
+if external:
+    import utilities
+    import mesh_import
+    import numerics
+    import setup
+    import solve
+    import postproc
+
 if external:
     import ansys.fluent.core as pyfluent
     #import utilities import writeExpressionFile
-    import utilities
+
 else:
     from importlib.machinery import SourceFileLoader
     utilities = SourceFileLoader("utilities", "./utilities.py").load_module()
+    utilities = SourceFileLoader("mesh_import", "./mesh_import.py").load_module()
+    utilities = SourceFileLoader("numerics", "./numerics.py").load_module()
+    utilities = SourceFileLoader("setup", "./setup.py").load_module()
+    utilities = SourceFileLoader("solve", "./solve.py").load_module()
+    utilities = SourceFileLoader("postproc", "./postproc.py").load_module()
+
 
 ######################################################################################################################
 #### Start up Fluent #################################################################################################
 ######################################################################################################################
-
+json_file = open('turboSetupConfig.json')
+turboData = json.load(json_file)
 
 if not external:    # pyConsole in Fluent
     try:
         import ansys.fluent.core as pyfluent
-        flglobals = pyfluent.setup_for_fluent(product_version="23.2.0", mode="solver", version="3d", precision="double", processor_count=32)
+        flglobals = pyfluent.setup_for_fluent(product_version=turboData["launching"]["fl_version"],
+                                              mode="solver", version="3d", precision = turboData["launching"]["precision"],
+                                              processor_count=int(turboData["launching"]["noCore"]))
         globals().update(flglobals)
     except Exception:
         pass
 
 
-json_file = open('turboSetupConfig.json')
-turboData = json.load(json_file)
+
 # solver.tui.define.parameters.input_parameters.edit('"BC_Pout"', '"BC_Pout"', '50000')
-caseList = turboData.get("cases")
-myLaunch = turboData.get("launching")
+
 
 if external:    # Fluent without pyConsole
-    solver = pyfluent.launch_fluent(precision=myLaunch.get("precision"), processor_count=myLaunch.get("noCore"),
+    solver = pyfluent.launch_fluent(precision=turboData["launching"]["precision"], processor_count=int(turboData["launching"]["noCore"]),
                                     mode="solver", show_gui=True,
-                                   product_version=myLaunch.get("fl_version"), cwd=myLaunch.get("workingDir"))
+                                   product_version = turboData["launching"]["fl_version"], cwd=turboData["launching"]["workingDir"])
 
 
-for caseEl in caseList:
-    #Getting all input data from jason file
-    caseFilename = caseEl.get("caseFilename")
-    meshFilename = caseEl.get("meshFilename")
-    profileName = caseEl.get("profileName")
-    expressionFilename = myLaunch.get("workingDir") + "\\" + caseEl.get("expressionFilename")
-    expressionTemplate = caseEl.get("expressionTemplate")
+for caseEl in turboData["cases"]:
 
-       #Locations Names
-    locationsEl = caseEl.get("locations")
-    cz_name = locationsEl.get("cz_name")
-    bz_inlet_name = locationsEl.get("bz_inlet_name")
-    bz_outlet_name = locationsEl.get("bz_outlet_name")
-    bz_walls_shroud_name = locationsEl.get("bz_walls_shroud_name")
-    bz_walls_hub_name = locationsEl.get("bz_walls_hub_name")
-    bz_walls_blade_name = locationsEl.get("bz_walls_blade_name")
-    bz_walls_freeslip_names = locationsEl.get("bz_walls_freeslip_names")
-    bz_interfaces_periodic_names = locationsEl.get("bz_interfaces_periodic_names")
-    bz_walls_counterrotating_names = locationsEl.get("bz_walls_counterrotating_names")
-
-    #Setup Node
-    setupEl = caseEl.get("setup")
-    # BCs
-    BC_pout_pbf = setupEl.get("BC_pout_pbf")
-    BC_pout_numbins = setupEl.get("BC_pout_numbins")
-
-      #Solution Node
-    solutionEl = caseEl.get("solution")
-    # Reports -> add Fluent Expressions which should be used as report
-    reportlist = solutionEl.get("reportlist")
-    #Solver Criteria
-    res_crit = solutionEl.get("res_crit")
-    cov_list = solutionEl.get("cov_list")
-    cov_crit = solutionEl.get("cov_crit")
-    iter_count = solutionEl.get("iter_count")
-    runSolver = solutionEl.get("runSolver")
-
-    # Result Node
-    resultEl = caseEl.get("results")
-
-    print("Running Case: " + caseFilename + "\n")
-    trnFileName = caseFilename + ".trn"
-
-
+    print("Running Case: " + caseEl + "\n")
+    trnFileName = caseEl + ".trn"
 
     solver.file.start_transcript(file_name=trnFileName)
 
     #Mesh import
-    solver.file.import_.read(file_type = "cfx-definition", file_name = meshFilename)
+    result = import_01(turboData["caseEl"])
 
     #Enable Beta-Features
     if not external:
@@ -95,52 +71,10 @@ for caseEl in caseList:
         #solver.tui.define.beta_feature_access("yes", '"ok"')
         solver.scheme_eval.exec(('(ti-menu-load-string (format #f "~%/define/beta-feature-access yes ok"))',))
 
-    solver.setup.models.energy = {"enabled" : True, "viscous_dissipation": True}
-
-    #Materials
-    solver.setup.materials.fluid.rename("air-cfx", "air")
-    solver.setup.materials.fluid['air-cfx'] = {"density" : {"option" : "ideal-gas"}, "specific_heat" : {"option" : "constant", "value" : 1004.4}, "thermal_conductivity" : {"option" : "constant", "value" : 0.0261}, "viscosity" : {"option" : "constant", "value" : 1.831e-05}, "molecular_weight" : {"option" : "constant", "value" : 28.96}}
-
-    #Adjust Fluent Expressions & Load File
-    expressionEl = caseEl.get("expressions")
-    utilities.writeExpressionFile(locationEl=locationsEl, expressionEl=expressionEl, templateName=expressionTemplate, fileName=expressionFilename)
-    solver.tui.define.named_expressions.import_from_tsv(expressionFilename)
-
-    #Cell Zone Conditions
-    solver.setup.cell_zone_conditions.fluid[cz_name] = {"mrf_motion": True, "mrf_omega": "BC_RPM"}
-
-    #Boundary Conditions
-    solver.setup.general.operating_conditions.operating_pressure = "BC_Pref"
-
-    #Interfaces
-    for peri_interface in bz_interfaces_periodic_names:
-        solver.tui.mesh.modify_zones.make_periodic(peri_interface, bz_interfaces_periodic_names.get(peri_interface), 'yes', 'yes')
-
-    #BC Profiles
-    solver.file.read_profile(file_name = profileName)
-
-    #Inlet
-    solver.tui.define.boundary_conditions.modify_zones.zone_type(bz_inlet_name, 'pressure-inlet')
-    solver.setup.boundary_conditions.pressure_inlet[bz_inlet_name] = {"gauge_total_pressure" : {"option" : "profile", "profile_name" : "inlet-bc", "field_name" : "pt-in"}, "gauge_pressure" : "BC_P_In_gauge", "t0" : {"option" : "profile", "profile_name" : "inlet-bc", "field_name" : "tt-in"}, "direction_spec" : "Direction Vector", "coordinate_system" : "Cylindrical (Radial, Tangential, Axial)", "flow_direction" : [{"field_name" : "vrad-dir", "profile_name" : "inlet-bc", "option" : "profile"}, {"field_name" : "vtang-dir", "profile_name" : "inlet-bc", "option" : "profile"}, {"field_name" : "vax-dir", "profile_name" : "inlet-bc", "option" : "profile"}]}
-
-    #Outlet
-    solver.setup.boundary_conditions.pressure_outlet[bz_outlet_name] = {"prevent_reverse_flow" : True}
-    solver.setup.boundary_conditions.pressure_outlet[bz_outlet_name] = {"gauge_pressure" : "BC_P_Out", "avg_press_spec" : True}
-    solver.tui.define.boundary_conditions.bc_settings.pressure_outlet(BC_pout_pbf, BC_pout_numbins)
-
-    #Walls
-    solver.setup.boundary_conditions.wall[bz_walls_shroud_name] = {"motion_bc" : "Moving Wall", "relative" : False, "rotating" : True}
-    for bz_cr in bz_walls_counterrotating_names:
-        solver.setup.boundary_conditions.wall[bz_cr] = {"motion_bc": "Moving Wall", "relative": False,
-                                                                   "rotating": True,
-                                                                    "omega": 0.,
-                                                                   "rotation_axis_origin": [0., 0., 0.],
-                                                                   "rotation_axis_direction": [0., 0., 1.]}
-
-    for bz_free in bz_walls_freeslip_names:
-        solver.setup.boundary_conditions.wall[bz_free] = {"shear_bc" : "Specified Shear"}
-
+    # Setup Stage
+    results = setup_01(myLaunch, caseEl)
     #Solution
+
 
       #Reports
     for report in reportlist:
@@ -186,26 +120,26 @@ for caseEl in caseList:
     solver.tui.solve.initialize.compute_defaults.pressure_inlet(bz_inlet_name)
     solver.solution.initialization.standard_initialize()
     solver.solution.initialization.fmg_initialize()
-    solver.file.write(file_type = "case-data", file_name = caseFilename)
-    settingsFilename = "\"" + caseFilename + ".set\""
+    solver.file.write(file_type = "case-data", file_name = caseEl.get("caseFilename"))
+    settingsFilename = "\"" + caseEl.get("caseFilename") + ".set\""
     solver.tui.file.write_settings(settingsFilename)
 
         #Solve
     if runSolver:
         solver.solution.run_calculation.iterate(iter_count = iter_count)
-        filename = caseFilename + "_fin"
+        filename = caseEl.get("caseFilename") + "_fin"
         solver.file.write(file_type = "case-data", file_name = filename)
 
         #Postproc
-    #filename = caseFilename + "_" + resultEl.get("filename_inputParameter_pf")
+    #filename = caseEl.get("caseFilename") + "_" + resultEl.get("filename_inputParameter_pf")
     #solver.tui.define.parameters.input_parameters.write_all_to_file('filename')
     #tuicommand = "define parameters input-parameters write-all-to-file \"" + filename + "\""
     #solver.execute_tui(tuicommand)
-    filename = caseFilename + "_" + resultEl.get("filename_outputParameter_pf")
+    filename = caseEl.get("caseFilename") + "_" + resultEl.get("filename_outputParameter_pf")
     #solver.tui.define.parameters.output_parameters.write_all_to_file('filename')
     tuicommand = "define parameters output-parameters write-all-to-file \"" + filename + "\""
     solver.execute_tui(tuicommand)
-    filename = caseFilename + "_" + resultEl.get("filename_summary_pf")
+    filename = caseEl.get("caseFilename") + "_" + resultEl.get("filename_summary_pf")
     solver.results.report.summary(write_to_file = True, file_name = filename)
     # Write out system time
     solver.report.system.time_statistics()
