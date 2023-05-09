@@ -61,7 +61,7 @@
           "cov_crit": 1.0e-4,
           "tsn": true,
           "iter_count": 1000,
-          "runSolver": false
+          "runSolver": true
         },
         "results": {
           "filename_inputParameter_pf": "inputParameters.out",
