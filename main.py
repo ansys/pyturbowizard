@@ -93,7 +93,7 @@ for caseEl in turboData["cases"]:
 
         #Solve
     if turboData["cases"][caseEl]["solution"]["runSolver"]:
-        solve.solve_01(data, solver)
+        solve.solve_01(turboData["cases"][caseEl], solver)
 
 
         filename = turboData["cases"][caseEl]["caseFilename"] + "_fin"
