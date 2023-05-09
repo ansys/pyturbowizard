@@ -83,7 +83,6 @@ for caseEl in turboData["cases"]:
     numerics.numerics_01(turboData["cases"][caseEl], solver)
     #Activate Turbonumerics
 
-    print("test")
 
         #Initialization
     solve.init_01(turboData["cases"][caseEl], solver)
