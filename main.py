@@ -2,9 +2,13 @@
 
 import os
 import json
+import sys
 
+json_filename = sys.argv[1]
+if json_filename is None:
+    json_filename = 'turboSetupConfig.json'
 
-json_file = open('turboSetupConfig.json')
+json_file = open(json_filename)
 turboData = json.load(json_file)
 
 myLaunchEl = turboData.get("launching")
@@ -19,6 +23,7 @@ if external:
     import numerics
     import postproc
     import solve
+    import parametricstudy
 
 else:
     from importlib.machinery import SourceFileLoader
@@ -28,6 +33,7 @@ else:
     numerics = SourceFileLoader("numerics", "./numerics.py").load_module()
     postproc = SourceFileLoader("postproc", "./postproc.py").load_module()
     solve = SourceFileLoader("solve", "./solve.py").load_module()
+    parametricstudy = SourceFileLoader("parametricstudy", "./parametricstudy.py").load_module()
 
 
 #pyfluent.set_log_level('DEBUG')
@@ -50,7 +56,7 @@ working_Dir = os.path.normpath(turboData["launching"]["workingDir"])
 if external:    # Fluent without pyConsole
     global solver
     serverfilename = myLaunchEl.get("serverfilename")
-    if serverfilename is None or serverfilename is "":
+    if serverfilename is None or serverfilename == "":
         solver = pyfluent.launch_fluent(precision=turboData["launching"]["precision"], processor_count=int(turboData["launching"]["noCore"]),
                                     mode="solver", show_gui=True,
                                    product_version = turboData["launching"]["fl_version"], cwd=working_Dir)
@@ -100,12 +106,12 @@ for casename in turboData["cases"]:
 
         #Solve
     if caseEl["solution"]["runSolver"]:
-        solve.solve_01(data, solver)
-
+        solve.solve_01(caseEl, solver)
 
         filename = caseEl["caseFilename"] + "_fin"
         solver.file.write(file_type = "case-data", file_name = filename)
 
+        #postprocessing
         filename = caseEl["caseFilename"] + "_" + caseEl["results"]["filename_outputParameter_pf"]
     #solver.tui.define.parameters.output_parameters.write_all_to_file('filename')
         tuicommand = "define parameters output-parameters write-all-to-file \"" + filename + "\""
@@ -117,4 +123,11 @@ for casename in turboData["cases"]:
 
       #Finalize
     solver.file.stop_transcript()
-    #solver.exit()
+
+# Do Studies
+studyDict = turboData.get("studies")
+if not (studyDict is None):
+    parametricstudy.study01(studyDict=studyDict, solver=solver)
+
+
+#solver.exit()
