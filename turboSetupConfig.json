@@ -25,7 +25,7 @@
           "BC_P_Out":	"60000[Pa]"
         },
         "locations": {
-          "cz_name": "b-rotor-1",
+          "cz_rotating_names": "b-rotor-1",
           "bz_inlet_name": "inlet",
           "bz_outlet_name": "outlet",
           "bz_walls_shroud_name": "b-rotor-1-shroud",
@@ -38,6 +38,9 @@
           ],
           "bz_interfaces_periodic_names": {
             "b-rotor-1-periodic-side-1": "b-rotor-1-periodic-side-2"
+          },
+          "bz_interfaces_mixingplane_names": {
+
           },
           "bz_eval_ip1_name": "plane_eval_ip1",
           "bz_eval_op1_name": "plane_eval_op1"

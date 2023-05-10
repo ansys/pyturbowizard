@@ -31,7 +31,7 @@ def physics_01(solver):
 def boundary_01(data, solver):
     for key in data["locations"]:
         # Cell Zone Conditions
-        if key == "cz_name":
+        if key == "cz_rotating_names":
             solver.setup.cell_zone_conditions.fluid[data["locations"][key]] = {"mrf_motion": True, "mrf_omega": "BC_RPM"}
         # Inlet
         elif key == "bz_inlet_name":
