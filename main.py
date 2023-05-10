@@ -50,7 +50,7 @@ working_Dir = os.path.normpath(turboData["launching"]["workingDir"])
 if external:    # Fluent without pyConsole
     global solver
     serverfilename = myLaunchEl.get("serverfilename")
-    if serverfilename is None:
+    if serverfilename is None or serverfilename is "":
         solver = pyfluent.launch_fluent(precision=turboData["launching"]["precision"], processor_count=int(turboData["launching"]["noCore"]),
                                     mode="solver", show_gui=True,
                                    product_version = turboData["launching"]["fl_version"], cwd=working_Dir)

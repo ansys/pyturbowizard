@@ -5,7 +5,8 @@
       "fl_version": "23.2.0",
       "noCore": 2,
       "precision": "double",
-      "external": true
+      "external": true,
+      "serverfilename": ""
     },
   "cases": {
       "HannoverRotor_NoTip_0.6M": {
