@@ -4,7 +4,8 @@
       "workingDir": "D:/TestTurbo",
       "fl_version": "23.2.0",
       "noCore": 2,
-      "precision": "double"
+      "precision": "double",
+      "external": true
     },
   "cases": {
       "HannoverRotor_NoTip_0.6M": {
@@ -13,7 +14,7 @@
         "meshFilename": "HannoverRotor_NoTip_0.6M.def",
         "profileName": "InletBC_fluent_Blend.csv",
         "expressionFilename": "hr_exp.tsv",
-        "expressionTemplate": "turboExpressionTemplate.tsv",
+        "expressionTemplate": "expressionTemplate_compressor_comp.tsv",
         "expressions": {
           "GEO_No_Blades":	"1",
           "BC_Pref":	"0[Pa]",

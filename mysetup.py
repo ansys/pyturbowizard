@@ -58,10 +58,9 @@ def boundary_01(data, solver):
                                                                               data["setup"]["BC_pout_numbins"])
 
         # Walls
-        elif key == "bz_walls_shroud_name":
-            solver.setup.boundary_conditions.wall[data["locations"][key]] = {"motion_bc": "Moving Wall",
-                                                                           "relative": False,
-                                                                       "rotating": True}
+        #elif key == "bz_walls_shroud_name":
+        #    solver.setup.boundary_conditions.wall[data["locations"][key]] = {"motion_bc": "Moving Wall","relative": False,"rotating": True}
+
         elif key == "bz_walls_counterrotating_names":
             for bz_cr in data["locations"][key]:
                 solver.setup.boundary_conditions.wall[bz_cr] = {"motion_bc": "Moving Wall", "relative": False,
@@ -117,4 +116,4 @@ def report_01(data, solver):
         solver.solution.monitor.convergence_conditions = {"convergence_reports": {covName : {"report_defs" : reportName, "cov" : True, "previous_values_to_consider" : 50, "stop_criterion" : data["solution"]["cov_crit"], "print" : True, "plot" : True}}}
 
        #Set Convergence Conditions
-    solver.solution.monitor.convergence_conditions = {"condition": "any-condition-is-met"}
+    #solver.solution.monitor.convergence_conditions = {"condition": "any-condition-is-met"}
