@@ -77,8 +77,8 @@ for studyName in studyDict:
             designPointCounter = designPointCounter + 1
 
     # Run all Design Points
-    #fluent_study.update_all_design_points()
-    #fluent_study.design_points.update_all()
+    if studyEl["updateAllDPs"]:
+        fluent_study.design_points.update_all()
 
     # Export results to table
     design_point_table = datapath + studyName + "_dp_table.csv"

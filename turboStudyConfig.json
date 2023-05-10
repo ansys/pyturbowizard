@@ -12,6 +12,7 @@
       "datapath": "./",
       "write_data": false,
       "refCaseFilename": "HannoverRotor_NoTip_0.6M_test",
+      "updateAllDPs": false,
       "definition": [
         {
           "inputparameters": [
