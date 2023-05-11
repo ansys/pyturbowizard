@@ -4,7 +4,7 @@ import sys
 
 json_filename = 'turboSetupConfig.json'
 #If arguments are passed take first argument as path to the json file
-if len(sys.argv) > 0:
+if len(sys.argv) > 1:
     json_filename = sys.argv[1]
 
 json_file = open(json_filename)
@@ -72,10 +72,10 @@ if not (caseDict is None):
     for casename in caseDict:
         print("Running Case: " + casename + "\n")
         caseEl = turboData["cases"][casename]
-        trnFileName = casename + ".trn"
 
+        #Start Transcript
+        trnFileName = casename + ".trn"
         solver.file.start_transcript(file_name=trnFileName)
-        #
 
         # Mesh import, expressions, profiles
         result = meshimport.import_01(caseEl, solver)
@@ -86,18 +86,14 @@ if not (caseDict is None):
         # Enable Beta-Features
         solver.tui.define.beta_feature_access("yes ok")
 
-
         # Case Setup
         mysetup.setup_01(caseEl, solver)
-
         mysetup.report_01(caseEl, solver)
+
         #Solution
-
-
            #Set Solver Settings
         numerics.numerics_01(caseEl, solver)
         #Activate Turbonumerics
-
 
             #Initialization
         solve.init_01(caseEl, solver)

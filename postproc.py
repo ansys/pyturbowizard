@@ -1,7 +1,7 @@
 def post(data, solver, functionName="post_01"):
     print("Running Postprocessing Function \"" + functionName + "\"...")
     if functionName == "post_01":
-        post_01(studyDict, solver)
+        post_01(data, solver)
     else:
         print("Prescribed Function \"" + functionName + "\" not known. Skipping Postprocessing!")
 

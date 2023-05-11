@@ -1,7 +1,7 @@
-def study(studyDict, solver, functionName="study_01"):
+def study(data, solver, functionName="study_01"):
     print("Running ParamatricStudy Function \"" + functionName + "\"...")
     if functionName == "study_01":
-        study01(studyDict, solver)
+        study01(data, solver)
     else:
         print("Prescribed Function \"" + functionName + "\" not known. Skipping Parametric Study!")
 
