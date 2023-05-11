@@ -1,4 +1,13 @@
-def study01(studyDict, solver, functionName=None):
+def study(studyDict, solver, functionName="study_01"):
+    print("Running ParamatricStudy Function \"" + functionName + "\"...")
+    if functionName == "study_01":
+        study01(studyDict, solver)
+    else:
+        print("Prescribed Function \"" + functionName + "\" not known. Skipping Parametric Study!")
+
+    print("ParamatricStudy finished.")
+
+def study01(studyDict, solver):
     #Init variables
     fluent_study = None
     studyIndex = 0

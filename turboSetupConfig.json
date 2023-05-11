@@ -1,4 +1,10 @@
 {
+  "functions":
+    {
+      "postproc": "post_01",
+      "parametricstudy": "study_01"
+    },
+
   "launching":
     {
       "workingDir": "D:/TestTurbo",

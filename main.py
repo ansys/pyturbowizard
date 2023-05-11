@@ -1,16 +1,16 @@
-# TurboTest
-
 import os
 import json
 import sys
 
-json_filename = sys.argv[1]
-if json_filename is None:
-    json_filename = 'turboSetupConfig.json'
+json_filename = 'turboSetupConfig.json'
+#If arguments are passed take first argument as path to the json file
+if len(sys.argv) > 0:
+    json_filename = sys.argv[1]
 
 json_file = open(json_filename)
 turboData = json.load(json_file)
 
+functionEl = turboData.get("functions")
 launchEl = turboData.get("launching")
 external = launchEl.get("external")
 
@@ -44,22 +44,22 @@ else:
 if not external:    # pyConsole in Fluent
     try:
         import ansys.fluent.core as pyfluent
-        flglobals = pyfluent.setup_for_fluent(product_version=turboData["launching"]["fl_version"],
-                                              mode="solver", version="3d", precision = turboData["launching"]["precision"],
-                                              processor_count=int(turboData["launching"]["noCore"]))
+        flglobals = pyfluent.setup_for_fluent(product_version=launchEl["fl_version"],
+                                              mode="solver", version="3d", precision = launchEl["precision"],
+                                              processor_count=int(launchEl["noCore"]))
         globals().update(flglobals)
     except Exception:
         pass
 
-working_Dir = os.path.normpath(turboData["launching"]["workingDir"])
+working_Dir = os.path.normpath(launchEl["workingDir"])
 
 if external:    # Fluent without pyConsole
     global solver
     serverfilename = launchEl.get("serverfilename")
     if serverfilename is None or serverfilename == "":
-        solver = pyfluent.launch_fluent(precision=turboData["launching"]["precision"], processor_count=int(turboData["launching"]["noCore"]),
+        solver = pyfluent.launch_fluent(precision=launchEl["precision"], processor_count=int(launchEl["noCore"]),
                                     mode="solver", show_gui=True,
-                                   product_version = turboData["launching"]["fl_version"], cwd=working_Dir)
+                                   product_version = launchEl["fl_version"], cwd=working_Dir)
     #Hook to existing Session
     else:
         print("Connecting to Fluent Session...")
@@ -106,30 +106,29 @@ if not (caseDict is None):
         settingsFilename = "\"" + caseEl["caseFilename"] + ".set\""
         solver.tui.file.write_settings(settingsFilename)
 
-            #Solve
+        #Solve
         if caseEl["solution"]["runSolver"]:
             solve.solve_01(caseEl, solver)
 
             filename = caseEl["caseFilename"] + "_fin"
             solver.file.write(file_type = "case-data", file_name = filename)
 
-            #postprocessing
-            filename = caseEl["caseFilename"] + "_" + caseEl["results"]["filename_outputParameter_pf"]
-        #solver.tui.define.parameters.output_parameters.write_all_to_file('filename')
-            tuicommand = "define parameters output-parameters write-all-to-file \"" + filename + "\""
-            solver.execute_tui(tuicommand)
-            filename = caseFilename + "_" + caseEl["results"]["filename_summary_pf"]
-            solver.results.report.summary(write_to_file = True, file_name = filename)
-            # Write out system time
-            solver.report.system.time_statistics()
+        #Postprocessing
+        if (functionEl is None) or (functionEl["postproc"] is None):
+            postproc.post(data=caseEl, solver=solver)
+        else:
+            postproc.post(data=caseEl, solver=solver,functionName=functionEl["postproc"])
 
-          #Finalize
+        #Finalize
         solver.file.stop_transcript()
 
 # Do Studies
 studyDict = turboData.get("studies")
 if not (studyDict is None):
-    parametricstudy.study01(studyDict=studyDict, solver=solver)
+    if (functionEl is None) or (functionEl["parametricstudy"] is None):
+        parametricstudy.study(studyDict=studyDict, solver=solver)
+    else:
+        parametricstudy.study(studyDict=studyDict, solver=solver, functionName=functionEl["parametricstudy"])
 
 #Exit Solver
 solverExit = launchEl.get("exitatend", False)
