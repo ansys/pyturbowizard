@@ -5,7 +5,9 @@
       "fl_version": "23.2.0",
       "noCore": 2,
       "precision": "double",
-      "external": true
+      "external": true,
+      "serverfilename": "",
+      "exitatend": false
     },
   "cases": {
       "HannoverRotor_NoTip_0.6M": {
@@ -65,7 +67,7 @@
           "cov_crit": 1.0e-4,
           "tsn": true,
           "iter_count": 1000,
-          "runSolver": true
+          "runSolver": false
         },
         "results": {
           "filename_inputParameter_pf": "inputParameters.out",
