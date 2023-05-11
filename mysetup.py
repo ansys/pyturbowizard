@@ -1,10 +1,9 @@
 def setup_01(data, solver):
-
+    # Set physics
     physics_01(solver)
     # Materials
     material_01(data, solver)
-    # Adjust Fluent Expressions & Load File
-
+    # Set Boundaries
     boundary_01(data, solver)
 
     return
@@ -35,17 +34,40 @@ def boundary_01(data, solver):
             solver.setup.cell_zone_conditions.fluid[data["locations"][key]] = {"mrf_motion": True, "mrf_omega": "BC_RPM"}
         # Inlet
         elif key == "bz_inlet_name":
-
+            #Total Pressure Inlet
             solver.tui.define.boundary_conditions.modify_zones.zone_type(data["locations"][key],
                                                                          'pressure-inlet')
-            solver.setup.boundary_conditions.pressure_inlet[data["locations"][key]] = {
-                "gauge_total_pressure": {"option": "profile", "profile_name": "inlet-bc", "field_name": "pt-in"},
-                "gauge_pressure": "BC_P_In_gauge",
-                "t0": {"option": "profile", "profile_name": "inlet-bc", "field_name": "tt-in"},
-                "direction_spec": "Direction Vector", "coordinate_system": "Cylindrical (Radial, Tangential, Axial)",
-                "flow_direction": [{"field_name": "vrad-dir", "profile_name": "inlet-bc", "option": "profile"},
-                                   {"field_name": "vtang-dir", "profile_name": "inlet-bc", "option": "profile"},
-                                   {"field_name": "vax-dir", "profile_name": "inlet-bc", "option": "profile"}]}
+            #Use profile data
+            profileName = data.get("profileName")
+            if not (profileName is None):
+                solver.setup.boundary_conditions.pressure_inlet[data["locations"][key]] = {
+                    "gauge_total_pressure": {"option": "profile", "profile_name": "inlet-bc", "field_name": "pt-in"},
+                    "gauge_pressure": "BC_P_In_gauge",
+                    "t0": {"option": "profile", "profile_name": "inlet-bc", "field_name": "tt-in"},
+                    "direction_spec": "Direction Vector", "coordinate_system": "Cylindrical (Radial, Tangential, Axial)",
+                    "flow_direction": [{"field_name": "vrad-dir", "profile_name": "inlet-bc", "option": "profile"},
+                                       {"field_name": "vtang-dir", "profile_name": "inlet-bc", "option": "profile"},
+                                       {"field_name": "vax-dir", "profile_name": "inlet-bc", "option": "profile"}]}
+            #Use expressions
+            else:
+                solver.setup.boundary_conditions.pressure_inlet[data["locations"][key]] = {
+                    "gauge_total_pressure": "BC_Pt_In",
+                    "gauge_pressure": "BC_P_In_gauge",
+                    "t0": "BC_Tt_In",
+                    "turb_intensity": "BC_TuIn_In",
+                    "turb_viscosity_ratio": "BC_TuVR_In",
+                    "direction_spec": "Normal to Boundary"
+                }
+                #If Expressions for a direction are specified
+                if (data["expressions"].get("BC_radDir_In") is not None) and \
+                   (data["expressions"].get("BC_tangDir_In") is not None) and \
+                   (data["expressions"].get("BC_axDir_In") is not None):
+                    solver.setup.boundary_conditions.pressure_inlet[data["locations"][key]] = {
+                        "direction_spec": "Direction Vector",
+                        "coordinate_system": "Cylindrical (Radial, Tangential, Axial)",
+                        "flow_direction": ["BC_radDir_In", "BC_tangDir_In", "BC_axDir_In"]
+                    }
+
 
         # Outlet
         elif key == "bz_outlet_name":
@@ -68,6 +90,14 @@ def boundary_01(data, solver):
                                                                 "omega": 0.,
                                                                 "rotation_axis_origin": [0., 0., 0.],
                                                                 "rotation_axis_direction": [0., 0., 1.]}
+        elif key == "bz_walls_rotating_names":
+            for bz_cr in data["locations"][key]:
+                solver.setup.boundary_conditions.wall[bz_cr] = {"motion_bc": "Moving Wall", "relative": False,
+                                                                "rotating": True,
+                                                                "omega": "BC_RPM",
+                                                                "rotation_axis_origin": [0., 0., 0.],
+                                                                "rotation_axis_direction": [0., 0., 1.]}
+
         elif key == "bz_walls_freeslip_names":
             for bz_free in data["locations"][key]:
                 solver.setup.boundary_conditions.wall[bz_free] = {"shear_bc": "Specified Shear"}
@@ -115,5 +145,5 @@ def report_01(data, solver):
         solver.solution.monitor.convergence_conditions.convergence_reports[covName] = {}
         solver.solution.monitor.convergence_conditions = {"convergence_reports": {covName : {"report_defs" : reportName, "cov" : True, "previous_values_to_consider" : 50, "stop_criterion" : data["solution"]["cov_crit"], "print" : True, "plot" : True}}}
 
-       #Set Convergence Conditions
-    #solver.solution.monitor.convergence_conditions = {"condition": "any-condition-is-met"}
+    #Set Convergence Conditions
+    solver.solution.monitor.convergence_conditions = {"condition": "any-condition-is-met"}

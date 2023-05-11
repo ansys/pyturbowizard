@@ -7,7 +7,7 @@
 
   "launching":
     {
-      "workingDir": "D:/TestTurbo",
+      "workingDir": "D:/TestTurbo/HannoverRotor",
       "fl_version": "23.2.0",
       "noCore": 2,
       "precision": "double",
@@ -27,9 +27,11 @@
           "GEO_No_Blades":	"1",
           "BC_Pref":	"0[Pa]",
           "BC_RPM":	"1790.71 [rad / s]",
-          "BC_Pt_In":	"1",
+          "BC_Pt_In":	"-1",
           "BC_P_In_gauge": 	"58000[Pa]",
-          "BC_Tt_In":	"1",
+          "BC_Tt_In":	"-1",
+          "BC_TuIn_In":	"-1",
+          "BC_TuVR_In":	"-1",
           "BC_P_Out":	"60000[Pa]"
         },
         "locations": {
@@ -40,6 +42,7 @@
           "bz_walls_hub_name": "b-rotor-1-hub",
           "bz_walls_blade_name": "b-rotor-1-blade",
           "bz_walls_counterrotating_names": [],
+          "bz_walls_rotating_names": [],
           "bz_walls_freeslip_names": [
             "b-rotor-1-free-slip-inlet",
             "b-rotor-1-free-slip-outlet"
@@ -48,6 +51,9 @@
             "b-rotor-1-periodic-side-1": "b-rotor-1-periodic-side-2"
           },
           "bz_interfaces_mixingplane_names": {
+
+          },
+          "bz_interfaces_general_names": {
 
           },
           "bz_eval_ip1_name": "plane_eval_ip1",

@@ -51,7 +51,9 @@ if not external:    # pyConsole in Fluent
     except Exception:
         pass
 
-working_Dir = os.path.normpath(launchEl["workingDir"])
+#Use directory of jason-file if not specified in config-file
+working_Dir = launchEl.get("workingDir", os.path.dirname(json_filename))
+working_Dir = os.path.normpath(working_Dir)
 
 if external:    # Fluent without pyConsole
     global solver
@@ -68,7 +70,7 @@ if external:    # Fluent without pyConsole
 
 # Start Setup
 caseDict = turboData.get("cases")
-if not (caseDict is None):
+if caseDict is not None:
     for casename in caseDict:
         print("Running Case: " + casename + "\n")
         caseEl = turboData["cases"][casename]
@@ -95,7 +97,7 @@ if not (caseDict is None):
         numerics.numerics_01(caseEl, solver)
         #Activate Turbonumerics
 
-            #Initialization
+           #Initialization
         solve.init_01(caseEl, solver)
 
         solver.file.write(file_type = "case-data", file_name = caseEl["caseFilename"])
@@ -120,7 +122,7 @@ if not (caseDict is None):
 
 # Do Studies
 studyDict = turboData.get("studies")
-if not (studyDict is None):
+if studyDict is not None:
     if (functionEl is None) or (functionEl["parametricstudy"] is None):
         parametricstudy.study(studyDict=studyDict, solver=solver)
     else:
