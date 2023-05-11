@@ -16,7 +16,7 @@ external = myLaunchEl.get("external")
 
 if external:
     import ansys.fluent.core as pyfluent
-    #import utilities import writeExpressionFile
+
     import utilities
     import meshimport
     import mysetup
@@ -67,67 +67,73 @@ if external:    # Fluent without pyConsole
 
 
 # Start Setup
-for casename in turboData["cases"]:
-    print("Running Case: " + casename + "\n")
-    caseEl = turboData["cases"][casename]
-    trnFileName = casename + ".trn"
+caseDict = turboData.get("cases")
+if not (caseDict is None):
+    for casename in caseDict:
+        print("Running Case: " + casename + "\n")
+        caseEl = turboData["cases"][casename]
+        trnFileName = casename + ".trn"
 
-    solver.file.start_transcript(file_name=trnFileName)
-    #
+        solver.file.start_transcript(file_name=trnFileName)
+        #
 
-    # Mesh import, expressions, profiles
-    result = meshimport.import_01(caseEl, solver)
+        # Mesh import, expressions, profiles
+        result = meshimport.import_01(caseEl, solver)
 
-    utilities.writeExpressionFile(caseEl,working_Dir)
-    solver.tui.define.named_expressions.import_from_tsv(caseEl["expressionFilename"])
+        utilities.writeExpressionFile(caseEl,working_Dir)
+        solver.tui.define.named_expressions.import_from_tsv(caseEl["expressionFilename"])
 
-    # Enable Beta-Features
-    solver.tui.define.beta_feature_access("yes ok")
-
-
-    # Case Setup
-    mysetup.setup_01(caseEl, solver)
-
-    mysetup.report_01(caseEl, solver)
-    #Solution
+        # Enable Beta-Features
+        solver.tui.define.beta_feature_access("yes ok")
 
 
-       #Set Solver Settings
-    numerics.numerics_01(caseEl, solver)
-    #Activate Turbonumerics
+        # Case Setup
+        mysetup.setup_01(caseEl, solver)
+
+        mysetup.report_01(caseEl, solver)
+        #Solution
 
 
-        #Initialization
-    solve.init_01(caseEl, solver)
+           #Set Solver Settings
+        numerics.numerics_01(caseEl, solver)
+        #Activate Turbonumerics
 
-    solver.file.write(file_type = "case-data", file_name = caseEl["caseFilename"])
-    settingsFilename = "\"" + caseEl["caseFilename"] + ".set\""
-    solver.tui.file.write_settings(settingsFilename)
 
-        #Solve
-    if caseEl["solution"]["runSolver"]:
-        solve.solve_01(caseEl, solver)
+            #Initialization
+        solve.init_01(caseEl, solver)
 
-        filename = caseEl["caseFilename"] + "_fin"
-        solver.file.write(file_type = "case-data", file_name = filename)
+        solver.file.write(file_type = "case-data", file_name = caseEl["caseFilename"])
+        settingsFilename = "\"" + caseEl["caseFilename"] + ".set\""
+        solver.tui.file.write_settings(settingsFilename)
 
-        #postprocessing
-        filename = caseEl["caseFilename"] + "_" + caseEl["results"]["filename_outputParameter_pf"]
-    #solver.tui.define.parameters.output_parameters.write_all_to_file('filename')
-        tuicommand = "define parameters output-parameters write-all-to-file \"" + filename + "\""
-        solver.execute_tui(tuicommand)
-        filename = caseFilename + "_" + caseEl["results"]["filename_summary_pf"]
-        solver.results.report.summary(write_to_file = True, file_name = filename)
-        # Write out system time
-        solver.report.system.time_statistics()
+            #Solve
+        if caseEl["solution"]["runSolver"]:
+            solve.solve_01(caseEl, solver)
 
-      #Finalize
-    solver.file.stop_transcript()
+            filename = caseEl["caseFilename"] + "_fin"
+            solver.file.write(file_type = "case-data", file_name = filename)
+
+            #postprocessing
+            filename = caseEl["caseFilename"] + "_" + caseEl["results"]["filename_outputParameter_pf"]
+        #solver.tui.define.parameters.output_parameters.write_all_to_file('filename')
+            tuicommand = "define parameters output-parameters write-all-to-file \"" + filename + "\""
+            solver.execute_tui(tuicommand)
+            filename = caseFilename + "_" + caseEl["results"]["filename_summary_pf"]
+            solver.results.report.summary(write_to_file = True, file_name = filename)
+            # Write out system time
+            solver.report.system.time_statistics()
+
+          #Finalize
+        solver.file.stop_transcript()
 
 # Do Studies
 studyDict = turboData.get("studies")
 if not (studyDict is None):
     parametricstudy.study01(studyDict=studyDict, solver=solver)
 
+#Exit Solver
+solverExit = turboData["launching"].get("exitatend", False)
+if solverExit:
+    solver.exit()
 
-#solver.exit()
+print("Script successfully finished! \n")

@@ -1,6 +1,7 @@
 def study01(studyDict, solver, functionName=None):
-
+    #Init variables
     fluent_study = None
+    studyIndex = 0
 
     for studyName in studyDict:
         studyEl = studyDict[studyName]

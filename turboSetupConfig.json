@@ -6,7 +6,8 @@
       "noCore": 2,
       "precision": "double",
       "external": true,
-      "serverfilename": ""
+      "serverfilename": "",
+      "exitatend": false
     },
   "cases": {
       "HannoverRotor_NoTip_0.6M": {
