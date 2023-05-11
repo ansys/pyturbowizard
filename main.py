@@ -11,8 +11,8 @@ if json_filename is None:
 json_file = open(json_filename)
 turboData = json.load(json_file)
 
-myLaunchEl = turboData.get("launching")
-external = myLaunchEl.get("external")
+launchEl = turboData.get("launching")
+external = launchEl.get("external")
 
 if external:
     import ansys.fluent.core as pyfluent
@@ -55,7 +55,7 @@ working_Dir = os.path.normpath(turboData["launching"]["workingDir"])
 
 if external:    # Fluent without pyConsole
     global solver
-    serverfilename = myLaunchEl.get("serverfilename")
+    serverfilename = launchEl.get("serverfilename")
     if serverfilename is None or serverfilename == "":
         solver = pyfluent.launch_fluent(precision=turboData["launching"]["precision"], processor_count=int(turboData["launching"]["noCore"]),
                                     mode="solver", show_gui=True,
@@ -132,7 +132,7 @@ if not (studyDict is None):
     parametricstudy.study01(studyDict=studyDict, solver=solver)
 
 #Exit Solver
-solverExit = turboData["launching"].get("exitatend", False)
+solverExit = launchEl.get("exitatend", False)
 if solverExit:
     solver.exit()
 
