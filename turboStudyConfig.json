@@ -1,7 +1,7 @@
 {
  "launching":
     {
-      "workingDir": "D:/TestTurbo",
+      "workingDir": "D:/TestTurbo/HannoverRotor",
       "fl_version": "23.2.0",
       "noCore": 2,
       "precision": "double",
@@ -32,19 +32,7 @@
               1.04,
               1.05
             ]
-          ],
-          "createAutoTable": false,
-          "autoTable": {
-            "minValue": [
-              0.9
-            ],
-            "maxValue": [
-              1.0
-            ],
-            "numSamples": [
-              10
-            ]
-          }
+          ]
         }
       ]
     }

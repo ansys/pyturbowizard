@@ -11,6 +11,8 @@ def import_01(data, solver):
         success = True
 
     # BC Profiles
-    solver.file.read_profile(file_name=data["profileName"])
+    profileName = data.get("profileName")
+    if not (profileName is None):
+        solver.file.read_profile(file_name=profileName)
 
     return success

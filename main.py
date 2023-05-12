@@ -51,7 +51,10 @@ if not external:    # pyConsole in Fluent
     except Exception:
         pass
 
-working_Dir = os.path.normpath(launchEl["workingDir"])
+
+#Use directory of jason-file if not specified in config-file
+working_Dir = launchEl.get("workingDir", os.path.dirname(json_filename))
+working_Dir = os.path.normpath(working_Dir)
 
 if external:    # Fluent without pyConsole
     global solver
@@ -68,7 +71,7 @@ if external:    # Fluent without pyConsole
 
 # Start Setup
 caseDict = turboData.get("cases")
-if not (caseDict is None):
+if caseDict is not None:
     for casename in caseDict:
         print("Running Case: " + casename + "\n")
         caseEl = turboData["cases"][casename]
@@ -92,15 +95,20 @@ if not (caseDict is None):
 
         #Solution
            #Set Solver Settings
-        numerics.numerics_01(caseEl, solver)
-        #Activate Turbonumerics
+        if (functionEl is None) or (functionEl.get("numerics") is None):
+            numerics.numerics(data=caseEl, solver=solver)
+        else:
+            numerics.numerics(data=caseEl, solver=solver, functionName=functionEl["numerics"])
 
-            #Initialization
-        solve.init_01(caseEl, solver)
-
-        solver.file.write(file_type = "case-data", file_name = caseEl["caseFilename"])
+        #Write case & settings file
+        solver.file.write(file_type="case", file_name=caseEl["caseFilename"])
         settingsFilename = "\"" + caseEl["caseFilename"] + ".set\""
         solver.tui.file.write_settings(settingsFilename)
+
+        #Initialization
+        solve.init_01(caseEl, solver)
+        #Write initial data
+        solver.file.write(file_type="data", file_name=caseEl["caseFilename"])
 
         #Solve
         if caseEl["solution"]["runSolver"]:
@@ -110,7 +118,7 @@ if not (caseDict is None):
             solver.file.write(file_type = "case-data", file_name = filename)
 
         #Postprocessing
-        if (functionEl is None) or (functionEl["postproc"] is None):
+        if (functionEl is None) or (functionEl.get("postproc") is None):
             postproc.post(data=caseEl, solver=solver)
         else:
             postproc.post(data=caseEl, solver=solver,functionName=functionEl["postproc"])
@@ -120,8 +128,9 @@ if not (caseDict is None):
 
 # Do Studies
 studyDict = turboData.get("studies")
-if not (studyDict is None):
-    if (functionEl is None) or (functionEl["parametricstudy"] is None):
+
+if studyDict is not None:
+    if (functionEl is None) or (functionEl.get("parametricstudy") is None):
         parametricstudy.study(studyDict=studyDict, solver=solver)
     else:
         parametricstudy.study(studyDict=studyDict, solver=solver, functionName=functionEl["parametricstudy"])
