@@ -51,6 +51,7 @@ if not external:    # pyConsole in Fluent
     except Exception:
         pass
 
+
 #Use directory of jason-file if not specified in config-file
 working_Dir = launchEl.get("workingDir", os.path.dirname(json_filename))
 working_Dir = os.path.normpath(working_Dir)
@@ -127,6 +128,7 @@ if caseDict is not None:
 
 # Do Studies
 studyDict = turboData.get("studies")
+
 if studyDict is not None:
     if (functionEl is None) or (functionEl.get("parametricstudy") is None):
         parametricstudy.study(studyDict=studyDict, solver=solver)
