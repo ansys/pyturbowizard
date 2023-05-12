@@ -46,7 +46,7 @@ def boundary_01(data, solver):
                                                                          'pressure-inlet')
             #Use profile data
             profileName = data.get("profileName")
-            if not (profileName is None):
+            if (profileName is not None):
                 solver.setup.boundary_conditions.pressure_inlet[data["locations"][key]] = {
                     "gauge_total_pressure": {"option": "profile", "profile_name": "inlet-bc", "field_name": "pt-in"},
                     "gauge_pressure": "BC_P_In_gauge",
