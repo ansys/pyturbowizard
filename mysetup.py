@@ -28,6 +28,9 @@ def physics_01(solver):
 
 
 def boundary_01(data, solver):
+    #Enable Turbo Models
+    solver.tui.define.turbo_model.enable_turbo_model('yes')
+
     for key in data["locations"]:
         # Cell Zone Conditions
         if key == "cz_rotating_names":
@@ -119,12 +122,12 @@ def boundary_01(data, solver):
             for key_if in keyEl:
                 side1 = keyEl[key_if].get("side1")
                 side2 = keyEl[key_if].get("side2")
-                solver.tui.define.mesh_interfaces.create(key_if, side1, '()', side2,'()', 'no', 'no', 'no', 'yes', 'no')
+                #solver.tui.define.mesh_interfaces.create(key_if, side1, '()', side2,'()', 'no', 'no', 'no', 'yes', 'no')
+                solver.tui.define.turbo_model.turbo_create(key_if, side1, '()', side2, '()', '3')
 
     #Setup turbo-interfaces at end
     keyEl = data["locations"].get("bz_interfaces_mixingplane_names")
     if keyEl is not None:
-        solver.tui.define.turbo_model.enable_turbo_model('yes')
         for key_if in keyEl:
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
