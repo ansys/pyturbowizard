@@ -108,7 +108,10 @@ def boundary_01(data, solver):
             for key_if in keyEl:
                 side1 = keyEl[key_if].get("side1")
                 side2 = keyEl[key_if].get("side2")
-                solver.tui.mesh.modify_zones.make_periodic(side1, side2,'yes', 'yes')
+                solver.tui.mesh.modify_zones.create_periodic_interface('auto', key_if, side1, side2, 'yes', 'no', 'no',
+                                                                       'yes', 'yes')
+                #old command
+                #solver.tui.mesh.modify_zones.make_periodic(side1, side2,'yes', 'yes')
 
         elif key == "bz_interfaces_general_names":
             solver.tui.define.mesh_interfaces.one_to_one_pairing('no')
@@ -126,8 +129,8 @@ def boundary_01(data, solver):
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
             solver.tui.define.turbo_model.turbo_create(key_if, side1, '()', side2, '()', '2')
-    return
 
+    return
 
 def report_01(data, solver):
      #Reports
