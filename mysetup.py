@@ -104,10 +104,28 @@ def boundary_01(data, solver):
 
         # Interfaces
         elif key == "bz_interfaces_periodic_names":
-            for key_if in data["locations"][key]:
-                solver.tui.mesh.modify_zones.make_periodic(key_if, data["locations"][key][key_if],
-                                                           'yes', 'yes')
+            keyEl = data["locations"].get(key)
+            for key_if in keyEl:
+                side1 = keyEl[key_if].get("side1")
+                side2 = keyEl[key_if].get("side2")
+                solver.tui.mesh.modify_zones.make_periodic(side1, side2,'yes', 'yes')
 
+        elif key == "bz_interfaces_general_names":
+            solver.tui.define.mesh_interfaces.one_to_one_pairing('no')
+            keyEl = data["locations"].get(key)
+            for key_if in keyEl:
+                side1 = keyEl[key_if].get("side1")
+                side2 = keyEl[key_if].get("side2")
+                solver.tui.define.mesh_interfaces.create(key_if, side1, '()', side2,'()', 'no', 'no', 'no', 'yes', 'no')
+
+    #Setup turbo-interfaces at end
+    keyEl = data["locations"].get("bz_interfaces_mixingplane_names")
+    if keyEl is not None:
+        solver.tui.define.turbo_model.enable_turbo_model('yes')
+        for key_if in keyEl:
+            side1 = keyEl[key_if].get("side1")
+            side2 = keyEl[key_if].get("side2")
+            solver.tui.define.turbo_model.turbo_create(key_if, side1, '()', side2, '()', '2')
     return
 
 

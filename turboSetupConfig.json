@@ -48,13 +48,14 @@
             "b-rotor-1-free-slip-outlet"
           ],
           "bz_interfaces_periodic_names": {
-            "b-rotor-1-periodic-side-1": "b-rotor-1-periodic-side-2"
+            "periodic-interface-1": {
+                "side1": "b-rotor-1-periodic-side-1",
+                "side2": "b-rotor-1-periodic-side-2"
+              }
           },
           "bz_interfaces_mixingplane_names": {
-
           },
           "bz_interfaces_general_names": {
-
           },
           "bz_eval_ip1_name": "plane_eval_ip1",
           "bz_eval_op1_name": "plane_eval_op1"
