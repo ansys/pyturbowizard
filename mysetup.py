@@ -6,6 +6,10 @@ def setup_01(data, solver):
     # Set Boundaries
     boundary_01(data, solver)
 
+    #Do some Mesh Checks
+    solver.mesh.check()
+    solver.mesh.quality()
+
     return
 
 def material_01(data, solver):
