@@ -1,6 +1,6 @@
 def numerics(data, solver, functionName="numerics_01"):
     print("Specifying Numerics: \"" + functionName + "\"...")
-    if functionName == "post_01":
+    if functionName == "numerics_01":
         numerics_01(data, solver)
     else:
         print("Prescribed Function \"" + functionName + "\" not known. Skipping Specifying Numerics!")

@@ -12,7 +12,7 @@ def import_01(data, solver):
 
     # BC Profiles
     profileName = data.get("profileName")
-    if not (profileName is None):
+    if profileName is not None:
         solver.file.read_profile(file_name=profileName)
 
     return success
