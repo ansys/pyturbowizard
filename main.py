@@ -101,8 +101,10 @@ if caseDict is not None:
         settingsFilename = "\"" + caseEl["caseFilename"] + ".set\""
         solver.tui.file.write_settings(settingsFilename)
 
-           #Initialization
+        #Initialization
         solve.init_01(caseEl, solver)
+        #Write initial data
+        solver.file.write(file_type="data", file_name=data["caseFilename"])
 
         #Solve
         if caseEl["solution"]["runSolver"]:
