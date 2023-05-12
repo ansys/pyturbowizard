@@ -94,7 +94,10 @@ if caseDict is not None:
 
         #Solution
            #Set Solver Settings
-        numerics.numerics_01(caseEl, solver)
+        if (functionEl is None) or (functionEl.get("numerics") is None):
+            numerics.numerics(data=caseEl, solver=solver)
+        else:
+            numerics.numerics(data=caseEl, solver=solver, functionName=functionEl["numerics"])
 
         #Write case & settings file
         solver.file.write(file_type="case", file_name=caseEl["caseFilename"])
@@ -104,7 +107,7 @@ if caseDict is not None:
         #Initialization
         solve.init_01(caseEl, solver)
         #Write initial data
-        solver.file.write(file_type="data", file_name=data["caseFilename"])
+        solver.file.write(file_type="data", file_name=caseEl["caseFilename"])
 
         #Solve
         if caseEl["solution"]["runSolver"]:
@@ -114,7 +117,7 @@ if caseDict is not None:
             solver.file.write(file_type = "case-data", file_name = filename)
 
         #Postprocessing
-        if (functionEl is None) or (functionEl["postproc"] is None):
+        if (functionEl is None) or (functionEl.get("postproc") is None):
             postproc.post(data=caseEl, solver=solver)
         else:
             postproc.post(data=caseEl, solver=solver,functionName=functionEl["postproc"])
@@ -125,7 +128,7 @@ if caseDict is not None:
 # Do Studies
 studyDict = turboData.get("studies")
 if studyDict is not None:
-    if (functionEl is None) or (functionEl["parametricstudy"] is None):
+    if (functionEl is None) or (functionEl.get("parametricstudy") is None):
         parametricstudy.study(studyDict=studyDict, solver=solver)
     else:
         parametricstudy.study(studyDict=studyDict, solver=solver, functionName=functionEl["parametricstudy"])
