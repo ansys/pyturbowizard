@@ -78,8 +78,10 @@ def boundary_01(data, solver):
             #Do some general settings
             if inBC is not None:
                 #Turbulent Settings
-                inBC.turb_intensity = "BC_TuIn_In"
-                inBC.turb_viscosity_ratio = "BC_TuVR_In"
+                if data["expressions"].get("BC_TuIn_In") is not None:
+                    inBC.turb_intensity = "BC_TuIn_In"
+                if data["expressions"].get("BC_TuVR_In") is not None:
+                    inBC.turb_viscosity_ratio = "BC_TuVR_In"
 
                 #If Expressions for a direction are specified
                 if (data["expressions"].get("BC_radDir_In") is not None) and \
