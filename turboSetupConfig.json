@@ -21,7 +21,8 @@
         "datapath": "./",
         "caseFilename": "HannoverRotor_NoTip_0.6M",
         "meshFilename": "HannoverRotor_NoTip_0.6M.def",
-        "profileName": "InletBC_fluent_Blend.csv",
+        "profileName_In": "InletBC_fluent_Blend.csv",
+        "profileName_Out": "InletBC_fluent_Blend.csv",
         "expressionFilename": "hr_exp.tsv",
         "expressionTemplate": "expressionTemplate_compressor_comp.tsv",
         "expressions": {
@@ -31,8 +32,8 @@
           "BC_Pt_In":	"-1",
           "BC_P_In_gauge": 	"58000[Pa]",
           "BC_Tt_In":	"-1",
-          "BC_TuIn_In":	"-1",
-          "BC_TuVR_In":	"-1",
+          "BC_TuIn_In":	"0.05",
+          "BC_TuVR_In":	"10",
           "BC_P_Out":	"60000[Pa]"
         },
         "locations": {
