@@ -3,11 +3,16 @@ name	definition	description	input-parameter	output-parameter
 "BC_Pref"	"{BC_Pref}"	""	#t	#f
 "BC_RPM"	"{BC_RPM}"	""	#t	#f
 "BC_Pt_In"	"{BC_Pt_In}"	""	#t	#f
+"BC_MassFlow_In"	"{BC_MassFlow_In}"	""	#t	#f
 "BC_P_In_gauge"	"{BC_P_In_gauge}"	""	#f	#f
 "BC_Tt_In"	"{BC_Tt_In}"	""	#t	#f
 "BC_TuIn_In"	"{BC_TuIn_In}"	""	#t	#f
 "BC_TuVR_In"	"{BC_TuVR_In}"	""	#t	#f
 "BC_P_Out"	"{BC_P_Out}"	""	#t	#f
+"BC_MassFlow_Out"	"{BC_MassFlow_Out}"	""	#t	#f
+"BC_ECMassFlow_Out"	"{BC_ECMassFlow_Out}"	""	#t	#f
+"BC_ECMassFlow_pref"	"{BC_ECMassFlow_pref}"	""	#f	#f
+"BC_ECMassFlow_tref"	"{BC_ECMassFlow_tref}"	""	#f	#f
 "MP_In_p"	"AreaAve(StaticPressure,['{bz_inlet_name}'])"	""	#f	#f
 "MP_MassFlow_In"	"MassFlow(['{bz_inlet_name}'])"	""	#f	#f
 "MP_MassFlow_Out"	"-MassFlow(['{bz_outlet_name}'])"	""	#f	#t

@@ -1,3 +1,4 @@
+import os
 def setup_01(data, solver):
     # Set physics
     physics_01(solver)
@@ -41,52 +42,104 @@ def boundary_01(data, solver):
             solver.setup.cell_zone_conditions.fluid[data["locations"][key]] = {"mrf_motion": True, "mrf_omega": "BC_RPM"}
         # Inlet
         elif key == "bz_inlet_name":
-            #Total Pressure Inlet
-            solver.tui.define.boundary_conditions.modify_zones.zone_type(data["locations"][key],
-                                                                         'pressure-inlet')
-            #Use profile data
-            profileName = data.get("profileName")
-            if (profileName is not None):
-                solver.setup.boundary_conditions.pressure_inlet[data["locations"][key]] = {
-                    "gauge_total_pressure": {"option": "profile", "profile_name": "inlet-bc", "field_name": "pt-in"},
-                    "gauge_pressure": "BC_P_In_gauge",
-                    "t0": {"option": "profile", "profile_name": "inlet-bc", "field_name": "tt-in"},
-                    "direction_spec": "Direction Vector", "coordinate_system": "Cylindrical (Radial, Tangential, Axial)",
-                    "flow_direction": [{"field_name": "vrad-dir", "profile_name": "inlet-bc", "option": "profile"},
-                                       {"field_name": "vtang-dir", "profile_name": "inlet-bc", "option": "profile"},
-                                       {"field_name": "vax-dir", "profile_name": "inlet-bc", "option": "profile"}]}
-            #Use expressions
-            else:
-                solver.setup.boundary_conditions.pressure_inlet[data["locations"][key]] = {
-                    "gauge_total_pressure": "BC_Pt_In",
-                    "gauge_pressure": "BC_P_In_gauge",
-                    "t0": "BC_Tt_In",
-                    "turb_intensity": "BC_TuIn_In",
-                    "turb_viscosity_ratio": "BC_TuVR_In",
-                    "direction_spec": "Normal to Boundary"
-                }
+            inletName = data["locations"].get(key)
+            inBC = None
+            profileName = data.get("profileName_In")
+            useProfileData = (profileName is not None) and (profileName != "")
+            if data["expressions"].get("BC_MassFlow_In") is not None:
+                print("Prescribing a Massflow-Inlet BC @" + inletName)
+                solver.setup.boundary_conditions.change_type(zone_list=[inletName], new_type="mass-flow-inlet")
+                inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
+                inBC.flow_spec = "Mass Flow Rate"
+                inBC.mass_flow = "BC_MassFlow_In"
+                inBC.gauge_pressure = "BC_P_In_gauge"
+                inBC.direction_spec = "Normal to Boundary"
+                inBC.t0 = "BC_Tt_In"
+
+            elif data["expressions"].get("BC_Pt_In") is not None:
+                solver.setup.boundary_conditions.change_type(zone_list=[inletName], new_type="pressure-inlet")
+                inBC = solver.setup.boundary_conditions.pressure_inlet[inletName]
+
+                if useProfileData:
+                    # check profile naming convention:
+                    # total pressure: pt-in,
+                    # total temp: tt-in
+                    inBC.gauge_total_pressure = {"option": "profile", "profile_name": "inlet-bc",
+                                                 "field_name": "pt-in"}
+                    inBC.gauge_pressure = "BC_P_In_gauge"
+                    inBC.t0 = {"option": "profile", "profile_name": "inlet-bc", "field_name": "tt-in"}
+                else:
+                    inBC.gauge_total_pressure = "BC_Pt_In"
+                    inBC.gauge_pressure = "BC_P_In_gauge"
+                    inBC.direction_spec = "Normal to Boundary"
+                    inBC.t0 = "BC_Tt_In"
+
+            #Do some general settings
+            if inBC is not None:
+                #Turbulent Settings
+                if data["expressions"].get("BC_TuIn_In") is not None:
+                    inBC.turb_intensity = "BC_TuIn_In"
+                if data["expressions"].get("BC_TuVR_In") is not None:
+                    inBC.turb_viscosity_ratio = "BC_TuVR_In"
+
                 #If Expressions for a direction are specified
                 if (data["expressions"].get("BC_radDir_In") is not None) and \
                    (data["expressions"].get("BC_tangDir_In") is not None) and \
                    (data["expressions"].get("BC_axDir_In") is not None):
-                    solver.setup.boundary_conditions.pressure_inlet[data["locations"][key]] = {
-                        "direction_spec": "Direction Vector",
-                        "coordinate_system": "Cylindrical (Radial, Tangential, Axial)",
-                        "flow_direction": ["BC_radDir_In", "BC_tangDir_In", "BC_axDir_In"]
-                    }
+                    inBC.direction_spec = "Direction Vector"
+                    inBC.coordinate_system = "Cylindrical (Radial, Tangential, Axial)"
+                    inBC.flow_direction = ["BC_radDir_In", "BC_tangDir_In", "BC_axDir_In"]
+
+                #Use Definitions from Profile-Data if sepcified
+                # check profile naming convention:
+                # directions (cylindrical): vrad-dir,vrad-dir,vax-dir
+                if useProfileData:
+                    inBC.direction_spec = "Direction Vector"
+                    inBC.coordinate_system = "Cylindrical (Radial, Tangential, Axial)"
+                    inBC.flow_direction = [{"field_name": "vrad-dir", "profile_name": "inlet-bc", "option": "profile"},
+                                           {"field_name": "vtang-dir", "profile_name": "inlet-bc", "option": "profile"},
+                                           {"field_name": "vax-dir", "profile_name": "inlet-bc", "option": "profile"}]
 
 
         # Outlet
         elif key == "bz_outlet_name":
-            solver.setup.boundary_conditions.pressure_outlet[data["locations"][key]] = {
-                "prevent_reverse_flow": True}
-            solver.setup.boundary_conditions.pressure_outlet[data["locations"][key]] = {
-                "gauge_pressure": "BC_P_Out",
-                "avg_press_spec": True}
-            solver.tui.define.boundary_conditions.bc_settings.pressure_outlet(data["setup"]["BC_pout_pbf"],
+            outletName = data["locations"][key]
+            if data["expressions"].get("BC_ECMassFlow_Out") is not None:
+                print("Prescribing a Exit-Corrected-Massflow-Outlet BC @" + outletName)
+                solver.setup.boundary_conditions.change_type(zone_list=[outletName], new_type="mass-flow-outlet")
+                outBC = solver.setup.boundary_conditions.mass_flow_outlet[outletName]
+                outBC.flow_spec = "Exit Corrected Mass Flow Rate"
+                outBC.ec_mass_flow = "BC_ECMassFlow_Out"
+                outBC.pref = "BC_ECMassFlow_pref"
+                outBC.tref = "BC_ECMassFlow_tref"
+
+            elif data["expressions"].get("BC_MassFlow_Out") is not None:
+                print("Prescribing a Massflow-Outlet BC @" + outletName)
+                solver.setup.boundary_conditions.change_type(zone_list=[outletName], new_type="mass-flow-outlet")
+                outBC = solver.setup.boundary_conditions.mass_flow_outlet[outletName]
+                outBC.flow_spec = "Mass Flow Rate"
+                outBC.mass_flow = "BC_MassFlow_Out"
+
+            elif data["expressions"].get("BC_P_Out") is not None:
+                print("Prescribing a Pressure-Outlet BC @" + outletName)
+                solver.setup.boundary_conditions.change_type(zone_list=[outletName], new_type="pressure-outlet")
+                outBC = solver.setup.boundary_conditions.pressure_outlet[outletName]
+                #Check Profile data exists
+                profileName = data.get("profileName_Out")
+                useProfileData = (profileName is not None) and (profileName != "")
+
+                outBC.prevent_reverse_flow = True
+                if useProfileData:
+                    # check profile naming convention:
+                    # outlet pressure: p-out
+                    outBC.gauge_pressure = {"option": "profile", "profile_name": "outlet-bc", "field_name": "p-out"}
+                else:
+                    outBC.gauge_pressure = "BC_P_Out"
+                outBC.avg_press_spec = True
+                solver.tui.define.boundary_conditions.bc_settings.pressure_outlet(data["setup"]["BC_pout_pbf"],
                                                                               data["setup"]["BC_pout_numbins"])
 
-        # Walls
+            # Walls
         #elif key == "bz_walls_shroud_name":
         #    solver.setup.boundary_conditions.wall[data["locations"][key]] = {"motion_bc": "Moving Wall","relative": False,"rotating": True}
 
