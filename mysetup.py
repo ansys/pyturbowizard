@@ -61,7 +61,6 @@ def boundary_01(data, solver):
                 inBC = solver.setup.boundary_conditions.pressure_inlet[inletName]
 
                 if useProfileData:
-                    # Use profile data: total pressure boundary condition
                     # check profile naming convention:
                     # total pressure: pt-in,
                     # total temp: tt-in
@@ -125,8 +124,17 @@ def boundary_01(data, solver):
                 print("Prescribing a Pressure-Outlet BC @" + outletName)
                 solver.setup.boundary_conditions.change_type(zone_list=[outletName], new_type="pressure-outlet")
                 outBC = solver.setup.boundary_conditions.pressure_outlet[outletName]
+                #Check Profile data exists
+                profileName = data.get("profileName_Out")
+                useProfileData = (profileName is not None) and (profileName != "")
+
                 outBC.prevent_reverse_flow = True
-                outBC.gauge_pressure = "BC_P_Out"
+                if useProfileData:
+                    # check profile naming convention:
+                    # outlet pressure: p-out
+                    outBC.gauge_pressure = {"option": "profile", "profile_name": "outlet-bc", "field_name": "p-out"}
+                else:
+                    outBC.gauge_pressure = "BC_P_Out"
                 outBC.avg_press_spec = True
                 solver.tui.define.boundary_conditions.bc_settings.pressure_outlet(data["setup"]["BC_pout_pbf"],
                                                                               data["setup"]["BC_pout_numbins"])
