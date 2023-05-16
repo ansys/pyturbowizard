@@ -137,7 +137,7 @@ if studyDict is not None:
     else:
         parametricstudy.study(data=studyDict, solver=solver, functionName=functionEl["parametricstudy"])
     #Postprocessing of studies
-    if turboData.get("plotResults"):
+    if launchEl.get("plotResults"):
         parametricstudy.studyPlot(data=studyDict)
 
 #Exit Solver

@@ -90,15 +90,48 @@ def study01(studyDict, solver):
 def studyPlot(data):
     import matplotlib.pyplot as plt
     import os
-    from numpy import genfromtxt
+    import pandas as pd
 
     for studyName in data:
         studyEl = data[studyName]
         datapath = studyEl.get("datapath")    
-    design_point_table_path = datapath + studyName + "_dp_table.csv"
-    if os.path.isfile(design_point_table_path):
-        design_point_table = genfromtxt(design_point_table_path, delimiter='',skip_header='2')
+        design_point_table_path = datapath + studyName + "_dp_table.csv"
+        if os.path.isfile(design_point_table_path):
+            design_point_table = pd.read_csv(design_point_table_path, delimiter=',',header=0)
 
+            #extract unit row and drop from table
+            units = design_point_table.iloc[0,:]
+            design_point_table = design_point_table.drop(0,axis=0)
+
+            #clear out NaN values for plot data
+            MP_MassFlow_Out = pd.to_numeric(design_point_table.loc[:,'MP_MassFlow_Out'],errors='coerce')
+            MP_PR_tot = pd.to_numeric(design_point_table.loc[:,'MP_PR_tot'],errors='coerce')
+            MP_Isentropic_Efficiency = pd.to_numeric(design_point_table.loc[:,'MP_Isentropic_Efficiency'],errors='coerce')
+
+            #generate plots
+            fig, axs = plt.subplots(1,2,figsize=(12, 6))
+            fig.suptitle('Compressor Map')
+            #Total Pressure Ratio 
+            axs[0].set_xlim([MP_MassFlow_Out.min()*0.99,MP_MassFlow_Out.max()*1.01])
+            axs[0].set_ylim([MP_PR_tot.min()*0.99,MP_PR_tot.max()*1.01])
+            axs[0].grid()
+            axs[0].set_xlabel('reduced mass flow rate [kg/s]')
+            axs[0].set_ylabel('total pressure ratio [-]')
+            axs[0].plot(MP_MassFlow_Out,MP_PR_tot,marker='^')
+
+            #Isentropic Efficiency
+            axs[1].set_xlim([MP_MassFlow_Out.min()*0.99,MP_MassFlow_Out.max()*1.01])
+            axs[1].set_ylim([MP_Isentropic_Efficiency.min()*0.99,MP_Isentropic_Efficiency.max()*1.01])
+            axs[1].grid()
+            axs[1].plot(MP_MassFlow_Out,MP_Isentropic_Efficiency,marker='^')
+            axs[1].set_xlabel('reduced mass flow rate [kg/s]')
+            axs[1].set_ylabel('isentropic efficiency [-]')
+
+            study_plot_name = studyName + '_compressor_map.svg'
+            print('generating figure: '+ study_plot_name)
+            plt.savefig(study_plot_name)
+        else:
+            print('No designpoint table CSV-file found')
     
 
 
