@@ -216,8 +216,8 @@ def boundary_01(data, solver):
                     "rotation_axis_direction": [0.0, 0.0, 1.0],
                 }
         elif key == "bz_walls_rotating_names":
-            for bz_cr in data["locations"][key]:
-                solver.setup.boundary_conditions.wall[bz_cr] = {
+            for bz_r in data["locations"][key]:
+                solver.setup.boundary_conditions.wall[bz_r] = {
                     "motion_bc": "Moving Wall",
                     "relative": False,
                     "rotating": True,
