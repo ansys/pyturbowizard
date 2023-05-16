@@ -1,5 +1,6 @@
 import os
 
+
 def study(data, solver, functionName="study_01"):
     print('Running ParamatricStudy Function "' + functionName + '"...')
     if functionName == "study_01":
@@ -28,19 +29,21 @@ def study01(data, solver):
         refCase = studyEl.get("refCaseFilename")
         runExisting = studyEl.get("runExistingProject", False)
 
-        #Do some checks to skip if a run is not possible
+        # Do some checks to skip if a run is not possible
         studyFileName = data.get("launching")["workingDir"] + "/" + studyName + ".flprj"
-        studyFileName= os.path.normpath(studyFileName)
+        studyFileName = os.path.normpath(studyFileName)
         if os.path.isfile(studyFileName):
             if not studyEl.get("overwriteExisting", False):
                 print("Fluent-Project already exists " + studyFileName)
-                print("and \"overwriteExisting\"-flag is set to False or not existing in Config-File")
-                print("Skipping Parametric Study \"" + studyName + "\"")
+                print(
+                    'and "overwriteExisting"-flag is set to False or not existing in Config-File'
+                )
+                print('Skipping Parametric Study "' + studyName + '"')
                 break
         else:
             if runExisting:
                 print("Specified Fluent-Project does not exist " + studyFileName)
-                print("Skipping Parametric Study \"" + studyName + "\"")
+                print('Skipping Parametric Study "' + studyName + '"')
                 break
 
         # Check if a new Project should be created or an existing is executed
@@ -142,4 +145,3 @@ def study01(data, solver):
             solver.file.parametric_project.save()
 
     print("All Studies finished")
-
