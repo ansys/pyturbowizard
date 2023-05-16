@@ -1,32 +1,32 @@
 name	definition	description	input-parameter	output-parameter
 "GEO_No_Blades"	"{GEO_No_Blades}"	""	#f	#f
-"BC_Pref"	"{BC_Pref}"	""	#t	#f
+"BC_pref"	"{BC_pref}"	""	#t	#f
 "BC_RPM"	"{BC_RPM}"	""	#t	#f
-"BC_Pt_In"	"{BC_Pt_In}"	""	#t	#f
-"BC_MassFlow_In"	"{BC_MassFlow_In}"	""	#t	#f
-"BC_P_In_gauge"	"{BC_P_In_gauge}"	""	#f	#f
-"BC_Tt_In"	"{BC_Tt_In}"	""	#t	#f
-"BC_TuIn_In"	"{BC_TuIn_In}"	""	#t	#f
-"BC_TuVR_In"	"{BC_TuVR_In}"	""	#t	#f
-"BC_P_Out"	"{BC_P_Out}"	""	#t	#f
-"BC_MassFlow_Out"	"{BC_MassFlow_Out}"	""	#t	#f
-"BC_ECMassFlow_Out"	"{BC_ECMassFlow_Out}"	""	#t	#f
+"BC_IN_MassFlow"	"{BC_IN_MassFlow}"	""	#t	#f
+"BC_IN_pt"	"{BC_IN_pt}"	""	#t	#f
+"BC_IN_p_gauge"	"{BC_IN_p_gauge}"	""	#f	#f
+"BC_IN_Tt"	"{BC_IN_Tt}"	""	#t	#f
+"BC_IN_TuIn"	"{BC_IN_TuIn}"	""	#t	#f
+"BC_IN_TuVR"	"{BC_IN_TuVR}"	""	#t	#f
+"BC_OUT_p"	"{BC_OUT_p}"	""	#t	#f
+"BC_OUT_MassFlow"	"{BC_OUT_MassFlow}"	""	#t	#f
+"BC_OUT_ECMassFlow"	"{BC_OUT_ECMassFlow}"	""	#t	#f
 "BC_ECMassFlow_pref"	"{BC_ECMassFlow_pref}"	""	#f	#f
 "BC_ECMassFlow_tref"	"{BC_ECMassFlow_tref}"	""	#f	#f
-"MP_In_p"	"AreaAve(StaticPressure,['{bz_inlet_name}'])"	""	#f	#f
-"MP_MassFlow_In"	"MassFlow(['{bz_inlet_name}'])"	""	#f	#f
-"MP_MassFlow_Out"	"-MassFlow(['{bz_outlet_name}'])"	""	#f	#t
-"MP_Out_p"	"AreaAve(StaticPressure,['{bz_outlet_name}'])"	""	#f	#f
-"MP_massFlowAve_Tt_In"	"Average(TotalTemperature,['{bz_inlet_name}'],Weight = 'MassFlowRate')"	""	#f	#f
-"MP_massFlowAve_Tt_Out"	"Average(TotalTemperature,['{bz_outlet_name}'],Weight = 'MassFlowRate')"	""	#f	#f
-"MP_areaAve_p_In"	"AreaAve(StaticPressure,['{bz_inlet_name}'] ) + BC_Pref"	""	#f	#f
-"MP_massFlowAve_pt_In"	"Average(TotalPressure,['{bz_inlet_name}'],Weight = 'MassFlowRate') + BC_Pref"	""	#f	#f
-"MP_areaAve_p_Out"	"AreaAve(StaticPressure,['{bz_outlet_name}'] ) + BC_Pref"	""	#f	#f
-"MP_massFlowAve_pt_Out"	"Average(TotalPressure,['{bz_outlet_name}'],Weight = 'MassFlowRate') + BC_Pref"	""	#f	#f
-"MP_PR"	"MP_areaAve_p_In / MP_areaAve_p_Out"	""	#f	#f
-"MP_PR_tot"	"MP_massFlowAve_pt_In/ MP_massFlowAve_pt_Out"	""	#f	#t
-"MP_TR_tot"	"MassFlowAve(TotalTemperature,['{bz_outlet_name}']) / MassFlowAve(TotalTemperature,['{bz_inlet_name}'])"	""	#f	#f
+"MP_IN_p"	"AreaAve(StaticPressure,['{bz_inlet_name}'])"	""	#f	#f
+"MP_IN_MassFlow"	"MassFlow(['{bz_inlet_name}'])"	""	#f	#t
+"MP_OUT_MassFlow"	"-MassFlow(['{bz_outlet_name}'])"	""	#f	#f
+"MP_OUT_p"	"AreaAve(StaticPressure,['{bz_outlet_name}'])"	""	#f	#f
+"MP_IN_massFlowAve_Tt"	"Average(TotalTemperature,['{bz_inlet_name}'],Weight = 'MassFlowRate')"	""	#f	#f
+"MP_OUT_massFlowAve_Tt"	"Average(TotalTemperature,['{bz_outlet_name}'],Weight = 'MassFlowRate')"	""	#f	#f
+"MP_IN_areaAve_p"	"AreaAve(StaticPressure,['{bz_inlet_name}'] ) + BC_pref"	""	#f	#f
+"MP_IN_massFlowAve_pt"	"Average(TotalPressure,['{bz_inlet_name}'],Weight = 'MassFlowRate') + BC_pref"	""	#f	#f
+"MP_OUT_areaAve_p"	"AreaAve(StaticPressure,['{bz_outlet_name}'] ) + BC_pref"	""	#f	#f
+"MP_OUT_massFlowAve_pt"	"Average(TotalPressure,['{bz_outlet_name}'],Weight = 'MassFlowRate') + BC_pref"	""	#f	#f
+"MP_PR"	"MP_IN_areaAve_p / MP_OUT_areaAve_p"	""	#f	#f
+"MP_PRt"	"MP_IN_massFlowAve_pt/ MP_OUT_massFlowAve_pt"	""	#f	#t
+"MP_TRt"	"MassFlowAve(TotalTemperature,['{bz_outlet_name}']) / MassFlowAve(TotalTemperature,['{bz_inlet_name}'])"	""	#f	#f
 "MP_Torque"	"dot(vector(0,0,1) , Moment(vector(0.,0.,0.),['{bz_walls_hub_name}']) + Moment(vector(0.,0.,0.),['{bz_walls_blade_name}']))"	""	#f	#t
 "gamma"	"Average(SpecificHeatRatiogamma,['{bz_inlet_name}'],Weight = 'MassFlowRate')"	""	#f	#f
-"MP_Isentropic_Efficiency"	"(MP_massFlowAve_Tt_In - MP_massFlowAve_Tt_Out) / (MP_massFlowAve_Tt_In * (1 - (MP_massFlowAve_pt_Out / MP_massFlowAve_pt_In) ^ ((gamma-1)/gamma)))"	""	#f	#t
-"MP_Polytropic_Efficiency"	"(log10(MP_massFlowAve_Tt_In / MP_massFlowAve_Tt_Out) / log10(MP_massFlowAve_pt_In / MP_massFlowAve_pt_Out)) * (gamma/(gamma-1))"	""	#f	#t
+"MP_Isentropic_Efficiency"	"(MP_IN_massFlowAve_Tt - MP_OUT_massFlowAve_Tt) / (MP_IN_massFlowAve_Tt * (1 - (MP_OUT_massFlowAve_pt / MP_IN_massFlowAve_pt) ^ ((gamma-1)/gamma)))"	""	#f	#t
+"MP_Polytropic_Efficiency"	"(log10(MP_IN_massFlowAve_Tt / MP_OUT_massFlowAve_Tt) / log10(MP_IN_massFlowAve_pt / MP_OUT_massFlowAve_pt)) * (gamma/(gamma-1))"	""	#f	#t
