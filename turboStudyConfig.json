@@ -18,7 +18,7 @@
       "definition": [
         {
           "inputparameters": [
-            "BC_P_Out"
+            "BC_OUT_p"
           ],
           "useScaleFactor": true,
           "valueList": [
