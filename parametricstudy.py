@@ -163,8 +163,8 @@ def studyPlot(data):
             design_point_table = design_point_table.drop(0,axis=0)
 
             #clear out NaN values for plot data
-            MP_MassFlow_Out = pd.to_numeric(design_point_table.loc[:,'MP_MassFlow_Out'],errors='coerce')
-            MP_PR_tot = pd.to_numeric(design_point_table.loc[:,'MP_PR_tot'],errors='coerce')
+            MP_MassFlow_Out = pd.to_numeric(design_point_table.loc[:,'MP_OUT_MassFlow'],errors='coerce')
+            MP_PR_tot = pd.to_numeric(design_point_table.loc[:,'MP_PRt'],errors='coerce')
             MP_Isentropic_Efficiency = pd.to_numeric(design_point_table.loc[:,'MP_Isentropic_Efficiency'],errors='coerce')
 
             #generate plots

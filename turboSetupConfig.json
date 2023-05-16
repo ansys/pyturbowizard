@@ -76,7 +76,7 @@
           "BC_OUT_p_numbins": 65
         },
         "solution": {
-          "reportlist": ["MP_IN_MassFlow","MP_OUT_MassFlow","MP_Isentropic_Efficiency","MP_PRt","MP_Torque"],
+          "reportlist": ["MP_IN_MassFlow","MP_OUT_MassFlow","MP_Isentropic_Efficiency","MP_PRt"],
           "res_crit": 1.0e-7,
           "cov_list": [
             "MP_Isentropic_Efficiency"
