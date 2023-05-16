@@ -9,7 +9,7 @@
 
   "launching":
     {
-      "workingDir": "D:/TestTurbo/Darmstadt_R1S7",
+      "workingDir": "D:/TestTurbo/HannoverRotor",
       "fl_version": "23.2.0",
       "noCore": 2,
       "precision": "double",
@@ -18,7 +18,7 @@
       "exitatend": false
     },
   "cases": {
-      "darmstadt_coarse_tip08mm": {
+      "HannoverRotor_NoTip_0.6M": {
         "datapath": "./",
         "caseFilename": "HannoverRotor_NoTip_0.6M",
         "meshFilename": "HannoverRotor_NoTip_0.6M.def",
