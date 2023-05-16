@@ -14,8 +14,8 @@ name	definition	description	input-parameter	output-parameter
 "BC_ECMassFlow_pref"	"{BC_ECMassFlow_pref}"	""	#f	#f
 "BC_ECMassFlow_tref"	"{BC_ECMassFlow_tref}"	""	#f	#f
 "MP_IN_p"	"AreaAve(StaticPressure,['{bz_inlet_name}'])"	""	#f	#f
-"MP_IN_MassFlow"	"MassFlow(['{bz_inlet_name}'])"	""	#f	#f
-"MP_OUT_MassFlow"	"-MassFlow(['{bz_outlet_name}'])"	""	#f	#t
+"MP_IN_MassFlow"	"MassFlow(['{bz_inlet_name}'])"	""	#f	#t
+"MP_OUT_MassFlow"	"-MassFlow(['{bz_outlet_name}'])"	""	#f	#f
 "MP_OUT_p"	"AreaAve(StaticPressure,['{bz_outlet_name}'])"	""	#f	#f
 "MP_IN_massFlowAve_Tt"	"Average(TotalTemperature,['{bz_inlet_name}'],Weight = 'MassFlowRate')"	""	#f	#f
 "MP_OUT_massFlowAve_Tt"	"Average(TotalTemperature,['{bz_outlet_name}'],Weight = 'MassFlowRate')"	""	#f	#f

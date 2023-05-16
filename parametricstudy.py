@@ -67,6 +67,10 @@ def study01(studyDict, solver):
                 # fluent_study.design_points[designPointName].input_parameters = new_dp
                 designPointCounter = designPointCounter + 1
 
+        #Set Update Method
+        solver.tui.parametric_study.study.use_data_of_previous_dp('yes')
+        #solver.tui.parametric_study.study.use_base_data('yes')
+
         # Run all Design Points
         if studyEl["updateAllDPs"]:
             fluent_study.design_points.update_all()
