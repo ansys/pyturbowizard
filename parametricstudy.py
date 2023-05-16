@@ -125,6 +125,7 @@ def study01(data, solver):
 
         else:
             # Load Existing Project
+            #studyFileName = studyName + ".flprj"
             solver.file.parametric_project.open(project_filename=studyFileName)
             psname = refCase + "-Solve"
             fluent_study = solver.parametric_studies[psname]
