@@ -7,6 +7,7 @@
       "precision": "double",
       "external": true,
       "serverfilename": "",
+      "plotResults": true,
       "exitatend": false
     },
   "studies": {
