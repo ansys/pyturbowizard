@@ -5,7 +5,7 @@ def import_01(data, solver):
         solver.file.import_.read(file_type="cfx-definition", file_name=meshFilename)
         success = True
     else:
-        solver.file.read_case_data(file_type="case", file_name=meshFilename)
+        solver.file.read(file_type="mesh", file_name=meshFilename)
         success = True
 
     # BC Profiles
