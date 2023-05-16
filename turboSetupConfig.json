@@ -9,7 +9,7 @@
 
   "launching":
     {
-      "workingDir": "D:/TestTurbo/HannoverRotor",
+      "workingDir": "D:/TestTurbo/Darmstadt_R1S7",
       "fl_version": "23.2.0",
       "noCore": 2,
       "precision": "double",
@@ -18,7 +18,7 @@
       "exitatend": false
     },
   "cases": {
-      "HannoverRotor_NoTip_0.6M": {
+      "darmstadt_coarse_tip08mm": {
         "datapath": "./",
         "caseFilename": "HannoverRotor_NoTip_0.6M",
         "meshFilename": "HannoverRotor_NoTip_0.6M.def",
@@ -41,24 +41,34 @@
           "cz_rotating_names": ["b-rotor-1"],
           "bz_inlet_name": "inlet",
           "bz_outlet_name": "outlet",
-          "bz_walls_shroud_name": "b-rotor-1-shroud",
-          "bz_walls_hub_name": "b-rotor-1-hub",
-          "bz_walls_blade_name": "b-rotor-1-blade",
-          "bz_walls_counterrotating_names": [],
+          "bz_walls_shroud_name": "a-rotor-1-shroud",
+          "bz_walls_hub_name": "a-rotor-1-hub",
+          "bz_walls_blade_name": "a-rotor-1-blade",
+          "bz_walls_counterrotating_names": ["a-rotor-1-shroud"],
           "bz_walls_rotating_names": [],
-          "bz_walls_freeslip_names": [
-            "b-rotor-1-free-slip-inlet",
-            "b-rotor-1-free-slip-outlet"
-          ],
+          "bz_walls_freeslip_names": ["a-rotor-1-free-slip-inlet"],
           "bz_interfaces_periodic_names": {
-            "periodic-interface-1": {
-                "side1": "b-rotor-1-periodic-side-1",
-                "side2": "b-rotor-1-periodic-side-2"
+            "a-rotor-periodic-interface-1": {
+                "side1": "a-rotor-1-periodic-side-1",
+                "side2": "a-rotor-1-periodic-side-2"
+              },
+            "b-stator-periodic-interface-1": {
+                "side1": "b-stator-1-periodic-side-1",
+                "side2": "b-stator-1-periodic-side-2"
               }
+              
           },
           "bz_interfaces_mixingplane_names": {
+            "a-rotor-1-b-stator-1-mpm": {
+              "side1": "a-rotor-1-to-b-stator-1-side-1",
+              "side2": "a-rotor-1-to-b-stator-1-side-2"
+            }
           },
           "bz_interfaces_general_names": {
+            "a-rotor-1-tip": {
+              "side1": "a-rotor-1-tip-side-1",
+              "side2": "a-rotor-1-tip-side-2"
+            }
           },
           "bz_eval_ip1_name": "plane_eval_ip1",
           "bz_eval_op1_name": "plane_eval_op1"

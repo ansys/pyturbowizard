@@ -1,6 +1,9 @@
+# Test of Turbo-Workflow
+
 import os
 import json
 import sys
+
 
 json_filename = "turboSetupConfig.json"
 # If arguments are passed take first argument as path to the json file
@@ -165,6 +168,9 @@ if studyDict is not None:
             solver=solver,
             functionName=functionEl["parametricstudy"],
         )
+     #Postprocessing of studies
+     if launchEl.get("plotResults"):
+        parametricstudy.studyPlot(data=studyDict)
 
 # Exit Solver
 solverExit = launchEl.get("exitatend", False)
