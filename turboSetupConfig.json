@@ -8,7 +8,7 @@
 
   "launching":
     {
-      "workingDir": "D:/TestTurbo/HannoverRotor",
+      "workingDir": "D:/TestTurbo/Darmstadt_R1S7",
       "fl_version": "23.2.0",
       "noCore": 2,
       "precision": "double",
@@ -17,46 +17,56 @@
       "exitatend": false
     },
   "cases": {
-      "HannoverRotor_NoTip_0.6M": {
+      "darmstadt_coarse_tip08mm": {
         "datapath": "./",
-        "caseFilename": "HannoverRotor_NoTip_0.6M",
-        "meshFilename": "HannoverRotor_NoTip_0.6M.def",
-        "profileName": "InletBC_fluent_Blend.csv",
+        "caseFilename": "darmstadt_coarse_tip08mm",
+        "meshFilename": "darmstadt_coarse_tip08mm",
+        "profileName": null,
         "expressionFilename": "hr_exp.tsv",
         "expressionTemplate": "expressionTemplate_compressor_comp.tsv",
         "expressions": {
           "GEO_No_Blades":	"1",
           "BC_Pref":	"0[Pa]",
-          "BC_RPM":	"1790.71 [rad / s]",
-          "BC_Pt_In":	"-1",
-          "BC_P_In_gauge": 	"58000[Pa]",
-          "BC_Tt_In":	"-1",
-          "BC_TuIn_In":	"-1",
-          "BC_TuVR_In":	"-1",
-          "BC_P_Out":	"60000[Pa]"
+          "BC_RPM":	"-20000 [rev / min]",
+          "BC_Pt_In":	"101325 [Pa]",
+          "BC_P_In_gauge": 	"100000[Pa]",
+          "BC_Tt_In":	"288.15 [K]",
+          "BC_TuIn_In":	"5",
+          "BC_TuVR_In":	"10",
+          "BC_P_Out":	"132000 [Pa]"
         },
         "locations": {
-          "cz_rotating_names": "b-rotor-1",
+          "cz_rotating_names": "a-rotor-1",
           "bz_inlet_name": "inlet",
           "bz_outlet_name": "outlet",
-          "bz_walls_shroud_name": "b-rotor-1-shroud",
-          "bz_walls_hub_name": "b-rotor-1-hub",
-          "bz_walls_blade_name": "b-rotor-1-blade",
-          "bz_walls_counterrotating_names": [],
+          "bz_walls_shroud_name": "a-rotor-1-shroud",
+          "bz_walls_hub_name": "a-rotor-1-hub",
+          "bz_walls_blade_name": "a-rotor-1-blade",
+          "bz_walls_counterrotating_names": ["a-rotor-1-shroud"],
           "bz_walls_rotating_names": [],
-          "bz_walls_freeslip_names": [
-            "b-rotor-1-free-slip-inlet",
-            "b-rotor-1-free-slip-outlet"
-          ],
+          "bz_walls_freeslip_names": ["a-rotor-1-free-slip-inlet"],
           "bz_interfaces_periodic_names": {
-            "periodic-interface-1": {
-                "side1": "b-rotor-1-periodic-side-1",
-                "side2": "b-rotor-1-periodic-side-2"
+            "a-rotor-periodic-interface-1": {
+                "side1": "a-rotor-1-periodic-side-1",
+                "side2": "a-rotor-1-periodic-side-2"
+              },
+            "b-stator-periodic-interface-1": {
+                "side1": "b-stator-1-periodic-side-1",
+                "side2": "b-stator-1-periodic-side-2"
               }
+              
           },
           "bz_interfaces_mixingplane_names": {
+            "a-rotor-1-b-stator-1-mpm": {
+              "side1": "a-rotor-1-to-b-stator-1-side-1",
+              "side2": "a-rotor-1-to-b-stator-1-side-2"
+            }
           },
           "bz_interfaces_general_names": {
+            "a-rotor-1-tip": {
+              "side1": "a-rotor-1-tip-side-1",
+              "side2": "a-rotor-1-tip-side-2"
+            }
           },
           "bz_eval_ip1_name": "plane_eval_ip1",
           "bz_eval_op1_name": "plane_eval_op1"
