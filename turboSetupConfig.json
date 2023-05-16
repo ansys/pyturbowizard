@@ -1,6 +1,7 @@
 {
   "functions":
     {
+      "setup": "setup_01",
       "numerics": "numerics_01",
       "postproc": "post_01",
       "parametricstudy": "study_01"
@@ -19,24 +20,25 @@
   "cases": {
       "darmstadt_coarse_tip08mm": {
         "datapath": "./",
-        "caseFilename": "darmstadt_coarse_tip08mm",
-        "meshFilename": "darmstadt_coarse_tip08mm",
-        "profileName": null,
+        "caseFilename": "HannoverRotor_NoTip_0.6M",
+        "meshFilename": "HannoverRotor_NoTip_0.6M.def",
+        "profileName_In": "InletBC_fluent_Blend.csv",
+        "profileName_Out": "",
         "expressionFilename": "hr_exp.tsv",
         "expressionTemplate": "expressionTemplate_compressor_comp.tsv",
         "expressions": {
           "GEO_No_Blades":	"1",
-          "BC_Pref":	"0[Pa]",
-          "BC_RPM":	"-20000 [rev / min]",
-          "BC_Pt_In":	"101325 [Pa]",
-          "BC_P_In_gauge": 	"100000[Pa]",
-          "BC_Tt_In":	"288.15 [K]",
-          "BC_TuIn_In":	"5",
-          "BC_TuVR_In":	"10",
-          "BC_P_Out":	"132000 [Pa]"
+          "BC_pref":	"0[Pa]",
+          "BC_RPM":	"1790.71 [rad / s]",
+          "BC_IN_pt":	"-1",
+          "BC_IN_p_gauge": 	"58000[Pa]",
+          "BC_IN_Tt":	"-1",
+          "BC_IN_TuIn":	"0.05",
+          "BC_IN_TuVR":	"10",
+          "BC_OUT_p":	"60000[Pa]"
         },
         "locations": {
-          "cz_rotating_names": "a-rotor-1",
+          "cz_rotating_names": ["b-rotor-1"],
           "bz_inlet_name": "inlet",
           "bz_outlet_name": "outlet",
           "bz_walls_shroud_name": "a-rotor-1-shroud",
@@ -79,11 +81,11 @@
           "fl_mol_wight": 28.96
         },
         "setup": {
-          "BC_pout_pbf": 0.05,
-          "BC_pout_numbins": 65
+          "BC_OUT_p_pbf": 0.05,
+          "BC_OUT_p_numbins": 65
         },
         "solution": {
-          "reportlist": ["MP_MassFlow_In","MP_MassFlow_Out","MP_Isentropic_Efficiency","MP_PR_tot","MP_Torque"],
+          "reportlist": ["MP_IN_MassFlow","MP_OUT_MassFlow","MP_Isentropic_Efficiency","MP_PRt","MP_Torque"],
           "res_crit": 1.0e-7,
           "cov_list": [
             "MP_Isentropic_Efficiency"

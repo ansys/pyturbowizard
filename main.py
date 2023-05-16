@@ -4,8 +4,9 @@ import os
 import json
 import sys
 
-json_filename = 'turboStudyConfig.json'
-#If arguments are passed take first argument as path to the json file
+
+json_filename = "turboSetupConfig.json"
+# If arguments are passed take first argument as path to the json file
 if len(sys.argv) > 1:
     json_filename = sys.argv[1]
 
@@ -29,46 +30,64 @@ if external:
 
 else:
     from importlib.machinery import SourceFileLoader
+
     utilities = SourceFileLoader("utilities", "./utilities.py").load_module()
     meshimport = SourceFileLoader("meshimport", "./meshimport.py").load_module()
     mysetup = SourceFileLoader("mysetup", "./mysetup.py").load_module()
     numerics = SourceFileLoader("numerics", "./numerics.py").load_module()
     postproc = SourceFileLoader("postproc", "./postproc.py").load_module()
     solve = SourceFileLoader("solve", "./solve.py").load_module()
-    parametricstudy = SourceFileLoader("parametricstudy", "./parametricstudy.py").load_module()
+    parametricstudy = SourceFileLoader(
+        "parametricstudy", "./parametricstudy.py"
+    ).load_module()
 
 
-#pyfluent.set_log_level('DEBUG')
+# pyfluent.set_log_level('DEBUG')
 ######################################################################################################################
 #### Start up Fluent #################################################################################################
 ######################################################################################################################
 
-if not external:    # pyConsole in Fluent
+if not external:  # pyConsole in Fluent
     try:
         import ansys.fluent.core as pyfluent
-        flglobals = pyfluent.setup_for_fluent(product_version=launchEl["fl_version"],
-                                              mode="solver", version="3d", precision = launchEl["precision"],
-                                              processor_count=int(launchEl["noCore"]))
+
+        flglobals = pyfluent.setup_for_fluent(
+            product_version=launchEl["fl_version"],
+            mode="solver",
+            version="3d",
+            precision=launchEl["precision"],
+            processor_count=int(launchEl["noCore"]),
+        )
         globals().update(flglobals)
     except Exception:
         pass
 
 
-#Use directory of jason-file if not specified in config-file
-working_Dir = launchEl.get("workingDir", os.path.dirname(json_filename))
-working_Dir = os.path.normpath(working_Dir)
+# Use directory of jason-file if not specified in config-file
+fl_workingDir = launchEl.get("workingDir", os.path.dirname(json_filename))
+fl_workingDir = os.path.normpath(fl_workingDir)
+# reset working dir in dict
+launchEl["workingDir"] = fl_workingDir
+print("Used Fluent Working-Directory: " + fl_workingDir)
 
-if external:    # Fluent without pyConsole
+if external:  # Fluent without pyConsole
     global solver
     serverfilename = launchEl.get("serverfilename")
     if serverfilename is None or serverfilename == "":
-        solver = pyfluent.launch_fluent(precision=launchEl["precision"], processor_count=int(launchEl["noCore"]),
-                                    mode="solver", show_gui=True,
-                                   product_version = launchEl["fl_version"], cwd=working_Dir)
-    #Hook to existing Session
+        solver = pyfluent.launch_fluent(
+            precision=launchEl["precision"],
+            processor_count=int(launchEl["noCore"]),
+            mode="solver",
+            show_gui=True,
+            product_version=launchEl["fl_version"],
+            cwd=fl_workingDir,
+        )
+    # Hook to existing Session
     else:
         print("Connecting to Fluent Session...")
-        solver = pyfluent.launch_fluent(start_instance=False,  server_info_filepath=serverfilename)
+        solver = pyfluent.launch_fluent(
+            start_instance=False, server_info_filepath=serverfilename
+        )
 
 
 # Start Setup
@@ -78,54 +97,63 @@ if caseDict is not None:
         print("Running Case: " + casename + "\n")
         caseEl = turboData["cases"][casename]
 
-        #Start Transcript
+        # Start Transcript
         trnFileName = casename + ".trn"
         solver.file.start_transcript(file_name=trnFileName)
 
         # Mesh import, expressions, profiles
         result = meshimport.import_01(caseEl, solver)
 
-        utilities.writeExpressionFile(caseEl,working_Dir)
-        solver.tui.define.named_expressions.import_from_tsv(caseEl["expressionFilename"])
+        utilities.writeExpressionFile(caseEl, fl_workingDir)
+        solver.tui.define.named_expressions.import_from_tsv(
+            caseEl["expressionFilename"]
+        )
 
         # Enable Beta-Features
         solver.tui.define.beta_feature_access("yes ok")
 
         # Case Setup
-        mysetup.setup_01(caseEl, solver)
+        if (functionEl is None) or (functionEl.get("setup") is None):
+            mysetup.setup(data=caseEl, solver=solver)
+        else:
+            mysetup.setup(data=caseEl, solver=solver, functionName=functionEl["setup"])
         mysetup.report_01(caseEl, solver)
 
-        #Solution
-           #Set Solver Settings
+        # Solution
+        # Set Solver Settings
         if (functionEl is None) or (functionEl.get("numerics") is None):
             numerics.numerics(data=caseEl, solver=solver)
         else:
-            numerics.numerics(data=caseEl, solver=solver, functionName=functionEl["numerics"])
+            numerics.numerics(
+                data=caseEl, solver=solver, functionName=functionEl["numerics"]
+            )
 
-        #Write case & settings file
+        # Write case & settings file
         solver.file.write(file_type="case", file_name=caseEl["caseFilename"])
-        settingsFilename = "\"" + caseEl["caseFilename"] + ".set\""
+        settingsFilename = '"' + caseEl["caseFilename"] + '.set"'
         solver.tui.file.write_settings(settingsFilename)
 
-        #Initialization
+        # Initialization
         solve.init_01(caseEl, solver)
-        #Write initial data
+        # Write initial data
         solver.file.write(file_type="data", file_name=caseEl["caseFilename"])
 
-        #Solve
+        # Solve
         if caseEl["solution"]["runSolver"]:
             solve.solve_01(caseEl, solver)
 
             filename = caseEl["caseFilename"] + "_fin"
-            solver.file.write(file_type = "case-data", file_name = filename)
+            solver.file.write(file_type="case-data", file_name=filename)
 
-        #Postprocessing
+        # Postprocessing
         if (functionEl is None) or (functionEl.get("postproc") is None):
             postproc.post(data=caseEl, solver=solver)
         else:
-            postproc.post(data=caseEl, solver=solver,functionName=functionEl["postproc"])
+            postproc.post(
+                data=caseEl, solver=solver, functionName=functionEl["postproc"]
+            )
 
-        #Finalize
+        # Finalize
         solver.file.stop_transcript()
 
 # Do Studies
@@ -133,14 +161,18 @@ studyDict = turboData.get("studies")
 
 if studyDict is not None:
     if (functionEl is None) or (functionEl.get("parametricstudy") is None):
-        parametricstudy.study(data=studyDict, solver=solver)
+        parametricstudy.study(data=turboData, solver=solver)
     else:
-        parametricstudy.study(data=studyDict, solver=solver, functionName=functionEl["parametricstudy"])
-    #Postprocessing of studies
-    if launchEl.get("plotResults"):
+        parametricstudy.study(
+            data=turboData,
+            solver=solver,
+            functionName=functionEl["parametricstudy"],
+        )
+     #Postprocessing of studies
+     if launchEl.get("plotResults"):
         parametricstudy.studyPlot(data=studyDict)
 
-#Exit Solver
+# Exit Solver
 solverExit = launchEl.get("exitatend", False)
 if solverExit:
     solver.exit()

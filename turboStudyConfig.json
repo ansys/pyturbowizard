@@ -13,13 +13,15 @@
   "studies": {
     "HannoverRotor_NoTip_0.6M_study": {
       "datapath": "./",
+      "overwriteExisting": true,
+      "runExistingProject": true,
       "write_data": false,
-      "refCaseFilename": "HannoverRotor_NoTip_0.6M_test",
+      "refCaseFilename": "HannoverRotor_NoTip_0.6M",
       "updateAllDPs": false,
       "definition": [
         {
           "inputparameters": [
-            "BC_P_Out"
+            "BC_OUT_p"
           ],
           "useScaleFactor": true,
           "valueList": [
