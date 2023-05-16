@@ -13,7 +13,7 @@
     "HannoverRotor_NoTip_0.6M_study": {
       "datapath": "./",
       "write_data": false,
-      "refCaseFilename": "HannoverRotor_NoTip_0.6M_test",
+      "refCaseFilename": "HannoverRotor_NoTip_0.6M",
       "updateAllDPs": false,
       "definition": [
         {

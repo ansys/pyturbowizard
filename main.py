@@ -61,11 +61,11 @@ if not external:  # pyConsole in Fluent
 
 
 # Use directory of jason-file if not specified in config-file
-working_Dir = launchEl.get("workingDir", os.path.dirname(json_filename))
-working_Dir = os.path.normpath(working_Dir)
+fl_workingDir = launchEl.get("workingDir", os.path.dirname(json_filename))
+fl_workingDir = os.path.normpath(fl_workingDir)
 # reset working dir in dict
-launchEl["workingDir"] = working_Dir
-print("Used Fluent Working-Directory: " + working_Dir)
+launchEl["workingDir"] = fl_workingDir
+print("Used Fluent Working-Directory: " + fl_workingDir)
 
 if external:  # Fluent without pyConsole
     global solver
@@ -77,7 +77,7 @@ if external:  # Fluent without pyConsole
             mode="solver",
             show_gui=True,
             product_version=launchEl["fl_version"],
-            cwd=working_Dir,
+            cwd=fl_workingDir,
         )
     # Hook to existing Session
     else:
@@ -101,7 +101,7 @@ if caseDict is not None:
         # Mesh import, expressions, profiles
         result = meshimport.import_01(caseEl, solver)
 
-        utilities.writeExpressionFile(caseEl, working_Dir)
+        utilities.writeExpressionFile(caseEl, fl_workingDir)
         solver.tui.define.named_expressions.import_from_tsv(
             caseEl["expressionFilename"]
         )
@@ -155,10 +155,10 @@ studyDict = turboData.get("studies")
 
 if studyDict is not None:
     if (functionEl is None) or (functionEl.get("parametricstudy") is None):
-        parametricstudy.study(studyDict=studyDict, solver=solver)
+        parametricstudy.study(data=studyDict, solver=solver)
     else:
         parametricstudy.study(
-            studyDict=studyDict,
+            data=studyDict,
             solver=solver,
             functionName=functionEl["parametricstudy"],
         )
