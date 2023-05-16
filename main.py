@@ -1,8 +1,10 @@
+# Test of Turbo-Workflow
+
 import os
 import json
 import sys
 
-json_filename = 'turboSetupConfig.json'
+json_filename = 'turboStudyConfig.json'
 #If arguments are passed take first argument as path to the json file
 if len(sys.argv) > 1:
     json_filename = sys.argv[1]
@@ -131,9 +133,12 @@ studyDict = turboData.get("studies")
 
 if studyDict is not None:
     if (functionEl is None) or (functionEl.get("parametricstudy") is None):
-        parametricstudy.study(studyDict=studyDict, solver=solver)
+        parametricstudy.study(data=studyDict, solver=solver)
     else:
-        parametricstudy.study(studyDict=studyDict, solver=solver, functionName=functionEl["parametricstudy"])
+        parametricstudy.study(data=studyDict, solver=solver, functionName=functionEl["parametricstudy"])
+    #Postprocessing of studies
+    if turboData.get("plotResults"):
+        parametricstudy.studyPlot(data=studyDict)
 
 #Exit Solver
 solverExit = launchEl.get("exitatend", False)

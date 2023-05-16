@@ -86,3 +86,21 @@ def study01(studyDict, solver):
 
         studyIndex = studyIndex + 1
     print("All Studies finished")
+
+def studyPlot(data):
+    import matplotlib.pyplot as plt
+    import os
+    from numpy import genfromtxt
+
+    for studyName in data:
+        studyEl = data[studyName]
+        datapath = studyEl.get("datapath")    
+    design_point_table_path = datapath + studyName + "_dp_table.csv"
+    if os.path.isfile(design_point_table_path):
+        design_point_table = genfromtxt(design_point_table_path, delimiter='',skip_header='2')
+
+    
+
+
+
+

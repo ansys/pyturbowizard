@@ -1,3 +1,5 @@
+import os
+
 def post(data, solver, functionName="post_01"):
     print("Running Postprocessing Function \"" + functionName + "\"...")
     if functionName == "post_01":
@@ -17,4 +19,6 @@ def post_01(data, solver):
     solver.results.report.summary(write_to_file=True, file_name=filename)
     # Write out system time
     solver.report.system.time_statistics()
+    
     return
+
