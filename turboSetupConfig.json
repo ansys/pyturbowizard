@@ -27,17 +27,17 @@
         "expressionTemplate": "expressionTemplate_compressor_comp.tsv",
         "expressions": {
           "GEO_No_Blades":	"1",
-          "BC_Pref":	"0[Pa]",
+          "BC_pref":	"0[Pa]",
           "BC_RPM":	"1790.71 [rad / s]",
-          "BC_Pt_In":	"-1",
-          "BC_P_In_gauge": 	"58000[Pa]",
-          "BC_Tt_In":	"-1",
-          "BC_TuIn_In":	"0.05",
-          "BC_TuVR_In":	"10",
-          "BC_P_Out":	"60000[Pa]"
+          "BC_IN_pt":	"-1",
+          "BC_IN_p_gauge": 	"58000[Pa]",
+          "BC_IN_Tt":	"-1",
+          "BC_IN_TuIn":	"0.05",
+          "BC_IN_TuVR":	"10",
+          "BC_OUT_p":	"60000[Pa]"
         },
         "locations": {
-          "cz_rotating_names": "b-rotor-1",
+          "cz_rotating_names": ["b-rotor-1"],
           "bz_inlet_name": "inlet",
           "bz_outlet_name": "outlet",
           "bz_walls_shroud_name": "b-rotor-1-shroud",
@@ -70,11 +70,11 @@
           "fl_mol_wight": 28.96
         },
         "setup": {
-          "BC_pout_pbf": 0.05,
-          "BC_pout_numbins": 65
+          "BC_OUT_p_pbf": 0.05,
+          "BC_OUT_p_numbins": 65
         },
         "solution": {
-          "reportlist": ["MP_MassFlow_In","MP_MassFlow_Out","MP_Isentropic_Efficiency","MP_PR_tot","MP_Torque"],
+          "reportlist": ["MP_MassFlow_In","MP_MassFlow_Out","MP_Isentropic_Efficiency","MP_PRt","MP_Torque"],
           "res_crit": 1.0e-7,
           "cov_list": [
             "MP_Isentropic_Efficiency"

@@ -55,6 +55,9 @@ if not external:    # pyConsole in Fluent
 #Use directory of jason-file if not specified in config-file
 working_Dir = launchEl.get("workingDir", os.path.dirname(json_filename))
 working_Dir = os.path.normpath(working_Dir)
+#reset working dir in dict
+launchEl["workingDir"] = working_Dir
+print("Used Fluent Working-Directory: " + working_Dir)
 
 if external:    # Fluent without pyConsole
     global solver
