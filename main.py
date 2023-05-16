@@ -168,7 +168,7 @@ if studyDict is not None:
             solver=solver,
             functionName=functionEl["parametricstudy"],
         )
-    #Postprocessing of studies
+    # Postprocessing of studies
     if launchEl.get("plotResults"):
         parametricstudy.studyPlot(data=studyDict)
 
