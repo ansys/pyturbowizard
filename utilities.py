@@ -17,8 +17,7 @@ def writeExpressionFile(data, working_dir):
         sf.write(tempData.format(**helperDict))
         sf.close()
     return
-
-
+  
 def cleanupInputExpressions(expressionEl: dict, fileData: str):
     cleanfiledata = ""
     for line in fileData.splitlines():
@@ -27,6 +26,7 @@ def cleanupInputExpressions(expressionEl: dict, fileData: str):
             cleanfiledata = line
         # check BCs and prescribed Expressions
         elif line.startswith('"BC'):
+
             for expKey in expressionEl:
                 if expKey in line:
                     cleanfiledata = cleanfiledata + "\n" + line

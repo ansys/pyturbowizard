@@ -84,7 +84,7 @@ def boundary_01(data, solver):
                 )
                 inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
                 inBC.flow_spec = "Mass Flow Rate"
-                inBC.mass_flow = "BC_MassFlow_In"
+                inBC.mass_flow = "BC_IN_MassFlow"
                 inBC.gauge_pressure = "BC_IN_p_gauge"
                 inBC.direction_spec = "Normal to Boundary"
                 inBC.t0 = "BC_IN_Tt"
@@ -194,7 +194,6 @@ def boundary_01(data, solver):
                 # Check Profile data exists
                 profileName = data.get("profileName_Out")
                 useProfileData = (profileName is not None) and (profileName != "")
-
                 outBC.prevent_reverse_flow = True
                 if useProfileData:
                     # check profile naming convention:
