@@ -110,7 +110,10 @@ if caseDict is not None:
         solver.tui.define.beta_feature_access("yes ok")
 
         # Case Setup
-        mysetup.setup_01(caseEl, solver)
+        if (functionEl is None) or (functionEl.get("setup") is None):
+            mysetup.setup(data=caseEl, solver=solver)
+        else:
+            mysetup.setup(data=caseEl, solver=solver, functionName=functionEl["setup"])
         mysetup.report_01(caseEl, solver)
 
         # Solution

@@ -1,6 +1,16 @@
 import os
 
 
+def setup(data, solver, functionName="setup_01"):
+    print('Running Setup Function "' + functionName + '"...')
+    if functionName == "setup_01":
+        setup_01(data, solver)
+    else:
+        print('Prescribed Function "' + functionName + '" not known. Skipping Setup!')
+
+    print("Setup finished.")
+
+
 def setup_01(data, solver):
     # Set physics
     physics_01(solver)

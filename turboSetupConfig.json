@@ -1,6 +1,7 @@
 {
   "functions":
     {
+      "setup": "setup_01",
       "numerics": "numerics_01",
       "postproc": "post_01",
       "parametricstudy": "study_01"
