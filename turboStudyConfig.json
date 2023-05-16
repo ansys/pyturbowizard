@@ -12,6 +12,8 @@
   "studies": {
     "HannoverRotor_NoTip_0.6M_study": {
       "datapath": "./",
+      "overwriteExisting": true,
+      "runExistingProject": true,
       "write_data": false,
       "refCaseFilename": "HannoverRotor_NoTip_0.6M",
       "updateAllDPs": false,

@@ -155,10 +155,10 @@ studyDict = turboData.get("studies")
 
 if studyDict is not None:
     if (functionEl is None) or (functionEl.get("parametricstudy") is None):
-        parametricstudy.study(data=studyDict, solver=solver)
+        parametricstudy.study(data=turboData, solver=solver)
     else:
         parametricstudy.study(
-            data=studyDict,
+            data=turboData,
             solver=solver,
             functionName=functionEl["parametricstudy"],
         )
