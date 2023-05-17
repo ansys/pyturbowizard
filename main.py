@@ -170,7 +170,7 @@ if studyDict is not None:
         )
     # Postprocessing of studies
     if launchEl.get("plotResults"):
-        parametricstudy.studyPlot(data=studyDict)
+        parametricstudy.studyPlot(data=turboData)
 
 # Exit Solver
 solverExit = launchEl.get("exitatend", False)
