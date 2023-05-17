@@ -4,9 +4,11 @@ import os
 import json
 import sys
 
+version = "1.0"
 
+# Suggest Config File in python working Dir
 json_filename = "turboSetupConfig.json"
-# If arguments are passed take first argument as path to the json file
+# If arguments are passed take first argument as fullpath to the json file
 if len(sys.argv) > 1:
     json_filename = sys.argv[1]
 
@@ -84,9 +86,11 @@ if external:  # Fluent without pyConsole
         )
     # Hook to existing Session
     else:
+        fullpathtosfname = fl_workingDir + "/" + serverfilename
+        fullpathtosfname = os.path.normpath(fullpathtosfname)
         print("Connecting to Fluent Session...")
         solver = pyfluent.launch_fluent(
-            start_instance=False, server_info_filepath=serverfilename
+            start_instance=False, server_info_filepath=fullpathtosfname
         )
 
 
