@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import os
 import pandas as pd
 
+
 def study(data, solver, functionName="study_01"):
     print('Running ParamatricStudy Function "' + functionName + '"...')
     if functionName == "study_01":
@@ -26,7 +27,7 @@ def study01(data, solver):
     for studyName in studyDict:
         studyEl = studyDict[studyName]
         # Getting all input data from json file
-        #datapath = studyEl.get("datapath")
+        # datapath = studyEl.get("datapath")
         refCase = studyEl.get("refCaseFilename")
         runExisting = studyEl.get("runExistingProject", False)
 
@@ -148,7 +149,7 @@ def study01(data, solver):
 
 
 def studyPlot(data):
-    print('Running Function StudyPlot ...')
+    print("Running Function StudyPlot ...")
     studyDict = data.get("studies")
     for studyName in studyDict:
         flworking_Dir = data.get("launching")["workingDir"]
@@ -167,9 +168,7 @@ def studyPlot(data):
             MP_MassFlow = pd.to_numeric(
                 design_point_table.loc[:, "MP_IN_MassFlow"], errors="coerce"
             )
-            MP_PRt = pd.to_numeric(
-                design_point_table.loc[:, "MP_PRt"], errors="coerce"
-            )
+            MP_PRt = pd.to_numeric(design_point_table.loc[:, "MP_PRt"], errors="coerce")
             MP_Isentropic_Efficiency = pd.to_numeric(
                 design_point_table.loc[:, "MP_Isentropic_Efficiency"], errors="coerce"
             )
@@ -178,9 +177,7 @@ def studyPlot(data):
             fig, axs = plt.subplots(1, 2, figsize=(12, 6))
             fig.suptitle("Compressor Map")
             # Total Pressure Ratio
-            axs[0].set_xlim(
-                [MP_MassFlow.min() * 0.99, MP_MassFlow.max() * 1.01]
-            )
+            axs[0].set_xlim([MP_MassFlow.min() * 0.99, MP_MassFlow.max() * 1.01])
             axs[0].set_ylim([MP_PRt.min() * 0.99, MP_PRt.max() * 1.01])
             axs[0].grid()
             axs[0].set_xlabel("reduced mass flow rate [kg/s]")
@@ -188,9 +185,7 @@ def studyPlot(data):
             axs[0].plot(MP_MassFlow, MP_PRt, marker="^")
 
             # Isentropic Efficiency
-            axs[1].set_xlim(
-                [MP_MassFlow.min() * 0.99, MP_MassFlow.max() * 1.01]
-            )
+            axs[1].set_xlim([MP_MassFlow.min() * 0.99, MP_MassFlow.max() * 1.01])
             axs[1].set_ylim(
                 [
                     MP_Isentropic_Efficiency.min() * 0.99,
@@ -209,4 +204,4 @@ def studyPlot(data):
         else:
             print("No designpoint table CSV-file found")
 
-    print('Running Function StudyPlot finished!')
+    print("Running Function StudyPlot finished!")
