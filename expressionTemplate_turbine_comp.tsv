@@ -26,7 +26,6 @@ name	definition	description	input-parameter	output-parameter
 "MP_PR"	"MP_IN_areaAve_p / MP_OUT_areaAve_p"	""	#f	#f
 "MP_PRt"	"MP_IN_massFlowAve_pt/ MP_OUT_massFlowAve_pt"	""	#f	#t
 "MP_TRt"	"MassFlowAve(TotalTemperature,['{bz_outlet_name}']) / MassFlowAve(TotalTemperature,['{bz_inlet_name}'])"	""	#f	#f
-"MP_Torque"	"dot(vector(0,0,1) , Moment(vector(0.,0.,0.),['{bz_walls_hub_name}']) + Moment(vector(0.,0.,0.),['{bz_walls_blade_name}']))"	""	#f	#t
 "gamma"	"Average(SpecificHeatRatiogamma,['{bz_inlet_name}'],Weight = 'MassFlowRate')"	""	#f	#f
 "MP_Isentropic_Efficiency"	"(MP_IN_massFlowAve_Tt - MP_OUT_massFlowAve_Tt) / (MP_IN_massFlowAve_Tt * (1 - (MP_OUT_massFlowAve_pt / MP_IN_massFlowAve_pt) ^ ((gamma-1)/gamma)))"	""	#f	#t
 "MP_Polytropic_Efficiency"	"(log10(MP_IN_massFlowAve_Tt / MP_OUT_massFlowAve_Tt) / log10(MP_IN_massFlowAve_pt / MP_OUT_massFlowAve_pt)) * (gamma/(gamma-1))"	""	#f	#t

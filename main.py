@@ -168,9 +168,9 @@ if studyDict is not None:
             solver=solver,
             functionName=functionEl["parametricstudy"],
         )
-     #Postprocessing of studies
-     if launchEl.get("plotResults"):
-        parametricstudy.studyPlot(data=studyDict)
+    # Postprocessing of studies
+    if launchEl.get("plotResults"):
+        parametricstudy.studyPlot(data=turboData)
 
 # Exit Solver
 solverExit = launchEl.get("exitatend", False)
