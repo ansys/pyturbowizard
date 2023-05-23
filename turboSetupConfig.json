@@ -76,7 +76,7 @@
         },
         "solution": {
           "reportlist": ["MP_IN_MassFlow","MP_OUT_MassFlow","MP_Isentropic_Efficiency","MP_PRt"],
-          "res_crit": 1.0e-7,
+          "res_crit": 1.0e-5,
           "cov_list": [
             "MP_Isentropic_Efficiency"
           ],

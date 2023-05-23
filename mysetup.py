@@ -305,7 +305,9 @@ def report_01(data, solver):
     }
 
     # Set Residuals
-    solver.tui.preferences.simulation.local_residual_scaling("no")
+    #solver.tui.preferences.simulation.local_residual_scaling("yes")
+    solver.tui.solve.monitors.residual.scale_by_coefficient('yes', 'yes', 'yes')
+
     solver.tui.solve.monitors.residual.convergence_criteria(
         data["solution"]["cov_crit"],
         data["solution"]["cov_crit"],
@@ -337,7 +339,7 @@ def report_01(data, solver):
 
     # Set Convergence Conditions
     solver.solution.monitor.convergence_conditions = {
-        "condition": "any-condition-is-met"
+        "condition": "all-conditions-are-met"
     }
     # Set Basic Solver-Solution-Settings
     tsf = data["solution"].get("time_step_factor", 1)
