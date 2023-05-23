@@ -339,9 +339,10 @@ def report_01(data, solver):
     solver.solution.monitor.convergence_conditions = {
         "condition": "any-condition-is-met"
     }
-    # set Solver Settings
-    solver.tui.solve.set.pseudo_time_method.global_time_step_settings('yes', '1',
-                                                                      str(data["solution"]["time_step_factor"]))
-    solver.tui.solve.set.number_of_iterations(str(data["solution"]["iter_count"]))
+    # Set Basic Solver-Solution-Settings
+    tsf = data["solution"].get("time_step_factor", 1)
+    solver.tui.solve.set.pseudo_time_method.global_time_step_settings('yes', '1', str(tsf))
+    iter_count = data["solution"].get("iter_count", 0)
+    solver.tui.solve.set.number_of_iterations(str(iter_count))
 
 

@@ -17,6 +17,7 @@
       "write_data": false,
       "refCaseFilename": "HannoverRotor_NoTip_0.6M",
       "updateAllDPs": false,
+      "updateFromBaseDP": false,
       "definition": [
         {
           "inputparameters": [
