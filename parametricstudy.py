@@ -1,7 +1,4 @@
-import matplotlib.pyplot as plt
 import os
-import pandas as pd
-
 
 def study(data, solver, functionName="study_01"):
     print('Running ParamatricStudy Function "' + functionName + '"...')
@@ -40,12 +37,12 @@ def study01(data, solver):
                 print(
                     'and "overwriteExisting"-flag is set to False or not existing in Config-File'
                 )
-                print('Skipping Parametric Study "' + studyName + '"')
+                print('Skipping Parametric Study "' + studyName + '"\n')
                 break
         else:
             if runExisting:
                 print("Specified Fluent-Project does not exist " + studyFileName)
-                print('Skipping Parametric Study "' + studyName + '"')
+                print('Skipping Parametric Study "' + studyName + '"\n')
                 break
 
         # Check if a new Project should be created or an existing is executed
@@ -149,6 +146,9 @@ def study01(data, solver):
 
 
 def studyPlot(data):
+    import matplotlib.pyplot as plt
+    import pandas as pd
+
     print("Running Function StudyPlot ...")
     studyDict = data.get("studies")
     for studyName in studyDict:

@@ -82,6 +82,7 @@
           ],
           "cov_crit": 1.0e-4,
           "tsn": true,
+          "time_step_factor": 5,
           "iter_count": 1000,
           "runSolver": false
         },
