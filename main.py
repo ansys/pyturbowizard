@@ -132,15 +132,13 @@ if caseDict is not None:
                 data=caseEl, solver=solver, functionName=functionEl["numerics"]
             )
 
-        # Write case & settings file
-        solver.file.write(file_type="case", file_name=caseEl["caseFilename"])
-        settingsFilename = '"' + caseEl["caseFilename"] + '.set"'
-        solver.tui.file.write_settings(settingsFilename)
-
         # Initialization
         solve.init_01(caseEl, solver)
-        # Write initial data
-        solver.file.write(file_type="data", file_name=caseEl["caseFilename"])
+
+        # Write case and ini-data & settings file
+        solver.file.write(file_type="case-data", file_name=caseEl["caseFilename"])
+        settingsFilename = '"' + caseEl["caseFilename"] + '.set"'
+        solver.tui.file.write_settings(settingsFilename)
 
         # Solve
         if caseEl["solution"]["runSolver"]:
