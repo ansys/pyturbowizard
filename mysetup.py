@@ -274,6 +274,31 @@ def boundary_01(data, solver):
                 key_if, side1, "()", side2, "()", "2"
             )
 
+    # setup turbo topology
+    keyEl = data["locations"].get("tz_turbo_topology_names")
+    if keyEl is not None:
+        print("Setting up turbo topology for post processing.\n")
+        for key_topo in keyEl:
+            turbo_name = f"\"{key_topo}\""
+            hub_names = keyEl[key_topo].get("tz_hub_names")
+            shroud_names = keyEl[key_topo].get("tz_shroud_names")
+            inlet_names = keyEl[key_topo].get("tz_inlet_names")
+            outlet_names = keyEl[key_topo].get("tz_outlet_names")
+            blade_names = keyEl[key_topo].get("tz_blade_names")
+            periodic_names = keyEl[key_topo].get("tz_theta_periodic_names")
+            try:
+                solver.tui.define.turbo_model.turbo_topology.define_topology(
+                        turbo_name,
+                        *hub_names, [],
+                        *shroud_names,[],
+                        *inlet_names,[],
+                        *outlet_names,[],
+                        *blade_names,[],
+                        *periodic_names,[]
+                    )
+            except Exception as e:
+                print(f"An error occurred while defining topology: {e}")
+
     return
 
 
