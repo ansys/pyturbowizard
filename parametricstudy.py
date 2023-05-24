@@ -1,7 +1,4 @@
-import matplotlib.pyplot as plt
 import os
-import pandas as pd
-
 
 def study(data, solver, functionName="study_01"):
     print('Running ParamatricStudy Function "' + functionName + '"...')
@@ -40,12 +37,12 @@ def study01(data, solver):
                 print(
                     'and "overwriteExisting"-flag is set to False or not existing in Config-File'
                 )
-                print('Skipping Parametric Study "' + studyName + '"')
+                print('Skipping Parametric Study "' + studyName + '"\n')
                 break
         else:
             if runExisting:
                 print("Specified Fluent-Project does not exist " + studyFileName)
-                print('Skipping Parametric Study "' + studyName + '"')
+                print('Skipping Parametric Study "' + studyName + '"\n')
                 break
 
         # Check if a new Project should be created or an existing is executed
@@ -95,16 +92,20 @@ def study01(data, solver):
                     designPointCounter = designPointCounter + 1
 
             # Set Update Method
-            solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
-            # solver.tui.parametric_study.study.use_base_data('yes')
+            updateFromBaseDP = studyEl.get("updateFromBaseDP", False)
+            if updateFromBaseDP:
+                solver.tui.parametric_study.study.use_base_data('yes')
+            else:
+                solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
             # Run all Design Points
             if studyEl.get("updateAllDPs", False):
                 fluent_study.design_points.update_all()
 
             # Export results to table
-            design_point_table = studyName + "_dp_table.csv"
-            solver.parametric_studies.export_design_table(filepath=design_point_table)
+            design_point_table_filepath = flworking_Dir + "/" + studyName + "_dp_table.csv"
+            design_point_table_filepath = os.path.normpath(design_point_table_filepath)
+            solver.parametric_studies.export_design_table(filepath=design_point_table_filepath)
 
             # Save Study
             # solver.tui.file.parametric_project.save_as(studyName)
@@ -126,21 +127,27 @@ def study01(data, solver):
 
         else:
             # Load Existing Project
+            flworking_Dir = data.get("launching")["workingDir"]
             # studyFileName = studyName + ".flprj"
             solver.file.parametric_project.open(project_filename=studyFileName)
             psname = refCase + "-Solve"
             fluent_study = solver.parametric_studies[psname]
 
             # Set Update Method
-            solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
+            updateFromBaseDP = studyEl.get("updateFromBaseDP", False)
+            if updateFromBaseDP:
+                solver.tui.parametric_study.study.use_base_data('yes')
+            else:
+                solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
             # Run all Design Points
             if studyEl.get("updateAllDPs", False):
                 fluent_study.design_points.update_all()
 
             # Export results to table
-            design_point_table = studyName + "_dp_table.csv"
-            solver.parametric_studies.export_design_table(filepath=design_point_table)
+            design_point_table_filepath = flworking_Dir + "/" + studyName + "_dp_table.csv"
+            design_point_table_filepath = os.path.normpath(design_point_table_filepath)
+            solver.parametric_studies.export_design_table(filepath=design_point_table_filepath)
 
             # Save Study
             solver.file.parametric_project.save()
@@ -149,6 +156,9 @@ def study01(data, solver):
 
 
 def studyPlot(data):
+    import matplotlib.pyplot as plt
+    import pandas as pd
+
     print("Running Function StudyPlot ...")
     studyDict = data.get("studies")
     for studyName in studyDict:
