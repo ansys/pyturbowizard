@@ -103,7 +103,7 @@ def study01(data, solver):
                 fluent_study.design_points.update_all()
 
             # Export results to table
-            design_point_table_filepath = flworking_Dir + "/" + studyName + "_dp_table.csv"
+            design_point_table_filepath = data.get("launching")["workingDir"] + "/" + studyName + "_dp_table.csv"
             design_point_table_filepath = os.path.normpath(design_point_table_filepath)
             solver.parametric_studies.export_design_table(filepath=design_point_table_filepath)
 
