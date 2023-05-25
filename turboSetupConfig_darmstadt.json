@@ -12,7 +12,6 @@
       "fl_version": "23.2.0",
       "noCore": 8,
       "precision": "double",
-      "external": true,
       "serverfilename": "",
       "exitatend": false
     },

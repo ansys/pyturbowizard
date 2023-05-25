@@ -1,80 +1,53 @@
-# Test of Turbo-Workflow
-
 import os
 import json
 import sys
 
 version = "1.2.1"
 
+# If solver variable does not exist, Fluent has been started in external mode
+external = 'solver' not in globals()
+if external:
+    import ansys.fluent.core as pyfluent
+
+# Get scriptpath
+scriptPath = os.path.dirname(sys.argv[0])
+
+#Load Modules
+from importlib.machinery import SourceFileLoader
+utilities = SourceFileLoader("utilities", scriptPath + "./utilities.py").load_module()
+meshimport = SourceFileLoader("meshimport", scriptPath + "./meshimport.py").load_module()
+mysetup = SourceFileLoader("mysetup", scriptPath + "./mysetup.py").load_module()
+numerics = SourceFileLoader("numerics", scriptPath + "./numerics.py").load_module()
+postproc = SourceFileLoader("postproc", scriptPath + "./postproc.py").load_module()
+solve = SourceFileLoader("solve", scriptPath + "./solve.py").load_module()
+parametricstudy = SourceFileLoader(
+    "parametricstudy", scriptPath + "./parametricstudy.py"
+).load_module()
+
+# Load Json File
 # Suggest Config File in python working Dir
 json_filename = "turboSetupConfig.json"
 # If arguments are passed take first argument as fullpath to the json file
 if len(sys.argv) > 1:
     json_filename = sys.argv[1]
-
 json_file = open(json_filename)
 turboData = json.load(json_file)
 
+# Get important Elements from json file
 functionEl = turboData.get("functions")
 launchEl = turboData.get("launching")
-external = launchEl.get("external")
-
-if external:
-    import ansys.fluent.core as pyfluent
-
-    import utilities
-    import meshimport
-    import mysetup
-    import numerics
-    import postproc
-    import solve
-    import parametricstudy
-
-else:
-    from importlib.machinery import SourceFileLoader
-
-    utilities = SourceFileLoader("utilities", "./utilities.py").load_module()
-    meshimport = SourceFileLoader("meshimport", "./meshimport.py").load_module()
-    mysetup = SourceFileLoader("mysetup", "./mysetup.py").load_module()
-    numerics = SourceFileLoader("numerics", "./numerics.py").load_module()
-    postproc = SourceFileLoader("postproc", "./postproc.py").load_module()
-    solve = SourceFileLoader("solve", "./solve.py").load_module()
-    parametricstudy = SourceFileLoader(
-        "parametricstudy", "./parametricstudy.py"
-    ).load_module()
-
-
-# pyfluent.set_log_level('DEBUG')
-######################################################################################################################
-#### Start up Fluent #################################################################################################
-######################################################################################################################
-
-if not external:  # pyConsole in Fluent
-    try:
-        import ansys.fluent.core as pyfluent
-
-        flglobals = pyfluent.setup_for_fluent(
-            product_version=launchEl["fl_version"],
-            mode="solver",
-            version="3d",
-            precision=launchEl["precision"],
-            processor_count=int(launchEl["noCore"]),
-        )
-        globals().update(flglobals)
-    except Exception:
-        pass
-
 
 # Use directory of jason-file if not specified in config-file
 fl_workingDir = launchEl.get("workingDir", os.path.dirname(json_filename))
 fl_workingDir = os.path.normpath(fl_workingDir)
-# reset working dir in dict
+# Reset working dir in dict
 launchEl["workingDir"] = fl_workingDir
 print("Used Fluent Working-Directory: " + fl_workingDir)
 
 if external:  # Fluent without pyConsole
     global solver
     serverfilename = launchEl.get("serverfilename")
+    # If no serverFilename is specified, a new session will be started
     if serverfilename is None or serverfilename == "":
         solver = pyfluent.launch_fluent(
             precision=launchEl["precision"],
