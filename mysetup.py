@@ -279,7 +279,7 @@ def boundary_01(data, solver):
     if keyEl is not None:
         print("Setting up turbo topology for post processing.\n")
         for key_topo in keyEl:
-            turbo_name = f"\"{key_topo}\""
+            turbo_name = f'"{key_topo}"'
             hub_names = keyEl[key_topo].get("tz_hub_names")
             shroud_names = keyEl[key_topo].get("tz_shroud_names")
             inlet_names = keyEl[key_topo].get("tz_inlet_names")
@@ -288,14 +288,20 @@ def boundary_01(data, solver):
             periodic_names = keyEl[key_topo].get("tz_theta_periodic_names")
             try:
                 solver.tui.define.turbo_model.turbo_topology.define_topology(
-                        turbo_name,
-                        *hub_names, [],
-                        *shroud_names,[],
-                        *inlet_names,[],
-                        *outlet_names,[],
-                        *blade_names,[],
-                        *periodic_names,[]
-                    )
+                    turbo_name,
+                    *hub_names,
+                    [],
+                    *shroud_names,
+                    [],
+                    *inlet_names,
+                    [],
+                    *outlet_names,
+                    [],
+                    *blade_names,
+                    [],
+                    *periodic_names,
+                    [],
+                )
             except Exception as e:
                 print(f"An error occurred while defining topology: {e}")
 
@@ -330,8 +336,8 @@ def report_01(data, solver):
     }
 
     # Set Residuals
-    #solver.tui.preferences.simulation.local_residual_scaling("yes")
-    solver.tui.solve.monitors.residual.scale_by_coefficient('yes', 'yes', 'yes')
+    # solver.tui.preferences.simulation.local_residual_scaling("yes")
+    solver.tui.solve.monitors.residual.scale_by_coefficient("yes", "yes", "yes")
 
     solver.tui.solve.monitors.residual.convergence_criteria(
         data["solution"]["cov_crit"],
@@ -368,8 +374,8 @@ def report_01(data, solver):
     }
     # Set Basic Solver-Solution-Settings
     tsf = data["solution"].get("time_step_factor", 1)
-    solver.tui.solve.set.pseudo_time_method.global_time_step_settings('yes', '1', str(tsf))
+    solver.tui.solve.set.pseudo_time_method.global_time_step_settings(
+        "yes", "1", str(tsf)
+    )
     iter_count = data["solution"].get("iter_count", 0)
     solver.tui.solve.set.number_of_iterations(str(iter_count))
-
-
