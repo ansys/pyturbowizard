@@ -3,7 +3,6 @@ import utilities
 import matplotlib.pyplot as plt
 import pandas as pd
 
-
 def study(data, solver, functionName="study_01"):
     print('Running ParamatricStudy Function "' + functionName + '"...')
     if functionName == "study_01":
@@ -136,6 +135,7 @@ def study01(data, solver):
 
         else:
             # Load Existing Project
+            flworking_Dir = data.get("launching")["workingDir"]
             # studyFileName = studyName + ".flprj"
             solver.file.parametric_project.open(project_filename=studyFileName)
             psname = refCase + "-Solve"
@@ -145,6 +145,7 @@ def study01(data, solver):
             updateFromBaseDP = studyEl.get("updateFromBaseDP", False)
             if updateFromBaseDP:
                 solver.tui.parametric_study.study.use_base_data("yes")
+
             else:
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
@@ -168,6 +169,9 @@ def study01(data, solver):
 
 
 def studyPlot(data):
+    import matplotlib.pyplot as plt
+    import pandas as pd
+
     print("Running Function StudyPlot ...")
     studyDict = data.get("studies")
     for studyName in studyDict:

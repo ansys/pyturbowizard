@@ -3,6 +3,7 @@ def init_01(data, solver):
         data["locations"]["bz_inlet_name"]
     )
     solver.solution.initialization.standard_initialize()
+
     solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
         "absolute"
     )
