@@ -69,7 +69,7 @@ def plotOperatingMap(design_point_table):
     # generate plots
     fig, axs = plt.subplots(1, 2, figsize=(12, 6))
     fig.suptitle("Operating Point Map")
-    if MP_Isentropic_Efficiency is not None and MP_MassFlow is not None and MP_Isentropic_Efficiency is not None:
+    if (len(MP_PRt) > 0) and (len(MP_MassFlow) > 0) and (len(MP_Isentropic_Efficiency) > 0):
         # Total Pressure Ratio
         axs[0].set_xlim([MP_MassFlow.min() * 0.99, MP_MassFlow.max() * 1.01])
         axs[0].set_ylim([MP_PRt.min() * 0.99, MP_PRt.max() * 1.01])

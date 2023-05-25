@@ -43,7 +43,7 @@
           "bz_walls_shroud_name": "b-rotor-1-shroud",
           "bz_walls_hub_name": "b-rotor-1-hub",
           "bz_walls_blade_name": "b-rotor-1-blade",
-          "bz_walls_counterrotating_names": [],
+          "bz_walls_counterrotating_names": ["b-rotor-1-shroud"],
           "bz_walls_freeslip_names": [
             "b-rotor-1-free-slip-inlet",
             "b-rotor-1-free-slip-outlet"
@@ -76,13 +76,13 @@
         },
         "solution": {
           "reportlist": ["MP_IN_MassFlow","MP_OUT_MassFlow","MP_Isentropic_Efficiency","MP_PRt"],
-          "res_crit": 1.0e-5,
+          "res_crit": 1.0e-4,
           "cov_list": [
             "MP_Isentropic_Efficiency"
           ],
           "cov_crit": 1.0e-4,
           "tsn": true,
-          "time_step_factor": 5,
+          "time_step_factor": 1.0,
           "iter_count": 1000,
           "runSolver": false
         },
