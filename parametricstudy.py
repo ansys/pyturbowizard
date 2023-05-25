@@ -19,6 +19,7 @@ def study(data, solver, functionName="study_01"):
 
 def study01(data, solver):
     studyDict = data.get("studies")
+    flworking_Dir = data.get("launching")["workingDir"]
 
     # Init variables
     fluent_study = None
@@ -32,7 +33,7 @@ def study01(data, solver):
         runExisting = studyEl.get("runExistingProject", False)
 
         # Do some checks to skip if a run is not possible
-        studyFileName = data.get("launching")["workingDir"] + "/" + studyName + ".flprj"
+        studyFileName = flworking_Dir + "/" + studyName + ".flprj"
         studyFileName = os.path.normpath(studyFileName)
         if os.path.isfile(studyFileName):
             if not studyEl.get("overwriteExisting", False):
@@ -97,7 +98,7 @@ def study01(data, solver):
             # Set Update Method
             updateFromBaseDP = studyEl.get("updateFromBaseDP", False)
             if updateFromBaseDP:
-                solver.tui.parametric_study.study.use_base_data('yes')
+                solver.tui.parametric_study.study.use_base_data("yes")
             else:
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
@@ -106,9 +107,13 @@ def study01(data, solver):
                 fluent_study.design_points.update_all()
 
             # Export results to table
-            design_point_table_filepath = data.get("launching")["workingDir"] + "/" + studyName + "_dp_table.csv"
+            design_point_table_filepath = (
+                flworking_Dir + "/" + studyName + "_dp_table.csv"
+            )
             design_point_table_filepath = os.path.normpath(design_point_table_filepath)
-            solver.parametric_studies.export_design_table(filepath=design_point_table_filepath)
+            solver.parametric_studies.export_design_table(
+                filepath=design_point_table_filepath
+            )
 
             # Save Study
             # solver.tui.file.parametric_project.save_as(studyName)
@@ -139,7 +144,8 @@ def study01(data, solver):
             # Set Update Method
             updateFromBaseDP = studyEl.get("updateFromBaseDP", False)
             if updateFromBaseDP:
-                solver.tui.parametric_study.study.use_base_data('yes')
+                solver.tui.parametric_study.study.use_base_data("yes")
+
             else:
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
@@ -148,9 +154,13 @@ def study01(data, solver):
                 fluent_study.design_points.update_all()
 
             # Export results to table
-            design_point_table_filepath = flworking_Dir + "/" + studyName + "_dp_table.csv"
+            design_point_table_filepath = (
+                flworking_Dir + "/" + studyName + "_dp_table.csv"
+            )
             design_point_table_filepath = os.path.normpath(design_point_table_filepath)
-            solver.parametric_studies.export_design_table(filepath=design_point_table_filepath)
+            solver.parametric_studies.export_design_table(
+                filepath=design_point_table_filepath
+            )
 
             # Save Study
             solver.file.parametric_project.save()
@@ -168,15 +178,17 @@ def studyPlot(data):
         design_point_table_path = flworking_Dir + "/" + studyName + "_dp_table.csv"
         design_point_table_path = os.path.normpath(design_point_table_path)
         if os.path.isfile(design_point_table_path):
-            #read in design point table csv
+            # read in design point table csv
             design_point_table = pd.read_csv(
                 design_point_table_path, delimiter=",", header=0
             )
 
             fig = utilities.plotOperatingMap(design_point_table)
             fig
-            study_plot_name = flworking_Dir + "/" + studyName + '_operating_point_map.svg'
-            print('generating figure: '+ study_plot_name)
+            study_plot_name = (
+                flworking_Dir + "/" + studyName + "_operating_point_map.svg"
+            )
+            print("generating figure: " + study_plot_name)
             plt.savefig(study_plot_name)
         else:
             print("No designpoint table CSV-file found")
