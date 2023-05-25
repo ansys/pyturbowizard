@@ -96,11 +96,12 @@ def study01(data, solver):
                     designPointCounter = designPointCounter + 1
 
             # Set Update Method
-            updateFromBaseDP = studyEl.get("updateFromBaseDP", False)
-            if updateFromBaseDP:
-                solver.tui.parametric_study.study.use_base_data("yes")
-            else:
-                solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
+            updateFromBaseDP = studyEl.get("updateFromBaseDP")
+            if updateFromBaseDP is not None:
+                if updateFromBaseDP:
+                    solver.tui.parametric_study.study.use_base_data("yes")
+                else:
+                    solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
             # Run all Design Points
             if studyEl.get("updateAllDPs", False):
