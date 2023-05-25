@@ -4,7 +4,7 @@ import os
 import json
 import sys
 
-version = "1.1.0"
+version = "1.2.0"
 
 # Suggest Config File in python working Dir
 json_filename = "turboSetupConfig.json"
