@@ -370,7 +370,9 @@ def report_01(data, solver):
 
     # Set Convergence Conditions
     solver.solution.monitor.convergence_conditions = {
-        "condition": "all-conditions-are-met"
+        #"condition": "any-condition-is-met",
+        "condition": "all-conditions-are-met",
+        "frequency": 5
     }
     # Set Basic Solver-Solution-Settings
     tsf = data["solution"].get("time_step_factor", 1)

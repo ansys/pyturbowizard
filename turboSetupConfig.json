@@ -61,7 +61,17 @@
 
           },
           "bz_eval_ip1_name": "plane_eval_ip1",
-          "bz_eval_op1_name": "plane_eval_op1"
+          "bz_eval_op1_name": "plane_eval_op1",
+          "tz_turbo_topology_names":{
+            "a-rotor-1-topology":{
+              "tz_shroud_names": ["b-rotor-1-shroud"],
+              "tz_hub_names": ["b-rotor-1-hub"],
+              "tz_inlet_names": ["inlet"],
+              "tz_outlet_names": ["outlet"],
+              "tz_blade_names": ["b-rotor-1-blade"],
+              "tz_theta_periodic_names":["periodic-interface-1"]
+            }
+          }
         },
         "fluid_properties": {
           "fl_density": "ideal-gas",
