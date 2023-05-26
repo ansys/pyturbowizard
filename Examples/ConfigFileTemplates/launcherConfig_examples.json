@@ -1,0 +1,33 @@
+{
+  "launching_internal":
+    {
+      "exitatend": false
+    },
+  "launching_external":
+    {
+      "workingDir": "D:/TestTurbo/HannoverRotor",
+      "fl_version": "23.2.0",
+      "noCore": 2,
+      "precision": "double",
+      "show_gui":  true,
+      "exitatend": false
+    },
+  "launching_slurmQueue":
+    {
+      "workingDir": "D:/TestTurbo/HannoverRotor",
+      "fl_version": "23.2.0",
+      "noCore": 2,
+      "precision": "double",
+      "serverfilename": "",
+      "show_gui":  true,
+      "exitatend": false,
+      "queue_slurm": "ottc01",
+      "queue_waiting_time":  100
+    },
+  "launching_HooktoExisitngFluentSession":
+    {
+      "workingDir": "D:/TestTurbo/HannoverRotor",
+      "serverfilename": "server-info.txt",
+      "exitatend": false
+    }
+}

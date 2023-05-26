@@ -33,9 +33,11 @@ def study01(data, solver):
         runExisting = studyEl.get("runExistingProject", False)
 
         # Do some checks to skip if a run is not possible
-        studyFileName = flworking_Dir + "/" + studyName + ".flprj"
-        studyFileName = os.path.normpath(studyFileName)
-        if os.path.isfile(studyFileName):
+        studyFileName = studyName + ".flprj"
+        studyFileName = os.path.join(flworking_Dir, studyFileName)
+        studyFolderPath = studyName + ".cffdb"
+        studyFolderPath = os.path.join(flworking_Dir, studyFolderPath)
+        if os.path.isfile(studyFileName) or os.path.isdir(studyFolderPath):
             if not studyEl.get("overwriteExisting", False):
                 print("Fluent-Project already exists " + studyFileName)
                 print(

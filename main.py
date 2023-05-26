@@ -15,8 +15,6 @@ version = "1.2.1"
 
 # If solver variable does not exist, Fluent has been started in external mode
 external = 'solver' not in globals()
-if external:
-    import ansys.fluent.core as pyfluent
 
 # Get scriptpath
 scriptPath = os.path.dirname(sys.argv[0])
@@ -41,27 +39,11 @@ fl_workingDir = os.path.normpath(fl_workingDir)
 launchEl["workingDir"] = fl_workingDir
 print("Used Fluent Working-Directory: " + fl_workingDir)
 
-if external:  # Fluent without pyConsole
-    global solver
-    serverfilename = launchEl.get("serverfilename")
-    # If no serverFilename is specified, a new session will be started
-    if serverfilename is None or serverfilename == "":
-        solver = pyfluent.launch_fluent(
-            precision=launchEl["precision"],
-            processor_count=int(launchEl["noCore"]),
-            mode="solver",
-            show_gui=True,
-            product_version=launchEl["fl_version"],
-            cwd=fl_workingDir,
-        )
-    # Hook to existing Session
-    else:
-        fullpathtosfname = os.path.join(fl_workingDir, serverfilename)
-        print("Connecting to Fluent Session...")
-        solver = pyfluent.launch_fluent(
-            start_instance=False, server_info_filepath=fullpathtosfname
-        )
-
+if external:
+    import ansys.fluent.core as pyfluent
+    # Fluent starts externally
+    print("Launching Fluent...")
+    solver = utilities.launchFluent(launchEl)
 
 # Start Setup
 caseDict = turboData.get("cases")

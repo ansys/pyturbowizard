@@ -1,6 +1,7 @@
 import os.path
 import matplotlib.pyplot as plt
 import pandas as pd
+import time
 
 
 def writeExpressionFile(data, scriptpath, working_dir):
@@ -131,3 +132,59 @@ def plotOperatingMap(design_point_table):
         fig.legend(["Converged", "Not Converged"])
 
     return fig
+
+def launchFluent(launchEl):
+
+    import ansys.fluent.core as pyfluent
+    global solver
+
+    fl_workingDir = launchEl["workingDir"]
+    serverfilename = launchEl.get("serverfilename", None)
+    queueEl = launchEl.get("queue_slurm", None)
+
+    # open new session in queue
+    if queueEl is not None:
+        fullpathtosfname = os.path.join(fl_workingDir, "server-info.txt")
+        queueArguments = f'scheduler="slurm" scheduler_queue="{launchEl["queue_slurm"]}"'
+        solver = pyfluent.launch_fluent(
+            precision=launchEl.get("precision", True),
+            processor_count=int(launchEl["noCore"]),
+            mode="solver",
+            show_gui=launchEl.get("show_gui", True),
+            product_version=launchEl["fl_version"],
+            cwd=fl_workingDir,
+            server_info_filepath=fullpathtosfname,
+            additional_arguments=queueArguments
+        )
+        current_time = 0
+        while current_time <= queueEl.get("queue_waiting_time", 600):
+            try:
+                os.path.isfile()
+                break
+            except OSError:
+                print("Witing to process start...")
+                time.sleep(5)
+                current_time += 5
+        if current_time >= launchEl.get("queue_waiting_time",300):
+            raise TimeoutError("Maximum waiting time reached. Aborting...")
+        solver = pyfluent.launch_fluent(
+            start_instance=False, server_info_filepath=fullpathtosfname
+        )
+    # If no serverFilename is specified, a new session will be started
+    elif serverfilename is None or serverfilename == "":
+        solver = pyfluent.launch_fluent(
+            precision=launchEl.get("precision", True),
+            processor_count=int(launchEl["noCore"]),
+            mode="solver",
+            show_gui=launchEl.get("show_gui", True),
+            product_version=launchEl["fl_version"],
+            cwd=fl_workingDir,
+        )
+    # Hook to existing Session
+    else:
+        fullpathtosfname = os.path.join(fl_workingDir, serverfilename)
+        print("Connecting to Fluent Session...")
+        solver = pyfluent.launch_fluent(
+            start_instance=False, server_info_filepath=fullpathtosfname
+        )
+    return solver

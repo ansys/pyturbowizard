@@ -1,12 +1,4 @@
 {
-  "functions":
-    {
-      "setup": "setup_01",
-      "numerics": "numerics_01",
-      "postproc": "post_01",
-      "parametricstudy": "study_01"
-    },
-
   "launching":
     {
       "workingDir": "D:/TestTurbo/HannoverRotor",
@@ -60,8 +52,6 @@
           "bz_interfaces_general_names": {
 
           },
-          "bz_eval_ip1_name": "plane_eval_ip1",
-          "bz_eval_op1_name": "plane_eval_op1",
           "tz_turbo_topology_names":{
             "a-rotor-1-topology":{
               "tz_shroud_names": ["b-rotor-1-shroud"],
@@ -94,7 +84,7 @@
           "tsn": true,
           "time_step_factor": 1.0,
           "iter_count": 1000,
-          "runSolver": false
+          "runSolver": true
         },
         "results": {
           "filename_inputParameter_pf": "inputParameters.out",
