@@ -1,6 +1,6 @@
 import os
 import utilities
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt   
 import pandas as pd
 
 def study(data, solver, functionName="study_01"):

@@ -3,13 +3,14 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def writeExpressionFile(data, working_dir):
+def writeExpressionFile(data, scriptpath, working_dir):
     fileName = os.path.join(working_dir, data["expressionFilename"])
     if fileName is None:
         fileName = "expressions.tsv"
 
     with open(fileName, "w") as sf:
-        with open(data["expressionTemplate"], "r") as templateFile:
+        expressionTemplatePath = os.path.join(scriptpath, data["expressionTemplate"])
+        with open(expressionTemplatePath, "r") as templateFile:
             tempData = templateFile.read()
             templateFile.close()
         helperDict = data["locations"]

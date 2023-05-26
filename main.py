@@ -2,6 +2,15 @@ import os
 import json
 import sys
 
+#Load Script Modules
+import utilities
+import meshimport
+import mysetup
+import numerics
+import postproc
+import solve
+import parametricstudy
+
 version = "1.2.1"
 
 # If solver variable does not exist, Fluent has been started in external mode
@@ -11,18 +20,6 @@ if external:
 
 # Get scriptpath
 scriptPath = os.path.dirname(sys.argv[0])
-
-#Load Modules
-from importlib.machinery import SourceFileLoader
-utilities = SourceFileLoader("utilities", scriptPath + "./utilities.py").load_module()
-meshimport = SourceFileLoader("meshimport", scriptPath + "./meshimport.py").load_module()
-mysetup = SourceFileLoader("mysetup", scriptPath + "./mysetup.py").load_module()
-numerics = SourceFileLoader("numerics", scriptPath + "./numerics.py").load_module()
-postproc = SourceFileLoader("postproc", scriptPath + "./postproc.py").load_module()
-solve = SourceFileLoader("solve", scriptPath + "./solve.py").load_module()
-parametricstudy = SourceFileLoader(
-    "parametricstudy", scriptPath + "./parametricstudy.py"
-).load_module()
 
 # Load Json File
 # Suggest Config File in python working Dir
@@ -59,8 +56,7 @@ if external:  # Fluent without pyConsole
         )
     # Hook to existing Session
     else:
-        fullpathtosfname = fl_workingDir + "/" + serverfilename
-        fullpathtosfname = os.path.normpath(fullpathtosfname)
+        fullpathtosfname = os.path.join(fl_workingDir, serverfilename)
         print("Connecting to Fluent Session...")
         solver = pyfluent.launch_fluent(
             start_instance=False, server_info_filepath=fullpathtosfname
@@ -81,7 +77,7 @@ if caseDict is not None:
         # Mesh import, expressions, profiles
         result = meshimport.import_01(caseEl, solver)
 
-        utilities.writeExpressionFile(caseEl, fl_workingDir)
+        utilities.writeExpressionFile(data=caseEl, scriptpath=scriptPath, working_dir=fl_workingDir)
         solver.tui.define.named_expressions.import_from_tsv(
             caseEl["expressionFilename"]
         )
