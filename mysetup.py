@@ -86,7 +86,6 @@ def boundary_01(data, solver):
                     )
                     inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
                     inBC.flow_spec = "Mass Flow Rate"
-                    inBC.frame_of_reference = "Absolute"
                     inBC.mass_flow = "BC_IN_MassFlow"
                     inBC.gauge_pressure = "BC_IN_p_gauge"
                     inBC.direction_spec = "Normal to Boundary"
@@ -177,8 +176,14 @@ def boundary_01(data, solver):
                     outBC = solver.setup.boundary_conditions.mass_flow_outlet[outletName]
                     outBC.flow_spec = "Exit Corrected Mass Flow Rate"
                     outBC.ec_mass_flow = "BC_OUT_ECMassFlow"
-                    outBC.pref = "BC_ECMassFlow_pref"
-                    outBC.tref = "BC_ECMassFlow_tref"
+                    if data["expressions"].get('BC_ECMassFlow_pref') is not None:
+                        outBC.pref = "BC_ECMassFlow_pref"
+                    else:
+                        outBC.pref = "BC_IN_pt"
+                    if data["expressions"].get('BC_ECMassFlow_pref') is not None:
+                        outBC.tref = "BC_ECMassFlow_tref"
+                    else:
+                        outBC.tref = "BC_IN_Tt"
 
                 elif data["expressions"].get("BC_OUT_MassFlow") is not None:
                     print(f"Prescribing a Massflow-Outlet BC @{outletName}")
@@ -342,7 +347,7 @@ def report_01(data, solver):
         reportName = "rep-" + reportName.lower()
         reportNameList.append(reportName)
     solver.solution.monitor.report_files["report-file"] = {
-        "file_name": "./report_0.6M.out",
+        "file_name": "./report.out",
         "report_defs": reportNameList,
     }
 
