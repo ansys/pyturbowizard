@@ -145,7 +145,7 @@ def launchFluent(launchEl):
     # open new session in queue
     if queueEl is not None:
         fullpathtosfname = os.path.join(fl_workingDir, "server-info.txt")
-        queueArguments = f'scheduler="slurm" scheduler_queue="{launchEl["queue_slurm"]}"'
+        queueArguments = f'-scheduler="slurm" -scheduler_queue="{launchEl["queue_slurm"]}"'
         solver = pyfluent.launch_fluent(
             precision=launchEl.get("precision", True),
             processor_count=int(launchEl["noCore"]),
@@ -157,7 +157,8 @@ def launchFluent(launchEl):
             additional_arguments=queueArguments
         )
         current_time = 0
-        while current_time <= queueEl.get("queue_waiting_time", 600):
+        maxtime = float(queueEl.get("queue_waiting_time", 600.))
+        while current_time <= maxtime:
             try:
                 os.path.isfile()
                 break
@@ -165,7 +166,7 @@ def launchFluent(launchEl):
                 print("Witing to process start...")
                 time.sleep(5)
                 current_time += 5
-        if current_time >= launchEl.get("queue_waiting_time",300):
+        if current_time > maxtime:
             raise TimeoutError("Maximum waiting time reached. Aborting...")
         solver = pyfluent.launch_fluent(
             start_instance=False, server_info_filepath=fullpathtosfname

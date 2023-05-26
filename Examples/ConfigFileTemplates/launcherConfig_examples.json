@@ -22,7 +22,7 @@
       "show_gui":  true,
       "exitatend": false,
       "queue_slurm": "ottc01",
-      "queue_waiting_time":  100
+      "queue_waiting_time":  600
     },
   "launching_HooktoExisitngFluentSession":
     {
