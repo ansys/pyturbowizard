@@ -25,6 +25,16 @@ def post_01(data, solver):
     solver.execute_tui(tuicommand)
     filename = caseFilename + "_" + data["results"]["filename_summary_pf"]
     solver.results.report.summary(write_to_file=True, file_name=filename)
+
+    #define span-wise surfaces for post processing
+    if data["locations"].get("tz_turbo_topology_names") is not None:
+        try:
+            solver.tui.surface.iso_surface("spanwise-coordinate","span-20",[],[],"0.2",[])
+            solver.tui.surface.iso_surface("spanwise-coordinate","span-50",[],[],"0.5",[])
+            solver.tui.surface.iso_surface("spanwise-coordinate","span-90",[],[],"0.9",[])
+        except Exception as e:
+                print(f"No turbo surfaces have been created: {e}") 
+
     # Write out system time
     solver.report.system.time_statistics()
 
