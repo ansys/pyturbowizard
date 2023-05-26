@@ -12,15 +12,15 @@ name	definition	description	input-parameter	output-parameter
 "BC_IN_TuIn"	"{BC_IN_TuIn}"	""	#t	#f
 "BC_IN_TuVR"	"{BC_IN_TuVR}"	""	#t	#f
 "BC_OUT_p"	"{BC_OUT_p}"	""	#t	#f
-"BC_OUT_MassFlow"	"{BC_OUT_MassFlow} * GEO_OUT_No_Passages / GEO_OUT_No_Passages_360"	""	#t	#f
-"BC_OUT_ECMassFlow"	"BC_OUT_ECMassFlow_360 * GEO_OUT_No_Passages / GEO_OUT_No_Passages_360"	""	#f	#f
-"BC_OUT_ECMassFlow_360"	"{BC_OUT_ECMassFlow}"	""	#t	#f
-"BC_ECMassFlow_pref"	"{BC_ECMassFlow_pref}"	""	#f	#f
+"BC_OUT_MassFlow"	"{BC_OUT_MassFlow}"	""	#t	#f
+"BC_OUT_ECMassFlow"	"{BC_OUT_ECMassFlow}"	""	#t	#f
 "BC_ECMassFlow_pref"	"{BC_ECMassFlow_pref}"	""	#f	#f
 "BC_ECMassFlow_tref"	"{BC_ECMassFlow_tref}"	""	#f	#f
 "MP_IN_p"	"AreaAve(StaticPressure,{bz_inlet_names})"	""	#f	#f
-"MP_IN_MassFlow"	"MassFlow({bz_inlet_names}) * GEO_IN_No_Passages_360 / GEO_IN_No_Passages"	""	#f	#t
-"MP_OUT_MassFlow"	"-MassFlow({bz_outlet_names}) * GEO_OUT_No_Passages_360 / GEO_OUT_No_Passages"	""	#f	#f
+"MP_IN_MassFlow"	"MassFlow({bz_inlet_names})"	""	#f	#t
+"MP_IN_MassFlow_360"	"MassFlow({bz_inlet_names}) * GEO_IN_No_Passages_360 / GEO_IN_No_Passages"	""	#f	#t
+"MP_OUT_MassFlow"	"-MassFlow({bz_outlet_names})"	""	#f	#f
+"MP_OUT_MassFlow_360"	"-MassFlow({bz_outlet_names}) * GEO_OUT_No_Passages_360 / GEO_OUT_No_Passages"	""	#f	#f
 "MP_OUT_p"	"AreaAve(StaticPressure,{bz_outlet_names})"	""	#f	#f
 "MP_IN_massFlowAve_Tt"	"Average(TotalTemperature,{bz_inlet_names},Weight = 'MassFlowRate')"	""	#f	#f
 "MP_OUT_massFlowAve_Tt"	"Average(TotalTemperature,{bz_outlet_names},Weight = 'MassFlowRate')"	""	#f	#f
