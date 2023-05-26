@@ -7,7 +7,7 @@ import sys
 version = "1.2.0"
 
 # Suggest Config File in python working Dir
-json_filename = "turboSetupConfig.json"
+json_filename = "turboSetupConfig_darmstadt.json"
 # If arguments are passed take first argument as fullpath to the json file
 if len(sys.argv) > 1:
     json_filename = sys.argv[1]
