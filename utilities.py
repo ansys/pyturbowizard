@@ -160,7 +160,7 @@ def launchFluent(launchEl):
         maxtime = float(queueEl.get("queue_waiting_time", 600.))
         while current_time <= maxtime:
             try:
-                os.path.isfile()
+                os.path.isfile(fullpathtosfname)
                 break
             except OSError:
                 print("Witing to process start...")
