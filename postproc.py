@@ -29,7 +29,7 @@ def post_01(data, solver):
     #define span-wise surfaces for post processing
     if data["locations"].get("tz_turbo_topology_names") is not None:
         try:
-            print('Creating spanwise ISO-surfaces @20,50,90')
+            print('Creating spanwise ISO-surfaces @20,50,90 span')
             solver.tui.surface.iso_surface("spanwise-coordinate","span-20",[],[],"0.2",[])
             solver.tui.surface.iso_surface("spanwise-coordinate","span-50",[],[],"0.5",[])
             solver.tui.surface.iso_surface("spanwise-coordinate","span-90",[],[],"0.9",[])
