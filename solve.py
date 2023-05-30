@@ -1,5 +1,5 @@
 def init(data, solver, functionName="init_hybrid_01"):
-    print('Running Initialization Function "' + functionName + '"...')
+    print('\nRunning Initialization Function "' + functionName + '"...')
     if functionName == "init_standard_01":
         init_standard_01(data, solver)
     if functionName == "init_hybrid_01":
@@ -13,7 +13,7 @@ def init(data, solver, functionName="init_hybrid_01"):
             + '" not known. Skipping Initialization!'
         )
 
-    print("Initialization finished.")
+    print("Running Initialization Function... finished.")
 
 
 def init_standard_01(data, solver):

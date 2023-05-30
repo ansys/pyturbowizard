@@ -2,7 +2,7 @@ import os
 
 
 def post(data, solver, functionName="post_01"):
-    print('Running Postprocessing Function "' + functionName + '"...')
+    print('\nRunning Postprocessing Function "' + functionName + '"...')
     if functionName == "post_01":
         post_01(data, solver)
     else:
@@ -12,7 +12,7 @@ def post(data, solver, functionName="post_01"):
             + '" not known. Skipping Postprocessing!'
         )
 
-    print("Postprocessing finished.")
+    print("Running Postprocessing Function... finished.")
 
 
 def post_01(data, solver):

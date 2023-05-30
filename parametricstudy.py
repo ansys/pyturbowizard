@@ -5,7 +5,7 @@ import pandas as pd
 
 
 def study(data, solver, functionName="study_01"):
-    print('Running ParamatricStudy Function "' + functionName + '"...')
+    print('\nRunning ParamatricStudy Function "' + functionName + '"...')
     if functionName == "study_01":
         study01(data, solver)
     else:
@@ -15,7 +15,7 @@ def study(data, solver, functionName="study_01"):
             + '" not known. Skipping Parametric Study!'
         )
 
-    print("ParamatricStudy finished.")
+    print("Running ParamatricStudy Function... finished.")
 
 
 def study01(data, solver):
