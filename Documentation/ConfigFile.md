@@ -113,7 +113,7 @@ Under the ``` locations ``` section the different regions of your mesh have to b
                   },
                   ...
 ```
-In the ``` locations ``` a turbo topolgy can also be specified.
+In the ``` locations ``` section a turbo topolgy for post processing in Fluent can be defined. For different mesh regions (e.g. rotors and stators), seperate topologies have to be created.
 ```
 "tz_turbo_topology_names":{
             "a-rotor-1-topology":{
@@ -134,4 +134,31 @@ In the ``` locations ``` a turbo topolgy can also be specified.
             }
           },
           ...
+```
+This completes the setup of the ``` locations ``` section.
+
+### Solution & Results Setup
+In the section ``` solution ``` the convergence criteria and solve settings can be specified. In ``` reportlist ``` the expressions for monitoring (plotting and file save) can be specified. ``` res_crit ``` is used to specify the normalized local residual convergence limit. ``` cov_list ``` and  ``` cov_crit ``` are used to specify the parameters and convergence criteria used for a Coefficient of Variation. ``` tsn ``` turns on turbo machinery specific numerics as beta feature. The automatic time step factor and iteration count can be set via ``` time_step_factor ``` and ``` iter_count ```. ``` runSolver ``` can be used to specify whether the simulation should start to run at the end of the setup.
+```
+"Case_1": {
+        ...
+        "solution": {
+                  "reportlist": ["MP_IN_MassFlow","MP_OUT_MassFlow","MP_Isentropic_Efficiency","MP_PRt"],
+                  "res_crit": 1e-5,
+                  "cov_list": [
+                    "MP_Isentropic_Efficiency",
+                    "MP_IN_MassFlow",
+                    "MP_PRt"
+                  ],
+                  "cov_crit": 1.0e-5,
+                  "tsn": true,
+                  "iter_count": 500,
+                  "time_step_factor": 5,
+                  "runSolver": false
+                },
+                "results": {
+                  "filename_inputParameter_pf": "inputParameters.out",
+                  "filename_outputParameter_pf": "outParameters.out",
+                  "filename_summary_pf": "report.sum"
+                }
 ```
