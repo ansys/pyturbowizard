@@ -5,7 +5,6 @@
       "fl_version": "23.2.0",
       "noCore": 2,
       "precision": "double",
-      "serverfilename": "",
       "plotResults": true,
       "exitatend": false
     },
