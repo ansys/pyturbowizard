@@ -89,7 +89,12 @@ if caseDict is not None:
             )
 
         # Initialization
-        solve.init_01(caseEl, solver)
+        if (functionEl is None) or (functionEl.get("initialization") is None):
+            solve.init(data=caseEl, solver=solver)
+        else:
+            solve.init(
+                data=caseEl, solver=solver, functionName=functionEl["initialization"]
+            )
 
         # Write case and ini-data & settings file
         solver.file.write(file_type="case-data", file_name=caseEl["caseFilename"])
