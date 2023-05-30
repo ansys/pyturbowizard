@@ -24,7 +24,7 @@ Under the section ``` launching ```, different options for launching options for
 
 For running Fluent on Linux or a Cluster, the script needs to hook on to a existing Fluent session ([How to Run on Linux](/README.md)). For this a server file name has to be specified under ``` serverfilename ```
 
-``` exitatend ``` can be used to specify wether you want to close Fluent after the script is finished.
+``` exitatend ``` can be used to specify whether you want to close Fluent after the script is finished.
 ```
 "launching":
     {
@@ -43,9 +43,95 @@ Under the ``` cases ``` section different case setups can be specified for the s
 ```
  "cases": {
       "Case_1": {
-      ....
+        "caseFilename": "Case_1",
+        "meshFilename": "Case_1_mesh",
+        "profileName_In": "InProfile.csv",
+        "profileName_Out": "",
+        "expressionFilename": "exp.tsv",
+        "expressionTemplate": "expressionTemplate_compressor_comp.tsv",
+        ...
       },
       "Case_2": {
       ....
       }
+```
+First, different general case parameters, like the final ``` caseFilename ``` and the initial ``` meshFilename ``` have to be specified. Make sure that the mesh file is located in the Fluent working directory.
+You can choose to specify a profile for your inlet or outlet boundaries by providing the ``` profileName ``` in your Fluent working directory. Next, you can choose your ``` expressionTemplate ```. Currently, there are expression templates availabe for a compressor and a turbine setup.
+```
+ "Case_1": {
+       ...
+       "expressions": {
+          "GEO_IN_No_Passages": "1",
+          "GEO_IN_No_Passages_360": "1",
+          "GEO_OUT_No_Passages": "1",
+          "GEO_OUT_No_Passages_360": "1",
+          "BC_pref":	"0 [Pa]",
+          "BC_RPM":	"17000 [rev / min]",
+          "BC_IN_pt":	"",
+          "BC_IN_p_gauge": 	"58000 [Pa]",
+          "BC_IN_Tt":	"",
+          "BC_IN_TuIn":	"0.05",
+          "BC_IN_TuVR":	"10",
+          "BC_OUT_p":	"60000 [Pa]"
+         },
+      ...
+```
+Now you can specify values your boundary condition and geometric expressions, that are available in your expression template. Make sure to leave the values blank, if you use profile data.
+
+Under the ``` locations ``` section the different regions of your mesh have to be mapped accordingly. Please note that every location input is a list, so that you can map multiple regions, e.g. ``` ["inlet1","inlet2"] ```. Interfaces can also be specified for periodic and general interfaces or mixing plane models.
+```
+"Case_1": {
+        ...
+        "locations": {
+                  "cz_rotating_names": ["a-rotor-1"],
+                  "bz_inlet_names": ["inlet1","inlet2"],
+                  "bz_outlet_names": ["outlet"],
+                  "bz_walls_counterrotating_names": ["a-rotor-1-shroud"],
+                  "bz_walls_rotating_names": [],
+                  "bz_walls_freeslip_names": ["a-rotor-1-default"],
+                  "bz_interfaces_periodic_names": {
+                    "a-rotor-periodic-interface-1": {
+                        "side1": "a-rotor-1-to-a-rotor-1-periodic-1-side-1",
+                        "side2": "a-rotor-1-to-a-rotor-1-periodic-1-side-2"
+                      },
+                    "b-stator-periodic-interface-1": {
+                        "side1": "b-stator-1-to-b-stator-1-periodic-1-side-1",
+                        "side2": "b-stator-1-to-b-stator-1-periodic-1-side-2"
+                      }
+                  },
+                  "bz_interfaces_mixingplane_names": {
+                    "a-rotor-1-b-stator-1-mpm": {
+                      "side1": "b-stator-1-to-a-rotor-1-side-1",
+                      "side2": "b-stator-1-to-a-rotor-1-side-2"
+                    }
+                  },
+                  "bz_interfaces_general_names": {
+                    "a-rotor-1-tip": {
+                      "side1": "a-rotor-1-to-a-rotor-1-internal-side-1",
+                      "side2": "a-rotor-1-to-a-rotor-1-internal-side-2"
+                    }
+                  },
+                  ...
+```
+In the ``` locations ``` a turbo topolgy can also be specified.
+```
+"tz_turbo_topology_names":{
+            "a-rotor-1-topology":{
+              "tz_shroud_names": ["a-rotor-1-shroud"],
+              "tz_hub_names": ["a-rotor-1-hub"],
+              "tz_inlet_names": ["inlet"],
+              "tz_outlet_names": ["b-stator-1-to-a-rotor-1-side-2"],
+              "tz_blade_names": ["a-rotor-1-blade"],
+              "tz_theta_periodic_names":["a-rotor-periodic-interface-1"]
+            },
+            "b-stator-1-topology":{
+              "tz_shroud_names": ["b-stator-1-shroud"],
+              "tz_hub_names": ["b-stator-1-hub"],
+              "tz_inlet_names": ["b-stator-1-to-a-rotor-1-side-1"],
+              "tz_outlet_names": ["outlet"],
+              "tz_blade_names": ["b-stator-1-blade"],
+              "tz_theta_periodic_names":["b-stator-periodic-interface-1"]
+            }
+          },
+          ...
 ```
