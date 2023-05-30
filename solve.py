@@ -1,7 +1,11 @@
-def init(data, solver, functionName="init_01_hybrid"):
+def init(data, solver, functionName="init_hybrid_01"):
     print('Running Initialization Function "' + functionName + '"...')
-    if functionName == "init_01_hybrid":
-        init_01_hybrid(data, solver)
+    if functionName == "init_standard_01":
+        init_standard_01(data, solver)
+    if functionName == "init_hybrid_01":
+        init_hybrid_01(data, solver)
+    if functionName == "init_fmg_01":
+        init_fmg_01(data, solver)
     else:
         print(
             'Prescribed Function "'
@@ -12,7 +16,7 @@ def init(data, solver, functionName="init_01_hybrid"):
     print("Initialization finished.")
 
 
-def init_01_standard(data, solver):
+def init_standard_01(data, solver):
     print(f'Using {data["locations"]["bz_inlet_names"][0]} pressure for initialization')
     solver.tui.solve.initialize.compute_defaults.pressure_inlet(
         data["locations"]["bz_inlet_names"][0]
@@ -24,8 +28,8 @@ def init_01_standard(data, solver):
     )
 
 
-def init_01_hybrid(data, solver):
-    init_01_standard(data=data, solver=solver)
+def init_hybrid_01(data, solver):
+    init_standard_01(data=data, solver=solver)
     solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
         "absolute"
     )
@@ -35,8 +39,8 @@ def init_01_hybrid(data, solver):
     solver.solution.initialization.hybrid_initialize()
 
 
-def init_01_fmg(data, solver):
-    init_01_standard(data=data, solver=solver)
+def init_fmg_01(data, solver):
+    init_standard_01(data=data, solver=solver)
     solver.solution.initialization.fmg_initialize()
 
 

@@ -2,7 +2,7 @@
   "functions":
     {
       "setup": "setup_01",
-      "initialization": "init_01_hybrid",
+      "initialization": "init_hybrid_01",
       "numerics": "numerics_01",
       "postproc": "post_01",
       "parametricstudy": "study_01"
