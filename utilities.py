@@ -19,8 +19,14 @@ def writeExpressionFile(data, scriptpath, working_dir):
         expressionEl = data.get("expressions")
         helperDict.update(expressionEl)
         tempData = cleanupInputExpressions(expressionEl=expressionEl, fileData=tempData)
-        sf.write(tempData.format(**helperDict))
-        sf.close()
+        for line in tempData.splitlines():
+            try:
+                sf.write(line.format(**helperDict))
+                sf.write("\n")
+            except KeyError:
+            # Skip the line if a key is missing
+             continue
+
     return
 
 
