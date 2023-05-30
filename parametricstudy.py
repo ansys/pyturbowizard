@@ -1,4 +1,7 @@
 import os
+import utilities
+import matplotlib.pyplot as plt
+import pandas as pd
 
 def study(data, solver, functionName="study_01"):
     print('Running ParamatricStudy Function "' + functionName + '"...')
@@ -16,6 +19,7 @@ def study(data, solver, functionName="study_01"):
 
 def study01(data, solver):
     studyDict = data.get("studies")
+    flworking_Dir = data.get("launching")["workingDir"]
 
     # Init variables
     fluent_study = None
@@ -29,7 +33,7 @@ def study01(data, solver):
         runExisting = studyEl.get("runExistingProject", False)
 
         # Do some checks to skip if a run is not possible
-        studyFileName = data.get("launching")["workingDir"] + "/" + studyName + ".flprj"
+        studyFileName = flworking_Dir + "/" + studyName + ".flprj"
         studyFileName = os.path.normpath(studyFileName)
         if os.path.isfile(studyFileName):
             if not studyEl.get("overwriteExisting", False):
@@ -156,59 +160,25 @@ def study01(data, solver):
 
 
 def studyPlot(data):
-    import matplotlib.pyplot as plt
-    import pandas as pd
 
     print("Running Function StudyPlot ...")
     studyDict = data.get("studies")
     for studyName in studyDict:
+        
         flworking_Dir = data.get("launching")["workingDir"]
         design_point_table_path = flworking_Dir + "/" + studyName + "_dp_table.csv"
         design_point_table_path = os.path.normpath(design_point_table_path)
         if os.path.isfile(design_point_table_path):
+            # read in design point table csv
             design_point_table = pd.read_csv(
                 design_point_table_path, delimiter=",", header=0
             )
 
-            # extract unit row and drop from table
-            units = design_point_table.iloc[0, :]
-            design_point_table = design_point_table.drop(0, axis=0)
-
-            # clear out NaN values for plot data
-            MP_MassFlow = pd.to_numeric(
-                design_point_table.loc[:, "MP_IN_MassFlow"], errors="coerce"
+            fig = utilities.plotOperatingMap(design_point_table)
+            fig
+            study_plot_name = (
+                flworking_Dir + "/" + studyName + "_operating_point_map.svg"
             )
-            MP_PRt = pd.to_numeric(design_point_table.loc[:, "MP_PRt"], errors="coerce")
-            MP_Isentropic_Efficiency = pd.to_numeric(
-                design_point_table.loc[:, "MP_Isentropic_Efficiency"], errors="coerce"
-            )
-
-            # generate plots
-            fig, axs = plt.subplots(1, 2, figsize=(12, 6))
-            fig.suptitle("Compressor Map")
-            # Total Pressure Ratio
-            axs[0].set_xlim([MP_MassFlow.min() * 0.99, MP_MassFlow.max() * 1.01])
-            axs[0].set_ylim([MP_PRt.min() * 0.99, MP_PRt.max() * 1.01])
-            axs[0].grid()
-            axs[0].set_xlabel("reduced mass flow rate [kg/s]")
-            axs[0].set_ylabel("total pressure ratio [-]")
-            axs[0].plot(MP_MassFlow, MP_PRt, marker="^")
-
-            # Isentropic Efficiency
-            axs[1].set_xlim([MP_MassFlow.min() * 0.99, MP_MassFlow.max() * 1.01])
-            axs[1].set_ylim(
-                [
-                    MP_Isentropic_Efficiency.min() * 0.99,
-                    MP_Isentropic_Efficiency.max() * 1.01,
-                ]
-            )
-            axs[1].grid()
-            axs[1].plot(MP_MassFlow, MP_Isentropic_Efficiency, marker="^")
-            axs[1].set_xlabel("reduced mass flow rate [kg/s]")
-            axs[1].set_ylabel("isentropic efficiency [-]")
-
-            study_plot_name = flworking_Dir + "/" + studyName + "_compressor_map.svg"
-            study_plot_name = os.path.normpath(study_plot_name)
             print("generating figure: " + study_plot_name)
             plt.savefig(study_plot_name)
         else:

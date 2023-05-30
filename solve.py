@@ -1,10 +1,12 @@
 def init_01(data, solver):
+    print(f'Using {data["locations"]["bz_inlet_names"][0]} pressure for initialization')
     solver.tui.solve.initialize.compute_defaults.pressure_inlet(
-        data["locations"]["bz_inlet_name"]
+        data["locations"]["bz_inlet_names"][0]
     )
     solver.solution.initialization.standard_initialize()
     solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = "absolute"
     solver.solution.initialization.hybrid_init_options.general_settings.initial_pressure = True
+
     solver.solution.initialization.hybrid_initialize()
     # solver.solution.initialization.fmg_initialize()
 
