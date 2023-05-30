@@ -63,7 +63,7 @@ if caseDict is not None:
         result = meshimport.import_01(caseEl, solver)
 
         utilities.writeExpressionFile(
-            data=caseEl, scriptpath=scriptPath, working_dir=fl_workingDir
+            data=caseEl, script_dir=scriptPath, working_dir=fl_workingDir
         )
         solver.tui.define.named_expressions.import_from_tsv(
             caseEl["expressionFilename"]

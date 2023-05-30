@@ -5,13 +5,13 @@ import subprocess
 import time
 
 
-def writeExpressionFile(data, scriptpath, working_dir):
+def writeExpressionFile(data, script_dir, working_dir):
     fileName = os.path.join(working_dir, data["expressionFilename"])
     if fileName is None:
         fileName = "expressions.tsv"
 
     with open(fileName, "w") as sf:
-        expressionTemplatePath = os.path.join(scriptpath, data["expressionTemplate"])
+        expressionTemplatePath = os.path.join(script_dir, data["expressionTemplate"])
         with open(expressionTemplatePath, "r") as templateFile:
             tempData = templateFile.read()
             templateFile.close()
