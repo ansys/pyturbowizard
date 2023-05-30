@@ -1,5 +1,5 @@
 def numerics(data, solver, functionName="numerics_01"):
-    print('Specifying Numerics: "' + functionName + '"...')
+    print('\nSpecifying Numerics: "' + functionName + '"...')
     if functionName == "numerics_01":
         numerics_01(data, solver)
     else:
@@ -9,7 +9,7 @@ def numerics(data, solver, functionName="numerics_01"):
             + '" not known. Skipping Specifying Numerics!'
         )
 
-    print("Specifying Numerics finished.")
+    print("Specifying Numerics... finished.")
 
 
 def numerics_01(data, solver):

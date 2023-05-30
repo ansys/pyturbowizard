@@ -1,98 +1,52 @@
-# Test of Turbo-Workflow
-
 import os
 import json
 import sys
 
-version = "1.2.0"
+# Load Script Modules
+import utilities
+import meshimport
+import mysetup
+import numerics
+import postproc
+import solve
+import parametricstudy
 
+version = "1.2.5"
+
+# If solver variable does not exist, Fluent has been started in external mode
+external = "solver" not in globals()
+
+# Get scriptpath
+scriptPath = os.path.dirname(sys.argv[0])
+
+# Load Json File
 # Suggest Config File in python working Dir
-json_filename = "turboSetupConfig_darmstadt.json"
+json_filename = "turboSetupConfig.json"
 # If arguments are passed take first argument as fullpath to the json file
 if len(sys.argv) > 1:
     json_filename = sys.argv[1]
-
+json_filename = os.path.normpath(json_filename)
+print("Opening ConfigFile: " + json_filename)
 json_file = open(json_filename)
 turboData = json.load(json_file)
 
+# Get important Elements from json file
 functionEl = turboData.get("functions")
 launchEl = turboData.get("launching")
-external = launchEl.get("external")
-
-if external:
-    import ansys.fluent.core as pyfluent
-
-    import utilities
-    import meshimport
-    import mysetup
-    import numerics
-    import postproc
-    import solve
-    import parametricstudy
-
-else:
-    from importlib.machinery import SourceFileLoader
-
-    utilities = SourceFileLoader("utilities", "./utilities.py").load_module()
-    meshimport = SourceFileLoader("meshimport", "./meshimport.py").load_module()
-    mysetup = SourceFileLoader("mysetup", "./mysetup.py").load_module()
-    numerics = SourceFileLoader("numerics", "./numerics.py").load_module()
-    postproc = SourceFileLoader("postproc", "./postproc.py").load_module()
-    solve = SourceFileLoader("solve", "./solve.py").load_module()
-    parametricstudy = SourceFileLoader(
-        "parametricstudy", "./parametricstudy.py"
-    ).load_module()
-
-
-# pyfluent.set_log_level('DEBUG')
-######################################################################################################################
-#### Start up Fluent #################################################################################################
-######################################################################################################################
-
-if not external:  # pyConsole in Fluent
-    try:
-        import ansys.fluent.core as pyfluent
-
-        flglobals = pyfluent.setup_for_fluent(
-            product_version=launchEl["fl_version"],
-            mode="solver",
-            version="3d",
-            precision=launchEl["precision"],
-            processor_count=int(launchEl["noCore"]),
-        )
-        globals().update(flglobals)
-    except Exception:
-        pass
-
 
 # Use directory of jason-file if not specified in config-file
 fl_workingDir = launchEl.get("workingDir", os.path.dirname(json_filename))
 fl_workingDir = os.path.normpath(fl_workingDir)
-# reset working dir in dict
+# Reset working dir in dict
 launchEl["workingDir"] = fl_workingDir
 print("Used Fluent Working-Directory: " + fl_workingDir)
 
-if external:  # Fluent without pyConsole
-    global solver
-    serverfilename = launchEl.get("serverfilename")
-    if serverfilename is None or serverfilename == "":
-        solver = pyfluent.launch_fluent(
-            precision=launchEl["precision"],
-            processor_count=int(launchEl["noCore"]),
-            mode="solver",
-            show_gui=True,
-            product_version=launchEl["fl_version"],
-            cwd=fl_workingDir,
-        )
-    # Hook to existing Session
-    else:
-        fullpathtosfname = fl_workingDir + "/" + serverfilename
-        fullpathtosfname = os.path.normpath(fullpathtosfname)
-        print("Connecting to Fluent Session...")
-        solver = pyfluent.launch_fluent(
-            start_instance=False, server_info_filepath=fullpathtosfname
-        )
+if external:
+    import ansys.fluent.core as pyfluent
 
+    # Fluent starts externally
+    print("Launching Fluent...")
+    solver = utilities.launchFluent(launchEl)
 
 # Start Setup
 caseDict = turboData.get("cases")
@@ -108,7 +62,9 @@ if caseDict is not None:
         # Mesh import, expressions, profiles
         result = meshimport.import_01(caseEl, solver)
 
-        utilities.writeExpressionFile(caseEl, fl_workingDir)
+        utilities.writeExpressionFile(
+            data=caseEl, script_dir=scriptPath, working_dir=fl_workingDir
+        )
         solver.tui.define.named_expressions.import_from_tsv(
             caseEl["expressionFilename"]
         )
@@ -133,7 +89,12 @@ if caseDict is not None:
             )
 
         # Initialization
-        solve.init_01(caseEl, solver)
+        if (functionEl is None) or (functionEl.get("initialization") is None):
+            solve.init(data=caseEl, solver=solver)
+        else:
+            solve.init(
+                data=caseEl, solver=solver, functionName=functionEl["initialization"]
+            )
 
         # Write case and ini-data & settings file
         solver.file.write(file_type="case-data", file_name=caseEl["caseFilename"])
