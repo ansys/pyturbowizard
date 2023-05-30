@@ -158,8 +158,8 @@ def launchFluent(launchEl):
             + str(maxtime)
         )
         serverfilename = launchEl.get("serverfilename", "server-info.txt")
-        launcherCommandlist = list()
-        launcherCommandlist.append(
+        commandlist = list()
+        commandlist.append(
             pyfluent.launcher.launcher.get_fluent_exe_path(
                 product_version=launchEl["fl_version"]
             )
@@ -176,9 +176,9 @@ def launchFluent(launchEl):
         ]
         if not launchEl.get("show_gui", True):
             batch_arguments.extend(["-gu", "-driver opengl"])
-        launcherCommandlist.extend(batch_arguments)
+        commandlist.extend(batch_arguments)
         process_files = subprocess.Popen(
-            launcherCommandlist, cwd=fl_workingDir, stdout=subprocess.DEVNULL
+            commandlist, cwd=fl_workingDir, stdout=subprocess.DEVNULL
         )
         # Check if Fluent started
         fullpathtosfname = os.path.join(fl_workingDir, serverfilename)
