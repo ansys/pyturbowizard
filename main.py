@@ -11,7 +11,7 @@ import postproc
 import solve
 import parametricstudy
 
-version = "1.2.1"
+version = "1.2.5"
 
 # If solver variable does not exist, Fluent has been started in external mode
 external = "solver" not in globals()
