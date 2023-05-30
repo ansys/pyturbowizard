@@ -3,9 +3,8 @@ import utilities
 import matplotlib.pyplot as plt
 import pandas as pd
 
-
 def study(data, solver, functionName="study_01"):
-    print('\nRunning ParamatricStudy Function "' + functionName + '"...')
+    print('Running ParamatricStudy Function "' + functionName + '"...')
     if functionName == "study_01":
         study01(data, solver)
     else:
@@ -15,7 +14,7 @@ def study(data, solver, functionName="study_01"):
             + '" not known. Skipping Parametric Study!'
         )
 
-    print("Running ParamatricStudy Function... finished.")
+    print("ParamatricStudy finished.")
 
 
 def study01(data, solver):
@@ -173,9 +172,11 @@ def study01(data, solver):
 
 
 def studyPlot(data):
+
     print("Running Function StudyPlot ...")
     studyDict = data.get("studies")
     for studyName in studyDict:
+        
         flworking_Dir = data.get("launching")["workingDir"]
         design_point_table_path = flworking_Dir + "/" + studyName + "_dp_table.csv"
         design_point_table_path = os.path.normpath(design_point_table_path)
