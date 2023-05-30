@@ -1,6 +1,7 @@
 import os.path
 import matplotlib.pyplot as plt
 import pandas as pd
+import subprocess
 import time
 
 
@@ -141,33 +142,38 @@ def launchFluent(launchEl):
     fl_workingDir = launchEl["workingDir"]
     serverfilename = launchEl.get("serverfilename", None)
     queueEl = launchEl.get("queue_slurm", None)
-
     # open new session in queue
     if queueEl is not None:
-        fullpathtosfname = os.path.join(fl_workingDir, "server-info.txt")
-        queueArguments = f'-scheduler="slurm" -scheduler_queue="{launchEl["queue_slurm"]}"'
-        solver = pyfluent.launch_fluent(
-            precision=launchEl.get("precision", True),
-            processor_count=int(launchEl["noCore"]),
-            mode="solver",
-            show_gui=launchEl.get("show_gui", True),
-            product_version=launchEl["fl_version"],
-            cwd=fl_workingDir,
-            server_info_filepath=fullpathtosfname,
-            additional_arguments=queueArguments
-        )
+        maxtime = float(launchEl.get("queue_waiting_time", 600.))
+        print("Trying to launching new Fluent Session on queue '" + queueEl + "'")
+        print("Max waiting time set to: " + maxtime)
+        serverfilename = launchEl.get("serverfilename", "server-info.txt")
+        launcherCommandlist = list()
+        launcherCommandlist.append(pyfluent.launcher.launcher.get_fluent_exe_path(product_version=launchEl["fl_version"]))
+        precisionCommand = "3d"
+        if launchEl.get("precision", True):
+            precisionCommand = precisionCommand + "dp"
+        batch_arguments = [precisionCommand, "-t%s" % (int(launchEl["noCore"])), "-scheduler=slurm", "-scheduler_queue=%s" % (launchEl["queue_slurm"]),
+                           "-sifile=%s" % (serverfilename)]
+        if not launchEl.get("show_gui", True):
+            batch_arguments.extend(["-gu", "-driver opengl"])
+        launcherCommandlist.extend(batch_arguments)
+        process_files = subprocess.Popen(launcherCommandlist, cwd=fl_workingDir, stdout=subprocess.DEVNULL)
+        # Check if Fluent started
+        fullpathtosfname = os.path.join(fl_workingDir, serverfilename)
         current_time = 0
-        maxtime = float(queueEl.get("queue_waiting_time", 600.))
         while current_time <= maxtime:
             try:
-                os.path.isfile(fullpathtosfname)
-                break
+                if os.path.isfile(fullpathtosfname):
+                    time.sleep(5)
+                    break
             except OSError:
                 print("Witing to process start...")
                 time.sleep(5)
                 current_time += 5
         if current_time > maxtime:
-            raise TimeoutError("Maximum waiting time reached. Aborting...")
+            raise TimeoutError("Maximum waiting time reached (" + maxtime + "sec). Aborting script...")
+        # Start Session via hook
         solver = pyfluent.launch_fluent(
             start_instance=False, server_info_filepath=fullpathtosfname
         )
