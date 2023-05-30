@@ -7,6 +7,7 @@ It serves as input file for the launch options, boundary conditions, as well as 
 
 ### Setup Subroutines
 Under the section ``` functions ```, different subroutines for the numerical setup, post processing or the parametric studies can be specified:
+
 ```
 "functions":
     {
@@ -40,6 +41,7 @@ For running Fluent on Linux or a Cluster, the script needs to hook on to a exist
 
 ### Cases
 Under the ``` cases ``` section different case setups can be specified for the script to run (different meshes etc.).
+
 ```
  "cases": {
       "Case_1": {
@@ -55,8 +57,13 @@ Under the ``` cases ``` section different case setups can be specified for the s
       ....
       }
 ```
-First, different general case parameters, like the final ``` caseFilename ``` and the initial ``` meshFilename ``` have to be specified. Make sure that the mesh file is located in the Fluent working directory.
+
+First, different general case parameters, like the final ``` caseFilename ``` and the initial ``` meshFilename ``` have to be specified. 
+
+Supported file types for meshes are .def, .cgns, .msh, .cas. Make sure that the mesh file is located in the Fluent working directory.
+
 You can choose to specify a profile for your inlet or outlet boundaries by providing the ``` profileName ``` in your Fluent working directory. Next, you can choose your ``` expressionTemplate ```. Currently, there are expression templates availabe for a compressor and a turbine setup.
+
 ```
  "Case_1": {
        ...
@@ -79,6 +86,7 @@ You can choose to specify a profile for your inlet or outlet boundaries by provi
 Now you can specify values your boundary condition and geometric expressions, that are available in your expression template. Make sure to leave the values blank, if you use profile data.
 
 Under the ``` locations ``` section the different regions of your mesh have to be mapped accordingly. Please note that every location input is a list, so that you can map multiple regions, e.g. ``` ["inlet1","inlet2"] ```. Interfaces can also be specified for periodic and general interfaces or mixing plane models.
+
 ```
 "Case_1": {
         ...
@@ -113,8 +121,11 @@ Under the ``` locations ``` section the different regions of your mesh have to b
                   },
                   ...
 ```
+
 In the ``` locations ``` section a turbo topolgy for post processing in Fluent can be defined. For different mesh regions (e.g. rotors and stators), seperate topologies have to be created.
+
 ```
+...
 "tz_turbo_topology_names":{
             "a-rotor-1-topology":{
               "tz_shroud_names": ["a-rotor-1-shroud"],
@@ -135,10 +146,12 @@ In the ``` locations ``` section a turbo topolgy for post processing in Fluent c
           },
           ...
 ```
+
 This completes the setup of the ``` locations ``` section.
 
 ### Solution & Results Setup
 In the section ``` solution ``` the convergence criteria and solve settings can be specified. In ``` reportlist ``` the expressions for monitoring (plotting and file save) can be specified. ``` res_crit ``` is used to specify the normalized local residual convergence limit. ``` cov_list ``` and  ``` cov_crit ``` are used to specify the parameters and convergence criteria used for a Coefficient of Variation. ``` tsn ``` turns on turbo machinery specific numerics as beta feature. The automatic time step factor and iteration count can be set via ``` time_step_factor ``` and ``` iter_count ```. ``` runSolver ``` can be used to specify whether the simulation should start to run at the end of the setup.
+
 ```
 "Case_1": {
         ...
@@ -164,7 +177,7 @@ In the section ``` solution ``` the convergence criteria and solve settings can 
 ```
 
 ## Parametric Study Setup
-
+The Configuration file for a parametric study can be found in the [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main) as ``` TurboStudyConfig.json ```.
 ### Launch Options
 
 ### Study Configuration
