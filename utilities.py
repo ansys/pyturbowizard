@@ -146,7 +146,7 @@ def launchFluent(launchEl):
     if queueEl is not None:
         maxtime = float(launchEl.get("queue_waiting_time", 600.))
         print("Trying to launching new Fluent Session on queue '" + queueEl + "'")
-        print("Max waiting time set to: " + maxtime)
+        print("Max waiting time (launching-key: 'queue_waiting_time') set to: " + str(maxtime))
         serverfilename = launchEl.get("serverfilename", "server-info.txt")
         launcherCommandlist = list()
         launcherCommandlist.append(pyfluent.launcher.launcher.get_fluent_exe_path(product_version=launchEl["fl_version"]))
