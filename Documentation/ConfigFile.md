@@ -162,3 +162,10 @@ In the section ``` solution ``` the convergence criteria and solve settings can 
                   "filename_summary_pf": "report.sum"
                 }
 ```
+
+## Parametric Study Setup
+
+### Launch Options
+
+### Study Configuration
+
