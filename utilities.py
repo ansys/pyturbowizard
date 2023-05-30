@@ -24,8 +24,8 @@ def writeExpressionFile(data, scriptpath, working_dir):
                 sf.write(line.format(**helperDict))
                 sf.write("\n")
             except KeyError:
-            # Skip the line if a key is missing
-             continue
+                # Skip the line if a key is missing
+                continue
 
     return
 
@@ -140,9 +140,10 @@ def plotOperatingMap(design_point_table):
 
     return fig
 
-def launchFluent(launchEl):
 
+def launchFluent(launchEl):
     import ansys.fluent.core as pyfluent
+
     global solver
 
     fl_workingDir = launchEl["workingDir"]
@@ -150,21 +151,35 @@ def launchFluent(launchEl):
     queueEl = launchEl.get("queue_slurm", None)
     # open new session in queue
     if queueEl is not None:
-        maxtime = float(launchEl.get("queue_waiting_time", 600.))
+        maxtime = float(launchEl.get("queue_waiting_time", 600.0))
         print("Trying to launching new Fluent Session on queue '" + queueEl + "'")
-        print("Max waiting time (launching-key: 'queue_waiting_time') set to: " + str(maxtime))
+        print(
+            "Max waiting time (launching-key: 'queue_waiting_time') set to: "
+            + str(maxtime)
+        )
         serverfilename = launchEl.get("serverfilename", "server-info.txt")
         launcherCommandlist = list()
-        launcherCommandlist.append(pyfluent.launcher.launcher.get_fluent_exe_path(product_version=launchEl["fl_version"]))
+        launcherCommandlist.append(
+            pyfluent.launcher.launcher.get_fluent_exe_path(
+                product_version=launchEl["fl_version"]
+            )
+        )
         precisionCommand = "3d"
         if launchEl.get("precision", True):
             precisionCommand = precisionCommand + "dp"
-        batch_arguments = [precisionCommand, "-t%s" % (int(launchEl["noCore"])), "-scheduler=slurm", "-scheduler_queue=%s" % (launchEl["queue_slurm"]),
-                           "-sifile=%s" % (serverfilename)]
+        batch_arguments = [
+            precisionCommand,
+            "-t%s" % (int(launchEl["noCore"])),
+            "-scheduler=slurm",
+            "-scheduler_queue=%s" % (launchEl["queue_slurm"]),
+            "-sifile=%s" % (serverfilename),
+        ]
         if not launchEl.get("show_gui", True):
             batch_arguments.extend(["-gu", "-driver opengl"])
         launcherCommandlist.extend(batch_arguments)
-        process_files = subprocess.Popen(launcherCommandlist, cwd=fl_workingDir, stdout=subprocess.DEVNULL)
+        process_files = subprocess.Popen(
+            launcherCommandlist, cwd=fl_workingDir, stdout=subprocess.DEVNULL
+        )
         # Check if Fluent started
         fullpathtosfname = os.path.join(fl_workingDir, serverfilename)
         current_time = 0
@@ -178,7 +193,11 @@ def launchFluent(launchEl):
                 time.sleep(5)
                 current_time += 5
         if current_time > maxtime:
-            raise TimeoutError("Maximum waiting time reached (" + maxtime + "sec). Aborting script...")
+            raise TimeoutError(
+                "Maximum waiting time reached ("
+                + str(maxtime)
+                + "sec). Aborting script..."
+            )
         # Start Session via hook
         solver = pyfluent.launch_fluent(
             start_instance=False, server_info_filepath=fullpathtosfname

@@ -2,7 +2,7 @@ import os
 import json
 import sys
 
-#Load Script Modules
+# Load Script Modules
 import utilities
 import meshimport
 import mysetup
@@ -14,7 +14,7 @@ import parametricstudy
 version = "1.2.1"
 
 # If solver variable does not exist, Fluent has been started in external mode
-external = 'solver' not in globals()
+external = "solver" not in globals()
 
 # Get scriptpath
 scriptPath = os.path.dirname(sys.argv[0])
@@ -43,6 +43,7 @@ print("Used Fluent Working-Directory: " + fl_workingDir)
 
 if external:
     import ansys.fluent.core as pyfluent
+
     # Fluent starts externally
     print("Launching Fluent...")
     solver = utilities.launchFluent(launchEl)
@@ -61,7 +62,9 @@ if caseDict is not None:
         # Mesh import, expressions, profiles
         result = meshimport.import_01(caseEl, solver)
 
-        utilities.writeExpressionFile(data=caseEl, scriptpath=scriptPath, working_dir=fl_workingDir)
+        utilities.writeExpressionFile(
+            data=caseEl, scriptpath=scriptPath, working_dir=fl_workingDir
+        )
         solver.tui.define.named_expressions.import_from_tsv(
             caseEl["expressionFilename"]
         )

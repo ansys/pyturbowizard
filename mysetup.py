@@ -133,7 +133,9 @@ def boundary_01(data, solver):
                         and (data["expressions"].get("BC_IN_axDir") is not None)
                     ):
                         inBC.direction_spec = "Direction Vector"
-                        inBC.coordinate_system = "Cylindrical (Radial, Tangential, Axial)"
+                        inBC.coordinate_system = (
+                            "Cylindrical (Radial, Tangential, Axial)"
+                        )
                         inBC.flow_direction = [
                             "BC_IN_radDir",
                             "BC_IN_tangDir",
@@ -145,7 +147,9 @@ def boundary_01(data, solver):
                     # directions (cylindrical): vrad-dir,vrad-dir,vax-dir
                     if useProfileData:
                         inBC.direction_spec = "Direction Vector"
-                        inBC.coordinate_system = "Cylindrical (Radial, Tangential, Axial)"
+                        inBC.coordinate_system = (
+                            "Cylindrical (Radial, Tangential, Axial)"
+                        )
                         inBC.flow_direction = [
                             {
                                 "field_name": "vrad-dir",
@@ -169,18 +173,22 @@ def boundary_01(data, solver):
             bz_outlet_names = data["locations"].get(key)
             for outletName in bz_outlet_names:
                 if data["expressions"].get("BC_OUT_ECMassFlow") is not None:
-                    print(f"Prescribing a Exit-Corrected Massflow-Outlet BC @{outletName}")
+                    print(
+                        f"Prescribing a Exit-Corrected Massflow-Outlet BC @{outletName}"
+                    )
                     solver.setup.boundary_conditions.change_type(
                         zone_list=[outletName], new_type="mass-flow-outlet"
                     )
-                    outBC = solver.setup.boundary_conditions.mass_flow_outlet[outletName]
+                    outBC = solver.setup.boundary_conditions.mass_flow_outlet[
+                        outletName
+                    ]
                     outBC.flow_spec = "Exit Corrected Mass Flow Rate"
                     outBC.ec_mass_flow = "BC_OUT_ECMassFlow"
-                    if data["expressions"].get('BC_ECMassFlow_pref') is not None:
+                    if data["expressions"].get("BC_ECMassFlow_pref") is not None:
                         outBC.pref = "BC_ECMassFlow_pref"
                     else:
                         outBC.pref = "BC_IN_pt"
-                    if data["expressions"].get('BC_ECMassFlow_pref') is not None:
+                    if data["expressions"].get("BC_ECMassFlow_pref") is not None:
                         outBC.tref = "BC_ECMassFlow_tref"
                     else:
                         outBC.tref = "BC_IN_Tt"
@@ -190,7 +198,9 @@ def boundary_01(data, solver):
                     solver.setup.boundary_conditions.change_type(
                         zone_list=[outletName], new_type="mass-flow-outlet"
                     )
-                    outBC = solver.setup.boundary_conditions.mass_flow_outlet[outletName]
+                    outBC = solver.setup.boundary_conditions.mass_flow_outlet[
+                        outletName
+                    ]
                     outBC.flow_spec = "Mass Flow Rate"
                     outBC.mass_flow = "BC_OUT_MassFlow"
 
@@ -224,7 +234,7 @@ def boundary_01(data, solver):
         #    solver.setup.boundary_conditions.wall[data["locations"][key]] = {"motion_bc": "Moving Wall","relative": False,"rotating": True}
 
         elif key == "bz_walls_counterrotating_names":
-            keyEl =  data["locations"].get(key)
+            keyEl = data["locations"].get(key)
             for key_cr in keyEl:
                 print(f"Prescribing a counter-rotating wall: {key_cr}")
                 solver.setup.boundary_conditions.wall[key_cr] = {
@@ -386,9 +396,9 @@ def report_01(data, solver):
 
     # Set Convergence Conditions
     solver.solution.monitor.convergence_conditions = {
-        #"condition": "any-condition-is-met",
+        # "condition": "any-condition-is-met",
         "condition": "all-conditions-are-met",
-        "frequency": 5
+        "frequency": 5,
     }
     # Set Basic Solver-Solution-Settings
     tsf = data["solution"].get("time_step_factor", 1)

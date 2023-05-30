@@ -1,7 +1,8 @@
 import os
 import utilities
-import matplotlib.pyplot as plt   
+import matplotlib.pyplot as plt
 import pandas as pd
+
 
 def study(data, solver, functionName="study_01"):
     print('Running ParamatricStudy Function "' + functionName + '"...')
@@ -172,11 +173,9 @@ def study01(data, solver):
 
 
 def studyPlot(data):
-
     print("Running Function StudyPlot ...")
     studyDict = data.get("studies")
     for studyName in studyDict:
-        
         flworking_Dir = data.get("launching")["workingDir"]
         design_point_table_path = flworking_Dir + "/" + studyName + "_dp_table.csv"
         design_point_table_path = os.path.normpath(design_point_table_path)
