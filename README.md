@@ -27,10 +27,12 @@ Required libraries:
 - Prepare data in your working directory
   - Copy Fluent data into the folder, e.g. mesh data, profiles
   - Copy a Configuration File (GitHub) to your Fluent working directory
-  - Adjust the Configuration File to your setup (see docu)
-- Get latest Version From GitHub [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main)
+  - Adjust the Configuration File to your setup ([Configuration File Setup](./Documentation/ConfigFile.md))
+- Get latest Version From GitHub: [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main)
   - Copy all files from GitHub to a specific folder
   - Start a Fluent job on cluster with additional arguments: ```-py -sifile=<name>.txt ```
   - Open command shell in script folder
   - execute script via: ```pyfluent main.py <FullPathToConfigurationFile.json>```
 #### Windows
+- Prepare data in you working directory
+  - Copy Fluent data into the folder, e.g. mesh data, profiles
