@@ -23,7 +23,7 @@ Under the section ``` launching ```, different options for launching options for
 
 ``` external ``` refers to if you wish to run the Script interally via the Fluent Python console or externally. **Currently only the External option is supported by the script.**
 
-For running Fluent on Linux or a Cluster, the script needs to hook on to a existing Fluent session ([How to Run on Linux](/README.md)). For this a server file name has to be specified under ``` serverfilename ```
+For running Fluent on Linux or a Cluster, the script needs to hook on to a existing Fluent session ([How to Run on Linux](/README.md#linux--cluster-1)). For this a server file name has to be specified under ``` serverfilename ```
 
 ``` exitatend ``` can be used to specify whether you want to close Fluent after the script is finished.
 ```
