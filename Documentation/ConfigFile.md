@@ -179,6 +179,27 @@ In the section ``` solution ``` the convergence criteria and solve settings can 
 ## Parametric Study Setup
 The Configuration file for a parametric study can be found in the [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main) as ``` TurboStudyConfig.json ```.
 ### Launch Options
+Under the section ``` launching ```, different options for launching options for Fluent can be specified, like the version, number of processes and single or double precision solver.
 
+``` external ``` refers to if you wish to run the Script interally via the Fluent Python console or externally. **Currently only the External option is supported by the script.**
+
+For running Fluent on Linux or a Cluster, the script needs to hook on to a existing Fluent session ([How to Run on Linux](/README.md)). For this a server file name has to be specified under ``` serverfilename ```
+
+```  plotResults``` specifies, whether a Operating Point Map should be plotted from the results of the parametric study like:
+
+``` exitatend ``` can be used to specify whether you want to close Fluent after the script is finished.
+```
+"launching":
+    {
+      "workingDir": "<pathToFluentWorkingDir>",
+      "fl_version": "23.2.0",
+      "noCore": 2,
+      "precision": "double",
+      "external": true,
+      "serverfilename": "",
+      "plotResults": true,
+      "exitatend": false
+    },
+```
 ### Study Configuration
 
