@@ -1,6 +1,7 @@
 def init_01(data, solver):
+    print(f'Using {data["locations"]["bz_inlet_names"][0]} pressure for initialization')
     solver.tui.solve.initialize.compute_defaults.pressure_inlet(
-        data["locations"]["bz_inlet_name"]
+        data["locations"]["bz_inlet_names"][0]
     )
     solver.solution.initialization.standard_initialize()
 

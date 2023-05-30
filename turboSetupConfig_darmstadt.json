@@ -18,14 +18,16 @@
     },
   "cases": {
       "TUDA_R1S7": {
-        "datapath": "./",
         "caseFilename": "TUDA_R1S7",
-        "meshFilename": "TUDA_R1S7_mesh",
+        "meshFilename": "TUDA_R1S7_coarse_mesh",
         "profileName": null,
         "expressionFilename": "hr_exp.tsv",
         "expressionTemplate": "expressionTemplate_compressor_comp.tsv",
         "expressions": {
-          "GEO_No_Blades":	"1",
+          "GEO_IN_No_Passages": "1",
+          "GEO_IN_No_Passages_360": "16",
+          "GEO_OUT_No_Passages": "1",
+          "GEO_OUT_No_Passages_360"	: "29",
           "BC_pref":	"0[Pa]",
           "BC_RPM":	"-20000 [rev / min]",
           "BC_IN_pt":	"101325 [Pa]",
@@ -33,14 +35,14 @@
           "BC_IN_Tt":	"288.15 [K]",
           "BC_IN_TuIn":	"0.05",
           "BC_IN_TuVR":	"10",
-          "BC_OUT_ECMassFlow":	"0.4 [kg / s]",
+          "BC_OUT_ECMassFlow":	"11.4 [kg / s]",
           "BC_ECMassFlow_pref": "101325 [Pa]",
           "BC_ECMassFlow_tref": "288.15 [K]"
         },
         "locations": {
           "cz_rotating_names": ["a-rotor-1"],
-          "bz_inlet_name": "inlet",
-          "bz_outlet_name": "outlet",
+          "bz_inlet_names": ["inlet"],
+          "bz_outlet_names": ["outlet"],
           "bz_walls_counterrotating_names": ["a-rotor-1-shroud"],
           "bz_walls_rotating_names": [],
           "bz_walls_freeslip_names": ["a-rotor-1-default"],
@@ -110,7 +112,7 @@
           "cov_crit": 1.0e-5,
           "tsn": true,
           "iter_count": 500,
-          "time_step_factor": 1,
+          "time_step_factor": 5,
           "runSolver": false
         },
         "results": {
@@ -121,4 +123,3 @@
       }
     }
 }
-
