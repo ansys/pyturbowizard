@@ -11,6 +11,8 @@ Under the section ``` functions ```, different subroutines for the numerical set
 ```
 "functions":
     {
+      "setup": "setup_01",
+      "initialization": "init_hybrid_01",
       "numerics": "numerics_01",
       "postproc": "post_01",
       "parametricstudy": "study_01"
@@ -24,18 +26,15 @@ Under the section ``` launching ```, different options for launching options for
 ``` external ``` refers to if you wish to run the Script interally via the Fluent Python console or externally. **Currently only the External option is supported by the script.**
 
 For running Fluent on Linux or a Cluster, the script needs to hook on to a existing Fluent session ([How to Run on Linux](/README.md#linux--cluster-1)). For this a server file name has to be specified under ``` serverfilename ```
-
-``` exitatend ``` can be used to specify whether you want to close Fluent after the script is finished.
 ```
 "launching":
     {
-      "workingDir": "<pathToFluentWorkingDir>",
+      "workingDir": "D:/TestTurbo/launch_test",
       "fl_version": "23.2.0",
-      "noCore": 2,
-      "precision": "double",
-      "external": true,
+      "noCore": 8,
       "serverfilename": "",
-      "exitatend": false
+      "precision": "double",
+      "show_gui":  true
     },
 ```
 
@@ -85,7 +84,7 @@ You can choose to specify a profile for your inlet or outlet boundaries by provi
 ```
 Now you can specify values your boundary condition and geometric expressions, that are available in your expression template. Make sure to leave the corresponding values blank, if you use profile data.
 
-Under the ```locations``` section the different regions of your mesh have to be mapped accordingly. Please note that every location input is a list, so that you can map multiple regions, e.g. ``` ["inlet1","inlet2"] ```. Interfaces can also be specified for periodic and general interfaces or mixing plane models.
+Under the ```locations``` section the different regions of your mesh have to be mapped accordingly. Note that every location input is a list, so that you can map multiple regions, e.g. ``` ["inlet1","inlet2"] ```. Interfaces can also be specified for periodic and general interfaces or mixing plane models.
 
 ```
 "Case_1": {
@@ -202,8 +201,7 @@ Under the section ``` launching ```, different options for launching options for
       "precision": "double",
       "external": true,
       "serverfilename": "",
-      "plotResults": true,
-      "exitatend": false
+      "plotResults": true
     },
 ```
 
