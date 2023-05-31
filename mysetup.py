@@ -283,6 +283,7 @@ def boundary_01(data, solver):
             solver.tui.define.mesh_interfaces.one_to_one_pairing("no")
             keyEl = data["locations"].get(key)
             for key_if in keyEl:
+                print(f"Setting up general interface: {key_if}")
                 side1 = keyEl[key_if].get("side1")
                 side2 = keyEl[key_if].get("side2")
                 # solver.tui.define.mesh_interfaces.create(key_if, side1, '()', side2,'()', 'no', 'no', 'no', 'yes', 'no')
@@ -294,6 +295,7 @@ def boundary_01(data, solver):
     keyEl = data["locations"].get("bz_interfaces_mixingplane_names")
     if keyEl is not None:
         for key_if in keyEl:
+            print(f"Setting up mixing plane interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
             solver.tui.define.turbo_model.turbo_create(

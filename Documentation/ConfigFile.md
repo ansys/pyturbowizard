@@ -11,6 +11,8 @@ Under the section ``` functions ```, different subroutines for the numerical set
 ```
 "functions":
     {
+      "setup": "setup_01",
+      "initialization": "init_hybrid_01",
       "numerics": "numerics_01",
       "postproc": "post_01",
       "parametricstudy": "study_01"
@@ -21,21 +23,16 @@ Under the section ``` functions ```, different subroutines for the numerical set
 ### Launch Options
 Under the section ``` launching ```, different options for launching options for Fluent can be specified, like the version, number of processes and single or double precision solver.
 
-``` external ``` refers to if you wish to run the Script interally via the Fluent Python console or externally. **Currently only the External option is supported by the script.**
-
-For running Fluent on Linux or a Cluster, the script needs to hook on to a existing Fluent session ([How to Run on Linux](/README.md)). For this a server file name has to be specified under ``` serverfilename ```
-
-``` exitatend ``` can be used to specify whether you want to close Fluent after the script is finished.
+For running Fluent on Linux or a Cluster, the script needs to hook on to a existing Fluent session ([How to Run on Linux](/README.md#linux--cluster-1)). For this a server file name has to be specified under ``` serverfilename ```. When hooking onto a existing Fluent session the ``` launching ``` options are not used, except for ```workingDir```.
 ```
 "launching":
     {
-      "workingDir": "<pathToFluentWorkingDir>",
+      "workingDir": "<PathToFluentWorkingDir>",
       "fl_version": "23.2.0",
-      "noCore": 2,
-      "precision": "double",
-      "external": true,
+      "noCore": 8,
       "serverfilename": "",
-      "exitatend": false
+      "precision": "double",
+      "show_gui":  true
     },
 ```
 
@@ -60,9 +57,9 @@ Under the ``` cases ``` section different case setups can be specified for the s
 
 First, different general case parameters, like the final ``` caseFilename ``` and the initial ``` meshFilename ``` have to be specified. 
 
-Supported file types for meshes are .def, .cgns, .msh, .cas. Make sure that the mesh file is located in the Fluent working directory.
+Supported file types for meshes are .def, .cgns, .msh and .cas. Make sure that the mesh consists of a single file and is located in the Fluent working directory.
 
-You can choose to specify a profile for your inlet or outlet boundaries by providing the ``` profileName ``` in your Fluent working directory. Next, you can choose your ``` expressionTemplate ```. Currently, there are expression templates availabe for a compressor and a turbine setup.
+You can choose to specify a profile for your inlet or outlet boundaries by providing the ``` profileName ``` in your Fluent working directory. Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup.
 
 ```
  "Case_1": {
@@ -83,9 +80,9 @@ You can choose to specify a profile for your inlet or outlet boundaries by provi
          },
       ...
 ```
-Now you can specify values your boundary condition and geometric expressions, that are available in your expression template. Make sure to leave the values blank, if you use profile data.
+Now you can specify values your boundary condition and geometric expressions, that are available in your expression template. Make sure to leave the corresponding values blank, if you use profile data.
 
-Under the ``` locations ``` section the different regions of your mesh have to be mapped accordingly. Please note that every location input is a list, so that you can map multiple regions, e.g. ``` ["inlet1","inlet2"] ```. Interfaces can also be specified for periodic and general interfaces or mixing plane models.
+Under the ```locations``` section the different regions of your mesh have to be mapped accordingly. Note that every location input is a list, so that you can map multiple regions, e.g. ``` ["inlet1","inlet2"] ```. Interfaces can also be specified for periodic and general interfaces or mixing plane models.
 
 ```
 "Case_1": {
@@ -122,7 +119,7 @@ Under the ``` locations ``` section the different regions of your mesh have to b
                   ...
 ```
 
-In the ``` locations ``` section a turbo topolgy for post processing in Fluent can be defined. For different mesh regions (e.g. rotors and stators), seperate topologies have to be created.
+In the ```locations``` section a turbo topolgy for post processing in Fluent can be defined. For different mesh regions (e.g. rotors and stators), seperate topologies have to be created.
 
 ```
 ...
@@ -150,7 +147,19 @@ In the ``` locations ``` section a turbo topolgy for post processing in Fluent c
 This completes the setup of the ``` locations ``` section.
 
 ### Solution & Results Setup
-In the section ``` solution ``` the convergence criteria and solve settings can be specified. In ``` reportlist ``` the expressions for monitoring (plotting and file save) can be specified. ``` res_crit ``` is used to specify the normalized local residual convergence limit. ``` cov_list ``` and  ``` cov_crit ``` are used to specify the parameters and convergence criteria used for a Coefficient of Variation. ``` tsn ``` turns on turbo machinery specific numerics as beta feature. The automatic time step factor and iteration count can be set via ``` time_step_factor ``` and ``` iter_count ```. ``` runSolver ``` can be used to specify whether the simulation should start to run at the end of the setup.
+In the section ```solution``` the convergence criteria and solve settings can be specified. 
+
+In ```reportlist``` the expressions for monitoring (plotting and file save) can be set.
+
+``` res_crit``` is used to specify the normalized local residual convergence limit. 
+
+```cov_list``` and  ``` cov_crit ``` are used to specify the parameters and convergence criteria used for a Coefficient of Variation. 
+
+```tsn``` turns on turbo machinery specific numerics as beta feature. 
+
+The automatic time step factor and iteration count can be set via ```time_step_factor``` and ``` iter_count ``` respectively. 
+
+``` runSolver``` can be used to specify whether the simulation should start to run at the end of the setup.
 
 ```
 "Case_1": {
@@ -181,13 +190,6 @@ The Configuration file for a parametric study can be found in the [main branch](
 ### Launch Options
 Under the section ``` launching ```, different options for launching options for Fluent can be specified, like the version, number of processes and single or double precision solver.
 
-``` external ``` refers to if you wish to run the Script interally via the Fluent Python console or externally. **Currently only the External option is supported by the script.**
-
-For running Fluent on Linux or a Cluster, the script needs to hook on to a existing Fluent session ([How to Run on Linux](/README.md)). For this a server file name has to be specified under ``` serverfilename ```
-
-```  plotResults``` specifies, whether a Operating Point Map should be plotted from the results of the parametric study like:
-
-``` exitatend ``` can be used to specify whether you want to close Fluent after the script is finished.
 ```
 "launching":
     {
@@ -197,9 +199,66 @@ For running Fluent on Linux or a Cluster, the script needs to hook on to a exist
       "precision": "double",
       "external": true,
       "serverfilename": "",
-      "plotResults": true,
-      "exitatend": false
+      "plotResults": true
     },
 ```
+
+``` external ``` refers to if you wish to run the Script interally via the Fluent Python console or externally. **Currently only the External option is supported by the script.**
+
+For running Fluent on Linux or a Cluster, the script needs to hook on to a existing Fluent session ([How to Run on Linux](/README.md)). For this a server file name has to be specified under ``` serverfilename ```
+
+```plotResults``` specifies, whether a Operating Point Map should be plotted and saved from the results of the parametric study.
+
+An example plot of the Operating Point Map is shown below:
+
+<img src="/Documentation/images/operating_map_example.png" alt="operating point map example" style="height: 400px; width:800px;"/>
+
+```exitatend ``` can be used to specify whether you want to close Fluent after the script is finished.
+
 ### Study Configuration
+In the ```studies``` section different study setups can be created. 
+
+```overwriteExisting``` sets whether a existing study with the same name should be overwritten. 
+
+```runExistingProject``` specifies if a existing study setup with the same name should be used. 
+
+```write_data``` gives the option to save the simulation data for all design points. 
+
+The reference case file name for the base case has to be specified under ```refCaseFilename``` and has to be in the Fluent working directory.
+
+```updateAllDPs``` specifies whether the study should be run after the setup.
+
+If ```updateFromBaseDP``` is ```true``` the simulation of each design point is initialized from the base design point. If ```updateFromBaseDP``` is set to ```false``` the previous design point is used for initialization.
+
+The expressions to be varied for the different design points are specified in the  ```inputparameters```. The option ```useScaleFactor``` can be set to ```true``` to use a scale factor from the base case value.
+
+The ```valueList``` holds either the scale factors or the specific values to be used for the different design points of the study.
+
+```
+...
+"studies": {
+    "Study_1": {
+      "overwriteExisting": true,
+      "runExistingProject": false,
+      "write_data": false,
+      "refCaseFilename": "Case_1",
+      "updateAllDPs": true,
+      "updateFromBaseDP": false,
+      "definition": [
+        {
+          "inputparameters": [
+            "BC_OUT_p"
+          ],
+          "useScaleFactor": true,
+          "valueList": [
+              0.95,
+              0.9,
+              0.85,
+              0.8,
+              1.025,
+              1.03,
+              1.04,
+              1.05
+          ]
+```
 
