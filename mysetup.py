@@ -205,7 +205,7 @@ def boundary_01(data, solver):
                     outBC.mass_flow = "BC_OUT_MassFlow"
 
                 elif data["expressions"].get("BC_OUT_p") is not None:
-                    print("Prescribing a Pressure-Outlet BC @" + outletName)
+                    print(f"Prescribing a Pressure-Outlet BC @{outletName}")
                     solver.setup.boundary_conditions.change_type(
                         zone_list=[outletName], new_type="pressure-outlet"
                     )
