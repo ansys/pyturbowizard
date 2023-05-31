@@ -24,26 +24,40 @@ def writeExpressionFile(data, script_dir, working_dir):
                 sf.write(line.format(**helperDict))
                 sf.write("\n")
             except KeyError:
-                # Skip the line if a key is missing
-                continue
+                print(f'Expression missing: {KeyError}')
+
 
     return
 
 
 def cleanupInputExpressions(expressionEl: dict, fileData: str):
     cleanfiledata = ""
+        
     for line in fileData.splitlines():
         # write header line
         if cleanfiledata == "":
             cleanfiledata = line
         # check BCs and prescribed Expressions
-        elif line.startswith('"BC'):
-            for expKey in expressionEl:
-                if expKey in line:
-                    cleanfiledata = cleanfiledata + "\n" + line
-                    break
+        elif line.startswith('"BC'):               
+            columns = line.split("\t")
+            expKey = columns[1].replace('"{', "").replace('}"', "")
+            if expressionEl.get(expKey) is not None:
+                cleanfiledata = cleanfiledata + "\n" + line
+            else: 
+                continue
+
+        elif line.startswith('"GEO'):
+            columns = line.split("\t")
+            expKey = columns[1].replace('"{', "").replace('}"', "")
+            if expressionEl.get(expKey) is not None:
+                cleanfiledata = cleanfiledata + "\n" + line
+            else:
+                columns[1] = columns[1].replace("{" + expKey + "}", "1")
+                line = "\t".join(columns)
+                cleanfiledata = cleanfiledata + "\n" + line
         else:
-            cleanfiledata = cleanfiledata + "\n" + line
+            cleanfiledata = cleanfiledata + "\n" + line    
+
 
     return cleanfiledata
 
