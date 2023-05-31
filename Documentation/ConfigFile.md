@@ -29,7 +29,7 @@ For running Fluent on Linux or a Cluster, the script needs to hook on to a exist
 ```
 "launching":
     {
-      "workingDir": "D:/TestTurbo/launch_test",
+      "workingDir": "<PathToFluentWorkingDir>",
       "fl_version": "23.2.0",
       "noCore": 8,
       "serverfilename": "",
