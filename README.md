@@ -41,3 +41,6 @@ Required libraries:
 - Get latest Version From GitHub: [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main)
   - Copy all files from GitHub to a specific folder
   - execute script in Terminal via: ```py <FullPathToMain.py> <FullPathToConfigurationFile.json>```
+
+## Useful Documents
+- [Configuration File Setup](./Documentation/ConfigFile.md)
