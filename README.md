@@ -43,4 +43,4 @@ Required libraries:
   - execute script in Terminal via: ```py <FullPathToMain.py> <FullPathToConfigurationFile.json>```
 
 ## Useful Documents
-- ([Configuration File Setup](./Documentation/ConfigFile.md))
+- [Configuration File Setup](./Documentation/ConfigFile.md)
