@@ -31,8 +31,8 @@ json_file = open(json_filename)
 turboData = json.load(json_file)
 
 # Get important Elements from json file
-functionEl = turboData.get("functions")
 launchEl = turboData.get("launching")
+glfunctionEl = turboData.get("functions")
 
 # Use directory of jason-file if not specified in config-file
 fl_workingDir = launchEl.get("workingDir", os.path.dirname(json_filename))
@@ -54,6 +54,14 @@ if caseDict is not None:
     for casename in caseDict:
         print("Running Case: " + casename + "\n")
         caseEl = turboData["cases"][casename]
+        # Merge function dicts
+        caseFunctionEl = caseEl.get("functions")
+        if glfunctionEl is not None and caseFunctionEl is not None:
+            helpDict = glfunctionEl.copy()
+            helpDict.update(caseFunctionEl)
+            caseFunctionEl = helpDict
+        elif caseFunctionEl is None:
+            caseFunctionEl = glfunctionEl
 
         # Start Transcript
         trnFileName = casename + ".trn"
@@ -73,28 +81,15 @@ if caseDict is not None:
         solver.tui.define.beta_feature_access("yes ok")
 
         # Case Setup
-        if (functionEl is None) or (functionEl.get("setup") is None):
-            mysetup.setup(data=caseEl, solver=solver)
-        else:
-            mysetup.setup(data=caseEl, solver=solver, functionName=functionEl["setup"])
+        mysetup.setup(data=caseEl, solver=solver, functionEl=caseFunctionEl)
         mysetup.report_01(caseEl, solver)
 
         # Solution
         # Set Solver Settings
-        if (functionEl is None) or (functionEl.get("numerics") is None):
-            numerics.numerics(data=caseEl, solver=solver)
-        else:
-            numerics.numerics(
-                data=caseEl, solver=solver, functionName=functionEl["numerics"]
-            )
+        numerics.numerics(data=caseEl, solver=solver, functionEl=caseFunctionEl)
 
         # Initialization
-        if (functionEl is None) or (functionEl.get("initialization") is None):
-            solve.init(data=caseEl, solver=solver)
-        else:
-            solve.init(
-                data=caseEl, solver=solver, functionName=functionEl["initialization"]
-            )
+        solve.init(data=caseEl, solver=solver, functionEl=caseFunctionEl)
 
         # Write case and ini-data & settings file
         solver.file.write(file_type="case-data", file_name=caseEl["caseFilename"])
@@ -109,28 +104,16 @@ if caseDict is not None:
             solver.file.write(file_type="case-data", file_name=filename)
 
         # Postprocessing
-        if (functionEl is None) or (functionEl.get("postproc") is None):
-            postproc.post(data=caseEl, solver=solver)
-        else:
-            postproc.post(
-                data=caseEl, solver=solver, functionName=functionEl["postproc"]
-            )
+        postproc.post(data=caseEl, solver=solver, functionEl=caseFunctionEl)
 
         # Finalize
         solver.file.stop_transcript()
 
 # Do Studies
 studyDict = turboData.get("studies")
-
 if studyDict is not None:
-    if (functionEl is None) or (functionEl.get("parametricstudy") is None):
-        parametricstudy.study(data=turboData, solver=solver)
-    else:
-        parametricstudy.study(
-            data=turboData,
-            solver=solver,
-            functionName=functionEl["parametricstudy"],
-        )
+    parametricstudy.study(data=turboData, solver=solver, functionEl=glfunctionEl)
+
     # Postprocessing of studies
     if launchEl.get("plotResults"):
         parametricstudy.studyPlot(data=turboData)

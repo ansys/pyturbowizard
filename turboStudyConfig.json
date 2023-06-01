@@ -21,7 +21,7 @@
           "inputparameters": [
             "BC_OUT_p"
           ],
-          "useScaleFactor": true,
+          "useScaleFactor": [true],
           "valueList": [
             [
               0.95,
@@ -37,5 +37,6 @@
         }
       ]
     }
+
   }
 }

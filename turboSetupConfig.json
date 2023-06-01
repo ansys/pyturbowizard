@@ -3,7 +3,6 @@
     {
       "setup": "setup_01",
       "initialization": "init_hybrid_01",
-      "numerics": "numerics_01",
       "postproc": "post_01",
       "parametricstudy": "study_01"
     },
@@ -20,6 +19,10 @@
     },
   "cases": {
       "HannoverRotor_NoTip_0.6M": {
+        "functions":
+    {
+      "initialization": "init_fmg_01"
+    },
         "caseFilename": "HannoverRotor_NoTip_0.6M",
         "meshFilename": "HannoverRotor_NoTip_0.6M.def",
         "profileName_In": "InletBC_fluent_Blend.csv",

@@ -220,3 +220,23 @@ def launchFluent(launchEl):
             start_instance=False, server_info_filepath=fullpathtosfname
         )
     return solver
+
+
+def get_funcname_and_upd_funcdict(
+    parentEl: dict, functionEl: dict, funcElName: str, defaultName: str
+):
+    functionName = None
+    if functionEl is not None:
+        functionName = functionEl.get(funcElName)
+    # Set Default if not already set
+    if functionName is None:
+        functionName = defaultName
+        # If the element is not existing, create a new one, otherwise update the existing
+        if functionEl is None:
+            functionEl = {"functions": {funcElName: functionName}}
+        else:
+            functionEl.update({funcElName: functionName})
+
+    # Update Parent Element
+    parentEl.update({"functions": functionEl})
+    return functionName

@@ -1,7 +1,14 @@
 import os
 
+import utilities
 
-def setup(data, solver, functionName="setup_01"):
+
+def setup(data, solver, functionEl):
+    # Get FunctionName & Update FunctionEl
+    functionName = utilities.get_funcname_and_upd_funcdict(
+        parentEl=data, functionEl=functionEl, funcElName="setup", defaultName="setup_01"
+    )
+
     print('\nRunning Setup Function "' + functionName + '"...')
     if functionName == "setup_01":
         setup_01(data, solver)
@@ -362,9 +369,8 @@ def report_01(data, solver):
     }
 
     # Set Residuals
-    #solver.tui.preferences.simulation.local_residual_scaling("yes")
-    solver.tui.solve.monitors.residual.scale_by_coefficient('yes', 'yes', 'yes')
-
+    # solver.tui.preferences.simulation.local_residual_scaling("yes")
+    solver.tui.solve.monitors.residual.scale_by_coefficient("yes", "yes", "yes")
 
     solver.tui.solve.monitors.residual.convergence_criteria(
         data["solution"]["cov_crit"],
@@ -403,7 +409,9 @@ def report_01(data, solver):
     }
     # Set Basic Solver-Solution-Settings
     tsf = data["solution"].get("time_step_factor", 1)
-    solver.tui.solve.set.pseudo_time_method.global_time_step_settings('yes', '1', str(tsf))
+    solver.tui.solve.set.pseudo_time_method.global_time_step_settings(
+        "yes", "1", str(tsf)
+    )
     iter_count = data["solution"].get("iter_count", 0)
     solver.tui.solve.set.number_of_iterations(str(iter_count))
     solver.tui.solve.set.pseudo_time_method.global_time_step_settings(
