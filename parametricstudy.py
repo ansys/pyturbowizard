@@ -89,6 +89,12 @@ def study01(data, solver):
 
             for studyDef in definitionList:
                 useScaleFactor = studyDef.get("useScaleFactor")
+                #if a single value is prescribed (old code), we automatically transfer it to a list
+                if type(useScaleFactor) is not list:
+                    glSFValue = useScaleFactor
+                    useScaleFactor = []
+                    for ipIndex in range(numIPs):
+                        useScaleFactor.append(glSFValue)
                 ipList = studyDef.get("inputparameters")
                 valueListArray = studyDef.get("valueList")
                 numDPs = len(valueListArray[0])
