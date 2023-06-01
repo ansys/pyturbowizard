@@ -40,7 +40,7 @@ Required libraries:
   - Adjust the Configuration File to your setup ([Configuration File Setup](./Documentation/ConfigFile.md))
 - Get latest Version From GitHub: [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main)
   - Copy all files from GitHub to a specific folder
-  - execute script in Terminal via: ```py <FullPathToMain.py> <FullPathToConfigurationFile.json>```
+  - execute script in Terminal via: ```python <FullPathToMain.py> <FullPathToConfigurationFile.json>```
 
 ## Useful Documents
 - [Configuration File Setup](./Documentation/ConfigFile.md)
