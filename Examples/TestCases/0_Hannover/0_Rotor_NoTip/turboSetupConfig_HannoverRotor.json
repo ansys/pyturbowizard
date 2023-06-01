@@ -1,4 +1,8 @@
 {
+   "functions":
+    {
+      "initialization": "init_fmg_01"
+    },
   "launching":
     {
       "workingDir": "D:/TestTurbo/HannoverRotor",

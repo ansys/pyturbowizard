@@ -20,7 +20,7 @@
           "inputparameters": [
             "BC_OUT_ECMassFlow"
           ],
-          "useScaleFactor": true,
+          "useScaleFactor": [true],
           "valueList": [
             [
               0.95,
