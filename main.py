@@ -26,7 +26,7 @@ json_filename = "turboSetupConfig.json"
 if len(sys.argv) > 1:
     json_filename = sys.argv[1]
 json_filename = os.path.normpath(json_filename)
-print("Opening ConfigFile: " + json_filename)
+print("Opening ConfigFile: " + os.path.abspath(json_filename))
 json_file = open(json_filename)
 turboData = json.load(json_file)
 
