@@ -18,7 +18,8 @@ Under the section ``` functions ```, different subroutines for the numerical set
       "parametricstudy": "study_01"
     },
 ```
-**Currently only the default routines are available for the setup.**
+**If the section 'functions' is not defined the default functions are used.
+Currently only the default routines are available for the setup.**
 
 ### Launch Options
 Under the section ``` launching ```, different options for launching options for Fluent can be specified, like the version, number of processes and single or double precision solver.
