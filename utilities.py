@@ -24,26 +24,25 @@ def writeExpressionFile(data, script_dir, working_dir):
                 sf.write(line.format(**helperDict))
                 sf.write("\n")
             except KeyError:
-                print(f'Expression missing: {KeyError}')
-
+                print(f"Expression missing: {KeyError}")
 
     return
 
 
 def cleanupInputExpressions(expressionEl: dict, fileData: str):
     cleanfiledata = ""
-        
+
     for line in fileData.splitlines():
         # write header line
         if cleanfiledata == "":
             cleanfiledata = line
         # check BCs and prescribed Expressions
-        elif line.startswith('"BC'):               
+        elif line.startswith('"BC'):
             columns = line.split("\t")
             expKey = columns[1].replace('"{', "").replace('}"', "")
             if expressionEl.get(expKey) is not None:
                 cleanfiledata = cleanfiledata + "\n" + line
-            else: 
+            else:
                 continue
 
         elif line.startswith('"GEO'):
@@ -56,8 +55,7 @@ def cleanupInputExpressions(expressionEl: dict, fileData: str):
                 line = "\t".join(columns)
                 cleanfiledata = cleanfiledata + "\n" + line
         else:
-            cleanfiledata = cleanfiledata + "\n" + line    
-
+            cleanfiledata = cleanfiledata + "\n" + line
 
     return cleanfiledata
 
@@ -234,3 +232,23 @@ def launchFluent(launchEl):
             start_instance=False, server_info_filepath=fullpathtosfname
         )
     return solver
+
+
+def get_funcname_and_upd_funcdict(
+    parentEl: dict, functionEl: dict, funcElName: str, defaultName: str
+):
+    functionName = None
+    if functionEl is not None:
+        functionName = functionEl.get(funcElName)
+    # Set Default if not already set
+    if functionName is None:
+        functionName = defaultName
+        # If the element is not existing, create a new one, otherwise update the existing
+        if functionEl is None:
+            functionEl = {"functions": {funcElName: functionName}}
+        else:
+            functionEl.update({funcElName: functionName})
+
+    # Update Parent Element
+    parentEl.update({"functions": functionEl})
+    return functionName

@@ -1,8 +1,17 @@
 import os
 
+import utilities
 
-def setup(data, solver, functionName="setup_01"):
-    print('\nRunning Setup Function "' + functionName + '"...')
+
+def setup(data, solver, functionEl):
+    # Get FunctionName & Update FunctionEl
+    functionName = utilities.get_funcname_and_upd_funcdict(
+        parentEl=data,
+        functionEl=functionEl,
+        funcElName="setup",
+        defaultName="setup_01",
+    )
+    print('Running Setup Function "' + functionName + '"...')
     if functionName == "setup_01":
         setup_01(data, solver)
     else:
@@ -99,6 +108,7 @@ def boundary_01(data, solver):
 
                     if useProfileData:
                         # check profile naming convention:
+                        # profile_name: "inlet-bc"
                         # total pressure: pt-in,
                         # total temp: tt-in
                         inBC.gauge_total_pressure = {
@@ -144,6 +154,7 @@ def boundary_01(data, solver):
 
                     # Use Definitions from Profile-Data if sepcified
                     # check profile naming convention:
+                    # profile_name: "inlet-bc"
                     # directions (cylindrical): vrad-dir,vrad-dir,vax-dir
                     if useProfileData:
                         inBC.direction_spec = "Direction Vector"
@@ -216,6 +227,7 @@ def boundary_01(data, solver):
                     outBC.prevent_reverse_flow = True
                     if useProfileData:
                         # check profile naming convention:
+                        # profile_name: "outlet-bc"
                         # outlet pressure: p-out
                         outBC.gauge_pressure = {
                             "option": "profile",
@@ -283,7 +295,6 @@ def boundary_01(data, solver):
             solver.tui.define.mesh_interfaces.one_to_one_pairing("no")
             keyEl = data["locations"].get(key)
             for key_if in keyEl:
-                print(f"Setting up general interface: {key_if}")
                 side1 = keyEl[key_if].get("side1")
                 side2 = keyEl[key_if].get("side2")
                 # solver.tui.define.mesh_interfaces.create(key_if, side1, '()', side2,'()', 'no', 'no', 'no', 'yes', 'no')
@@ -295,7 +306,6 @@ def boundary_01(data, solver):
     keyEl = data["locations"].get("bz_interfaces_mixingplane_names")
     if keyEl is not None:
         for key_if in keyEl:
-            print(f"Setting up mixing plane interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
             solver.tui.define.turbo_model.turbo_create(
@@ -364,9 +374,8 @@ def report_01(data, solver):
     }
 
     # Set Residuals
-    #solver.tui.preferences.simulation.local_residual_scaling("yes")
-    solver.tui.solve.monitors.residual.scale_by_coefficient('yes', 'yes', 'yes')
-
+    # solver.tui.preferences.simulation.local_residual_scaling("yes")
+    solver.tui.solve.monitors.residual.scale_by_coefficient("yes", "yes", "yes")
 
     solver.tui.solve.monitors.residual.convergence_criteria(
         data["solution"]["cov_crit"],
@@ -405,7 +414,9 @@ def report_01(data, solver):
     }
     # Set Basic Solver-Solution-Settings
     tsf = data["solution"].get("time_step_factor", 1)
-    solver.tui.solve.set.pseudo_time_method.global_time_step_settings('yes', '1', str(tsf))
+    solver.tui.solve.set.pseudo_time_method.global_time_step_settings(
+        "yes", "1", str(tsf)
+    )
     iter_count = data["solution"].get("iter_count", 0)
     solver.tui.solve.set.number_of_iterations(str(iter_count))
     solver.tui.solve.set.pseudo_time_method.global_time_step_settings(

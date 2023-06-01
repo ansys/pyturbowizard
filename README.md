@@ -7,7 +7,12 @@ The functionalities are displayed in the following Feature-Matrix:
 |-------------|-----------|---------------------------|------------------------------------------------------|---------------------|-------------------------|---------------------------------|--------------------------|
 | Gas Turbine | Ideal Air | Total Pressure, Mass Flow | Static Pressure, Exit Corrected Mass Flow, Mass Flow | yes                 | Unlimited (1 mesh file) | Mixing Plane, General, Periodic | yes                      |
 | Compressor  | Ideal Air | Total Pressure, Mass Flow | Static Pressure, Exit Corrected Mass Flow, Mass Flow | yes                 | Unlimited (1 mesh file) | Mixing Plane, General, Periodic | yes                      |
+
+**Note: Rotation axis is expected to be z-axis (0,0,1) with axis origin (0,0,0)**
+
 ## **Getting Started**
+### **Fluent Installation**
+The script has been developed for Ansys Fluent versions 2023R2 and latter versions
 ### **PyFluent Installation**
 Required libraries:
 - PyFluent
@@ -40,7 +45,7 @@ Required libraries:
   - Adjust the Configuration File to your setup ([Configuration File Setup](./Documentation/ConfigFile.md))
 - Get latest Version From GitHub: [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main)
   - Copy all files from GitHub to a specific folder
-  - execute script in Terminal via: ```py <FullPathToMain.py> <FullPathToConfigurationFile.json>```
+  - execute script in Terminal via: ```python <FullPathToMain.py> <FullPathToConfigurationFile.json>```
 
 ## Useful Documents
 - [Configuration File Setup](./Documentation/ConfigFile.md)

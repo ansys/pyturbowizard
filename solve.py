@@ -1,4 +1,15 @@
-def init(data, solver, functionName="init_hybrid_01"):
+import utilities
+
+
+def init(data, solver, functionEl):
+    # Get FunctionName & Update FunctionEl
+    functionName = utilities.get_funcname_and_upd_funcdict(
+        parentEl=data,
+        functionEl=functionEl,
+        funcElName="initialization",
+        defaultName="init_hybrid_01",
+    )
+
     print('\nRunning Initialization Function "' + functionName + '"...')
     if functionName == "init_standard_01":
         init_standard_01(data, solver)

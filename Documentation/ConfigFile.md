@@ -18,7 +18,9 @@ Under the section ``` functions ```, different subroutines for the numerical set
       "parametricstudy": "study_01"
     },
 ```
-**Currently only the default routines are available for the setup.**
+**Notes:**
+- If the section 'functions' is not defined the default functions are used.
+- Currently only the default routines are available for the setup.
 
 ### Launch Options
 Under the section ``` launching ```, different options for launching options for Fluent can be specified, like the version, number of processes and single or double precision solver.
@@ -196,14 +198,15 @@ Under the section ``` launching ```, different options for launching options for
       "workingDir": "<pathToFluentWorkingDir>",
       "fl_version": "23.2.0",
       "noCore": 2,
-      "precision": "double",
-      "external": true,
+      "precision": "double",     
       "serverfilename": "",
       "plotResults": true
     },
 ```
 
-``` external ``` refers to if you wish to run the Script interally via the Fluent Python console or externally. **Currently only the External option is supported by the script.**
+**Notes**: 
+ - Currently only the External option is supported by the script.
+ - Currently only one the first defined study is executed by the script.
 
 For running Fluent on Linux or a Cluster, the script needs to hook on to a existing Fluent session ([How to Run on Linux](/README.md)). For this a server file name has to be specified under ``` serverfilename ```
 
@@ -230,7 +233,7 @@ The reference case file name for the base case has to be specified under ```refC
 
 If ```updateFromBaseDP``` is ```true``` the simulation of each design point is initialized from the base design point. If ```updateFromBaseDP``` is set to ```false``` the previous design point is used for initialization.
 
-The expressions to be varied for the different design points are specified in the  ```inputparameters```. The option ```useScaleFactor``` can be set to ```true``` to use a scale factor from the base case value.
+The expressions to be varied for the different design points are specified in the  ```inputparameters```. The option ```useScaleFactor``` can be set to ```true``` for each selected Inputparameter to use a scale factor from the base case value.
 
 The ```valueList``` holds either the scale factors or the specific values to be used for the different design points of the study.
 
@@ -249,7 +252,7 @@ The ```valueList``` holds either the scale factors or the specific values to be 
           "inputparameters": [
             "BC_OUT_p"
           ],
-          "useScaleFactor": true,
+          "useScaleFactor": [true],
           "valueList": [
               0.95,
               0.9,
