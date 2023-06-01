@@ -49,7 +49,7 @@ def post_01(data, solver):
                 "spanwise-coordinate", "span-90", [], [], "0.9", []
             )
         except Exception as e:
-                print(f"No turbo surfaces have been created: {e}") 
+            print(f"No turbo surfaces have been created: {e}")
 
     # Write out system time
     solver.report.system.time_statistics()

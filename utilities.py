@@ -24,8 +24,7 @@ def writeExpressionFile(data, script_dir, working_dir):
                 sf.write(line.format(**helperDict))
                 sf.write("\n")
             except KeyError:
-                print(f'Expression missing: {KeyError}')
-
+                print(f"Expression missing: {KeyError}")
 
     return
 
@@ -57,7 +56,6 @@ def cleanupInputExpressions(expressionEl: dict, fileData: str):
                 cleanfiledata = cleanfiledata + "\n" + line
         else:
             cleanfiledata = cleanfiledata + "\n" + line
-
 
     return cleanfiledata
 
