@@ -36,7 +36,7 @@ def study01(data, solver):
     if len(studyDict) > 1:
         print(
             "\nNote: In the config-File more than 1 study elements are defined! "
-            "\nUnfortunaltely currently only executing one study is supported!"
+            "\nCurrently only executing one study is supported!"
             "\nFirst one in your config-File will be executed\n"
         )
 

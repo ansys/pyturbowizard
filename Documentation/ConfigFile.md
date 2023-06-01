@@ -61,7 +61,22 @@ First, different general case parameters, like the final ``` caseFilename ``` an
 
 Supported file types for meshes are .def, .cgns, .msh and .cas. Make sure that the mesh consists of a single file and is located in the Fluent working directory.
 
-You can choose to specify a profile for your inlet or outlet boundaries by providing the ``` profileName ``` in your Fluent working directory. Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup.
+You can choose to specify a profile for your inlet or outlet boundaries by providing the ``` profileName ``` in your Fluent working directory.
+Restrictions when using profiles:
+- Inlet: 
+  - Profiles for Total Pressure, Total Temperature & Absolute Velocity Directions can be specified
+  - Naming Convention:
+    - Profilename: "inlet-bc"
+    - Total Pressure: "pt-in"
+    - Total Temperature: "tt-in"
+    - Velocity directions in cylindrical coordinates: "vrad-dir","vrad-dir","vax-dir"
+- Outlet:
+    - Profile for Static Pressure
+    - Naming Convention
+      - Profilename: "outlet-bc"
+      - Total Pressure: "p-out"
+    
+Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup.
 
 ```
  "Case_1": {
