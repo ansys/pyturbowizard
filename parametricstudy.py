@@ -88,14 +88,16 @@ def study01(data, solver):
             definitionList = studyEl.get("definition")
 
             for studyDef in definitionList:
+                ipList = studyDef.get("inputparameters")
+                numIPs = len(ipList)
                 useScaleFactor = studyDef.get("useScaleFactor")
-                #if a single value is prescribed (old code), we automatically transfer it to a list
+                # if a single value is prescribed (old code), we automatically transfer it to a list
                 if type(useScaleFactor) is not list:
                     glSFValue = useScaleFactor
                     useScaleFactor = []
                     for ipIndex in range(numIPs):
                         useScaleFactor.append(glSFValue)
-                ipList = studyDef.get("inputparameters")
+
                 valueListArray = studyDef.get("valueList")
                 numDPs = len(valueListArray[0])
                 for dpIndex in range(numDPs):
@@ -104,7 +106,6 @@ def study01(data, solver):
                     designPointName = "DP" + str(designPointCounter)
                     # new_dp = {"BC_P_Out": 0.}
                     new_dp = fluent_study.design_points[designPointName]
-                    numIPs = len(ipList)
                     for ipIndex in range(numIPs):
                         ipName = ipList[ipIndex]
                         modValue = valueListArray[ipIndex][dpIndex]
