@@ -8,6 +8,8 @@ The functionalities are displayed in the following Feature-Matrix:
 | Gas Turbine | Ideal Air | Total Pressure, Mass Flow | Static Pressure, Exit Corrected Mass Flow, Mass Flow | yes                 | Unlimited (1 mesh file) | Mixing Plane, General, Periodic | yes                      |
 | Compressor  | Ideal Air | Total Pressure, Mass Flow | Static Pressure, Exit Corrected Mass Flow, Mass Flow | yes                 | Unlimited (1 mesh file) | Mixing Plane, General, Periodic | yes                      |
 ## **Getting Started**
+### **Fluent Installation**
+The script has been developed for Ansys Fluent versions 2023R2 and latter versions
 ### **PyFluent Installation**
 Required libraries:
 - PyFluent
