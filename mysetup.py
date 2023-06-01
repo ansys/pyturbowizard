@@ -108,6 +108,7 @@ def boundary_01(data, solver):
 
                     if useProfileData:
                         # check profile naming convention:
+                        # profile_name: "inlet-bc"
                         # total pressure: pt-in,
                         # total temp: tt-in
                         inBC.gauge_total_pressure = {
@@ -153,6 +154,7 @@ def boundary_01(data, solver):
 
                     # Use Definitions from Profile-Data if sepcified
                     # check profile naming convention:
+                    # profile_name: "inlet-bc"
                     # directions (cylindrical): vrad-dir,vrad-dir,vax-dir
                     if useProfileData:
                         inBC.direction_spec = "Direction Vector"
@@ -225,6 +227,7 @@ def boundary_01(data, solver):
                     outBC.prevent_reverse_flow = True
                     if useProfileData:
                         # check profile naming convention:
+                        # profile_name: "outlet-bc"
                         # outlet pressure: p-out
                         outBC.gauge_pressure = {
                             "option": "profile",
