@@ -36,3 +36,11 @@ Required libraries:
 #### Windows
 - Prepare data in you working directory
   - Copy Fluent data into the folder, e.g. mesh data, profiles
+  - Copy a Configuration File (GitHub) to your Fluent working directory
+  - Adjust the Configuration File to your setup ([Configuration File Setup](./Documentation/ConfigFile.md))
+- Get latest Version From GitHub: [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main)
+  - Copy all files from GitHub to a specific folder
+  - execute script in Terminal via: ```py <FullPathToMain.py> <FullPathToConfigurationFile.json>```
+
+## Useful Documents
+- [Configuration File Setup](./Documentation/ConfigFile.md)

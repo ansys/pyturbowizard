@@ -3,13 +3,8 @@ import os
 import utilities
 
 
-def setup(data, solver, functionEl):
-    # Get FunctionName & Update FunctionEl
-    functionName = utilities.get_funcname_and_upd_funcdict(
-        parentEl=data, functionEl=functionEl, funcElName="setup", defaultName="setup_01"
-    )
-
-    print('\nRunning Setup Function "' + functionName + '"...')
+def setup(data, solver, functionName="setup_01"):
+    print('Running Setup Function "' + functionName + '"...')
     if functionName == "setup_01":
         setup_01(data, solver)
     else:

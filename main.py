@@ -111,6 +111,7 @@ if caseDict is not None:
 
 # Do Studies
 studyDict = turboData.get("studies")
+
 if studyDict is not None:
     parametricstudy.study(data=turboData, solver=solver, functionEl=glfunctionEl)
 
