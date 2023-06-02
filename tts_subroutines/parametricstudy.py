@@ -1,7 +1,6 @@
 import os
-import utilities
+from tts_subroutines import utilities
 import matplotlib.pyplot as plt
-import pandas as pd
 
 
 def study(data, solver, functionEl):
@@ -206,6 +205,8 @@ def study01(data, solver):
 
 
 def studyPlot(data):
+    #Only working in external mode
+    import pandas as pd
     print("Running Function StudyPlot ...")
     studyDict = data.get("studies")
     for studyName in studyDict:
