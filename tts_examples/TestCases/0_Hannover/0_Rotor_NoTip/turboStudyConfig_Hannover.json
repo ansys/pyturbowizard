@@ -5,8 +5,7 @@
       "fl_version": "23.2.0",
       "noCore": 2,
       "precision": "double",
-      "plotResults": true,
-      "exitatend": false
+      "plotResults": true
     },
   "studies": {
     "HannoverRotor_NoTip_0.6M_study": {
@@ -37,6 +36,5 @@
         }
       ]
     }
-
   }
 }

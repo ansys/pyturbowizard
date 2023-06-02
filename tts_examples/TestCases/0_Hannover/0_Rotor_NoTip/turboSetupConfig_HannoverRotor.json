@@ -1,37 +1,24 @@
 {
-  "functions":
+   "functions":
     {
-      "setup": "setup_01",
-      "initialization": "init_hybrid_01",
-      "numerics": "numerics_bp_all_2305",
-      "postproc": "post_01",
-      "parametricstudy": "study_01"
+      "initialization": "init_fmg_01"
     },
-
   "launching":
     {
       "workingDir": "D:/TestTurbo/HannoverRotor",
       "fl_version": "23.2.0",
       "noCore": 2,
       "precision": "double",
-      "serverfilename": "",
-      "show_gui":  true,
-      "exitatend": false
+      "show_gui":  true
     },
   "cases": {
       "HannoverRotor_NoTip_0.6M": {
-        "functions":
-    {
-      "initialization": "init_fmg_01"
-    },
         "caseFilename": "HannoverRotor_NoTip_0.6M",
         "meshFilename": "HannoverRotor_NoTip_0.6M.def",
         "profileName_In": "InletBC_fluent_Blend.csv",
         "profileName_Out": "",
         "expressionFilename": "hr_exp.tsv",
         "expressionTemplate": "expressionTemplate_compressor_comp.tsv",
-        "rotation_axis_direction": [0.0, 0.0, 1.0],
-        "rotation_axis_origin": [0.0, 0.0, 0.0],
         "expressions": {
           "GEO_IN_No_Passages": "1",
           "GEO_IN_No_Passages_360": "1",
@@ -64,14 +51,6 @@
                 "side2": "b-rotor-1-periodic-side-2"
               }
           },
-          "bz_interfaces_mixingplane_names": {
-
-          },
-          "bz_interfaces_general_names": {
-
-          },
-          "bz_eval_ip1_name": "plane_eval_ip1",
-          "bz_eval_op1_name": "plane_eval_op1",
           "tz_turbo_topology_names":{
             "a-rotor-1-topology":{
               "tz_shroud_names": ["b-rotor-1-shroud"],
@@ -104,7 +83,7 @@
           "tsn": true,
           "time_step_factor": 1.0,
           "iter_count": 1000,
-          "runSolver": false
+          "runSolver": true
         },
         "results": {
           "filename_inputParameter_pf": "inputParameters.out",

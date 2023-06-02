@@ -1,0 +1,36 @@
+{
+  "studies": {
+    "New_ParametricProject_Name": {
+      "overwriteExisting": true,
+      "runExistingProject": false,
+      "write_data": false,
+      "refCaseFilename": "myTestCase",
+      "updateAllDPs": false,
+      "updateFromBaseDP": false,
+      "definition": [
+        {
+          "inputparameters": [
+            "BC_IN_pt","BC_OUT_p"
+          ],
+          "useScaleFactor": true,
+          "valueList": [
+            [
+              1.0,
+              1.2
+            ],
+            [
+              0.95,
+              1.1
+            ]
+          ]
+        }
+      ]
+    },
+    "Existing_ParametricProject_Name": {
+      "refCaseFilename": "myTestCase",
+      "overwriteExisting": true,
+      "runExistingProject": true,
+      "updateAllDPs": true
+    }
+  }
+}
