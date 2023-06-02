@@ -12,15 +12,40 @@ Under the section ``` functions ```, different subroutines for the numerical set
 "functions":
     {
       "setup": "setup_01",
-      "initialization": "init_hybrid_01",
-      "numerics": "numerics_01",
+      "numerics": "numerics_bp_all_2305",
+      "initialization": "init_hybrid_01",      
       "postproc": "post_01",
       "parametricstudy": "study_01"
     },
 ```
-**Notes:**
-- If the section 'functions' is not defined the default functions are used.
-- Currently only the default routines are available for the setup.
+Currently the following functions and corresponding options are available:
+- "setup":
+  - Specify setup function
+  - Available functions:
+    - **"setup_01" (default):** standard setup  
+- "numerics": 
+  - Specify numeric settings
+  - Available functions:
+    - "numerics_defaults": Use Fluent default settings    
+    - "numerics_bp_tn_2305": Use turbo best practice settings from May 2023 in combination with Fluent default discretization-schemes
+    - **"numerics_bp_all_2305" (default):** Use turbo best practice settings from May 2023, additionally set explicitly all discretization-schemes to second order    
+- "initialization":
+  - Specify initialization settings
+  - Available functions:
+    - "init_standard_01": standard initialization, using inlet data as reference    
+    - **"init_hybrid_01" (default):** Hybrid initialization, using standard "init_standard_01" for pre-initialization
+    - "init_fmg_01": FMG initialization, using standard "init_standard_01" for pre-initialization
+- "postproc":
+  - Specify postproc function
+  - Available functions:
+    - **"post_01" (default):** standard postprocessing
+- "parametricstudy":
+  - Specify parametricstudy function
+  - Available functions:
+    - **"study_01" (default):** standard parametricstudy
+
+**Note: If the section 'functions' is not defined the default functions are used. Therefore, the definition of this section is not required, unless the user wants to prescribe non-default functions**
+
 
 ### Launch Options
 Under the section ``` launching ```, different options for launching options for Fluent can be specified, like the version, number of processes and single or double precision solver.
@@ -61,7 +86,22 @@ First, different general case parameters, like the final ``` caseFilename ``` an
 
 Supported file types for meshes are .def, .cgns, .msh and .cas. Make sure that the mesh consists of a single file and is located in the Fluent working directory.
 
-You can choose to specify a profile for your inlet or outlet boundaries by providing the ``` profileName ``` in your Fluent working directory. Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup.
+You can choose to specify a profile for your inlet or outlet boundaries by providing the ``` profileName ``` in your Fluent working directory.
+Restrictions when using profiles:
+- Inlet: 
+  - Profiles for Total Pressure, Total Temperature & Absolute Velocity Directions can be specified
+  - Naming Convention:
+    - Profilename: "inlet-bc"
+    - Total Pressure: "pt-in"
+    - Total Temperature: "tt-in"
+    - Velocity directions in cylindrical coordinates: "vrad-dir","vrad-dir","vax-dir"
+- Outlet:
+    - Profile for Static Pressure
+    - Naming Convention
+      - Profilename: "outlet-bc"
+      - Total Pressure: "p-out"
+    
+Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup.
 
 ```
  "Case_1": {

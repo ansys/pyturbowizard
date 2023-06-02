@@ -1,6 +1,4 @@
-import os
-
-import utilities
+from tts_subroutines import utilities
 
 
 def setup(data, solver, functionEl):
@@ -72,17 +70,46 @@ def boundary_01(data, solver):
     # Enable Turbo Models
     solver.tui.define.turbo_model.enable_turbo_model("yes")
 
+    # Get rotation axis info: default is z-axis
+    rot_ax_dir = data.get("rotation_axis_direction", [0.0, 0.0, 1.0])
+    rot_ax_orig = data.get("rotation_axis_origin", [0.0, 0.0, 0.0])
+
+    # Do important steps at startup in specified order
+    # 1. Fluid cell zone conditions
+    cz_rot_list = data["locations"].get("cz_rotating_names")
+    for cz_name in solver.setup.cell_zone_conditions.fluid():
+        # Check if it´s a rotating cell-zone
+        if (cz_rot_list is not None) and (cz_name in cz_rot_list):
+            print(f"Prescribing rotating cell zone: {cz_name}")
+            solver.setup.cell_zone_conditions.fluid[cz_name] = {
+                "reference_frame_axis_origin": rot_ax_orig,
+                "reference_frame_axis_direction": rot_ax_dir,
+                "mrf_motion": True,
+                "mrf_omega": "BC_RPM",
+            }
+        # otherwise its stationary
+        else:
+            print(f"Prescribing stationary cell zone: {cz_name}")
+            solver.setup.cell_zone_conditions.fluid[cz_name] = {
+                "reference_frame_axis_origin": rot_ax_orig,
+                "reference_frame_axis_direction": rot_ax_dir,
+            }
+
+    # 2. Search for periodic interfaces
+    peri_if_El = data["locations"].get("bz_interfaces_periodic_names")
+    if peri_if_El is not None:
+        for key_if in peri_if_El:
+            print(f"Setting up periodic BC: {key_if}")
+            side1 = peri_if_El[key_if].get("side1")
+            side2 = peri_if_El[key_if].get("side2")
+            solver.tui.mesh.modify_zones.create_periodic_interface(
+                "auto", key_if, side1, side2, "yes", "no", "no", "yes", "yes"
+            )
+
+    # after important steps loop over all keys -> no order important
     for key in data["locations"]:
-        # Cell Zone Conditions
-        if key == "cz_rotating_names":
-            for cz_rot in data["locations"][key]:
-                print(f"Prescribing rotating cell zone: {cz_rot}")
-                solver.setup.cell_zone_conditions.fluid[cz_rot] = {
-                    "mrf_motion": True,
-                    "mrf_omega": "BC_RPM",
-                }
         # Inlet
-        elif key == "bz_inlet_names":
+        if key == "bz_inlet_names":
             bz_inlet_names = data["locations"].get(key)
             for inletName in bz_inlet_names:
                 inBC = None
@@ -254,8 +281,8 @@ def boundary_01(data, solver):
                     "relative": False,
                     "rotating": True,
                     "omega": 0.0,
-                    "rotation_axis_origin": [0.0, 0.0, 0.0],
-                    "rotation_axis_direction": [0.0, 0.0, 1.0],
+                    "rotation_axis_origin": rot_ax_orig,
+                    "rotation_axis_direction": rot_ax_dir,
                 }
         elif key == "bz_walls_rotating_names":
             keyEl = data["locations"].get(key)
@@ -266,8 +293,8 @@ def boundary_01(data, solver):
                     "relative": False,
                     "rotating": True,
                     "omega": "BC_RPM",
-                    "rotation_axis_origin": [0.0, 0.0, 0.0],
-                    "rotation_axis_direction": [0.0, 0.0, 1.0],
+                    "rotation_axis_origin": rot_ax_orig,
+                    "rotation_axis_direction": rot_ax_dir,
                 }
 
         elif key == "bz_walls_freeslip_names":
@@ -279,18 +306,6 @@ def boundary_01(data, solver):
                 }
 
         # Interfaces
-        elif key == "bz_interfaces_periodic_names":
-            keyEl = data["locations"].get(key)
-            for key_if in keyEl:
-                print(f"Setting up periodic BC: {key_if}")
-                side1 = keyEl[key_if].get("side1")
-                side2 = keyEl[key_if].get("side2")
-                solver.tui.mesh.modify_zones.create_periodic_interface(
-                    "auto", key_if, side1, side2, "yes", "no", "no", "yes", "yes"
-                )
-                # old command
-                # solver.tui.mesh.modify_zones.make_periodic(side1, side2,'yes', 'yes')
-
         elif key == "bz_interfaces_general_names":
             solver.tui.define.mesh_interfaces.one_to_one_pairing("no")
             keyEl = data["locations"].get(key)
@@ -417,6 +432,9 @@ def report_01(data, solver):
     solver.tui.solve.set.pseudo_time_method.global_time_step_settings(
         "yes", "1", str(tsf)
     )
+    # needs to be implemented use a pseudo-time-step-size
+    # solver.solution.run_calculation()['pseudo_time_settings'] = {
+    #    'time_step_method': {'time_step_method': 'user-specified', 'pseudo-time-step-size': 5.0}}
     iter_count = data["solution"].get("iter_count", 0)
     solver.tui.solve.set.number_of_iterations(str(iter_count))
     solver.tui.solve.set.pseudo_time_method.global_time_step_settings(

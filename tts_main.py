@@ -3,15 +3,17 @@ import json
 import sys
 
 # Load Script Modules
-import utilities
-import meshimport
-import mysetup
-import numerics
-import postproc
-import solve
-import parametricstudy
+from tts_subroutines import (
+    numerics,
+    parametricstudy,
+    solve,
+    meshimport,
+    mysetup,
+    utilities,
+    postproc,
+)
 
-version = "1.2.5"
+version = "1.3.0"
 
 # If solver variable does not exist, Fluent has been started in external mode
 external = "solver" not in globals()
@@ -42,8 +44,6 @@ launchEl["workingDir"] = fl_workingDir
 print("Used Fluent Working-Directory: " + fl_workingDir)
 
 if external:
-    import ansys.fluent.core as pyfluent
-
     # Fluent starts externally
     print("Launching Fluent...")
     solver = utilities.launchFluent(launchEl)
@@ -116,7 +116,7 @@ if studyDict is not None:
     parametricstudy.study(data=turboData, solver=solver, functionEl=glfunctionEl)
 
     # Postprocessing of studies
-    if launchEl.get("plotResults"):
+    if launchEl.get("plotResults") and external:
         parametricstudy.studyPlot(data=turboData)
 
 # Exit Solver

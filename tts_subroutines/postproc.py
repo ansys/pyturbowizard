@@ -1,5 +1,4 @@
-import os
-import utilities
+from tts_subroutines import utilities
 
 
 def post(data, solver, functionEl):

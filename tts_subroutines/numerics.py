@@ -1,4 +1,4 @@
-import utilities
+from tts_subroutines import utilities
 
 
 def numerics(data, solver, functionEl):
@@ -7,12 +7,12 @@ def numerics(data, solver, functionEl):
         parentEl=data,
         functionEl=functionEl,
         funcElName="numerics",
-        defaultName="numerics_01",
+        defaultName="numerics_bp_all_2305",
     )
 
     print('\nSpecifying Numerics: "' + functionName + '"...')
-    if functionName == "numerics_01":
-        numerics_01(data, solver)
+    if functionName == "numerics_defaults":
+        numerics_defaults(data, solver)
     elif functionName == "numerics_bp_tn_2305":
         numerics_bp_tn_2305(data, solver)
     elif functionName == "numerics_bp_all_2305":
@@ -27,8 +27,10 @@ def numerics(data, solver, functionEl):
     print("Specifying Numerics... finished.")
 
 
-def numerics_01(data, solver):
-    numerics_bp_all_2305(data=data, solver=solver)
+def numerics_defaults(data, solver):
+    print(
+        "No changes of numerics-settings are made. Fluent defaults-settings are used..."
+    )
     return
 
 

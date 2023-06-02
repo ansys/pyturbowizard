@@ -11,7 +11,9 @@ def writeExpressionFile(data, script_dir, working_dir):
         fileName = "expressions.tsv"
 
     with open(fileName, "w") as sf:
-        expressionTemplatePath = os.path.join(script_dir, data["expressionTemplate"])
+        expressionTemplatePath = os.path.join(
+            script_dir, "tts_templates", data["expressionTemplate"]
+        )
         with open(expressionTemplatePath, "r") as templateFile:
             tempData = templateFile.read()
             templateFile.close()
