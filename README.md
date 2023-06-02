@@ -37,7 +37,7 @@ Required libraries:
   - Copy all files from GitHub to a specific folder
   - Start a Fluent job on cluster with additional arguments: ```-py -sifile=<name>.txt ```
   - Open command shell in script folder
-  - execute script via: ```pyfluent tts_main.py <FullPathToConfigurationFile.json>```
+  - execute script via: ```pyfluent tts_main.py <PathToConfigurationFile.json>```
 #### Windows
 - Prepare data in you working directory
   - Copy Fluent data into the folder, e.g. mesh data, profiles
