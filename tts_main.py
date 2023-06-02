@@ -3,7 +3,15 @@ import json
 import sys
 
 # Load Script Modules
-from tts_subroutines import numerics, parametricstudy, solve, meshimport, mysetup, utilities, postproc
+from tts_subroutines import (
+    numerics,
+    parametricstudy,
+    solve,
+    meshimport,
+    mysetup,
+    utilities,
+    postproc,
+)
 
 version = "1.3.0"
 

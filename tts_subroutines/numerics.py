@@ -28,8 +28,11 @@ def numerics(data, solver, functionEl):
 
 
 def numerics_defaults(data, solver):
-    print("No changes of numerics-settings are made. Fluent defaults-settings are used...")
+    print(
+        "No changes of numerics-settings are made. Fluent defaults-settings are used..."
+    )
     return
+
 
 def numerics_bp_tn_2305(data, solver):
     solver.solution.methods.gradient_scheme = "green-gauss-node-based"

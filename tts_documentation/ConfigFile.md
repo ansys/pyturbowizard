@@ -44,7 +44,7 @@ Currently the following functions and corresponding options are available:
   - Available functions:
     - **"study_01" (default):** standard parametricstudy
 
-**Note: If the section 'functions' is not defined the default functions are used.**
+**Note: If the section 'functions' is not defined the default functions are used. Therefore, the definition of this section is not required, unless the user wants to prescribe non-default functions**
 
 
 ### Launch Options

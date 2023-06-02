@@ -70,7 +70,7 @@ def boundary_01(data, solver):
     # Enable Turbo Models
     solver.tui.define.turbo_model.enable_turbo_model("yes")
 
-    #Get rotation axis info: default is z-axis
+    # Get rotation axis info: default is z-axis
     rot_ax_dir = data.get("rotation_axis_direction", [0.0, 0.0, 1.0])
     rot_ax_orig = data.get("rotation_axis_origin", [0.0, 0.0, 0.0])
 
@@ -78,14 +78,14 @@ def boundary_01(data, solver):
     # 1. Fluid cell zone conditions
     cz_rot_list = data["locations"].get("cz_rotating_names")
     for cz_name in solver.setup.cell_zone_conditions.fluid():
-        #Check if it´s a rotating cell-zone
+        # Check if it´s a rotating cell-zone
         if (cz_rot_list is not None) and (cz_name in cz_rot_list):
             print(f"Prescribing rotating cell zone: {cz_name}")
             solver.setup.cell_zone_conditions.fluid[cz_name] = {
                 "reference_frame_axis_origin": rot_ax_orig,
                 "reference_frame_axis_direction": rot_ax_dir,
                 "mrf_motion": True,
-                "mrf_omega": "BC_RPM"
+                "mrf_omega": "BC_RPM",
             }
         # otherwise its stationary
         else:
@@ -432,8 +432,8 @@ def report_01(data, solver):
     solver.tui.solve.set.pseudo_time_method.global_time_step_settings(
         "yes", "1", str(tsf)
     )
-    #needs to be implemented use a pseudo-time-step-size
-    #solver.solution.run_calculation()['pseudo_time_settings'] = {
+    # needs to be implemented use a pseudo-time-step-size
+    # solver.solution.run_calculation()['pseudo_time_settings'] = {
     #    'time_step_method': {'time_step_method': 'user-specified', 'pseudo-time-step-size': 5.0}}
     iter_count = data["solution"].get("iter_count", 0)
     solver.tui.solve.set.number_of_iterations(str(iter_count))

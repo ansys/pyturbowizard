@@ -205,8 +205,9 @@ def study01(data, solver):
 
 
 def studyPlot(data):
-    #Only working in external mode
+    # Only working in external mode
     import pandas as pd
+
     print("Running Function StudyPlot ...")
     studyDict = data.get("studies")
     for studyName in studyDict:
