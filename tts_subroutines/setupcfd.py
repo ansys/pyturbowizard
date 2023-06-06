@@ -436,11 +436,13 @@ def report_01(data, solver):
     #Check for a pseudo-time-step-size
     pseudo_timestep = data["solution"].get("pseudo_timestep")
     if pseudo_timestep is not None:
-        print(f"Direct Specification of pseudo_timestep set in Configfile: {pseudo_timestep}")
+        # Use pseudo timestep
+        print(f"Direct Specification of pseudo timestep size from Configfile: {pseudo_timestep}")
         solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = "user-specified"
         solver.solution.run_calculation.pseudo_time_settings.time_step_method.pseudo_time_step_size = pseudo_timestep
     else:
-        #Use Timescale Factor & set in GUI
+        #Use timescale factor
+        print(f"Using 'conservative'-'automatic' timestep method with timescale-factor: {tsf}")
         solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = "automatic"
         solver.solution.run_calculation.pseudo_time_settings.time_step_method.length_scale_methods = "conservative"
         solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_size_scale_factor = tsf
