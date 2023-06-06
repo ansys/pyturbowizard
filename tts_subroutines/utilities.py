@@ -25,8 +25,8 @@ def writeExpressionFile(data, script_dir, working_dir):
             try:
                 sf.write(line.format(**helperDict))
                 sf.write("\n")
-            except KeyError:
-                print(f"Expression missing: {KeyError}")
+            except KeyError as e:
+                print(f"Expression not found in ConfigFile: {str(e)}")
 
     return
 

@@ -264,9 +264,13 @@ def boundary_01(data, solver):
                     else:
                         outBC.gauge_pressure = "BC_OUT_p"
                     outBC.avg_press_spec = True
-                    solver.tui.define.boundary_conditions.bc_settings.pressure_outlet(
-                        data["setup"]["BC_OUT_p_pbf"], data["setup"]["BC_OUT_p_numbins"]
-                    )
+                    #Set additional pressure-outlet-bc settings if available in config file
+                    try:
+                        p_pbf = data["setup"]["BC_OUT_p_pbf"]
+                        p_numbins = data["setup"]["BC_OUT_p_numbins"]
+                        solver.tui.define.boundary_conditions.bc_settings.pressure_outlet(p_pbf, p_numbins)
+                    except KeyError as e:
+                        print(f"KeyError: Key not found in ConfigFile: {str(e)} \nAdditional pressure-outlet-bc settings skipped!")
 
             # Walls
         # elif key == "bz_walls_shroud_name":
