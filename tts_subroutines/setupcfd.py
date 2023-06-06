@@ -433,16 +433,17 @@ def report_01(data, solver):
     }
     # Set Basic Solver-Solution-Settings
     tsf = data["solution"].get("time_step_factor", 1)
-    solver.tui.solve.set.pseudo_time_method.global_time_step_settings(
-        "yes", "1", str(tsf)
-    )
-    # needs to be implemented use a pseudo-time-step-size
-    # solver.solution.run_calculation()['pseudo_time_settings'] = {
-    #    'time_step_method': {'time_step_method': 'user-specified', 'pseudo-time-step-size': 5.0}}
+    #Check for a pseudo-time-step-size
+    pseudo_timestep = data["solution"].get("pseudo_timestep")
+    if pseudo_timestep is not None:
+        print(f"Direct Specification of pseudo_timestep set in Configfile: {pseudo_timestep}")
+        solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = "user-specified"
+        solver.solution.run_calculation.pseudo_time_settings.time_step_method.pseudo_time_step_size = pseudo_timestep
+    else:
+        #Use Timescale Factor & set in GUI
+        solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = "automatic"
+        solver.solution.run_calculation.pseudo_time_settings.time_step_method.length_scale_methods = "conservative"
+        solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_size_scale_factor = tsf
+
     iter_count = data["solution"].get("iter_count", 0)
-    solver.tui.solve.set.number_of_iterations(str(iter_count))
-    solver.tui.solve.set.pseudo_time_method.global_time_step_settings(
-        "yes", "1", str(tsf)
-    )
-    iter_count = data["solution"].get("iter_count", 0)
-    solver.tui.solve.set.number_of_iterations(str(iter_count))
+    solver.solution.run_calculation.iter_count = int(iter_count)

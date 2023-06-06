@@ -266,7 +266,7 @@ def merge_functionEls(caseEl:dict, glfunctionEl:dict):
         caseFunctionEl = helpDict
     elif caseFunctionEl is None:
         caseFunctionEl = glfunctionEl
-    return
+    return caseFunctionEl
 
 def merge_data_with_refEl(caseEl:dict, allCasesEl:dict):
     refCaseName = caseEl.get("refCase")

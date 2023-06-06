@@ -56,10 +56,9 @@ def init_fmg_01(data, solver):
 
 
 def solve_01(data, solver):
-    tsf = data["solution"].get("time_step_factor", 1)
     iter_count = data["solution"].get("iter_count", 0)
     print(
-        "Solving " + str(iter_count) + " iterations with time scale factor " + str(tsf)
+        "Solving " + str(iter_count) + " iterations"
     )
     solver.solution.run_calculation.iterate(iter_count=iter_count)
     return
