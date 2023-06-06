@@ -5,11 +5,13 @@ import subprocess
 import time
 
 
-def writeExpressionFile(data, script_dir, working_dir):
-    fileName = os.path.join(working_dir, data["expressionFilename"])
-    if fileName is None:
+def writeExpressionFile(data: dict, script_dir: str, working_dir: str):
+    fileName = data.get("expressionFilename")
+    #if nothing is set for "expressionFilename" a default value ("expressions.tsv") is set and dict will be updated
+    if fileName is None or fileName == "":
         fileName = "expressions.tsv"
-
+        data["expressionFilename"] = fileName
+    fileName = os.path.join(working_dir, fileName)
     with open(fileName, "w") as sf:
         expressionTemplatePath = os.path.join(
             script_dir, "tts_templates", data["expressionTemplate"]
