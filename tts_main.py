@@ -89,18 +89,18 @@ if caseDict is not None:
         solve.init(data=caseEl, solver=solver, functionEl=caseFunctionEl)
 
         # Write case and ini-data & settings file
-        print("Writing initial case file\n")
+        print("\nWriting initial case & settings file\n")
         solver.file.write(file_type="case", file_name=caseEl["caseFilename"])
         settingsFilename = '"' + caseEl["caseFilename"] + '.set"'
         solver.tui.file.write_settings(settingsFilename)
         if solver.field_data.is_data_valid():
-            print("Writing initial dat file\n")
+            print("\nWriting initial dat file\n")
             solver.file.write(file_type="data", file_name=caseEl["caseFilename"])
         else:
             print("Skipping Writing of Initial Solution Data: No Solution Data available\n")
 
         # Solve
-        if caseEl["solution"]["runSolver"]:
+        if caseEl["solution"].get("runSolver", False):
             solve.solve_01(caseEl, solver)
 
             filename = caseEl["caseFilename"] + "_fin"
