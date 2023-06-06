@@ -122,7 +122,7 @@ if studyDict is not None:
     parametricstudy.study(data=turboData, solver=solver, functionEl=glfunctionEl)
 
     # Postprocessing of studies
-    if launchEl.get("plotResults") and external:
+    if launchEl.get("plotResults"):
         parametricstudy.studyPlot(data=turboData)
 
 # Exit Solver

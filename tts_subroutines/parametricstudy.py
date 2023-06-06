@@ -206,7 +206,12 @@ def study01(data, solver):
 
 def studyPlot(data):
     # Only working in external mode
-    import pandas as pd
+    try:
+        import pandas as pd
+    except ImportError as e:
+        print(f"ImportError! Could not import lib: {str(e)}")
+        print(f"Skipping studyPlot function!")
+        return
 
     print("Running Function StudyPlot ...")
     studyDict = data.get("studies")

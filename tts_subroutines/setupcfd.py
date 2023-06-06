@@ -273,7 +273,7 @@ def boundary_01(data, solver):
                         print(f"KeyError: Key not found in ConfigFile: {str(e)} \nAdditional pressure-outlet-bc settings skipped!")
 
             # Walls
-        # elif key == "bz_walls_shroud_name":
+        # elif key == "bz_walls_shroud_names":
         #    solver.setup.boundary_conditions.wall[data["locations"][key]] = {"motion_bc": "Moving Wall","relative": False,"rotating": True}
 
         elif key == "bz_walls_counterrotating_names":
