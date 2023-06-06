@@ -56,7 +56,7 @@ def init_fmg_01(data, solver):
 
 
 def solve_01(data, solver):
-    iter_count = data["solution"].get("iter_count", 0)
+    iter_count = data["solution"]["iter_count"]
     print(
         "Solving " + str(iter_count) + " iterations"
     )

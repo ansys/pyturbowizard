@@ -440,12 +440,19 @@ def report_01(data, solver):
         print(f"Direct Specification of pseudo timestep size from Configfile: {pseudo_timestep}")
         solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = "user-specified"
         solver.solution.run_calculation.pseudo_time_settings.time_step_method.pseudo_time_step_size = pseudo_timestep
+        #Update dict
+        if data["solution"].get("time_step_factor") is not None:
+            data["solution"].pop("time_step_factor")
     else:
         #Use timescale factor
         print(f"Using 'conservative'-'automatic' timestep method with timescale-factor: {tsf}")
         solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = "automatic"
         solver.solution.run_calculation.pseudo_time_settings.time_step_method.length_scale_methods = "conservative"
         solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_size_scale_factor = tsf
+        # Update dict
+        data["solution"]["time_step_factor"] = tsf
 
-    iter_count = data["solution"].get("iter_count", 0)
+    iter_count = data["solution"].get("iter_count", 500)
+    # Update dict
+    data["solution"]["iter_count"] = iter_count
     solver.solution.run_calculation.iter_count = int(iter_count)
