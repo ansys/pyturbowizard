@@ -55,13 +55,10 @@ if caseDict is not None:
         print("Running Case: " + casename + "\n")
         caseEl = turboData["cases"][casename]
         # Merge function dicts
-        caseFunctionEl = caseEl.get("functions")
-        if glfunctionEl is not None and caseFunctionEl is not None:
-            helpDict = glfunctionEl.copy()
-            helpDict.update(caseFunctionEl)
-            caseFunctionEl = helpDict
-        elif caseFunctionEl is None:
-            caseFunctionEl = glfunctionEl
+        utilities.merge_functionEls(caseEl=caseEl, glfunctionEl=glfunctionEl)
+        # Copy data from reference if refCase is set
+        if caseEl.get("refCase") is not None:
+            caseEl = utilities.merge_data_with_refEl(caseEl=caseEl, allCasesEl=caseDict)
 
         # Start Transcript
         trnFileName = casename + ".trn"

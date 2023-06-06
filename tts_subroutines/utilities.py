@@ -254,3 +254,24 @@ def get_funcname_and_upd_funcdict(
     # Update Parent Element
     parentEl.update({"functions": functionEl})
     return functionName
+
+def merge_functionEls(caseEl:dict, glfunctionEl:dict):
+    # Merge function dicts
+    caseFunctionEl = caseEl.get("functions")
+    if glfunctionEl is not None and caseFunctionEl is not None:
+        helpDict = glfunctionEl.copy()
+        helpDict.update(caseFunctionEl)
+        caseFunctionEl = helpDict
+    elif caseFunctionEl is None:
+        caseFunctionEl = glfunctionEl
+    return
+
+def merge_data_with_refEl(caseEl:dict, allCasesEl:dict):
+    refCaseName = caseEl.get("refCase")
+    refEl = allCasesEl.get(refCaseName)
+    if refEl is None:
+        print(f"Specified Reference Case {refCaseName} not found in Config-File!\nSkipping CopyFunction...")
+        return caseEl
+    mergedCaseEl = refEl.copy()
+    mergedCaseEl.update(caseEl)
+    return mergedCaseEl
