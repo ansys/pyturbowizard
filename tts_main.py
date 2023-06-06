@@ -95,7 +95,7 @@ if caseDict is not None:
         solver.tui.file.write_settings(settingsFilename)
         if solver.field_data.is_data_valid():
             print("Writing initial dat file\n")
-            solver.file.write(file_type="dat", file_name=caseEl["caseFilename"])
+            solver.file.write(file_type="data", file_name=caseEl["caseFilename"])
         else:
             print("Skipping Writing of Initial Solution Data: No Solution Data available\n")
 
