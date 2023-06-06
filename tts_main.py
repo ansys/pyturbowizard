@@ -8,7 +8,7 @@ from tts_subroutines import (
     parametricstudy,
     solve,
     meshimport,
-    mysetup,
+    setupcfd,
     utilities,
     postproc,
 )
@@ -81,8 +81,8 @@ if caseDict is not None:
         solver.tui.define.beta_feature_access("yes ok")
 
         # Case Setup
-        mysetup.setup(data=caseEl, solver=solver, functionEl=caseFunctionEl)
-        mysetup.report_01(caseEl, solver)
+        setupcfd.setup(data=caseEl, solver=solver, functionEl=caseFunctionEl)
+        setupcfd.report_01(caseEl, solver)
 
         # Solution
         # Set Solver Settings
