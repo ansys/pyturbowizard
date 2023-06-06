@@ -89,9 +89,15 @@ if caseDict is not None:
         solve.init(data=caseEl, solver=solver, functionEl=caseFunctionEl)
 
         # Write case and ini-data & settings file
-        solver.file.write(file_type="case-data", file_name=caseEl["caseFilename"])
+        print("Writing initial case file\n")
+        solver.file.write(file_type="case", file_name=caseEl["caseFilename"])
         settingsFilename = '"' + caseEl["caseFilename"] + '.set"'
         solver.tui.file.write_settings(settingsFilename)
+        if solver.field_data.is_data_valid():
+            print("Writing initial dat file\n")
+            solver.file.write(file_type="dat", file_name=caseEl["caseFilename"])
+        else:
+            print("Skipping Writing of Initial Solution Data: No Solution Data available\n")
 
         # Solve
         if caseEl["solution"]["runSolver"]:
@@ -101,7 +107,10 @@ if caseDict is not None:
             solver.file.write(file_type="case-data", file_name=filename)
 
         # Postprocessing
-        postproc.post(data=caseEl, solver=solver, functionEl=caseFunctionEl)
+        if solver.field_data.is_data_valid():
+            postproc.post(data=caseEl, solver=solver, functionEl=caseFunctionEl)
+        else:
+            print("Skipping Postprocessing: No Solution Data available\n")
 
         # Finalize
         solver.file.stop_transcript()
