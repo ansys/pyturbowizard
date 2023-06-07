@@ -264,13 +264,17 @@ def boundary_01(data, solver):
                     else:
                         outBC.gauge_pressure = "BC_OUT_p"
                     outBC.avg_press_spec = True
-                    #Set additional pressure-outlet-bc settings if available in config file
+                    # Set additional pressure-outlet-bc settings if available in config file
                     try:
                         p_pbf = data["setup"]["BC_OUT_p_pbf"]
                         p_numbins = data["setup"]["BC_OUT_p_numbins"]
-                        solver.tui.define.boundary_conditions.bc_settings.pressure_outlet(p_pbf, p_numbins)
+                        solver.tui.define.boundary_conditions.bc_settings.pressure_outlet(
+                            p_pbf, p_numbins
+                        )
                     except KeyError as e:
-                        print(f"KeyError: Key not found in ConfigFile: {str(e)} \nAdditional pressure-outlet-bc settings skipped!")
+                        print(
+                            f"KeyError: Key not found in ConfigFile: {str(e)} \nAdditional pressure-outlet-bc settings skipped!"
+                        )
 
             # Walls
         # elif key == "bz_walls_shroud_names":
@@ -433,22 +437,36 @@ def report_01(data, solver):
     }
     # Set Basic Solver-Solution-Settings
     tsf = data["solution"].get("time_step_factor", 1)
-    #Check for a pseudo-time-step-size
+    # Check for a pseudo-time-step-size
     pseudo_timestep = data["solution"].get("pseudo_timestep")
     if pseudo_timestep is not None:
         # Use pseudo timestep
-        print(f"Direct Specification of pseudo timestep size from Configfile: {pseudo_timestep}")
-        solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = "user-specified"
-        solver.solution.run_calculation.pseudo_time_settings.time_step_method.pseudo_time_step_size = pseudo_timestep
-        #Update dict
+        print(
+            f"Direct Specification of pseudo timestep size from Configfile: {pseudo_timestep}"
+        )
+        solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = (
+            "user-specified"
+        )
+        solver.solution.run_calculation.pseudo_time_settings.time_step_method.pseudo_time_step_size = (
+            pseudo_timestep
+        )
+        # Update dict
         if data["solution"].get("time_step_factor") is not None:
             data["solution"].pop("time_step_factor")
     else:
-        #Use timescale factor
-        print(f"Using 'conservative'-'automatic' timestep method with timescale-factor: {tsf}")
-        solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = "automatic"
-        solver.solution.run_calculation.pseudo_time_settings.time_step_method.length_scale_methods = "conservative"
-        solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_size_scale_factor = tsf
+        # Use timescale factor
+        print(
+            f"Using 'conservative'-'automatic' timestep method with timescale-factor: {tsf}"
+        )
+        solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = (
+            "automatic"
+        )
+        solver.solution.run_calculation.pseudo_time_settings.time_step_method.length_scale_methods = (
+            "conservative"
+        )
+        solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_size_scale_factor = (
+            tsf
+        )
         # Update dict
         data["solution"]["time_step_factor"] = tsf
 

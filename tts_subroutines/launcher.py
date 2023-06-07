@@ -2,6 +2,7 @@ import os
 import subprocess
 import time
 
+
 def launchFluent(launchEl):
     import ansys.fluent.core as pyfluent
 

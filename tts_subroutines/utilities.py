@@ -5,7 +5,7 @@ import pandas as pd
 
 def writeExpressionFile(data: dict, script_dir: str, working_dir: str):
     fileName = data.get("expressionFilename")
-    #if nothing is set for "expressionFilename" a default value ("expressions.tsv") is set and dict will be updated
+    # if nothing is set for "expressionFilename" a default value ("expressions.tsv") is set and dict will be updated
     if fileName is None or fileName == "":
         fileName = "expressions.tsv"
         data["expressionFilename"] = fileName
@@ -155,7 +155,6 @@ def plotOperatingMap(design_point_table):
     return fig
 
 
-
 def get_funcname_and_upd_funcdict(
     parentEl: dict, functionEl: dict, funcElName: str, defaultName: str
 ):
@@ -175,7 +174,8 @@ def get_funcname_and_upd_funcdict(
     parentEl.update({"functions": functionEl})
     return functionName
 
-def merge_functionEls(caseEl:dict, glfunctionEl:dict):
+
+def merge_functionEls(caseEl: dict, glfunctionEl: dict):
     # Merge function dicts
     caseFunctionEl = caseEl.get("functions")
     if glfunctionEl is not None and caseFunctionEl is not None:
@@ -186,11 +186,14 @@ def merge_functionEls(caseEl:dict, glfunctionEl:dict):
         caseFunctionEl = glfunctionEl
     return caseFunctionEl
 
-def merge_data_with_refEl(caseEl:dict, allCasesEl:dict):
+
+def merge_data_with_refEl(caseEl: dict, allCasesEl: dict):
     refCaseName = caseEl.get("refCase")
     refEl = allCasesEl.get(refCaseName)
     if refEl is None:
-        print(f"Specified Reference Case {refCaseName} not found in Config-File!\nSkipping CopyFunction...")
+        print(
+            f"Specified Reference Case {refCaseName} not found in Config-File!\nSkipping CopyFunction..."
+        )
         return caseEl
     mergedCaseEl = refEl.copy()
     mergedCaseEl.update(caseEl)
