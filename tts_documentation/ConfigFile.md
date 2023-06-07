@@ -12,24 +12,49 @@ Under the section ``` functions ```, different subroutines for the numerical set
 "functions":
     {
       "setup": "setup_01",
-      "initialization": "init_hybrid_01",
-      "numerics": "numerics_01",
+      "numerics": "numerics_bp_all_2305",
+      "initialization": "init_hybrid_01",      
       "postproc": "post_01",
       "parametricstudy": "study_01"
     },
 ```
-**Currently only the default routines are available for the setup.**
+Currently the following functions and corresponding options are available:
+- "setup":
+  - Specify setup function
+  - Available functions:
+    - **"setup_01" (default):** standard setup  
+- "numerics": 
+  - Specify numeric settings
+  - Available functions:
+    - "numerics_defaults": Use Fluent default settings    
+    - "numerics_bp_tn_2305": Use turbo best practice settings from May 2023 in combination with Fluent default discretization-schemes
+    - **"numerics_bp_all_2305" (default):** Use turbo best practice settings from May 2023, additionally set explicitly all discretization-schemes to second order    
+- "initialization":
+  - Specify initialization settings
+  - Available functions:
+    - "init_standard_01": standard initialization, using inlet data as reference    
+    - **"init_hybrid_01" (default):** Hybrid initialization, using standard "init_standard_01" for pre-initialization
+    - "init_fmg_01": FMG initialization, using standard "init_standard_01" for pre-initialization
+- "postproc":
+  - Specify postproc function
+  - Available functions:
+    - **"post_01" (default):** standard postprocessing
+- "parametricstudy":
+  - Specify parametricstudy function
+  - Available functions:
+    - **"study_01" (default):** standard parametricstudy
+
+**Note: If the section 'functions' is not defined the default functions are used. Therefore, the definition of this section is not required, unless the user wants to prescribe non-default functions**
+
 
 ### Launch Options
 Under the section ``` launching ```, different options for launching options for Fluent can be specified, like the version, number of processes and single or double precision solver.
 
-``` external ``` refers to if you wish to run the Script interally via the Fluent Python console or externally. **Currently only the External option is supported by the script.**
-
-For running Fluent on Linux or a Cluster, the script needs to hook on to a existing Fluent session ([How to Run on Linux](/README.md#linux--cluster-1)). For this a server file name has to be specified under ``` serverfilename ```
+For running Fluent on Linux or a Cluster, the script needs to hook on to a existing Fluent session ([How to Run on Linux](/README.md#linux--cluster-1)). For this a server file name has to be specified under ``` serverfilename ```. When hooking onto a existing Fluent session the ``` launching ``` options are not used, except for ```workingDir```.
 ```
 "launching":
     {
-      "workingDir": "D:/TestTurbo/launch_test",
+      "workingDir": "<PathToFluentWorkingDir>",
       "fl_version": "23.2.0",
       "noCore": 8,
       "serverfilename": "",
@@ -61,7 +86,22 @@ First, different general case parameters, like the final ``` caseFilename ``` an
 
 Supported file types for meshes are .def, .cgns, .msh and .cas. Make sure that the mesh consists of a single file and is located in the Fluent working directory.
 
-You can choose to specify a profile for your inlet or outlet boundaries by providing the ``` profileName ``` in your Fluent working directory. Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup.
+You can choose to specify a profile for your inlet or outlet boundaries by providing the ``` profileName ``` in your Fluent working directory.
+Restrictions when using profiles:
+- Inlet: 
+  - Profiles for Total Pressure, Total Temperature & Absolute Velocity Directions can be specified
+  - Naming Convention:
+    - Profilename: "inlet-bc"
+    - Total Pressure: "pt-in"
+    - Total Temperature: "tt-in"
+    - Velocity directions in cylindrical coordinates: "vrad-dir","vrad-dir","vax-dir"
+- Outlet:
+    - Profile for Static Pressure
+    - Naming Convention
+      - Profilename: "outlet-bc"
+      - Total Pressure: "p-out"
+    
+Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup.
 
 ```
  "Case_1": {
@@ -198,14 +238,15 @@ Under the section ``` launching ```, different options for launching options for
       "workingDir": "<pathToFluentWorkingDir>",
       "fl_version": "23.2.0",
       "noCore": 2,
-      "precision": "double",
-      "external": true,
+      "precision": "double",     
       "serverfilename": "",
       "plotResults": true
     },
 ```
 
-``` external ``` refers to if you wish to run the Script interally via the Fluent Python console or externally. **Currently only the External option is supported by the script.**
+**Notes**: 
+ - Currently only the External option is supported by the script.
+ - Currently only one the first defined study is executed by the script.
 
 For running Fluent on Linux or a Cluster, the script needs to hook on to a existing Fluent session ([How to Run on Linux](/README.md)). For this a server file name has to be specified under ``` serverfilename ```
 
@@ -213,7 +254,7 @@ For running Fluent on Linux or a Cluster, the script needs to hook on to a exist
 
 An example plot of the Operating Point Map is shown below:
 
-<img src="/Documentation/images/operating_map_example.png" alt="operating point map example" style="height: 400px; width:800px;"/>
+<img src="/tts_documentation/images/operating_map_example.png" alt="operating point map example" style="height: 400px; width:800px;"/>
 
 ```exitatend ``` can be used to specify whether you want to close Fluent after the script is finished.
 
@@ -232,7 +273,7 @@ The reference case file name for the base case has to be specified under ```refC
 
 If ```updateFromBaseDP``` is ```true``` the simulation of each design point is initialized from the base design point. If ```updateFromBaseDP``` is set to ```false``` the previous design point is used for initialization.
 
-The expressions to be varied for the different design points are specified in the  ```inputparameters```. The option ```useScaleFactor``` can be set to ```true``` to use a scale factor from the base case value.
+The expressions to be varied for the different design points are specified in the  ```inputparameters```. The option ```useScaleFactor``` can be set to ```true``` for each selected Inputparameter to use a scale factor from the base case value.
 
 The ```valueList``` holds either the scale factors or the specific values to be used for the different design points of the study.
 
@@ -251,7 +292,7 @@ The ```valueList``` holds either the scale factors or the specific values to be 
           "inputparameters": [
             "BC_OUT_p"
           ],
-          "useScaleFactor": true,
+          "useScaleFactor": [true],
           "valueList": [
               0.95,
               0.9,

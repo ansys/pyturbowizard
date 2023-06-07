@@ -1,40 +1,33 @@
 {
-  "functions":
-    {
-      "numerics": "numerics_01",
-      "postproc": "post_01",
-      "parametricstudy": "study_01"
-    },
-    
   "launching":
     {
       "workingDir": "D:/TestTurbo/launch_test",
       "fl_version": "23.2.0",
-      "noCore": 8,
+      "noCore": 2,
       "precision": "double",
-      "serverfilename": "",
-      "exitatend": false
+      "show_gui":  true
     },
   "cases": {
       "TUDA_R1S7": {
         "caseFilename": "TUDA_R1S7",
-        "meshFilename": "TUDA_R1S7_coarse_mesh",
-        "profileName": null,
-        "expressionFilename": "hr_exp.tsv",
+        "meshFilename": "TUDA_R1S7_1_2M_mesh.cas",
+        "profileName_In": "",
+        "profileName_Out": "",
+        "expressionFilename": "exp.tsv",
         "expressionTemplate": "expressionTemplate_compressor_comp.tsv",
         "expressions": {
           "GEO_IN_No_Passages": "1",
           "GEO_IN_No_Passages_360": "16",
           "GEO_OUT_No_Passages": "1",
           "GEO_OUT_No_Passages_360"	: "29",
-          "BC_pref":	"0[Pa]",
+          "BC_pref":	"0 [Pa]",
           "BC_RPM":	"-20000 [rev / min]",
           "BC_IN_pt":	"101325 [Pa]",
           "BC_IN_p_gauge": 	"99500 [Pa]",
           "BC_IN_Tt":	"288.15 [K]",
           "BC_IN_TuIn":	"0.05",
           "BC_IN_TuVR":	"10",
-          "BC_OUT_ECMassFlow":	"11.4 [kg / s]",
+          "BC_OUT_ECMassFlow":	"0.39 [kg / s]",
           "BC_ECMassFlow_pref": "101325 [Pa]",
           "BC_ECMassFlow_tref": "288.15 [K]"
         },
@@ -85,9 +78,7 @@
               "tz_blade_names": ["b-stator-1-blade"],
               "tz_theta_periodic_names":["b-stator-periodic-interface-1"]
             }
-          },
-          "bz_eval_ip1_name": "plane_eval_ip1",
-          "bz_eval_op1_name": "plane_eval_op1"
+          }
         },
         "fluid_properties": {
           "fl_density": "ideal-gas",
@@ -101,18 +92,18 @@
           "BC_OUT_p_numbins": 65
         },
         "solution": {
-          "reportlist": ["MP_IN_MassFlow","MP_OUT_MassFlow","MP_Isentropic_Efficiency","MP_PRt"],
-          "res_crit": 1e-5,
+          "reportlist": ["MP_IN_MassFlow","MP_OUT_MassFlow","MP_IN_MassFlow_360","MP_OUT_MassFlow_360","MP_Isentropic_Efficiency","MP_PRt"],
+          "res_crit": 1e-4,
           "cov_list": [
             "MP_Isentropic_Efficiency",
             "MP_IN_MassFlow",
             "MP_PRt"
           ],
-          "cov_crit": 1.0e-5,
+          "cov_crit": 1.0e-4,
           "tsn": true,
           "iter_count": 500,
           "time_step_factor": 5,
-          "runSolver": false
+          "runSolver": true
         },
         "results": {
           "filename_inputParameter_pf": "inputParameters.out",

@@ -1,17 +1,19 @@
 import os.path
 import matplotlib.pyplot as plt
 import pandas as pd
-import subprocess
-import time
 
 
-def writeExpressionFile(data, script_dir, working_dir):
-    fileName = os.path.join(working_dir, data["expressionFilename"])
-    if fileName is None:
+def writeExpressionFile(data: dict, script_dir: str, working_dir: str):
+    fileName = data.get("expressionFilename")
+    # if nothing is set for "expressionFilename" a default value ("expressions.tsv") is set and dict will be updated
+    if fileName is None or fileName == "":
         fileName = "expressions.tsv"
-
+        data["expressionFilename"] = fileName
+    fileName = os.path.join(working_dir, fileName)
     with open(fileName, "w") as sf:
-        expressionTemplatePath = os.path.join(script_dir, data["expressionTemplate"])
+        expressionTemplatePath = os.path.join(
+            script_dir, "tts_templates", data["expressionTemplate"]
+        )
         with open(expressionTemplatePath, "r") as templateFile:
             tempData = templateFile.read()
             templateFile.close()
@@ -23,26 +25,26 @@ def writeExpressionFile(data, script_dir, working_dir):
             try:
                 sf.write(line.format(**helperDict))
                 sf.write("\n")
-            except KeyError:
-                print(f'Expression missing: {KeyError}')
+            except KeyError as e:
+                print(f"Expression not found in ConfigFile: {str(e)}")
 
     return
 
 
 def cleanupInputExpressions(expressionEl: dict, fileData: str):
     cleanfiledata = ""
-        
+
     for line in fileData.splitlines():
         # write header line
         if cleanfiledata == "":
             cleanfiledata = line
         # check BCs and prescribed Expressions
-        elif line.startswith('"BC'):               
+        elif line.startswith('"BC'):
             columns = line.split("\t")
             expKey = columns[1].replace('"{', "").replace('}"', "")
             if expressionEl.get(expKey) is not None:
                 cleanfiledata = cleanfiledata + "\n" + line
-            else: 
+            else:
                 continue
 
         elif line.startswith('"GEO'):
@@ -55,8 +57,7 @@ def cleanupInputExpressions(expressionEl: dict, fileData: str):
                 line = "\t".join(columns)
                 cleanfiledata = cleanfiledata + "\n" + line
         else:
-            cleanfiledata = cleanfiledata + "\n" + line    
-
+            cleanfiledata = cleanfiledata + "\n" + line
 
     return cleanfiledata
 
@@ -154,82 +155,46 @@ def plotOperatingMap(design_point_table):
     return fig
 
 
-def launchFluent(launchEl):
-    import ansys.fluent.core as pyfluent
+def get_funcname_and_upd_funcdict(
+    parentEl: dict, functionEl: dict, funcElName: str, defaultName: str
+):
+    functionName = None
+    if functionEl is not None:
+        functionName = functionEl.get(funcElName)
+    # Set Default if not already set
+    if functionName is None:
+        functionName = defaultName
+        # If the element is not existing, create a new one, otherwise update the existing
+        if functionEl is None:
+            functionEl = {"functions": {funcElName: functionName}}
+        else:
+            functionEl.update({funcElName: functionName})
 
-    global solver
+    # Update Parent Element
+    parentEl.update({"functions": functionEl})
+    return functionName
 
-    fl_workingDir = launchEl["workingDir"]
-    serverfilename = launchEl.get("serverfilename", None)
-    queueEl = launchEl.get("queue_slurm", None)
-    # open new session in queue
-    if queueEl is not None:
-        maxtime = float(launchEl.get("queue_waiting_time", 600.0))
-        print("Trying to launching new Fluent Session on queue '" + queueEl + "'")
+
+def merge_functionEls(caseEl: dict, glfunctionEl: dict):
+    # Merge function dicts
+    caseFunctionEl = caseEl.get("functions")
+    if glfunctionEl is not None and caseFunctionEl is not None:
+        helpDict = glfunctionEl.copy()
+        helpDict.update(caseFunctionEl)
+        caseFunctionEl = helpDict
+    elif caseFunctionEl is None:
+        caseFunctionEl = glfunctionEl
+    return caseFunctionEl
+
+
+def merge_data_with_refEl(caseEl: dict, allCasesEl: dict):
+    refCaseName = caseEl.get("refCase")
+    refEl = allCasesEl.get(refCaseName)
+    if refEl is None:
         print(
-            "Max waiting time (launching-key: 'queue_waiting_time') set to: "
-            + str(maxtime)
+            f"Specified Reference Case {refCaseName} not found in Config-File!\nSkipping CopyFunction..."
         )
-        serverfilename = launchEl.get("serverfilename", "server-info.txt")
-        commandlist = list()
-        commandlist.append(
-            pyfluent.launcher.launcher.get_fluent_exe_path(
-                product_version=launchEl["fl_version"]
-            )
-        )
-        precisionCommand = "3d"
-        if launchEl.get("precision", True):
-            precisionCommand = precisionCommand + "dp"
-        batch_arguments = [
-            precisionCommand,
-            "-t%s" % (int(launchEl["noCore"])),
-            "-scheduler=slurm",
-            "-scheduler_queue=%s" % (launchEl["queue_slurm"]),
-            "-sifile=%s" % (serverfilename),
-        ]
-        if not launchEl.get("show_gui", True):
-            batch_arguments.extend(["-gu", "-driver opengl"])
-        commandlist.extend(batch_arguments)
-        process_files = subprocess.Popen(
-            commandlist, cwd=fl_workingDir, stdout=subprocess.DEVNULL
-        )
-        # Check if Fluent started
-        fullpathtosfname = os.path.join(fl_workingDir, serverfilename)
-        current_time = 0
-        while current_time <= maxtime:
-            try:
-                if os.path.isfile(fullpathtosfname):
-                    time.sleep(5)
-                    break
-            except OSError:
-                print("Witing to process start...")
-                time.sleep(5)
-                current_time += 5
-        if current_time > maxtime:
-            raise TimeoutError(
-                "Maximum waiting time reached ("
-                + str(maxtime)
-                + "sec). Aborting script..."
-            )
-        # Start Session via hook
-        solver = pyfluent.launch_fluent(
-            start_instance=False, server_info_filepath=fullpathtosfname
-        )
-    # If no serverFilename is specified, a new session will be started
-    elif serverfilename is None or serverfilename == "":
-        solver = pyfluent.launch_fluent(
-            precision=launchEl.get("precision", True),
-            processor_count=int(launchEl["noCore"]),
-            mode="solver",
-            show_gui=launchEl.get("show_gui", True),
-            product_version=launchEl["fl_version"],
-            cwd=fl_workingDir,
-        )
-    # Hook to existing Session
-    else:
-        fullpathtosfname = os.path.join(fl_workingDir, serverfilename)
-        print("Connecting to Fluent Session...")
-        solver = pyfluent.launch_fluent(
-            start_instance=False, server_info_filepath=fullpathtosfname
-        )
-    return solver
+        return caseEl
+    mergedCaseEl = refEl.copy()
+    mergedCaseEl.update(caseEl)
+    return mergedCaseEl

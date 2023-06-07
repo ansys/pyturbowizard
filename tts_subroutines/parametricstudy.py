@@ -1,9 +1,17 @@
 import os
-import utilities
+from tts_subroutines import utilities
 import matplotlib.pyplot as plt
-import pandas as pd
 
-def study(data, solver, functionName="study_01"):
+
+def study(data, solver, functionEl):
+    # Get FunctionName & Update FunctionEl
+    functionName = utilities.get_funcname_and_upd_funcdict(
+        parentEl=data,
+        functionEl=functionEl,
+        funcElName="parametricstudy",
+        defaultName="study_01",
+    )
+
     print('Running ParamatricStudy Function "' + functionName + '"...')
     if functionName == "study_01":
         study01(data, solver)
@@ -14,7 +22,7 @@ def study(data, solver, functionName="study_01"):
             + '" not known. Skipping Parametric Study!'
         )
 
-    print("ParamatricStudy finished.")
+    print("\nRunning ParamatricStudy Function...  finished!\n")
 
 
 def study01(data, solver):
@@ -24,6 +32,12 @@ def study01(data, solver):
     # Init variables
     fluent_study = None
     studyIndex = 0
+    if len(studyDict) > 1:
+        print(
+            "\nNote: In the config-File more than 1 study elements are defined! "
+            "\nCurrently only executing one study is supported!"
+            "\nFirst one in your config-File will be executed\n"
+        )
 
     for studyName in studyDict:
         studyEl = studyDict[studyName]
@@ -54,8 +68,13 @@ def study01(data, solver):
         # Check if a new Project should be created or an existing is executed
         if not runExisting:
             # Read Ref Case
-            # solver.file.read_case_data(file_type="case-data", file_name=refCase)
-            solver.tui.file.read_case_data(refCase)
+            refCaseFilePath = os.path.join(flworking_Dir, refCase)
+            solver.file.read_case_data(file_type="case-data", file_name=refCaseFilePath)
+            # solver.tui.file.read_case_data(refCase)
+
+            # Read Ref Case
+            if studyIndex > 0:
+                solver.tui.parametric_study.study.delete()
 
             # Initialize a new parametric study
             if fluent_study is None:
@@ -68,8 +87,16 @@ def study01(data, solver):
             definitionList = studyEl.get("definition")
 
             for studyDef in definitionList:
-                useScaleFactor = studyDef.get("useScaleFactor")
                 ipList = studyDef.get("inputparameters")
+                numIPs = len(ipList)
+                useScaleFactor = studyDef.get("useScaleFactor")
+                # if a single value is prescribed (old code), we automatically transfer it to a list
+                if type(useScaleFactor) is not list:
+                    glSFValue = useScaleFactor
+                    useScaleFactor = []
+                    for ipIndex in range(numIPs):
+                        useScaleFactor.append(glSFValue)
+
                 valueListArray = studyDef.get("valueList")
                 numDPs = len(valueListArray[0])
                 for dpIndex in range(numDPs):
@@ -78,11 +105,10 @@ def study01(data, solver):
                     designPointName = "DP" + str(designPointCounter)
                     # new_dp = {"BC_P_Out": 0.}
                     new_dp = fluent_study.design_points[designPointName]
-                    numIPs = len(ipList)
                     for ipIndex in range(numIPs):
                         ipName = ipList[ipIndex]
                         modValue = valueListArray[ipIndex][dpIndex]
-                        if useScaleFactor:
+                        if useScaleFactor[ipIndex]:
                             ref_dp = fluent_study.design_points[
                                 "Base DP"
                             ].input_parameters()
@@ -124,22 +150,23 @@ def study01(data, solver):
                 solver.file.parametric_project.save()
             else:
                 solver.file.parametric_project.save_as(project_filename=studyName)
-            #
 
-            if studyIndex < (len(studyDict) - 1):
-                # Delete DesignPoints Current Study
-                # fluent_study = fluent_study.duplicate()
-                for dpIndex in range(designPointCounter - 1):
-                    designPointName = "DP" + str(dpIndex + 1)
-                    fluent_study.design_points.delete_design_points(
-                        design_points=designPointName
-                    )
+            # Delete Design Points for next study: a complete reset would be the better option
+            # if (len(studyDict) > 1) and (studyIndex < (len(studyDict) - 1)):
+            #    # Delete DesignPoints Current Study
+            #    # fluent_study = fluent_study.duplicate()
+            #    for dpIndex in range(designPointCounter - 1):
+            #        designPointName = "DP" + str(dpIndex + 1)
+            #        fluent_study.design_points.delete_design_points(
+            #            design_points=designPointName
+            #        )
+
+            # Increasing study index
             studyIndex = studyIndex + 1
 
         else:
             # Load Existing Project
             flworking_Dir = data.get("launching")["workingDir"]
-            # studyFileName = studyName + ".flprj"
             solver.file.parametric_project.open(project_filename=studyFileName)
             psname = refCase + "-Solve"
             fluent_study = solver.parametric_studies[psname]
@@ -168,15 +195,27 @@ def study01(data, solver):
             # Save Study
             solver.file.parametric_project.save()
 
+            # Increasing study index
+            studyIndex = studyIndex + 1
+
+        # Skipping after first study has been finished
+        break
+
     print("All Studies finished")
 
 
 def studyPlot(data):
+    # Only working in external mode
+    try:
+        import pandas as pd
+    except ImportError as e:
+        print(f"ImportError! Could not import lib: {str(e)}")
+        print(f"Skipping studyPlot function!")
+        return
 
     print("Running Function StudyPlot ...")
     studyDict = data.get("studies")
     for studyName in studyDict:
-        
         flworking_Dir = data.get("launching")["workingDir"]
         design_point_table_path = flworking_Dir + "/" + studyName + "_dp_table.csv"
         design_point_table_path = os.path.normpath(design_point_table_path)

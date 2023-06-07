@@ -1,7 +1,15 @@
-import os
+from tts_subroutines import utilities
 
 
-def post(data, solver, functionName="post_01"):
+def post(data, solver, functionEl):
+    # Get FunctionName & Update FunctionEl
+    functionName = utilities.get_funcname_and_upd_funcdict(
+        parentEl=data,
+        functionEl=functionEl,
+        funcElName="postproc",
+        defaultName="post_01",
+    )
+
     print('\nRunning Postprocessing Function "' + functionName + '"...')
     if functionName == "post_01":
         post_01(data, solver)
@@ -12,7 +20,7 @@ def post(data, solver, functionName="post_01"):
             + '" not known. Skipping Postprocessing!'
         )
 
-    print("Running Postprocessing Function... finished.")
+    print("\nRunning Postprocessing Function... finished!\n")
 
 
 def post_01(data, solver):

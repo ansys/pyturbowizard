@@ -1,13 +1,15 @@
 {
+   "functions":
+    {
+      "initialization": "init_fmg_01"
+    },
   "launching":
     {
       "workingDir": "D:/TestTurbo/HannoverRotor",
       "fl_version": "23.2.0",
       "noCore": 2,
       "precision": "double",
-      "serverfilename": "",
-      "show_gui":  true,
-      "exitatend": false
+      "show_gui":  true
     },
   "cases": {
       "HannoverRotor_NoTip_0.6M": {
@@ -18,7 +20,10 @@
         "expressionFilename": "hr_exp.tsv",
         "expressionTemplate": "expressionTemplate_compressor_comp.tsv",
         "expressions": {
-          "GEO_No_Blades":	"1",
+          "GEO_IN_No_Passages": "1",
+          "GEO_IN_No_Passages_360": "1",
+          "GEO_OUT_No_Passages": "1",
+          "GEO_OUT_No_Passages_360"	: "1",
           "BC_pref":	"0[Pa]",
           "BC_RPM":	"1790.71 [rad / s]",
           "BC_IN_pt":	"-1",
@@ -30,8 +35,8 @@
         },
         "locations": {
           "cz_rotating_names": ["b-rotor-1"],
-          "bz_inlet_name": "inlet",
-          "bz_outlet_name": "outlet",
+          "bz_inlet_names": ["inlet"],
+          "bz_outlet_names": ["outlet"],
           "bz_walls_shroud_name": "b-rotor-1-shroud",
           "bz_walls_hub_name": "b-rotor-1-hub",
           "bz_walls_blade_name": "b-rotor-1-blade",
@@ -45,12 +50,6 @@
                 "side1": "b-rotor-1-periodic-side-1",
                 "side2": "b-rotor-1-periodic-side-2"
               }
-          },
-          "bz_interfaces_mixingplane_names": {
-
-          },
-          "bz_interfaces_general_names": {
-
           },
           "tz_turbo_topology_names":{
             "a-rotor-1-topology":{
