@@ -51,7 +51,7 @@ def launchFluent(launchEl):
                     time.sleep(5)
                     break
             except OSError:
-                print("Witing to process start...")
+                print("Waiting to process start...")
                 time.sleep(5)
                 current_time += 5
         if current_time > maxtime:
