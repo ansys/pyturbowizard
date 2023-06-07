@@ -24,7 +24,7 @@ def numerics(data, solver, functionEl):
             + '" not known. Skipping Specifying Numerics!'
         )
 
-    print("Specifying Numerics... finished.")
+    print("\nSpecifying Numerics... finished!\n")
 
 
 def numerics_defaults(data, solver):

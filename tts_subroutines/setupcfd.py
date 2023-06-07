@@ -15,7 +15,7 @@ def setup(data, solver, functionEl):
     else:
         print('Prescribed Function "' + functionName + '" not known. Skipping Setup!')
 
-    print("Running Setup Function... finished.")
+    print("\nRunning Setup Function... finished!\n")
 
 
 def setup_01(data, solver):

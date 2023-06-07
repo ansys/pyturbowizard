@@ -13,9 +13,9 @@ def init(data, solver, functionEl):
     print('\nRunning Initialization Function "' + functionName + '"...')
     if functionName == "init_standard_01":
         init_standard_01(data, solver)
-    if functionName == "init_hybrid_01":
+    elif functionName == "init_hybrid_01":
         init_hybrid_01(data, solver)
-    if functionName == "init_fmg_01":
+    elif functionName == "init_fmg_01":
         init_fmg_01(data, solver)
     else:
         print(
@@ -24,7 +24,7 @@ def init(data, solver, functionEl):
             + '" not known. Skipping Initialization!'
         )
 
-    print("Running Initialization Function... finished.")
+    print("\n\n Initialization Function... finished.\n")
 
 
 def init_standard_01(data, solver):

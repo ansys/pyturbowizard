@@ -22,7 +22,7 @@ def study(data, solver, functionEl):
             + '" not known. Skipping Parametric Study!'
         )
 
-    print("ParamatricStudy finished.")
+    print("\nRunning ParamatricStudy Function...  finished!\n")
 
 
 def study01(data, solver):
