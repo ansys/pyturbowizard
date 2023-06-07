@@ -14,7 +14,7 @@ from tts_subroutines import (
     postproc,
 )
 
-version = "1.3.1"
+version = "1.3.2"
 
 # If solver variable does not exist, Fluent has been started in external mode
 external = "solver" not in globals()
