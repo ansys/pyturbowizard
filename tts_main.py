@@ -63,6 +63,9 @@ if caseDict is not None:
         if caseEl.get("refCase") is not None:
             caseEl = utilities.merge_data_with_refEl(caseEl=caseEl, allCasesEl=caseDict)
 
+        # Set Batch options
+        solver.file.confirm_overwrite = False
+
         # Start Transcript
         trnFileName = casename + ".trn"
         solver.file.start_transcript(file_name=trnFileName)
@@ -79,8 +82,6 @@ if caseDict is not None:
 
         # Enable Beta-Features
         solver.tui.define.beta_feature_access("yes ok")
-        # Set Batch options
-        solver.file.confirm_overwrite = False
 
         # Case Setup
         setupcfd.setup(data=caseEl, solver=solver, functionEl=caseFunctionEl)
