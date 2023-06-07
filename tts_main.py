@@ -4,16 +4,17 @@ import sys
 
 # Load Script Modules
 from tts_subroutines import (
+    launcher,
     numerics,
     parametricstudy,
     solve,
     meshimport,
-    mysetup,
+    setupcfd,
     utilities,
     postproc,
 )
 
-version = "1.3.0"
+version = "1.3.2"
 
 # If solver variable does not exist, Fluent has been started in external mode
 external = "solver" not in globals()
@@ -46,7 +47,7 @@ print("Used Fluent Working-Directory: " + fl_workingDir)
 if external:
     # Fluent starts externally
     print("Launching Fluent...")
-    solver = utilities.launchFluent(launchEl)
+    solver = launcher.launchFluent(launchEl)
 
 # Start Setup
 caseDict = turboData.get("cases")
@@ -55,13 +56,15 @@ if caseDict is not None:
         print("Running Case: " + casename + "\n")
         caseEl = turboData["cases"][casename]
         # Merge function dicts
-        caseFunctionEl = caseEl.get("functions")
-        if glfunctionEl is not None and caseFunctionEl is not None:
-            helpDict = glfunctionEl.copy()
-            helpDict.update(caseFunctionEl)
-            caseFunctionEl = helpDict
-        elif caseFunctionEl is None:
-            caseFunctionEl = glfunctionEl
+        caseFunctionEl = utilities.merge_functionEls(
+            caseEl=caseEl, glfunctionEl=glfunctionEl
+        )
+        # Copy data from reference if refCase is set
+        if caseEl.get("refCase") is not None:
+            caseEl = utilities.merge_data_with_refEl(caseEl=caseEl, allCasesEl=caseDict)
+
+        # Set Batch options
+        solver.file.confirm_overwrite = False
 
         # Start Transcript
         trnFileName = casename + ".trn"
@@ -81,8 +84,8 @@ if caseDict is not None:
         solver.tui.define.beta_feature_access("yes ok")
 
         # Case Setup
-        mysetup.setup(data=caseEl, solver=solver, functionEl=caseFunctionEl)
-        mysetup.report_01(caseEl, solver)
+        setupcfd.setup(data=caseEl, solver=solver, functionEl=caseFunctionEl)
+        setupcfd.report_01(caseEl, solver)
 
         # Solution
         # Set Solver Settings
@@ -91,20 +94,35 @@ if caseDict is not None:
         # Initialization
         solve.init(data=caseEl, solver=solver, functionEl=caseFunctionEl)
 
+        # Get base caseFilename and update dict
+        caseFilename = caseEl.get("caseFilename", casename)
+        caseEl["caseFilename"] = caseFilename
+
         # Write case and ini-data & settings file
-        solver.file.write(file_type="case-data", file_name=caseEl["caseFilename"])
-        settingsFilename = '"' + caseEl["caseFilename"] + '.set"'
+        print("\nWriting initial case & settings file\n")
+        solver.file.write(file_type="case", file_name=caseFilename)
+        settingsFilename = '"' + caseFilename + '.set"'
         solver.tui.file.write_settings(settingsFilename)
+        if solver.field_data.is_data_valid():
+            print("\nWriting initial dat file\n")
+            solver.file.write(file_type="data", file_name=caseFilename)
+        else:
+            print(
+                "Skipping Writing of Initial Solution Data: No Solution Data available\n"
+            )
 
         # Solve
-        if caseEl["solution"]["runSolver"]:
+        if caseEl["solution"].get("runSolver", False):
             solve.solve_01(caseEl, solver)
 
-            filename = caseEl["caseFilename"] + "_fin"
+            filename = caseFilename + "_fin"
             solver.file.write(file_type="case-data", file_name=filename)
 
         # Postprocessing
-        postproc.post(data=caseEl, solver=solver, functionEl=caseFunctionEl)
+        if solver.field_data.is_data_valid():
+            postproc.post(data=caseEl, solver=solver, functionEl=caseFunctionEl)
+        else:
+            print("Skipping Postprocessing: No Solution Data available\n")
 
         # Finalize
         solver.file.stop_transcript()
@@ -116,7 +134,7 @@ if studyDict is not None:
     parametricstudy.study(data=turboData, solver=solver, functionEl=glfunctionEl)
 
     # Postprocessing of studies
-    if launchEl.get("plotResults") and external:
+    if launchEl.get("plotResults"):
         parametricstudy.studyPlot(data=turboData)
 
 # Exit Solver

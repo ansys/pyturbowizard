@@ -45,7 +45,7 @@ Required libraries:
   - Adjust the Configuration File to your setup ([Configuration File Setup](tts_documentation/ConfigFile.md))
 - Get latest Version From GitHub: [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main)
   - Copy complete file structure from GitHub to a specific folder
-  - execute script in Terminal via: ```python <FullPathToTTSMain.py> <FullPathToConfigurationFile.json>```
+  - execute script in Terminal via: ```python <FullPathToTTSMain.py> <PathToConfigurationFile.json>```
 
 ## Useful Documents
 - [Configuration File Setup](tts_documentation/ConfigFile.md)

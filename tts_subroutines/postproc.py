@@ -20,7 +20,7 @@ def post(data, solver, functionEl):
             + '" not known. Skipping Postprocessing!'
         )
 
-    print("Running Postprocessing Function... finished.")
+    print("\nRunning Postprocessing Function... finished!\n")
 
 
 def post_01(data, solver):
