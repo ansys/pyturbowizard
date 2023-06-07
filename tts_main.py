@@ -56,7 +56,9 @@ if caseDict is not None:
         print("Running Case: " + casename + "\n")
         caseEl = turboData["cases"][casename]
         # Merge function dicts
-        caseFunctionEl = utilities.merge_functionEls(caseEl=caseEl, glfunctionEl=glfunctionEl)
+        caseFunctionEl = utilities.merge_functionEls(
+            caseEl=caseEl, glfunctionEl=glfunctionEl
+        )
         # Copy data from reference if refCase is set
         if caseEl.get("refCase") is not None:
             caseEl = utilities.merge_data_with_refEl(caseEl=caseEl, allCasesEl=caseDict)
@@ -100,7 +102,9 @@ if caseDict is not None:
             print("\nWriting initial dat file\n")
             solver.file.write(file_type="data", file_name=caseEl["caseFilename"])
         else:
-            print("Skipping Writing of Initial Solution Data: No Solution Data available\n")
+            print(
+                "Skipping Writing of Initial Solution Data: No Solution Data available\n"
+            )
 
         # Solve
         if caseEl["solution"].get("runSolver", False):
