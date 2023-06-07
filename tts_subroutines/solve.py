@@ -52,6 +52,8 @@ def init_hybrid_01(data, solver):
 
 def init_fmg_01(data, solver):
     init_standard_01(data=data, solver=solver)
+    #setting rp variable which is needed for version v232 when using gtis, may be obsolete in future versions
+    solver.execute_tui(r'''(rpsetvar 'fmg-init/enable-with-gti? #t)''')
     solver.solution.initialization.fmg_initialize()
 
 
