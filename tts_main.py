@@ -4,6 +4,7 @@ import sys
 
 # Load Script Modules
 from tts_subroutines import (
+    launcher,
     numerics,
     parametricstudy,
     solve,
@@ -46,7 +47,7 @@ print("Used Fluent Working-Directory: " + fl_workingDir)
 if external:
     # Fluent starts externally
     print("Launching Fluent...")
-    solver = utilities.launchFluent(launchEl)
+    solver = launcher.launchFluent(launchEl)
 
 # Start Setup
 caseDict = turboData.get("cases")
