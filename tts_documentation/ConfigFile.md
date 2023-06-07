@@ -254,7 +254,7 @@ For running Fluent on Linux or a Cluster, the script needs to hook on to a exist
 
 An example plot of the Operating Point Map is shown below:
 
-<img src="/Documentation/images/operating_map_example.png" alt="operating point map example" style="height: 400px; width:800px;"/>
+<img src="/tts_documentation/images/operating_map_example.png" alt="operating point map example" style="height: 400px; width:800px;"/>
 
 ```exitatend ``` can be used to specify whether you want to close Fluent after the script is finished.
 
