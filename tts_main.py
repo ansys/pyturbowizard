@@ -15,6 +15,7 @@ from tts_subroutines import (
 )
 
 version = "1.3.3"
+print(f"\n*** Starting TurboTestSuite (Version {str(version)}) ***\n\n")
 
 # If solver variable does not exist, Fluent has been started in external mode
 external = "solver" not in globals()
