@@ -58,52 +58,56 @@ def post_01(data, solver, launchEl):
     # Filter for file names starting with "report"
     filtered_files = [file for file in file_names if file.startswith("report")]
     # Find the file name with the highest number
-    report_file = max(filtered_files, key=lambda x: [int(num) for num in x.split("_") if num.isdigit()])
+    if filtered_files != []:
+        report_file = max(filtered_files, key=lambda x: [int(num) for num in x.split("_") if num.isdigit()])
+        
+        
 
-    # read in table of report-mp and get last row
-    out_table = pd.read_csv(report_file, header=2, delimiter=" ")
-    first_column = out_table.columns[0]
-    last_column = out_table.columns[-1]
+        # read in table of report-mp and get last row
+        out_table = pd.read_csv(report_file, header=2, delimiter=" ")
+        first_column = out_table.columns[0]
+        last_column = out_table.columns[-1]
 
-    # Remove brackets from first and last column names
-    modified_columns = {
-        first_column: first_column.replace('(', '').replace(')', '').replace('"',''),
-        last_column: last_column.replace('(', '').replace(')', '')
-    }
-    out_table = out_table.rename(columns = modified_columns)
-    report_values = out_table.iloc[[-1]]
+        # Remove brackets from first and last column names
+        modified_columns = {
+            first_column: first_column.replace('(', '').replace(')', '').replace('"',''),
+            last_column: last_column.replace('(', '').replace(')', '')
+        }
+        out_table = out_table.rename(columns = modified_columns)
+        report_values = out_table.iloc[[-1]]
 
-    ## get wall clock time
-    # Write out system time
-    solver.report.system.time_statistics()
+        ## get wall clock time
+        # Write out system time
+        solver.report.system.time_statistics()
 
-    trnFileName = caseFilename + ".trn"
-    with open(trnFileName, "r") as file:
-        transcript = file.read()
+        trnFileName = caseFilename + ".trn"
+        with open(trnFileName, "r") as file:
+            transcript = file.read()
 
-    lines = transcript.split("\n")
-    wall_clock_per_it = 0
-    wall_clock_tot = 0
-    nodes = 0
-    for line in lines:
-        if "Average wall-clock time per iteration" in line:
-            wall_clock_per_it = line.split(":")[1].strip()
-            print("Average Wall Clock Time per Iteration:", wall_clock_per_it)
-        if "Total wall-clock time" in line:
-            wall_clock_tot = line.split(":")[1].strip()
-            print("Total Wall Clock Time:", wall_clock_tot)
-        if "iterations on " in line:
-            nodes = line.split(" ")[-3]
+        lines = transcript.split("\n")
+        wall_clock_per_it = 0
+        wall_clock_tot = 0
+        nodes = 0
+        for line in lines:
+            if "Average wall-clock time per iteration" in line:
+                wall_clock_per_it = line.split(":")[1].strip()
+                print("Average Wall Clock Time per Iteration:", wall_clock_per_it)
+            if "Total wall-clock time" in line:
+                wall_clock_tot = line.split(":")[1].strip()
+                print("Total Wall Clock Time:", wall_clock_tot)
+            if "iterations on " in line:
+                nodes = line.split(" ")[-3]
 
-    ## write report table
-    report_table = report_values
-    
-    report_table["Total Wall Clock Time"] = wall_clock_tot
-    report_table["Ave Wall Clock Time per It"] = wall_clock_per_it
-    report_table["Compute Nodes"] = nodes
-    report_table["Case Name"] = caseFilename
+        ## write report table
+        report_table = report_values
+        
+        report_table["Total Wall Clock Time"] = wall_clock_tot
+        report_table["Ave Wall Clock Time per It"] = wall_clock_per_it
+        report_table["Compute Nodes"] = nodes
+        report_table["Case Name"] = caseFilename
 
-    reportTableFileName =  caseFilename + '_reporttable.csv'
-    report_table.to_csv(reportTableFileName,index=None)
+        reportTableFileName =  caseFilename + '_reporttable.csv'
+        report_table.to_csv(reportTableFileName,index=None)
+    else: print("Report File not found. Skipping Report Table.")
     
     return
