@@ -64,6 +64,10 @@ if caseDict is not None:
         if caseEl.get("refCase") is not None:
             caseEl = utilities.merge_data_with_refEl(caseEl=caseEl, allCasesEl=caseDict)
 
+        # Get base caseFilename and update dict
+        caseFilename = caseEl.get("caseFilename", casename)
+        caseEl["caseFilename"] = caseFilename
+
         # Set Batch options
         solver.file.confirm_overwrite = False
 
@@ -94,10 +98,6 @@ if caseDict is not None:
 
         # Initialization
         solve.init(data=caseEl, solver=solver, functionEl=caseFunctionEl)
-
-        # Get base caseFilename and update dict
-        caseFilename = caseEl.get("caseFilename", casename)
-        caseEl["caseFilename"] = caseFilename
 
         # Write case and ini-data & settings file
         print("\nWriting initial case & settings file\n")
