@@ -8,7 +8,7 @@ The functionalities are displayed in the following Feature-Matrix:
 | Gas Turbine | Ideal Air | Total Pressure, Mass Flow | Static Pressure, Exit Corrected Mass Flow, Mass Flow | yes                 | Unlimited (1 mesh file) | Mixing Plane, General, Periodic | yes                      |
 | Compressor  | Ideal Air | Total Pressure, Mass Flow | Static Pressure, Exit Corrected Mass Flow, Mass Flow | yes                 | Unlimited (1 mesh file) | Mixing Plane, General, Periodic | yes                      |
 
-**Note: Rotation axis is expected to be z-axis (0,0,1) with axis origin (0,0,0)**
+**Note: Default rotation axis is expected to be z-axis (0,0,1) with axis origin (0,0,0)**
 
 ## **Getting Started**
 ### **Fluent Installation**

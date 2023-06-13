@@ -74,9 +74,11 @@ Under the ``` cases ``` section different case setups can be specified for the s
         "caseFilename": "Case_1",
         "meshFilename": "Case_1_mesh",
         "profileName_In": "InProfile.csv",
-        "profileName_Out": "",
-        "expressionFilename": "exp.tsv",
+        "profileName_Out": "",        
         "expressionTemplate": "expressionTemplate_compressor_comp.tsv",
+        "gravity_vector": [0.0, 0.0, -9.81],
+        "rotation_axis_direction": [0.0, 0.0, 1.0],
+        "rotation_axis_origin": [0.0, 0.0, 0.0],
         ...
       },
       "Case_2": {
@@ -201,7 +203,7 @@ In ```reportlist``` the expressions for monitoring (plotting and file save) can 
 
 ```tsn``` turns on turbo machinery specific numerics as beta feature. 
 
-The automatic time step factor and iteration count can be set via ```time_step_factor``` and ``` iter_count ``` respectively. 
+The automatic time step factor and iteration count can be set via ```time_step_factor``` (length-scale-method = conservative) or ```pseudo_timestep``` and ``` iter_count ``` respectively. 
 
 ``` runSolver``` can be used to specify whether the simulation should start to run at the end of the setup.
 
