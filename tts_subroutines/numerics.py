@@ -7,12 +7,14 @@ def numerics(data, solver, functionEl):
         parentEl=data,
         functionEl=functionEl,
         funcElName="numerics",
-        defaultName="numerics_bp_all_2305",
+        defaultName="numerics_bp_tn_2305",
     )
 
     print('\nSpecifying Numerics: "' + functionName + '"...')
     if functionName == "numerics_defaults":
         numerics_defaults(data, solver)
+    elif functionName == "numerics_bp_tn_2304":
+        numerics_bp_tn_2304(data, solver)
     elif functionName == "numerics_bp_tn_2305":
         numerics_bp_tn_2305(data, solver)
     elif functionName == "numerics_bp_all_2305":
@@ -33,6 +35,10 @@ def numerics_defaults(data, solver):
     )
     return
 
+def numerics_bp_tn_2304(data, solver):
+    if data["solution"]["tsn"]:
+        solver.tui.solve.set.advanced.turbomachinery_specific_numerics.enable("yes")
+    return
 
 def numerics_bp_tn_2305(data, solver):
     solver.solution.methods.gradient_scheme = "green-gauss-node-based"
