@@ -25,13 +25,13 @@ def post(data, solver, functionEl):
 
 def post_01(data, solver):
     caseFilename = data["caseFilename"]
-    filename = caseFilename + "_" + data["results"]["filename_outputParameter_pf"]
+    filename = caseFilename + "_" + data["results"].get("filename_outputParameter", "outParameters.out")
     # solver.tui.define.parameters.output_parameters.write_all_to_file('filename')
     tuicommand = (
         'define parameters output-parameters write-all-to-file "' + filename + '"'
     )
     solver.execute_tui(tuicommand)
-    filename = caseFilename + "_" + data["results"]["filename_summary_pf"]
+    filename = caseFilename + "_" + data["results"].get("filename_summary", "report.sum")
     solver.results.report.summary(write_to_file=True, file_name=filename)
 
     # define span-wise surfaces for post processing

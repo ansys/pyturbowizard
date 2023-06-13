@@ -428,8 +428,10 @@ def report_01(data, solver):
         reportName = report.replace("_", "-")
         reportName = "rep-" + reportName.lower()
         reportNameList.append(reportName)
+
+    reportFileName = data["caseFilename"] + "_report.out"
     solver.solution.monitor.report_files["report-file"] = {
-        "file_name": "./report.out",
+        "file_name": reportFileName,
         "report_defs": reportNameList,
     }
 
