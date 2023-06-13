@@ -198,3 +198,53 @@ def merge_data_with_refEl(caseEl: dict, allCasesEl: dict):
     mergedCaseEl = refEl.copy()
     mergedCaseEl.update(caseEl)
     return mergedCaseEl
+
+def CreateReportTable(reportFileName,trnFileName,caseFilename):
+        
+    # get report file
+    # read in table of report-mp and get last row
+    try:
+        out_table = pd.read_csv(reportFileName, header=2, delimiter=" ")
+        first_column = out_table.columns[0]
+        last_column = out_table.columns[-1]
+
+        # Remove brackets from first and last column names
+        modified_columns = {
+            first_column: first_column.replace('(', '').replace(')', '').replace('"',''),
+            last_column: last_column.replace('(', '').replace(')', '')
+        }
+        out_table = out_table.rename(columns = modified_columns)
+        report_values = out_table.iloc[[-1]]
+
+
+        # Read in transcript file
+        with open(trnFileName, "r") as file:
+            transcript = file.read()
+
+        lines = transcript.split("\n")
+        wall_clock_per_it = 0
+        wall_clock_tot = 0
+        nodes = 0
+        for line in lines:
+            if "Average wall-clock time per iteration" in line:
+                wall_clock_per_it = line.split(":")[1].strip()
+                print("Average Wall Clock Time per Iteration:", wall_clock_per_it)
+            if "Total wall-clock time" in line:
+                wall_clock_tot = line.split(":")[1].strip()
+                print("Total Wall Clock Time:", wall_clock_tot)
+            if "iterations on " in line:
+                nodes = line.split(" ")[-3]
+
+        ## write report table
+        report_table = report_values
+        
+        report_table["Total Wall Clock Time"] = wall_clock_tot
+        report_table["Ave Wall Clock Time per It"] = wall_clock_per_it
+        report_table["Compute Nodes"] = nodes
+        report_table["Case Name"] = caseFilename
+
+        reportTableFileName =  caseFilename + '_reporttable.csv'
+        print("Writing Report Table to: "+ reportTableFileName)
+        report_table.to_csv(reportTableFileName,index=None)
+    except: print("Report File not found. Skipping Report Table.")
+    return
