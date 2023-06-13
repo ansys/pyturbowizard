@@ -119,7 +119,7 @@ def boundary_01(data, solver, solveEnergy:bool = True):
                 "reference_frame_axis_origin": rot_ax_orig,
                 "reference_frame_axis_direction": rot_ax_dir,
                 "mrf_motion": True,
-                "mrf_omega": "BC_RPM",
+                "mrf_omega": "BC_omega",
             }
         # otherwise its stationary
         else:
@@ -337,7 +337,7 @@ def boundary_01(data, solver, solveEnergy:bool = True):
                     "motion_bc": "Moving Wall",
                     "relative": False,
                     "rotating": True,
-                    "omega": "BC_RPM",
+                    "omega": "BC_omega",
                     "rotation_axis_origin": rot_ax_orig,
                     "rotation_axis_direction": rot_ax_dir,
                 }
