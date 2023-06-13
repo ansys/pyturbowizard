@@ -106,6 +106,11 @@ Restrictions when using profiles:
       - Total Pressure: "p-out"
     
 Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup.
+Optional objects are:
+  - ```gravity_vector```:  Vector defining gravity, e.g. [0.0, 0.0, -9.81], default: not set, gravity off
+  - Definition of Rotation Axis
+    - ```rotation_axis_direction```: Vector defining axis direction, default: [0.0, 0.0, 1.0]
+    - ```rotation_axis_origin```: Vector defining axis origin, default: [0.0, 0.0, 0.0] 
 
 ```
  "Case_1": {
