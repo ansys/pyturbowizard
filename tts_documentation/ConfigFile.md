@@ -11,8 +11,8 @@ Under the section ``` functions ```, different subroutines for the numerical set
 ```
 "functions":
     {
-      "setup": "setup_01",
-      "numerics": "numerics_bp_all_2305",
+      "setup": "setup_compressible_01",
+      "numerics": "numerics_bp_tn_2305",
       "initialization": "init_hybrid_01",      
       "postproc": "post_01",
       "parametricstudy": "study_01"
@@ -22,13 +22,15 @@ Currently the following functions and corresponding options are available:
 - "setup":
   - Specify setup function
   - Available functions:
-    - **"setup_01" (default):** standard setup  
+    - **"setup_compressible_01" (default):** standard setup for compressible fluids
+    - "setup_incompressible_01": standard setup for incompressible fluids (beta)
 - "numerics": 
   - Specify numeric settings
   - Available functions:
     - "numerics_defaults": Use Fluent default settings    
-    - "numerics_bp_tn_2305": Use turbo best practice settings from May 2023 in combination with Fluent default discretization-schemes
-    - **"numerics_bp_all_2305" (default):** Use turbo best practice settings from May 2023, additionally set explicitly all discretization-schemes to second order    
+    - **"numerics_bp_tn_2305" (default):**  Use turbo best practice settings from May 2023 in combination with Fluent default discretization-schemes
+    - "numerics_bp_all_2305": Use turbo best practice settings from May 2023, additionally set explicitly all discretization-schemes to second order    
+    - "numerics_bp_tn_2304" : Use turbo best practice settings from April 2023, Usage of LSQ gradient discretization-schemes
 - "initialization":
   - Specify initialization settings
   - Available functions:
@@ -112,7 +114,7 @@ Next, you can choose your ``` expressionTemplate ```. Currently there are expres
           "GEO_OUT_No_Passages": "1",
           "GEO_OUT_No_Passages_360": "1",
           "BC_pref":	"0 [Pa]",
-          "BC_RPM":	"17000 [rev / min]",
+          "BC_omega":	"17000 [rev / min]",
           "BC_IN_pt":	"",
           "BC_IN_p_gauge": 	"58000 [Pa]",
           "BC_IN_Tt":	"",
@@ -220,9 +222,8 @@ The automatic time step factor and iteration count can be set via ```time_step_f
                   "time_step_factor": 5,
                   "runSolver": false
                 },
-                "results": {
-                  "filename_inputParameter_pf": "inputParameters.out",
-                  "filename_outputParameter_pf": "outParameters.out",
+                "results": {                 
+                  "filename_outputParameter": "outParameters.out",
                   "filename_summary_pf": "report.sum"
                 }
 ```
