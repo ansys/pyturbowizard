@@ -30,6 +30,3 @@ name	definition	description	input-parameter	output-parameter
 "MP_OUT_VolumeFlow_360"	"MP_OUT_MassFlow_360 / AreaAve(Density,{bz_outlet_names})"	""	#f	#f
 "MP_Power_dpt_360"	"MP_OUT_VolumeFlow_360 * (MP_IN_massFlowAve_pt - MP_OUT_massFlowAve_pt)"	""	#f	#t
 "MP_Efficiency_Torque"	"MP_Power_Torque_360 / MP_Power_dpt_360"	""	#f	#t
-"MP_IN_massFlowAve_pEu"	"(BC_omega * PI/180 [deg]) * MassFlowAve(Density * RadialCoordinate * TangentialVelocity, {bz_inlet_names})"	""	#f	#f
-"MP_OUT_massFlowAve_pEu"	"(BC_omega * PI/180 [deg]) * MassFlowAve(Density * RadialCoordinate * TangentialVelocity, {bz_outlet_names})"	""	#f	#f
-"MP_Efficiency_Eu"	"(MP_IN_massFlowAve_pEu - MP_OUT_massFlowAve_pEu) / (MP_IN_massFlowAve_pt - MP_OUT_massFlowAve_pt)"	""	#f	#t
