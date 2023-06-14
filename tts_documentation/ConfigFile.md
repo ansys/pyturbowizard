@@ -52,14 +52,16 @@ Currently the following functions and corresponding options are available:
 ### Launch Options
 Under the section ``` launching ```, different options for launching options for Fluent can be specified, like the version, number of processes and single or double precision solver.
 
-For running Fluent on Linux or a Cluster, the script needs to hook on to a existing Fluent session ([How to Run on Linux](/README.md#linux--cluster-1)). For this a server file name has to be specified under ``` serverfilename ```. When hooking onto a existing Fluent session the ``` launching ``` options are not used, except for ```workingDir```.
+For running Fluent on Linux or a Cluster, there are two options:
+   - Submit job to a slurm-queue: ```queue_slurm``` and a maximal waiting time in sec ```queue_waiting_time``` (default: 600sec). Other options identical to usual launching options
+   - Hook on to an existing Fluent session ([How to Run on Linux](/README.md#linux--cluster-1)): For this a server file name has to be specified under ``` serverfilename ```. When hooking onto a existing Fluent session the ``` launching ``` options are not used, except for ```workingDir```.
 ```
 "launching":
     {
       "workingDir": "<PathToFluentWorkingDir>",
       "fl_version": "23.2.0",
       "noCore": 8,
-      "serverfilename": "",
+      "serverfilename": "server-info.txt",
       "precision": "double",
       "show_gui":  true
     },
