@@ -1,3 +1,4 @@
+
 name	definition	description	input-parameter	output-parameter
 "GEO_IN_No_Passages"	"{GEO_IN_No_Passages}"	""	#f	#f
 "GEO_IN_No_Passages_360"	"{GEO_IN_No_Passages_360}"	""	#f	#f
@@ -24,6 +25,11 @@ name	definition	description	input-parameter	output-parameter
 "MP_OUT_massFlowAve_pt"	"Average(TotalPressure,{bz_outlet_names},Weight = 'MassFlowRate') + BC_pref"	""	#f	#f
 "MP_PR"	"MP_OUT_areaAve_p / MP_IN_areaAve_p"	""	#f	#f
 "MP_PRt"	"MP_OUT_massFlowAve_pt/ MP_IN_massFlowAve_pt"	""	#f	#t
-"MP_IN_massFlowAve_ptth"	"(BC_omega / 1[rad]) * MassFlowAve(Density * RadialCoordinate * TangentialVelocity, {bz_inlet_names})"	""	#f	#f
-"MP_OUT_massFlowAve_ptth"	"(BC_omega / 1[rad]) * MassFlowAve(Density * RadialCoordinate * TangentialVelocity, {bz_outlet_names})"	""	#f	#f
-"MP_Efficiency"	"(MP_IN_massFlowAve_pt - MP_OUT_massFlowAve_pt) / (MP_IN_massFlowAve_ptth - MP_OUT_massFlowAve_ptth)"	""	#f	#t
+"MP_Torque_360"	"(GEO_IN_No_Passages_360 / GEO_IN_No_Passages) * dot(vector{rotation_axis_direction} , Moment(vector{rotation_axis_origin},{bz_walls_torque}))"	""	#f	#t
+"MP_Power_Torque_360"	"MP_Torque_360 * (BC_omega * PI/180 [deg])"	""	#f	#t
+"MP_IN_VolumeFlow_360"	"MP_IN_MassFlow_360 / AreaAve(Density,{bz_inlet_names})"	""	#f	#f
+"MP_Power_pt_360"	"MP_IN_VolumeFlow_360 * (MP_IN_massFlowAve_pt - MP_OUT_massFlowAve_pt)"	""	#f	#t
+"MP_Efficiency_Torque"	"MP_Power_pt_360 / MP_Power_Torque_360"	""	#f	#t
+"MP_IN_massFlowAve_pEu"	"(BC_omega * PI/180 [deg]) * MassFlowAve(Density * RadialCoordinate * TangentialVelocity, {bz_inlet_names})"	""	#f	#f
+"MP_OUT_massFlowAve_pEu"	"(BC_omega * PI/180 [deg]) * MassFlowAve(Density * RadialCoordinate * TangentialVelocity, {bz_outlet_names})"	""	#f	#f
+"MP_Efficiency_Eu"	"(MP_IN_massFlowAve_pt - MP_OUT_massFlowAve_pt) / (MP_IN_massFlowAve_pEu - MP_OUT_massFlowAve_pEu)"	""	#f	#t

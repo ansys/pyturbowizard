@@ -88,8 +88,7 @@
           "fl_mol_wight": 28.96
         },
         "setup": {
-          "BC_OUT_p_pbf": 0.05,
-          "BC_OUT_p_numbins": 65
+           "BC_settings_pout": [0.05, 65]
         },
         "solution": {
           "reportlist": ["MP_IN_MassFlow","MP_OUT_MassFlow","MP_IN_MassFlow_360","MP_OUT_MassFlow_360","MP_Isentropic_Efficiency","MP_PRt"],

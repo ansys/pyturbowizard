@@ -303,10 +303,9 @@ def boundary_01(data, solver, solveEnergy:bool = True):
                     outBC.avg_press_spec = True
                     # Set additional pressure-outlet-bc settings if available in config file
                     try:
-                        p_pbf = data["setup"]["BC_OUT_p_pbf"]
-                        p_numbins = data["setup"]["BC_OUT_p_numbins"]
+                        pout_settings = data["setup"]["BC_settings_pout"]
                         solver.tui.define.boundary_conditions.bc_settings.pressure_outlet(
-                            p_pbf, p_numbins
+                            pout_settings[0], pout_settings[1]
                         )
                     except KeyError as e:
                         print(
