@@ -34,22 +34,11 @@ def post_01(data, solver, launchEl):
     solver.execute_tui(tuicommand)
     filename = caseFilename + "_" + data["results"]["filename_summary_pf"]
     solver.results.report.summary(write_to_file=True, file_name=filename)
-
-    # define span-wise surfaces for post processing
     if data["locations"].get("tz_turbo_topology_names") is not None:
         try:
-            print("Creating spanwise ISO-surfaces @20,50,90 span")
-            solver.tui.surface.iso_surface(
-                "spanwise-coordinate", "span-20", [], [], "0.2", []
-            )
-            solver.tui.surface.iso_surface(
-                "spanwise-coordinate", "span-50", [], [], "0.5", []
-            )
-            solver.tui.surface.iso_surface(
-                "spanwise-coordinate", "span-90", [], [], "0.9", []
-            )
+            utilities.spanPlots(data,solver)
         except Exception as e:
-            print(f"No turbo surfaces have been created: {e}")
+            print(f"No span plots have been created: {e}")
     
     ## get wall clock time
     # Write out system time
@@ -58,7 +47,7 @@ def post_01(data, solver, launchEl):
     trnFileName = caseFilename + ".trn"
     # get correct report file from fluent
     reportFileName = caseFilename + "_report.out"
-    
+
     utilities.CreateReportTable(reportFileName,trnFileName,caseFilename)
     
     

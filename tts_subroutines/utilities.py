@@ -219,32 +219,83 @@ def CreateReportTable(reportFileName,trnFileName,caseFilename):
 
         # Read in transcript file
         with open(trnFileName, "r") as file:
-            transcript = file.read()
+         transcript = file.read()
 
+        table_started = False
         lines = transcript.split("\n")
         wall_clock_per_it = 0
         wall_clock_tot = 0
         nodes = 0
+        filtered_values = []
+        filtered_headers = []
+
         for line in lines:
             if "Average wall-clock time per iteration" in line:
                 wall_clock_per_it = line.split(":")[1].strip()
                 print("Average Wall Clock Time per Iteration:", wall_clock_per_it)
-            if "Total wall-clock time" in line:
+            elif "Total wall-clock time" in line:
                 wall_clock_tot = line.split(":")[1].strip()
                 print("Total Wall Clock Time:", wall_clock_tot)
-            if "iterations on " in line:
-                nodes = line.split(" ")[-3]
+            elif "iter" in line:
+                headers = line.split()
+                filtered_headers = headers[1:-1]
+                table_started = True
+            elif "Done." in line and table_started:
+                # "Done." line encountered, indicating the end of the iteration table
+                print("Done")
+                table_started = False
+            elif table_started:
+                values = line.split()
+                if len(values[1:-2]) == len(filtered_headers):
+                    filtered_values = values[1:-2]
+
+        for i in range(len(filtered_headers)):
+            if filtered_headers[i].startswith('rep-'):
+                filtered_headers[i] += '-cov'
+            else:
+                filtered_headers[i] = 'res-' + filtered_headers[i]
+        
+        filtered_values = [float(val) for val in filtered_values]
+        res_columns = dict(zip(filtered_headers,filtered_values))
+
 
         ## write report table
-        report_table = report_values
-        
+        report_table = pd.DataFrame()
+        report_table = pd.concat([report_table, report_values], axis=1)
+        report_table = report_table.assign(**res_columns)
         report_table["Total Wall Clock Time"] = wall_clock_tot
         report_table["Ave Wall Clock Time per It"] = wall_clock_per_it
         report_table["Compute Nodes"] = nodes
-        report_table["Case Name"] = caseFilename
-
+        report_table.insert(0,"Case Name", caseFilename)
+        
         reportTableFileName =  caseFilename + '_reporttable.csv'
         print("Writing Report Table to: "+ reportTableFileName)
         report_table.to_csv(reportTableFileName,index=None)
     except: print("Report File not found. Skipping Report Table.")
     return
+
+def spanPlots(data,solver):
+    # Create spanwise surfaces
+    spansSurf = data["results"].get("span_plot_height")
+    contVars = data["results"].get("span_plot_var")
+    for spanVal in spansSurf:
+        spanName = f"span-{spanVal}"
+        print("Creating spanwise ISO-surface: " + spanName)
+        solver.results.surfaces.iso_surface[spanName]= {}
+        zones = solver.results.surfaces.iso_surface[spanName].zone.get_attr("allowed-values")
+        solver.results.surfaces.iso_surface[spanName](
+            field="spanwise-coordinate",
+            zone = zones,
+            iso_value = [spanVal]
+        )
+
+        for contVar in contVars:
+            contName = spanName + "-" + contVar
+            print("Creating spanwise contour-plot: " + contName)
+            solver.results.graphics.contour[contName] = {}
+            solver.results.graphics.contour[contName](
+                field = contVar,
+                contour_lines = True
+            )
+            solver.results.graphics.contour[contName].range_option.auto_range_on.global_range = False
+
