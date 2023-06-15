@@ -309,7 +309,7 @@ def boundary_01(data, solver, solveEnergy:bool = True):
                         )
                     except KeyError as e:
                         print(
-                            f"KeyError: Key not found in ConfigFile: {str(e)} \nAdditional pressure-outlet-bc settings skipped!"
+                            f"Key not found in ConfigFile: {str(e)} \nAdditional pressure-outlet-bc settings skipped!"
                         )
 
             # Walls
