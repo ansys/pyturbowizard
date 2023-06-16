@@ -11,8 +11,8 @@ Under the section ``` functions ```, different subroutines for the numerical set
 ```
 "functions":
     {
-      "setup": "setup_01",
-      "numerics": "numerics_bp_all_2305",
+      "setup": "setup_compressible_01",
+      "numerics": "numerics_bp_tn_2305",
       "initialization": "init_hybrid_01",      
       "postproc": "post_01",
       "parametricstudy": "study_01"
@@ -22,13 +22,16 @@ Currently the following functions and corresponding options are available:
 - "setup":
   - Specify setup function
   - Available functions:
-    - **"setup_01" (default):** standard setup  
+    - **"setup_compressible_01" (default):** standard setup for compressible fluids
+    - "setup_incompressible_01": standard setup for incompressible fluids (beta)
 - "numerics": 
   - Specify numeric settings
   - Available functions:
     - "numerics_defaults": Use Fluent default settings    
-    - "numerics_bp_tn_2305": Use turbo best practice settings from May 2023 in combination with Fluent default discretization-schemes
-    - **"numerics_bp_all_2305" (default):** Use turbo best practice settings from May 2023, additionally set explicitly all discretization-schemes to second order    
+    - **"numerics_bp_tn_2305" (default):**  Use turbo best practice settings from May 2023 in combination with Fluent default discretization-schemes
+    - "numerics_bp_tn_2305_lsq" : Use turbo best practice settings from May 2023, but usage of LSQ gradient discretization-scheme
+    - "numerics_bp_all_2305": Use turbo best practice settings from May 2023, additionally set explicitly all discretization-schemes to second order    
+     
 - "initialization":
   - Specify initialization settings
   - Available functions:
@@ -50,14 +53,16 @@ Currently the following functions and corresponding options are available:
 ### Launch Options
 Under the section ``` launching ```, different options for launching options for Fluent can be specified, like the version, number of processes and single or double precision solver.
 
-For running Fluent on Linux or a Cluster, the script needs to hook on to a existing Fluent session ([How to Run on Linux](/README.md#linux--cluster-1)). For this a server file name has to be specified under ``` serverfilename ```. When hooking onto a existing Fluent session the ``` launching ``` options are not used, except for ```workingDir```.
+For running Fluent on Linux or a Cluster, there are two options:
+   - Submit job to a slurm-queue: ```queue_slurm``` and a maximal waiting time in sec ```queue_waiting_time``` (default: 600sec). Other options identical to usual launching options
+   - Hook on to an existing Fluent session ([How to Run on Linux](/README.md#linux--cluster-1)): For this a server file name has to be specified under ``` serverfilename ```. When hooking onto a existing Fluent session the ``` launching ``` options are not used, except for ```workingDir```.
 ```
 "launching":
     {
       "workingDir": "<PathToFluentWorkingDir>",
       "fl_version": "23.2.0",
       "noCore": 8,
-      "serverfilename": "",
+      "serverfilename": "server-info.txt",
       "precision": "double",
       "show_gui":  true
     },
@@ -72,9 +77,11 @@ Under the ``` cases ``` section different case setups can be specified for the s
         "caseFilename": "Case_1",
         "meshFilename": "Case_1_mesh",
         "profileName_In": "InProfile.csv",
-        "profileName_Out": "",
-        "expressionFilename": "exp.tsv",
+        "profileName_Out": "",        
         "expressionTemplate": "expressionTemplate_compressor_comp.tsv",
+        "gravity_vector": [0.0, 0.0, -9.81],
+        "rotation_axis_direction": [0.0, 0.0, 1.0],
+        "rotation_axis_origin": [0.0, 0.0, 0.0],
         ...
       },
       "Case_2": {
@@ -102,6 +109,11 @@ Restrictions when using profiles:
       - Total Pressure: "p-out"
     
 Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup.
+Optional objects are:
+  - ```gravity_vector```:  Vector defining gravity, e.g. [0.0, 0.0, -9.81], default: not set, gravity off
+  - Definition of Rotation Axis
+    - ```rotation_axis_direction```: Vector defining axis direction, default: [0.0, 0.0, 1.0]
+    - ```rotation_axis_origin```: Vector defining axis origin, default: [0.0, 0.0, 0.0] 
 
 ```
  "Case_1": {
@@ -112,7 +124,7 @@ Next, you can choose your ``` expressionTemplate ```. Currently there are expres
           "GEO_OUT_No_Passages": "1",
           "GEO_OUT_No_Passages_360": "1",
           "BC_pref":	"0 [Pa]",
-          "BC_RPM":	"17000 [rev / min]",
+          "BC_omega":	"17000 [rev / min]",
           "BC_IN_pt":	"",
           "BC_IN_p_gauge": 	"58000 [Pa]",
           "BC_IN_Tt":	"",
@@ -199,7 +211,7 @@ In ```reportlist``` the expressions for monitoring (plotting and file save) can 
 
 ```tsn``` turns on turbo machinery specific numerics as beta feature. 
 
-The automatic time step factor and iteration count can be set via ```time_step_factor``` and ``` iter_count ``` respectively. 
+The automatic time step factor and iteration count can be set via ```time_step_factor``` (length-scale-method = conservative) or ```pseudo_timestep``` and ``` iter_count ``` respectively. 
 
 ``` runSolver``` can be used to specify whether the simulation should start to run at the end of the setup.
 
@@ -220,11 +232,11 @@ The automatic time step factor and iteration count can be set via ```time_step_f
                   "time_step_factor": 5,
                   "runSolver": false
                 },
-                "results": {
-                  "filename_inputParameter_pf": "inputParameters.out",
-                  "filename_outputParameter_pf": "outParameters.out",
-                  "filename_summary_pf": "report.sum"
-                }
+        "results": {                 
+          "filename_outputParameter": "outParameters.out",
+          "filename_summary": "report.sum",
+          "filename_reporttable":   "reporttable.csv"
+        }
 ```
 
 ## Parametric Study Setup

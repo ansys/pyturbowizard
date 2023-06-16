@@ -20,6 +20,11 @@ def launchFluent(launchEl):
             + str(maxtime)
         )
         serverfilename = launchEl.get("serverfilename", "server-info.txt")
+        #Check if serverfile already exists
+        serverfilepath = os.path.join(fl_workingDir, serverfilename)
+        if os.path.isfile(serverfilepath):
+            raise FileExistsError(f"Serverfile already exits {serverfilepath}!\nPlease remove this file or specify a different serverfilename (Key: 'serverfilename')!")
+
         commandlist = list()
         commandlist.append(
             pyfluent.launcher.launcher.get_fluent_exe_path(
@@ -51,7 +56,7 @@ def launchFluent(launchEl):
                     time.sleep(5)
                     break
             except OSError:
-                print("Witing to process start...")
+                print("Waiting to process start...")
                 time.sleep(5)
                 current_time += 5
         if current_time > maxtime:

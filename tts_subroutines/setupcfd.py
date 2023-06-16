@@ -7,24 +7,33 @@ def setup(data, solver, functionEl):
         parentEl=data,
         functionEl=functionEl,
         funcElName="setup",
-        defaultName="setup_01",
+        defaultName="setup_compressible_01",
     )
     print('Running Setup Function "' + functionName + '"...')
-    if functionName == "setup_01":
-        setup_01(data, solver)
+    if functionName == "setup_compressible_01":
+        setup_compressible_01(data, solver)
+    elif functionName == "setup_incompressible_01":
+        setup_incompressible_01(data, solver)
     else:
         print('Prescribed Function "' + functionName + '" not known. Skipping Setup!')
 
     print("\nRunning Setup Function... finished!\n")
 
+def setup_compressible_01(data, solver):
+    setup_01(data=data, solver=solver, solveEnergy=True)
+    return
 
-def setup_01(data, solver):
+def setup_incompressible_01(data, solver):
+    setup_01(data=data, solver=solver, solveEnergy=False)
+    return
+
+def setup_01(data, solver, solveEnergy:bool = True):
     # Set physics
-    physics_01(solver)
+    physics_01(data=data, solver=solver, solveEnergy=solveEnergy)
     # Materials
-    material_01(data, solver)
+    material_01(data=data, solver=solver, solveEnergy=solveEnergy)
     # Set Boundaries
-    boundary_01(data, solver)
+    boundary_01(data=data, solver=solver, solveEnergy=solveEnergy)
 
     # Do some Mesh Checks
     solver.mesh.check()
@@ -32,41 +41,66 @@ def setup_01(data, solver):
 
     return
 
+def material_01(data, solver, solveEnergy:bool = True):
+    fl_name = data["fluid_properties"].get("fl_name")
+    if fl_name is None:
+        if solveEnergy:
+            fl_name = "air-cfx"
+        else:
+            fl_name = "water"
+        data["fluid_properties"]["fl_name"] = fl_name
 
-def material_01(data, solver):
-    solver.setup.materials.fluid.rename("air-cfx", "air")
-    solver.setup.materials.fluid["air-cfx"] = {
-        "density": {"option": data["fluid_properties"]["fl_density"]},
-        "specific_heat": {
-            "option": "constant",
-            "value": data["fluid_properties"]["fl_specific_heat"],
-        },
-        "thermal_conductivity": {
-            "option": "constant",
-            "value": data["fluid_properties"]["fl_thermal_conductivity"],
-        },
-        "viscosity": {
-            "option": "constant",
-            "value": data["fluid_properties"]["fl_viscosity"],
-        },
-        "molecular_weight": {
-            "option": "constant",
-            "value": data["fluid_properties"]["fl_mol_wight"],
-        },
-    }
+    solver.setup.materials.fluid.rename(fl_name, "air")
+    if solveEnergy:
+        solver.setup.materials.fluid[fl_name] = {
+            "density": {"option": data["fluid_properties"]["fl_density"]},
+            "specific_heat": {
+                "option": "constant",
+                "value": data["fluid_properties"]["fl_specific_heat"],
+            },
+            "thermal_conductivity": {
+                "option": "constant",
+                "value": data["fluid_properties"]["fl_thermal_conductivity"],
+            },
+            "viscosity": {
+                "option": "constant",
+                "value": data["fluid_properties"]["fl_viscosity"],
+            },
+            "molecular_weight": {
+                "option": "constant",
+                "value": data["fluid_properties"]["fl_mol_wight"],
+            },
+        }
+    else:
+        solver.setup.materials.fluid[fl_name] = {
+            "density": {
+                "option": "constant",
+                "value": data["fluid_properties"]["fl_density"],
+            },
+            "viscosity": {
+                "option": "constant",
+                "value": data["fluid_properties"]["fl_viscosity"],
+            }
+        }
 
     # Boundary Conditions
     solver.setup.general.operating_conditions.operating_pressure = "BC_pref"
 
     return
 
+def physics_01(data, solver, solveEnergy:bool = True):
+    if solveEnergy:
+        solver.setup.models.energy = {"enabled": True, "viscous_dissipation": True}
+    gravityVector = data.get("gravity_vector")
+    if (gravityVector is not None) and (type(gravityVector) is list):
+       print(f"\nSpecification of Gravity-Vector found: {gravityVector} \nEnabling and setting Gravity-Vector")
+       solver.setup.general.operating_conditions.gravity.enable = True
+       solver.setup.general.operating_conditions.gravity.components = gravityVector
 
-def physics_01(solver):
-    solver.setup.models.energy = {"enabled": True, "viscous_dissipation": True}
     return
 
 
-def boundary_01(data, solver):
+def boundary_01(data, solver, solveEnergy:bool = True):
     # Enable Turbo Models
     solver.tui.define.turbo_model.enable_turbo_model("yes")
 
@@ -85,7 +119,7 @@ def boundary_01(data, solver):
                 "reference_frame_axis_origin": rot_ax_orig,
                 "reference_frame_axis_direction": rot_ax_dir,
                 "mrf_motion": True,
-                "mrf_omega": "BC_RPM",
+                "mrf_omega": "BC_omega",
             }
         # otherwise its stationary
         else:
@@ -125,7 +159,8 @@ def boundary_01(data, solver):
                     inBC.mass_flow = "BC_IN_MassFlow"
                     inBC.gauge_pressure = "BC_IN_p_gauge"
                     inBC.direction_spec = "Normal to Boundary"
-                    inBC.t0 = "BC_IN_Tt"
+                    if solveEnergy:
+                        inBC.t0 = "BC_IN_Tt"
 
                 elif data["expressions"].get("BC_IN_pt") is not None:
                     solver.setup.boundary_conditions.change_type(
@@ -144,16 +179,18 @@ def boundary_01(data, solver):
                             "field_name": "pt-in",
                         }
                         inBC.gauge_pressure = "BC_IN_p_gauge"
-                        inBC.t0 = {
-                            "option": "profile",
-                            "profile_name": "inlet-bc",
-                            "field_name": "tt-in",
-                        }
+                        if solveEnergy:
+                            inBC.t0 = {
+                                "option": "profile",
+                                "profile_name": "inlet-bc",
+                                "field_name": "tt-in",
+                            }
                     else:
                         inBC.gauge_total_pressure = "BC_IN_pt"
                         inBC.gauge_pressure = "BC_IN_p_gauge"
                         inBC.direction_spec = "Normal to Boundary"
-                        inBC.t0 = "BC_IN_Tt"
+                        if solveEnergy:
+                            inBC.t0 = "BC_IN_Tt"
 
                 # Do some general settings
                 if inBC is not None:
@@ -266,14 +303,13 @@ def boundary_01(data, solver):
                     outBC.avg_press_spec = True
                     # Set additional pressure-outlet-bc settings if available in config file
                     try:
-                        p_pbf = data["setup"]["BC_OUT_p_pbf"]
-                        p_numbins = data["setup"]["BC_OUT_p_numbins"]
+                        pout_settings = data["setup"]["BC_settings_pout"]
                         solver.tui.define.boundary_conditions.bc_settings.pressure_outlet(
-                            p_pbf, p_numbins
+                            pout_settings[0], pout_settings[1]
                         )
                     except KeyError as e:
                         print(
-                            f"KeyError: Key not found in ConfigFile: {str(e)} \nAdditional pressure-outlet-bc settings skipped!"
+                            f"Key not found in ConfigFile: {str(e)} \nAdditional pressure-outlet-bc settings skipped!"
                         )
 
             # Walls
@@ -300,7 +336,7 @@ def boundary_01(data, solver):
                     "motion_bc": "Moving Wall",
                     "relative": False,
                     "rotating": True,
-                    "omega": "BC_RPM",
+                    "omega": "BC_omega",
                     "rotation_axis_origin": rot_ax_orig,
                     "rotation_axis_direction": rot_ax_dir,
                 }
@@ -318,6 +354,7 @@ def boundary_01(data, solver):
             solver.tui.define.mesh_interfaces.one_to_one_pairing("no")
             keyEl = data["locations"].get(key)
             for key_if in keyEl:
+                print(f"Setting up general interface: {key_if}")
                 side1 = keyEl[key_if].get("side1")
                 side2 = keyEl[key_if].get("side2")
                 # solver.tui.define.mesh_interfaces.create(key_if, side1, '()', side2,'()', 'no', 'no', 'no', 'yes', 'no')
@@ -329,6 +366,7 @@ def boundary_01(data, solver):
     keyEl = data["locations"].get("bz_interfaces_mixingplane_names")
     if keyEl is not None:
         for key_if in keyEl:
+            print(f"Setting up mixing plane interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
             solver.tui.define.turbo_model.turbo_create(
@@ -391,8 +429,10 @@ def report_01(data, solver):
         reportName = report.replace("_", "-")
         reportName = "rep-" + reportName.lower()
         reportNameList.append(reportName)
+
+    reportFileName = data["caseFilename"] + "_report.out"
     solver.solution.monitor.report_files["report-file"] = {
-        "file_name": "./report.out",
+        "file_name": reportFileName,
         "report_defs": reportNameList,
     }
 

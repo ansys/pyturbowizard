@@ -20,6 +20,9 @@ def writeExpressionFile(data: dict, script_dir: str, working_dir: str):
         helperDict = data["locations"]
         expressionEl = data.get("expressions")
         helperDict.update(expressionEl)
+        #add rotation axis
+        helperDict["rotation_axis_direction"] = tuple(data.get("rotation_axis_direction", [0., 0., 1.]))
+        helperDict["rotation_axis_origin"] = tuple(data.get("rotation_axis_origin", [0., 0., 0.]))
         tempData = cleanupInputExpressions(expressionEl=expressionEl, fileData=tempData)
         for line in tempData.splitlines():
             try:
@@ -195,6 +198,7 @@ def merge_data_with_refEl(caseEl: dict, allCasesEl: dict):
             f"Specified Reference Case {refCaseName} not found in Config-File!\nSkipping CopyFunction..."
         )
         return caseEl
-    mergedCaseEl = refEl.copy()
-    mergedCaseEl.update(caseEl)
-    return mergedCaseEl
+    helpCaseEl = refEl.copy()
+    helpCaseEl.update(caseEl)
+    caseEl.update(helpCaseEl)
+    return

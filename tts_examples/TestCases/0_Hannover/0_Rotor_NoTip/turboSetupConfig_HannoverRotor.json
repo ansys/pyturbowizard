@@ -25,7 +25,7 @@
           "GEO_OUT_No_Passages": "1",
           "GEO_OUT_No_Passages_360"	: "1",
           "BC_pref":	"0[Pa]",
-          "BC_RPM":	"1790.71 [rad / s]",
+          "BC_omega":	"1790.71 [rad / s]",
           "BC_IN_pt":	"-1",
           "BC_IN_p_gauge": 	"58000[Pa]",
           "BC_IN_Tt":	"-1",
@@ -70,8 +70,7 @@
           "fl_mol_wight": 28.96
         },
         "setup": {
-          "BC_OUT_p_pbf": 0.05,
-          "BC_OUT_p_numbins": 65
+           "BC_settings_pout": [0.05, 65]
         },
         "solution": {
           "reportlist": ["MP_IN_MassFlow","MP_OUT_MassFlow","MP_Isentropic_Efficiency","MP_PRt"],
@@ -86,9 +85,8 @@
           "runSolver": true
         },
         "results": {
-          "filename_inputParameter_pf": "inputParameters.out",
-          "filename_outputParameter_pf": "outParameters.out",
-          "filename_summary_pf": "report.sum"
+          "filename_outputParameter": "outParameters.out",
+          "filename_summary": "report.sum"
         }
       }
     }

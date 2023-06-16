@@ -14,7 +14,8 @@ from tts_subroutines import (
     postproc,
 )
 
-version = "1.3.2"
+version = "1.3.5"
+print(f"\n*** Starting TurboTestSuite (Version {str(version)}) ***\n\n")
 
 # If solver variable does not exist, Fluent has been started in external mode
 external = "solver" not in globals()
@@ -24,21 +25,27 @@ scriptPath = os.path.dirname(sys.argv[0])
 
 # Load Json File
 # Suggest Config File in python working Dir
-json_filename = "turboSetupConfig.json"
+config_filename = "turboSetupConfig.json"
 # If arguments are passed take first argument as fullpath to the json file
 if len(sys.argv) > 1:
-    json_filename = sys.argv[1]
-json_filename = os.path.normpath(json_filename)
-print("Opening ConfigFile: " + os.path.abspath(json_filename))
-json_file = open(json_filename)
-turboData = json.load(json_file)
+    config_filename = sys.argv[1]
+config_filename = os.path.normpath(config_filename)
+print("Opening ConfigFile: " + os.path.abspath(config_filename))
+config_file = open(config_filename, 'r')
+turboData = dict()
+# Load a yaml file if specified, otherwise json
+if config_filename.endswith("yaml"):
+    import yaml
+    turboData = yaml.safe_load(config_file)
+else:
+    turboData = json.load(config_file)
 
 # Get important Elements from json file
 launchEl = turboData.get("launching")
 glfunctionEl = turboData.get("functions")
 
 # Use directory of jason-file if not specified in config-file
-fl_workingDir = launchEl.get("workingDir", os.path.dirname(json_filename))
+fl_workingDir = launchEl.get("workingDir", os.path.dirname(config_filename))
 fl_workingDir = os.path.normpath(fl_workingDir)
 # Reset working dir in dict
 launchEl["workingDir"] = fl_workingDir
@@ -61,7 +68,11 @@ if caseDict is not None:
         )
         # Copy data from reference if refCase is set
         if caseEl.get("refCase") is not None:
-            caseEl = utilities.merge_data_with_refEl(caseEl=caseEl, allCasesEl=caseDict)
+            utilities.merge_data_with_refEl(caseEl=caseEl, allCasesEl=caseDict)
+
+        # Get base caseFilename and update dict
+        caseFilename = caseEl.get("caseFilename", casename)
+        caseEl["caseFilename"] = caseFilename
 
         # Set Batch options
         solver.file.confirm_overwrite = False
@@ -94,10 +105,6 @@ if caseDict is not None:
         # Initialization
         solve.init(data=caseEl, solver=solver, functionEl=caseFunctionEl)
 
-        # Get base caseFilename and update dict
-        caseFilename = caseEl.get("caseFilename", casename)
-        caseEl["caseFilename"] = caseFilename
-
         # Write case and ini-data & settings file
         print("\nWriting initial case & settings file\n")
         solver.file.write(file_type="case", file_name=caseFilename)
@@ -120,12 +127,17 @@ if caseDict is not None:
 
         # Postprocessing
         if solver.field_data.is_data_valid():
-            postproc.post(data=caseEl, solver=solver, functionEl=caseFunctionEl)
+            postproc.post(data=caseEl, solver=solver, functionEl=caseFunctionEl,launchEl = launchEl)
         else:
             print("Skipping Postprocessing: No Solution Data available\n")
 
-        # Finalize
+            # Finalize
         solver.file.stop_transcript()
+        #End of Case-Loop
+
+    #Merge if multiple cases are defined
+    if len(caseDict) > 1:
+        postproc.mergeReportTables(turboData=turboData, solver=solver)
 
 # Do Studies
 studyDict = turboData.get("studies")
