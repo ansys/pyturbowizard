@@ -69,19 +69,18 @@ def study01(data, solver):
         if not runExisting:
             # Read Ref Case
             refCaseFilePath = os.path.join(flworking_Dir, refCase)
-            solver.file.read_case_data(file_type="case-data", file_name=refCaseFilePath)
-            # solver.tui.file.read_case_data(refCase)
-
-            # Read Ref Case
-            if studyIndex > 0:
-                solver.tui.parametric_study.study.delete()
+            if studyIndex == 0:
+                solver.file.read_case_data(file_type="case-data", file_name=refCaseFilePath)
+            else:
+                tuicommand = (
+                        'file/rcd "' + refCaseFilePath + '" yes no'
+                )
+                solver.execute_tui(tuicommand)
 
             # Initialize a new parametric study
-            if fluent_study is None:
-                # fluent_study = ParametricStudy(solver.parametric_studies).initialize()
-                solver.parametric_studies.initialize(project_filename=studyName)
-                psname = refCase + "-Solve"
-                fluent_study = solver.parametric_studies[psname]
+            solver.parametric_studies.initialize(project_filename=studyName)
+            psname = refCase + "-Solve"
+            fluent_study = solver.parametric_studies[psname]
 
             designPointCounter = 1
             definitionList = studyEl.get("definition")

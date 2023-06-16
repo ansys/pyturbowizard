@@ -198,6 +198,7 @@ def merge_data_with_refEl(caseEl: dict, allCasesEl: dict):
             f"Specified Reference Case {refCaseName} not found in Config-File!\nSkipping CopyFunction..."
         )
         return caseEl
-    mergedCaseEl = refEl.copy()
-    mergedCaseEl.update(caseEl)
-    return mergedCaseEl
+    helpCaseEl = refEl.copy()
+    helpCaseEl.update(caseEl)
+    caseEl.update(helpCaseEl)
+    return

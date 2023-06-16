@@ -13,8 +13,6 @@ def numerics(data, solver, functionEl):
     print('\nSpecifying Numerics: "' + functionName + '"...')
     if functionName == "numerics_defaults":
         numerics_defaults(data, solver)
-    elif functionName == "numerics_bp_tn_2304":
-        numerics_bp_tn_2304(data, solver)
     elif functionName == "numerics_bp_tn_2305":
         numerics_bp_tn_2305(data, solver)
     elif functionName == "numerics_bp_tn_2305_lsq":
@@ -35,11 +33,6 @@ def numerics_defaults(data, solver):
     print(
         "No changes of numerics-settings are made. Fluent defaults-settings are used..."
     )
-    return
-
-def numerics_bp_tn_2304(data, solver):
-    if data["solution"]["tsn"]:
-        solver.tui.solve.set.advanced.turbomachinery_specific_numerics.enable("yes")
     return
 
 def numerics_bp_tn_2305(data, solver):

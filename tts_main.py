@@ -25,21 +25,27 @@ scriptPath = os.path.dirname(sys.argv[0])
 
 # Load Json File
 # Suggest Config File in python working Dir
-json_filename = "turboSetupConfig_darmstadt_ogv.json"
+config_filename = "turboSetupConfig.json"
 # If arguments are passed take first argument as fullpath to the json file
 if len(sys.argv) > 1:
-    json_filename = sys.argv[1]
-json_filename = os.path.normpath(json_filename)
-print("Opening ConfigFile: " + os.path.abspath(json_filename))
-json_file = open(json_filename)
-turboData = json.load(json_file)
+    config_filename = sys.argv[1]
+config_filename = os.path.normpath(config_filename)
+print("Opening ConfigFile: " + os.path.abspath(config_filename))
+config_file = open(config_filename, 'r')
+turboData = dict()
+# Load a yaml file if specified, otherwise json
+if config_filename.endswith("yaml"):
+    import yaml
+    turboData = yaml.safe_load(config_file)
+else:
+    turboData = json.load(config_file)
 
 # Get important Elements from json file
 launchEl = turboData.get("launching")
 glfunctionEl = turboData.get("functions")
 
 # Use directory of jason-file if not specified in config-file
-fl_workingDir = launchEl.get("workingDir", os.path.dirname(json_filename))
+fl_workingDir = launchEl.get("workingDir", os.path.dirname(config_filename))
 fl_workingDir = os.path.normpath(fl_workingDir)
 # Reset working dir in dict
 launchEl["workingDir"] = fl_workingDir
@@ -62,7 +68,7 @@ if caseDict is not None:
         )
         # Copy data from reference if refCase is set
         if caseEl.get("refCase") is not None:
-            caseEl = utilities.merge_data_with_refEl(caseEl=caseEl, allCasesEl=caseDict)
+            utilities.merge_data_with_refEl(caseEl=caseEl, allCasesEl=caseDict)
 
         # Get base caseFilename and update dict
         caseFilename = caseEl.get("caseFilename", casename)
@@ -126,8 +132,12 @@ if caseDict is not None:
             print("Skipping Postprocessing: No Solution Data available\n")
 
             # Finalize
-
         solver.file.stop_transcript()
+        #End of Case-Loop
+
+    #Merge if multiple cases are defined
+    if len(caseDict) > 1:
+        postproc.mergeReportTables(turboData=turboData, solver=solver)
 
 # Do Studies
 studyDict = turboData.get("studies")

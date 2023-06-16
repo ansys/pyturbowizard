@@ -29,8 +29,9 @@ Currently the following functions and corresponding options are available:
   - Available functions:
     - "numerics_defaults": Use Fluent default settings    
     - **"numerics_bp_tn_2305" (default):**  Use turbo best practice settings from May 2023 in combination with Fluent default discretization-schemes
+    - "numerics_bp_tn_2305_lsq" : Use turbo best practice settings from May 2023, but usage of LSQ gradient discretization-scheme
     - "numerics_bp_all_2305": Use turbo best practice settings from May 2023, additionally set explicitly all discretization-schemes to second order    
-    - "numerics_bp_tn_2304" : Use turbo best practice settings from April 2023, Usage of LSQ gradient discretization-schemes
+     
 - "initialization":
   - Specify initialization settings
   - Available functions:
@@ -231,10 +232,11 @@ The automatic time step factor and iteration count can be set via ```time_step_f
                   "time_step_factor": 5,
                   "runSolver": false
                 },
-                "results": {                 
-                  "filename_outputParameter": "outParameters.out",
-                  "filename_summary_pf": "report.sum"
-                }
+        "results": {                 
+          "filename_outputParameter": "outParameters.out",
+          "filename_summary": "report.sum",
+          "filename_reporttable":   "reporttable.csv"
+        }
 ```
 
 ## Parametric Study Setup
