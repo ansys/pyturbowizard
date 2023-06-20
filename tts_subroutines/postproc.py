@@ -156,8 +156,7 @@ def createReportTable(data: dict, fl_workingDir):
         # Report Table File-Name
         reportTableName = data["results"].get("filename_reporttable", "reporttable.csv")
         data["results"]["filename_reporttable"] = reportTableName
-        reportTableFileName = caseFilename + "_" + reportTableName
-        reportTableFileName = os.path.join(fl_workingDir, reportTableFileName)
+        reportTableFileName = os.path.join(fl_workingDir, caseFilename + "_" + reportTableName)
         print("Writing Report Table to: " + reportTableFileName)
         report_table.to_csv(reportTableFileName, index=None)
     except:
