@@ -215,12 +215,30 @@ def merge_data_with_refEl(caseEl: dict, allCasesEl: dict):
     caseEl.update(helpCaseEl)
     return
 
-def CreateReportTable(reportFileName,trnFileName,caseFilename):
+def createReportTable(data:dict, fl_workingDir):
+    try:
+        import pandas as pd
+    except ImportError as e:
+        print(f"ImportError! Could not import lib: {str(e)}")
+        print(f"Skipping writing custom reporttable!")
+        return
+
+    caseFilename = data["caseFilename"]
 
     # get report file
     # read in table of report-mp and get last row
     try:
-        out_table = pd.read_csv(reportFileName, header=2, delimiter=" ")
+        # Filter for file names starting with "report"
+        reportFileName = caseFilename + "_report"
+        report_file = os.path.join(fl_workingDir, reportFileName + ".out")
+        file_names = os.listdir(fl_workingDir)
+        filtered_files = [file for file in file_names if file.startswith(reportFileName) and file.endswith(".out")]
+        if len(filtered_files) > 0:
+            # Find the file name with the highest number
+            report_file = max(filtered_files, key=lambda x: [int(num) for num in x.split("_") if num.isdigit()])
+            report_file = os.path.join(fl_workingDir, report_file)
+
+        out_table = pd.read_csv(report_file, header=2, delimiter=" ")
         first_column = out_table.columns[0]
         last_column = out_table.columns[-1]
 
@@ -234,6 +252,8 @@ def CreateReportTable(reportFileName,trnFileName,caseFilename):
 
 
         # Read in transcript file
+        trnFileName = caseFilename + ".trn"
+        trnFileName = os.path.join(fl_workingDir, trnFileName)
         with open(trnFileName, "r") as file:
          transcript = file.read()
 
@@ -272,8 +292,7 @@ def CreateReportTable(reportFileName,trnFileName,caseFilename):
                 filtered_headers[i] = 'res-' + filtered_headers[i]
 
         filtered_values = [float(val) for val in filtered_values]
-        res_columns = dict(zip(filtered_headers,filtered_values))
-
+        res_columns = dict(zip(filtered_headers, filtered_values))
 
         ## write report table
         report_table = pd.DataFrame()
@@ -282,12 +301,18 @@ def CreateReportTable(reportFileName,trnFileName,caseFilename):
         report_table["Total Wall Clock Time"] = wall_clock_tot
         report_table["Ave Wall Clock Time per It"] = wall_clock_per_it
         report_table["Compute Nodes"] = nodes
-        report_table.insert(0,"Case Name", caseFilename)
+        report_table.insert(0, "Case Name", caseFilename)
 
-        reportTableFileName =  caseFilename + '_reporttable.csv'
-        print("Writing Report Table to: "+ reportTableFileName)
-        report_table.to_csv(reportTableFileName,index=None)
-    except: print("Report File not found. Skipping Report Table.")
+        # Report Table File-Name
+        reportTableName = data["results"].get("filename_reporttable", "reporttable.csv")
+        data["results"]["filename_reporttable"] = reportTableName
+        reportTableFileName = caseFilename + '_' + reportTableName
+        reportTableFileName = os.path.join(fl_workingDir, reportTableFileName)
+        print("Writing Report Table to: " + reportTableFileName)
+        report_table.to_csv(reportTableFileName, index=None)
+    except:
+        print("Report File not found. Skipping Report Table.")
+
     return
 
 def spanPlots(data,solver):
