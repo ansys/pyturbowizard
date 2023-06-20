@@ -52,7 +52,7 @@ def post_01(data, solver, launchEl):
     # Write out system time
     solver.report.system.time_statistics()
 
-    ## read in the results of the simulation
+    ## write report table
     utilities.createReportTable(data=data, fl_workingDir=fl_workingDir)
 
     return
