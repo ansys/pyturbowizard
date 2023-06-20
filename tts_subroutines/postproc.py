@@ -2,6 +2,7 @@ from tts_subroutines import utilities
 import pandas as pd
 import os
 
+
 def post(data, solver, functionEl, launchEl):
     # Get FunctionName & Update FunctionEl
     functionName = utilities.get_funcname_and_upd_funcdict(
@@ -27,17 +28,23 @@ def post(data, solver, functionEl, launchEl):
 def post_01(data, solver, launchEl):
     fl_workingDir = launchEl.get("workingDir")
     caseFilename = data["caseFilename"]
-    filename = caseFilename + "_" + data["results"].get("filename_outputParameter", "outParameters.out")
+    filename = (
+        caseFilename
+        + "_"
+        + data["results"].get("filename_outputParameter", "outParameters.out")
+    )
     # solver.tui.define.parameters.output_parameters.write_all_to_file('filename')
     tuicommand = (
         'define parameters output-parameters write-all-to-file "' + filename + '"'
     )
     solver.execute_tui(tuicommand)
-    filename = caseFilename + "_" + data["results"].get("filename_summary", "report.sum")
+    filename = (
+        caseFilename + "_" + data["results"].get("filename_summary", "report.sum")
+    )
     solver.results.report.summary(write_to_file=True, file_name=filename)
     if data["locations"].get("tz_turbo_topology_names") is not None:
         try:
-            utilities.spanPlots(data,solver)
+            utilities.spanPlots(data, solver)
         except Exception as e:
             print(f"No span plots have been created: {e}")
 
@@ -49,6 +56,7 @@ def post_01(data, solver, launchEl):
     utilities.createReportTable(data=data, fl_workingDir=fl_workingDir)
 
     return
+
 
 def mergeReportTables(turboData, solver):
     # Only working with pandas lib
@@ -62,11 +70,13 @@ def mergeReportTables(turboData, solver):
     fl_workingDir = turboData["launching"].get("workingDir")
     caseDict = turboData.get("cases")
     if caseDict is not None:
-        reportFiles =  []
+        reportFiles = []
         for casename in caseDict:
             caseEl = turboData["cases"][casename]
             caseFilename = caseEl["caseFilename"]
-            reportTableName = caseEl["results"].get("filename_reporttable", "reporttable.csv")
+            reportTableName = caseEl["results"].get(
+                "filename_reporttable", "reporttable.csv"
+            )
             reportTableName = caseFilename + "_" + reportTableName
             reportTableFilePath = os.path.join(fl_workingDir, reportTableName)
             if os.path.isfile(reportTableFilePath):

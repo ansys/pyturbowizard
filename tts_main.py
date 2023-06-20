@@ -14,7 +14,7 @@ from tts_subroutines import (
     postproc,
 )
 
-version = "1.3.5"
+version = "1.3.6"
 print(f"\n*** Starting TurboTestSuite (Version {str(version)}) ***\n\n")
 
 # If solver variable does not exist, Fluent has been started in external mode
@@ -31,11 +31,12 @@ if len(sys.argv) > 1:
     config_filename = sys.argv[1]
 config_filename = os.path.normpath(config_filename)
 print("Opening ConfigFile: " + os.path.abspath(config_filename))
-config_file = open(config_filename, 'r')
+config_file = open(config_filename, "r")
 turboData = dict()
 # Load a yaml file if specified, otherwise json
 if config_filename.endswith("yaml"):
     import yaml
+
     turboData = yaml.safe_load(config_file)
 else:
     turboData = json.load(config_file)
@@ -126,16 +127,18 @@ if caseDict is not None:
 
         # Postprocessing
         if solver.field_data.is_data_valid():
-            postproc.post(data=caseEl, solver=solver, functionEl=caseFunctionEl,launchEl = launchEl)
+            postproc.post(
+                data=caseEl, solver=solver, functionEl=caseFunctionEl, launchEl=launchEl
+            )
             solver.file.write(file_type="case-data", file_name=filename)
         else:
             print("Skipping Postprocessing: No Solution Data available\n")
 
             # Finalize
         solver.file.stop_transcript()
-        #End of Case-Loop
+        # End of Case-Loop
 
-    #Merge if multiple cases are defined
+    # Merge if multiple cases are defined
     if len(caseDict) > 1:
         postproc.mergeReportTables(turboData=turboData, solver=solver)
 

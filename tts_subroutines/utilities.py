@@ -20,9 +20,13 @@ def writeExpressionFile(data: dict, script_dir: str, working_dir: str):
         helperDict = data["locations"]
         expressionEl = data.get("expressions")
         helperDict.update(expressionEl)
-        #add rotation axis
-        helperDict["rotation_axis_direction"] = tuple(data.get("rotation_axis_direction", [0., 0., 1.]))
-        helperDict["rotation_axis_origin"] = tuple(data.get("rotation_axis_origin", [0., 0., 0.]))
+        # add rotation axis
+        helperDict["rotation_axis_direction"] = tuple(
+            data.get("rotation_axis_direction", [0.0, 0.0, 1.0])
+        )
+        helperDict["rotation_axis_origin"] = tuple(
+            data.get("rotation_axis_origin", [0.0, 0.0, 0.0])
+        )
         tempData = cleanupInputExpressions(availableKeyEl=helperDict, fileData=tempData)
         for line in tempData.splitlines():
             try:
@@ -60,14 +64,17 @@ def cleanupInputExpressions(availableKeyEl: dict, fileData: str):
                 line = "\t".join(columns)
                 cleanfiledata = cleanfiledata + "\n" + line
 
-        elif 'Torque' in line:
+        elif "Torque" in line:
             if availableKeyEl.get("bz_walls_torque") is not None:
                 cleanfiledata = cleanfiledata + "\n" + line
             else:
                 continue
 
-        elif 'Euler' in line:
-            if (availableKeyEl.get("bz_ep1_Euler") and availableKeyEl.get("bz_ep2_Euler")) is not None:
+        elif "Euler" in line:
+            if (
+                availableKeyEl.get("bz_ep1_Euler")
+                and availableKeyEl.get("bz_ep2_Euler")
+            ) is not None:
                 cleanfiledata = cleanfiledata + "\n" + line
             else:
                 continue
@@ -215,7 +222,8 @@ def merge_data_with_refEl(caseEl: dict, allCasesEl: dict):
     caseEl.update(helpCaseEl)
     return
 
-def createReportTable(data:dict, fl_workingDir):
+
+def createReportTable(data: dict, fl_workingDir):
     try:
         import pandas as pd
     except ImportError as e:
@@ -232,10 +240,17 @@ def createReportTable(data:dict, fl_workingDir):
         reportFileName = caseFilename + "_report"
         report_file = os.path.join(fl_workingDir, reportFileName + ".out")
         file_names = os.listdir(fl_workingDir)
-        filtered_files = [file for file in file_names if file.startswith(reportFileName) and file.endswith(".out")]
+        filtered_files = [
+            file
+            for file in file_names
+            if file.startswith(reportFileName) and file.endswith(".out")
+        ]
         if len(filtered_files) > 0:
             # Find the file name with the highest number
-            report_file = max(filtered_files, key=lambda x: [int(num) for num in x.split("_") if num.isdigit()])
+            report_file = max(
+                filtered_files,
+                key=lambda x: [int(num) for num in x.split("_") if num.isdigit()],
+            )
             report_file = os.path.join(fl_workingDir, report_file)
 
         out_table = pd.read_csv(report_file, header=2, delimiter=" ")
@@ -244,18 +259,19 @@ def createReportTable(data:dict, fl_workingDir):
 
         # Remove brackets from first and last column names
         modified_columns = {
-            first_column: first_column.replace('(', '').replace(')', '').replace('"',''),
-            last_column: last_column.replace('(', '').replace(')', '')
+            first_column: first_column.replace("(", "")
+            .replace(")", "")
+            .replace('"', ""),
+            last_column: last_column.replace("(", "").replace(")", ""),
         }
-        out_table = out_table.rename(columns = modified_columns)
+        out_table = out_table.rename(columns=modified_columns)
         report_values = out_table.iloc[[-1]]
-
 
         # Read in transcript file
         trnFileName = caseFilename + ".trn"
         trnFileName = os.path.join(fl_workingDir, trnFileName)
         with open(trnFileName, "r") as file:
-         transcript = file.read()
+            transcript = file.read()
 
         table_started = False
         lines = transcript.split("\n")
@@ -286,10 +302,10 @@ def createReportTable(data:dict, fl_workingDir):
                     filtered_values = values[1:-2]
 
         for i in range(len(filtered_headers)):
-            if filtered_headers[i].startswith('rep-'):
-                filtered_headers[i] += '-cov'
+            if filtered_headers[i].startswith("rep-"):
+                filtered_headers[i] += "-cov"
             else:
-                filtered_headers[i] = 'res-' + filtered_headers[i]
+                filtered_headers[i] = "res-" + filtered_headers[i]
 
         filtered_values = [float(val) for val in filtered_values]
         res_columns = dict(zip(filtered_headers, filtered_values))
@@ -306,7 +322,7 @@ def createReportTable(data:dict, fl_workingDir):
         # Report Table File-Name
         reportTableName = data["results"].get("filename_reporttable", "reporttable.csv")
         data["results"]["filename_reporttable"] = reportTableName
-        reportTableFileName = caseFilename + '_' + reportTableName
+        reportTableFileName = caseFilename + "_" + reportTableName
         reportTableFileName = os.path.join(fl_workingDir, reportTableFileName)
         print("Writing Report Table to: " + reportTableFileName)
         report_table.to_csv(reportTableFileName, index=None)
@@ -315,28 +331,27 @@ def createReportTable(data:dict, fl_workingDir):
 
     return
 
-def spanPlots(data,solver):
+
+def spanPlots(data, solver):
     # Create spanwise surfaces
     spansSurf = data["results"].get("span_plot_height")
     contVars = data["results"].get("span_plot_var")
     for spanVal in spansSurf:
         spanName = f"span-{spanVal}"
         print("Creating spanwise ISO-surface: " + spanName)
-        solver.results.surfaces.iso_surface[spanName]= {}
-        zones = solver.results.surfaces.iso_surface[spanName].zone.get_attr("allowed-values")
+        solver.results.surfaces.iso_surface[spanName] = {}
+        zones = solver.results.surfaces.iso_surface[spanName].zone.get_attr(
+            "allowed-values"
+        )
         solver.results.surfaces.iso_surface[spanName](
-            field="spanwise-coordinate",
-            zone = zones,
-            iso_value = [spanVal]
+            field="spanwise-coordinate", zone=zones, iso_value=[spanVal]
         )
 
         for contVar in contVars:
             contName = spanName + "-" + contVar
             print("Creating spanwise contour-plot: " + contName)
             solver.results.graphics.contour[contName] = {}
-            solver.results.graphics.contour[contName](
-                field = contVar,
-                contour_lines = True
-            )
-            solver.results.graphics.contour[contName].range_option.auto_range_on.global_range = False
-
+            solver.results.graphics.contour[contName](field=contVar, contour_lines=True)
+            solver.results.graphics.contour[
+                contName
+            ].range_option.auto_range_on.global_range = False
