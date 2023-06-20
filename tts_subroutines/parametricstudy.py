@@ -150,16 +150,6 @@ def study01(data, solver):
             else:
                 solver.file.parametric_project.save_as(project_filename=studyName)
 
-            # Delete Design Points for next study: a complete reset would be the better option
-            # if (len(studyDict) > 1) and (studyIndex < (len(studyDict) - 1)):
-            #    # Delete DesignPoints Current Study
-            #    # fluent_study = fluent_study.duplicate()
-            #    for dpIndex in range(designPointCounter - 1):
-            #        designPointName = "DP" + str(dpIndex + 1)
-            #        fluent_study.design_points.delete_design_points(
-            #            design_points=designPointName
-            #        )
-
             # Increasing study index
             studyIndex = studyIndex + 1
 
@@ -198,7 +188,7 @@ def study01(data, solver):
             studyIndex = studyIndex + 1
 
         # Skipping after first study has been finished
-        break
+        #break
 
     print("All Studies finished")
 
