@@ -122,18 +122,21 @@ def createReportTable(data: dict, fl_workingDir):
             elif "Total wall-clock time" in line:
                 wall_clock_tot = line.split(":")[1].strip()
                 print("Total Wall Clock Time:", wall_clock_tot)
-            elif "iter" in line:
+            elif "iter  continuity  x-velocity" in line:
                 headers = line.split()
                 filtered_headers = headers[1:-1]
                 table_started = True
-            elif "Done." in line and table_started:
-                # "Done." line encountered, indicating the end of the iteration table
-                print("Done")
-                table_started = False
             elif table_started:
                 values = line.split()
-                if len(values[1:-2]) == len(filtered_headers):
+                if len(values) == 0:
+                    table_started = False
+                elif len(values[1:-2]) == len(filtered_headers):
                     filtered_values = values[1:-2]
+                else:
+                    try:
+                        values = int(values[0])
+                    except ValueError:
+                        table_started = False
 
         for i in range(len(filtered_headers)):
             if filtered_headers[i].startswith("rep-"):
@@ -160,7 +163,7 @@ def createReportTable(data: dict, fl_workingDir):
         print("Writing Report Table to: " + reportTableFileName)
         report_table.to_csv(reportTableFileName, index=None)
     except:
-        print("Report File not found. Skipping Report Table.")
+        print("An error occured during function 'createReportTable' -> Skipping creation of case report table!")
 
     return
 
