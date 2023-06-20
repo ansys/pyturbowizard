@@ -44,7 +44,7 @@ def post_01(data, solver, launchEl):
     solver.results.report.summary(write_to_file=True, file_name=filename)
     if data["locations"].get("tz_turbo_topology_names") is not None:
         try:
-            utilities.spanPlots(data, solver)
+            spanPlots(data, solver)
         except Exception as e:
             print(f"No span plots have been created: {e}")
 
@@ -53,9 +53,151 @@ def post_01(data, solver, launchEl):
     solver.report.system.time_statistics()
 
     ## write report table
-    utilities.createReportTable(data=data, fl_workingDir=fl_workingDir)
+    createReportTable(data=data, fl_workingDir=fl_workingDir)
 
     return
+
+def createReportTable(data: dict, fl_workingDir):
+    try:
+        import pandas as pd
+    except ImportError as e:
+        print(f"ImportError! Could not import lib: {str(e)}")
+        print(f"Skipping writing custom reporttable!")
+        return
+
+    caseFilename = data["caseFilename"]
+
+    # get report file
+    # read in table of report-mp and get last row
+    try:
+        # Filter for file names starting with "report"
+        reportFileName = caseFilename + "_report"
+        report_file = os.path.join(fl_workingDir, reportFileName + ".out")
+        file_names = os.listdir(fl_workingDir)
+        filtered_files = [
+            file
+            for file in file_names
+            if file.startswith(reportFileName) and file.endswith(".out")
+        ]
+        if len(filtered_files) > 0:
+            # Find the file name with the highest number
+            report_file = max(
+                filtered_files,
+                key=lambda x: [int(num) for num in x.split("_") if num.isdigit()],
+            )
+            report_file = os.path.join(fl_workingDir, report_file)
+
+        out_table = pd.read_csv(report_file, header=2, delimiter=" ")
+        first_column = out_table.columns[0]
+        last_column = out_table.columns[-1]
+
+        # Remove brackets from first and last column names
+        modified_columns = {
+            first_column: first_column.replace("(", "")
+            .replace(")", "")
+            .replace('"', ""),
+            last_column: last_column.replace("(", "").replace(")", ""),
+        }
+        out_table = out_table.rename(columns=modified_columns)
+        report_values = out_table.iloc[[-1]]
+
+        # Read in transcript file
+        trnFileName = caseFilename + ".trn"
+        trnFileName = os.path.join(fl_workingDir, trnFileName)
+        with open(trnFileName, "r") as file:
+            transcript = file.read()
+
+        table_started = False
+        lines = transcript.split("\n")
+        wall_clock_per_it = 0
+        wall_clock_tot = 0
+        nodes = 0
+        filtered_values = []
+        filtered_headers = []
+
+        for line in lines:
+            if "Average wall-clock time per iteration" in line:
+                wall_clock_per_it = line.split(":")[1].strip()
+                print("Average Wall Clock Time per Iteration:", wall_clock_per_it)
+            elif "Total wall-clock time" in line:
+                wall_clock_tot = line.split(":")[1].strip()
+                print("Total Wall Clock Time:", wall_clock_tot)
+            elif "iter" in line:
+                headers = line.split()
+                filtered_headers = headers[1:-1]
+                table_started = True
+            elif "Done." in line and table_started:
+                # "Done." line encountered, indicating the end of the iteration table
+                print("Done")
+                table_started = False
+            elif table_started:
+                values = line.split()
+                if len(values[1:-2]) == len(filtered_headers):
+                    filtered_values = values[1:-2]
+
+        for i in range(len(filtered_headers)):
+            if filtered_headers[i].startswith("rep-"):
+                filtered_headers[i] += "-cov"
+            else:
+                filtered_headers[i] = "res-" + filtered_headers[i]
+
+        filtered_values = [float(val) for val in filtered_values]
+        res_columns = dict(zip(filtered_headers, filtered_values))
+
+        ## write report table
+        report_table = pd.DataFrame()
+        report_table = pd.concat([report_table, report_values], axis=1)
+        report_table = report_table.assign(**res_columns)
+        report_table["Total Wall Clock Time"] = wall_clock_tot
+        report_table["Ave Wall Clock Time per It"] = wall_clock_per_it
+        report_table["Compute Nodes"] = nodes
+        report_table.insert(0, "Case Name", caseFilename)
+
+        # Report Table File-Name
+        reportTableName = data["results"].get("filename_reporttable", "reporttable.csv")
+        data["results"]["filename_reporttable"] = reportTableName
+        reportTableFileName = caseFilename + "_" + reportTableName
+        reportTableFileName = os.path.join(fl_workingDir, reportTableFileName)
+        print("Writing Report Table to: " + reportTableFileName)
+        report_table.to_csv(reportTableFileName, index=None)
+    except:
+        print("Report File not found. Skipping Report Table.")
+
+    return
+
+
+def spanPlots(data, solver):
+    # Create spanwise surfaces
+    spansSurf = data["results"].get("span_plot_height")
+    contVars = data["results"].get("span_plot_var")
+    availableFieldDataNames = solver.field_data.get_scalar_field_data.field_name.allowed_values()
+    for contVar in contVars:
+        if contVar not in availableFieldDataNames:
+            print(f"FieldVariable: '{contVar}' not available in Solution-Data!")
+            print(f"Available Scalar Values are: '{availableFieldDataNames}'")
+
+    for spanVal in spansSurf:
+        spanName = f"span-{spanVal}"
+        print("Creating spanwise ISO-surface: " + spanName)
+        solver.results.surfaces.iso_surface[spanName] = {}
+        zones = solver.results.surfaces.iso_surface[spanName].zone.get_attr(
+            "allowed-values"
+        )
+        solver.results.surfaces.iso_surface[spanName](
+            field="spanwise-coordinate", zone=zones, iso_value=[spanVal]
+        )
+
+        for contVar in contVars:
+            if contVar in availableFieldDataNames:
+                contName = spanName + "-" + contVar
+                print("Creating spanwise contour-plot: " + contName)
+
+                solver.results.graphics.contour[contName] = {}
+                solver.results.graphics.contour[contName](field=contVar, contour_lines=True)
+                solver.results.graphics.contour[
+                    contName
+                ].range_option.auto_range_on.global_range = False
+
 
 
 def mergeReportTables(turboData, solver):

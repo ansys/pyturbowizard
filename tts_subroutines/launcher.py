@@ -24,7 +24,8 @@ def launchFluent(launchEl):
         serverfilepath = os.path.join(fl_workingDir, serverfilename)
         if os.path.isfile(serverfilepath):
             raise FileExistsError(
-                f"Serverfile already exits {serverfilepath}!\nPlease remove this file or specify a different serverfilename (Key: 'serverfilename')!"
+                f"Serverfile already exits {serverfilepath}!"
+                f"\nPlease remove this file or specify a different serverfilename (Key: 'serverfilename')!"
             )
 
         commandlist = list()
