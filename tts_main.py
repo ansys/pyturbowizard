@@ -121,13 +121,13 @@ if caseDict is not None:
         # Solve
         if caseEl["solution"].get("runSolver", False):
             solve.solve_01(caseEl, solver)
-
             filename = caseFilename + "_fin"
             solver.file.write(file_type="case-data", file_name=filename)
 
         # Postprocessing
         if solver.field_data.is_data_valid():
             postproc.post(data=caseEl, solver=solver, functionEl=caseFunctionEl,launchEl = launchEl)
+            solver.file.write(file_type="case-data", file_name=filename)
         else:
             print("Skipping Postprocessing: No Solution Data available\n")
 
