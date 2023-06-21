@@ -19,15 +19,18 @@ def setup(data, solver, functionEl):
 
     print("\nRunning Setup Function... finished!\n")
 
+
 def setup_compressible_01(data, solver):
     setup_01(data=data, solver=solver, solveEnergy=True)
     return
+
 
 def setup_incompressible_01(data, solver):
     setup_01(data=data, solver=solver, solveEnergy=False)
     return
 
-def setup_01(data, solver, solveEnergy:bool = True):
+
+def setup_01(data, solver, solveEnergy: bool = True):
     # Set physics
     physics_01(data=data, solver=solver, solveEnergy=solveEnergy)
     # Materials
@@ -41,7 +44,8 @@ def setup_01(data, solver, solveEnergy:bool = True):
 
     return
 
-def material_01(data, solver, solveEnergy:bool = True):
+
+def material_01(data, solver, solveEnergy: bool = True):
     fl_name = data["fluid_properties"].get("fl_name")
     if fl_name is None:
         if solveEnergy:
@@ -80,7 +84,7 @@ def material_01(data, solver, solveEnergy:bool = True):
             "viscosity": {
                 "option": "constant",
                 "value": data["fluid_properties"]["fl_viscosity"],
-            }
+            },
         }
 
     # Boundary Conditions
@@ -88,19 +92,22 @@ def material_01(data, solver, solveEnergy:bool = True):
 
     return
 
-def physics_01(data, solver, solveEnergy:bool = True):
+
+def physics_01(data, solver, solveEnergy: bool = True):
     if solveEnergy:
         solver.setup.models.energy = {"enabled": True, "viscous_dissipation": True}
     gravityVector = data.get("gravity_vector")
     if (gravityVector is not None) and (type(gravityVector) is list):
-       print(f"\nSpecification of Gravity-Vector found: {gravityVector} \nEnabling and setting Gravity-Vector")
-       solver.setup.general.operating_conditions.gravity.enable = True
-       solver.setup.general.operating_conditions.gravity.components = gravityVector
+        print(
+            f"\nSpecification of Gravity-Vector found: {gravityVector} \nEnabling and setting Gravity-Vector"
+        )
+        solver.setup.general.operating_conditions.gravity.enable = True
+        solver.setup.general.operating_conditions.gravity.components = gravityVector
 
     return
 
 
-def boundary_01(data, solver, solveEnergy:bool = True):
+def boundary_01(data, solver, solveEnergy: bool = True):
     # Enable Turbo Models
     solver.tui.define.turbo_model.enable_turbo_model("yes")
 

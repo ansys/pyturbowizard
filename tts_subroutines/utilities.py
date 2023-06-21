@@ -20,10 +20,14 @@ def writeExpressionFile(data: dict, script_dir: str, working_dir: str):
         helperDict = data["locations"]
         expressionEl = data.get("expressions")
         helperDict.update(expressionEl)
-        #add rotation axis
-        helperDict["rotation_axis_direction"] = tuple(data.get("rotation_axis_direction", [0., 0., 1.]))
-        helperDict["rotation_axis_origin"] = tuple(data.get("rotation_axis_origin", [0., 0., 0.]))
-        tempData = cleanupInputExpressions(expressionEl=expressionEl, fileData=tempData)
+        # add rotation axis
+        helperDict["rotation_axis_direction"] = tuple(
+            data.get("rotation_axis_direction", [0.0, 0.0, 1.0])
+        )
+        helperDict["rotation_axis_origin"] = tuple(
+            data.get("rotation_axis_origin", [0.0, 0.0, 0.0])
+        )
+        tempData = cleanupInputExpressions(availableKeyEl=helperDict, fileData=tempData)
         for line in tempData.splitlines():
             try:
                 sf.write(line.format(**helperDict))
@@ -34,7 +38,7 @@ def writeExpressionFile(data: dict, script_dir: str, working_dir: str):
     return
 
 
-def cleanupInputExpressions(expressionEl: dict, fileData: str):
+def cleanupInputExpressions(availableKeyEl: dict, fileData: str):
     cleanfiledata = ""
 
     for line in fileData.splitlines():
@@ -45,7 +49,7 @@ def cleanupInputExpressions(expressionEl: dict, fileData: str):
         elif line.startswith('"BC'):
             columns = line.split("\t")
             expKey = columns[1].replace('"{', "").replace('}"', "")
-            if expressionEl.get(expKey) is not None:
+            if availableKeyEl.get(expKey) is not None:
                 cleanfiledata = cleanfiledata + "\n" + line
             else:
                 continue
@@ -53,12 +57,27 @@ def cleanupInputExpressions(expressionEl: dict, fileData: str):
         elif line.startswith('"GEO'):
             columns = line.split("\t")
             expKey = columns[1].replace('"{', "").replace('}"', "")
-            if expressionEl.get(expKey) is not None:
+            if availableKeyEl.get(expKey) is not None:
                 cleanfiledata = cleanfiledata + "\n" + line
             else:
                 columns[1] = columns[1].replace("{" + expKey + "}", "1")
                 line = "\t".join(columns)
                 cleanfiledata = cleanfiledata + "\n" + line
+
+        elif "Torque" in line:
+            if availableKeyEl.get("bz_walls_torque") is not None:
+                cleanfiledata = cleanfiledata + "\n" + line
+            else:
+                continue
+
+        elif "Euler" in line:
+            if (
+                availableKeyEl.get("bz_ep1_Euler")
+                and availableKeyEl.get("bz_ep2_Euler")
+            ) is not None:
+                cleanfiledata = cleanfiledata + "\n" + line
+            else:
+                continue
         else:
             cleanfiledata = cleanfiledata + "\n" + line
 

@@ -38,7 +38,6 @@ def init_standard_01(data, solver):
         "absolute"
     )
 
-
 def init_hybrid_01(data, solver):
     init_standard_01(data=data, solver=solver)
     solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
