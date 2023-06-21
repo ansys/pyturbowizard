@@ -107,6 +107,7 @@ def createReportTable(data: dict, fl_workingDir):
         with open(trnFileName, "r") as file:
             transcript = file.read()
 
+        solver_trn_data_valid = False
         table_started = False
         lines = transcript.split("\n")
         wall_clock_per_it = 0
@@ -132,6 +133,7 @@ def createReportTable(data: dict, fl_workingDir):
                     table_started = False
                 elif len(values[1:-2]) == len(filtered_headers):
                     filtered_values = values[1:-2]
+                    solver_trn_data_valid = True
                 else:
                     try:
                         values = int(values[0])
@@ -144,13 +146,17 @@ def createReportTable(data: dict, fl_workingDir):
             else:
                 filtered_headers[i] = "res-" + filtered_headers[i]
 
-        filtered_values = [float(val) for val in filtered_values]
-        res_columns = dict(zip(filtered_headers, filtered_values))
+        if solver_trn_data_valid:
+            filtered_values = [float(val) for val in filtered_values]
+            res_columns = dict(zip(filtered_headers, filtered_values))
 
         ## write report table
         report_table = pd.DataFrame()
         report_table = pd.concat([report_table, report_values], axis=1)
-        report_table = report_table.assign(**res_columns)
+        if solver_trn_data_valid:
+            report_table = report_table.assign(**res_columns)
+        else:
+            print(f"Reading Solver-Data from transcript file failed. Data not included in report table")
         report_table["Total Wall Clock Time"] = wall_clock_tot
         report_table["Ave Wall Clock Time per It"] = wall_clock_per_it
         report_table["Compute Nodes"] = nodes
