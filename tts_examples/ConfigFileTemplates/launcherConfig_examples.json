@@ -14,11 +14,9 @@
     },
   "launching_slurmQueue":
     {
-      "workingDir": "D:/TestTurbo/HannoverRotor",
       "fl_version": "23.2.0",
       "noCore": 2,
       "precision": "double",
-      "serverfilename": "",
       "show_gui":  true,
       "exitatend": false,
       "queue_slurm": "ottc01",
