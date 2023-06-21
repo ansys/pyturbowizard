@@ -68,6 +68,8 @@ For running Fluent on Linux or a Cluster, there are two options:
     },
 ```
 
+Note: If ```workingDir``` is not set, the script will use the directory of the configuration file as fluent working directory.
+
 ### Cases
 Under the ``` cases ``` section different case setups can be specified for the script to run (different meshes etc.).
 
