@@ -120,14 +120,14 @@ def createReportTable(data: dict, fl_workingDir):
             if "Average wall-clock time per iteration" in line:
                 wall_clock_per_it = line.split(":")[1].strip()
                 wall_clock_per_it = wall_clock_per_it.split(" ")[0].strip()
-                print("Average Wall Clock Time per Iteration:", wall_clock_per_it)
+                print("Detected Average Wall Clock Time per Iteration:", wall_clock_per_it)
             elif "Total wall-clock time" in line:
                 wall_clock_tot = line.split(":")[1].strip()
                 wall_clock_tot = wall_clock_tot.split(" ")[0].strip()
-                print("Total Wall Clock Time:", wall_clock_tot)
+                print("Detected Total Wall Clock Time:", wall_clock_tot)
             elif "compute nodes" in line:
                 nodes = line.split(" ")[6].strip()
-                print("Number of Nodes:", nodes)
+                print("Detected Number of Nodes:", nodes)
             elif "iter  continuity  x-velocity" in line:
                 headers = line.split()
                 filtered_headers = headers[1:-1]
