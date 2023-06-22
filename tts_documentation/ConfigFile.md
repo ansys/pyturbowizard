@@ -109,6 +109,17 @@ Restrictions when using profiles:
     - Naming Convention
       - Profilename: "outlet-bc"
       - Total Pressure: "p-out"
+
+Example snippet for a inlet profile data table:
+```
+[Name]
+inlet-bc
+
+[Data]
+radius, pt-in, tt-in, vax-dir, vrad-dir, vtang-dir
+6.6247E-02, 5.4357E+04, 2.8787E+02, 9.9025E-01, 7.4542E-02, 4.1016E-02
+...
+```
     
 Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup.
 Optional objects are:
