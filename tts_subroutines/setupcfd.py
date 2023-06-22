@@ -145,9 +145,13 @@ def boundary_01(data, solver, solveEnergy: bool = True):
             side2 = peri_if_El[key_if].get("side2")
             #check if spcified sides are not already defined as periodics
             periodicIFs = solver.setup.boundary_conditions.periodic
-            if (len(periodicIFs) > 0) and (periodicIFs.get(side1) is None) or (periodicIFs(side2) is None):
+            if periodicIFs.get(side1) is not None:
                 print(
-                    f"One of the prescribed Boundary-Zones ('{side1}' or '{side2}' is already defined as periodic interface. "
+                    f"Prescribed Boundary-Zones '{side1}' is already defined as periodic interface. "
+                    f"Creation of periodic interface is skipped!")
+            elif periodicIFs.get(side2) is not None:
+                print(
+                    f"Prescribed Boundary-Zones '{side2}' is already defined as periodic interface. "
                     f"Creation of periodic interface is skipped!")
             else:
                 solver.tui.mesh.modify_zones.create_periodic_interface(
