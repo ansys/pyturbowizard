@@ -228,29 +228,31 @@ The automatic time step factor and iteration count can be set via ```time_step_f
 
 ``` runSolver``` can be used to specify whether the simulation should start to run at the end of the setup.
 
+### Copying a testCase
+
+If you want to copy elements from a case to a new case you can use the  ```refcase``` keyword. 
+
+Here´s an example for a mesh study:
 ```
-"Case_1": {
-        ...
-        "solution": {
-                  "reportlist": ["MP_IN_MassFlow","MP_OUT_MassFlow","MP_Isentropic_Efficiency","MP_PRt"],
-                  "res_crit": 1e-5,
-                  "cov_list": [
-                    "MP_Isentropic_Efficiency",
-                    "MP_IN_MassFlow",
-                    "MP_PRt"
-                  ],
-                  "cov_crit": 1.0e-5,
-                  "tsn": true,
-                  "iter_count": 500,
-                  "time_step_factor": 5,
-                  "runSolver": false
-                },
-        "results": {                 
-          "filename_outputParameter": "outParameters.out",
-          "filename_summary": "report.sum",
-          "filename_reporttable":   "reporttable.csv"
-        }
+"Case_CoarseMesh": {
+        "caseFilename": "myCaseFileName_coarse",
+        "meshFilename": "myCaseFileName_coarse.def",
+        "functions": {...},
+        "expressions": {...},
+        "locations": {...},       
+        "solution": {...},     
+        "results": {...}                
+        },  
+        
+"Case_FineMesh": {
+         "refCase": "Case_CoarseMesh",
+         "caseFilename": "myCaseFileName_coarse",
+         "meshFilename": "myCaseFileName_coarse.def",          
+        }   
 ```
+
+In the example "Case_CoarseMesh" includes all setup definitions, case "Case_FineMesh" just refers with ```refCase``` to "Case_CoarseMesh". 
+This means all objects are copied from case "Case_CoarseMesh" except the elements prescribed in the case itself, in this case the objects ```caseFilename``` and ```meshFilename```.
 
 ## Parametric Study Setup
 The Configuration file for a parametric study can be found in the [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main) as ``` TurboStudyConfig.json ```.
