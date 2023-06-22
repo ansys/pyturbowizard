@@ -143,9 +143,20 @@ def boundary_01(data, solver, solveEnergy: bool = True):
             print(f"Setting up periodic BC: {key_if}")
             side1 = peri_if_El[key_if].get("side1")
             side2 = peri_if_El[key_if].get("side2")
-            solver.tui.mesh.modify_zones.create_periodic_interface(
-                "auto", key_if, side1, side2, "yes", "no", "no", "yes", "yes"
-            )
+            #check if spcified sides are not already defined as periodics
+            periodicIFs = solver.setup.boundary_conditions.periodic
+            if periodicIFs.get(side1) is not None:
+                print(
+                    f"Prescribed Boundary-Zones '{side1}' is already defined as periodic interface. "
+                    f"Creation of periodic interface is skipped!")
+            elif periodicIFs.get(side2) is not None:
+                print(
+                    f"Prescribed Boundary-Zones '{side2}' is already defined as periodic interface. "
+                    f"Creation of periodic interface is skipped!")
+            else:
+                solver.tui.mesh.modify_zones.create_periodic_interface(
+                    "auto", key_if, side1, side2, "yes", "no", "no", "yes", "yes"
+                )
 
     # after important steps loop over all keys -> no order important
     for key in data["locations"]:
