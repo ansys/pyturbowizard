@@ -230,7 +230,9 @@ The automatic time step factor and iteration count can be set via ```time_step_f
 
 ``` runSolver``` can be used to specify whether the simulation should start to run at the end of the setup.
 
-### Copying a testCase
+### Working with multiple cases
+
+You can easily add various cases to your configuration file. The cases will be executed by the script step by step.
 
 If you want to copy elements from a case to a new case you can use the  ```refcase``` keyword. 
 
@@ -248,8 +250,8 @@ Here´s an example for a mesh study:
         
 "Case_FineMesh": {
          "refCase": "Case_CoarseMesh",
-         "caseFilename": "myCaseFileName_coarse",
-         "meshFilename": "myCaseFileName_coarse.def",          
+         "caseFilename": "myCaseFileName_fine",
+         "meshFilename": "myCaseFileName_fine.def",          
         }   
 ```
 
