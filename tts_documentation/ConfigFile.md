@@ -3,6 +3,8 @@ This guide aims to give an overview on how to adjust the Configuration File for 
 ## Single Case Setup
 The Configuration file for single case setups can be found in the [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main) as ``` TurboSetupConfig.json ```.
 
+When running the script from outside Fluent, you can also use the yaml-file format for the configuration file.
+
 It serves as input file for the launch options, boundary conditions, as well as the numeric and simulation setups needed to run the main script. In the following the different sections of the Configuration File are explained in detail.
 
 ### Setup Subroutines
@@ -109,6 +111,17 @@ Restrictions when using profiles:
     - Naming Convention
       - Profilename: "outlet-bc"
       - Total Pressure: "p-out"
+
+Example snippet for a inlet profile data table:
+```
+[Name]
+inlet-bc
+
+[Data]
+radius, pt-in, tt-in, vax-dir, vrad-dir, vtang-dir
+6.6247E-02, 5.4357E+04, 2.8787E+02, 9.9025E-01, 7.4542E-02, 4.1016E-02
+...
+```
     
 Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup.
 Optional objects are:
@@ -217,29 +230,33 @@ The automatic time step factor and iteration count can be set via ```time_step_f
 
 ``` runSolver``` can be used to specify whether the simulation should start to run at the end of the setup.
 
+### Working with multiple cases
+
+You can easily add various cases to your configuration file. The cases will be executed by the script step by step.
+
+If you want to copy elements from a case to a new case you can use the  ```refcase``` keyword. 
+
+Here´s an example for a mesh study:
 ```
-"Case_1": {
-        ...
-        "solution": {
-                  "reportlist": ["MP_IN_MassFlow","MP_OUT_MassFlow","MP_Isentropic_Efficiency","MP_PRt"],
-                  "res_crit": 1e-5,
-                  "cov_list": [
-                    "MP_Isentropic_Efficiency",
-                    "MP_IN_MassFlow",
-                    "MP_PRt"
-                  ],
-                  "cov_crit": 1.0e-5,
-                  "tsn": true,
-                  "iter_count": 500,
-                  "time_step_factor": 5,
-                  "runSolver": false
-                },
-        "results": {                 
-          "filename_outputParameter": "outParameters.out",
-          "filename_summary": "report.sum",
-          "filename_reporttable":   "reporttable.csv"
-        }
+"Case_CoarseMesh": {
+        "caseFilename": "myCaseFileName_coarse",
+        "meshFilename": "myCaseFileName_coarse.def",
+        "functions": {...},
+        "expressions": {...},
+        "locations": {...},       
+        "solution": {...},     
+        "results": {...}                
+        },  
+        
+"Case_FineMesh": {
+         "refCase": "Case_CoarseMesh",
+         "caseFilename": "myCaseFileName_fine",
+         "meshFilename": "myCaseFileName_fine.def",          
+        }   
 ```
+
+In the example "Case_CoarseMesh" includes all setup definitions, case "Case_FineMesh" just refers with ```refCase``` to "Case_CoarseMesh". 
+This means all objects are copied from case "Case_CoarseMesh" except the elements prescribed in the case itself, in this case the objects ```caseFilename``` and ```meshFilename```.
 
 ## Parametric Study Setup
 The Configuration file for a parametric study can be found in the [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main) as ``` TurboStudyConfig.json ```.
