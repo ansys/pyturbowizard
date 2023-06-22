@@ -37,7 +37,7 @@ Required libraries:
   - Copy all files from GitHub to a specific folder
   - Start a Fluent job on cluster with additional arguments: ```-py -sifile=<name>.txt ```
   - Open command shell in script folder
-  - execute script via: ```pyfluent tts_main.py <PathToConfigurationFile.json>```
+  - execute script via: ```pyfluent tts_main.py <PathToConfigurationFile.json/yaml>```
 #### Windows
 - Prepare data in you working directory
   - Copy Fluent data into the folder, e.g. mesh data, profiles
@@ -45,7 +45,7 @@ Required libraries:
   - Adjust the Configuration File to your setup ([Configuration File Setup](tts_documentation/ConfigFile.md))
 - Get latest Version From GitHub: [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main)
   - Copy complete file structure from GitHub to a specific folder
-  - execute script in Terminal via: ```python <PathToTTSMain.py> <PathToConfigurationFile.json>```
+  - execute script in Terminal via: ```python <PathToTTSMain.py> <PathToConfigurationFile.json/yaml>```
 
 ## Useful Documents
 - [Configuration File Setup](tts_documentation/ConfigFile.md)

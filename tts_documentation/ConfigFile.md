@@ -3,6 +3,8 @@ This guide aims to give an overview on how to adjust the Configuration File for 
 ## Single Case Setup
 The Configuration file for single case setups can be found in the [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main) as ``` TurboSetupConfig.json ```.
 
+When running the script from outside Fluent, you can also use the yaml-file format for the configuration file.
+
 It serves as input file for the launch options, boundary conditions, as well as the numeric and simulation setups needed to run the main script. In the following the different sections of the Configuration File are explained in detail.
 
 ### Setup Subroutines
