@@ -206,7 +206,7 @@ def spanPlots(data, solver):
                 print("Creating spanwise contour-plot: " + contName)
 
                 solver.results.graphics.contour[contName] = {}
-                solver.results.graphics.contour[contName](field=contVar, contour_lines=True)
+                solver.results.graphics.contour[contName](field=contVar, contour_lines=True, surfaces_list = spanName)
                 solver.results.graphics.contour[
                     contName
                 ].range_option.auto_range_on.global_range = False
