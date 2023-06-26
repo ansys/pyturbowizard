@@ -14,7 +14,7 @@ from tts_subroutines import (
     postproc,
 )
 
-version = "1.3.6"
+version = "1.3.7"
 print(f"\n*** Starting TurboTestSuite (Version {str(version)}) ***\n\n")
 
 # If solver variable does not exist, Fluent has been started in external mode
@@ -130,6 +130,7 @@ if caseDict is not None:
             postproc.post(
                 data=caseEl, solver=solver, functionEl=caseFunctionEl, launchEl=launchEl
             )
+            filename = caseFilename + "_fin"
             solver.file.write(file_type="case-data", file_name=filename)
         else:
             print("Skipping Postprocessing: No Solution Data available\n")

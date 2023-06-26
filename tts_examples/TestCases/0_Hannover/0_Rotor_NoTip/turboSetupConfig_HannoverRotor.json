@@ -37,9 +37,6 @@
           "cz_rotating_names": ["b-rotor-1"],
           "bz_inlet_names": ["inlet"],
           "bz_outlet_names": ["outlet"],
-          "bz_walls_shroud_name": "b-rotor-1-shroud",
-          "bz_walls_hub_name": "b-rotor-1-hub",
-          "bz_walls_blade_name": "b-rotor-1-blade",
           "bz_walls_counterrotating_names": ["b-rotor-1-shroud"],
           "bz_walls_freeslip_names": [
             "b-rotor-1-free-slip-inlet",

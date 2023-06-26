@@ -145,10 +145,7 @@ def study01(data, solver):
 
             # Save Study
             # solver.tui.file.parametric_project.save_as(studyName)
-            if studyIndex == 0:
-                solver.file.parametric_project.save()
-            else:
-                solver.file.parametric_project.save_as(project_filename=studyName)
+            solver.file.parametric_project.save()
 
             # Increasing study index
             studyIndex = studyIndex + 1
