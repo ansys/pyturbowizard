@@ -87,19 +87,8 @@ def createReportTable(data: dict, fl_workingDir):
             )
             report_file = os.path.join(fl_workingDir, report_file)
 
-        out_table = pd.read_csv(report_file, header=2, delimiter=" ")
-        first_column = out_table.columns[0]
-        last_column = out_table.columns[-1]
+        report_values = utilities.calcCov(report_file)
 
-        # Remove brackets from first and last column names
-        modified_columns = {
-            first_column: first_column.replace("(", "")
-            .replace(")", "")
-            .replace('"', ""),
-            last_column: last_column.replace("(", "").replace(")", ""),
-        }
-        out_table = out_table.rename(columns=modified_columns)
-        report_values = out_table.iloc[[-1]]
 
         # Read in transcript file
         trnFileName = caseFilename + ".trn"
@@ -130,14 +119,14 @@ def createReportTable(data: dict, fl_workingDir):
                 print("Detected Number of Nodes:", nodes)
             elif "iter  continuity  x-velocity" in line:
                 headers = line.split()
-                filtered_headers = headers[1:-1]
+                filtered_headers = headers[1:8]
                 table_started = True
             elif table_started:
                 values = line.split()
                 if len(values) == 0:
                     table_started = False
-                elif len(values[1:-2]) == len(filtered_headers):
-                    filtered_values = values[1:-2]
+                elif len(values[1:8]) == len(filtered_headers):
+                    filtered_values = values[1:8]
                     solver_trn_data_valid = True
                 else:
                     try:
@@ -146,10 +135,7 @@ def createReportTable(data: dict, fl_workingDir):
                         table_started = False
 
         for i in range(len(filtered_headers)):
-            if filtered_headers[i].startswith("rep-"):
-                filtered_headers[i] += "-cov"
-            else:
-                filtered_headers[i] = "res-" + filtered_headers[i]
+            filtered_headers[i] = "res-" + filtered_headers[i]
 
         if solver_trn_data_valid:
             filtered_values = [float(val) for val in filtered_values]

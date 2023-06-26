@@ -221,3 +221,37 @@ def merge_data_with_refEl(caseEl: dict, allCasesEl: dict):
     helpCaseEl.update(caseEl)
     caseEl.update(helpCaseEl)
     return
+
+def calcCov(reportOut):
+    data = pd.read_csv(reportOut, skiprows=2, delim_whitespace=True)
+    data.columns = data.columns.str.strip('()"')
+
+
+
+    # Initialize lists to store mean and COV values
+    mean_values = []
+    cov_values = []
+
+    # Calculate mean and COV for each column
+    for column in data.columns[1:]:
+        last_50_rows = data[column].tail(50)  # Select the last 50 rows of the column
+        std = last_50_rows.std()
+        mean = last_50_rows.mean()  # Calculate mean
+        cov = std / mean  # Calculate COV
+        mean_values.append(mean)
+        cov_values.append(cov)
+
+    # Create a DataFrame with mean and COV values
+    result_dict = {}
+    result_dict[data.columns[0]] = data.iloc[-1, 0]  # Add first column header and last row value
+
+    # format dataframe
+    for i, column in enumerate(data.columns[1:]):
+        result_dict[column] = mean_values[i]
+
+    for i, column in enumerate(data.columns[1:]):
+        result_dict[column + "-cov"] = cov_values[i]
+  
+    result_df = pd.DataFrame(result_dict, index=[0])
+
+    return result_df
