@@ -123,7 +123,7 @@ radius, pt-in, tt-in, vax-dir, vrad-dir, vtang-dir
 ...
 ```
     
-Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup.
+Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup, as well as for compressible and incompressible setups.
 Optional objects are:
   - ```gravity_vector```:  Vector defining gravity, e.g. [0.0, 0.0, -9.81], default: not set, gravity off
   - Definition of Rotation Axis
