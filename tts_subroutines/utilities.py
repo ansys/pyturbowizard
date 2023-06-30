@@ -27,6 +27,8 @@ def writeExpressionFile(data: dict, script_dir: str, working_dir: str):
         helperDict["rotation_axis_origin"] = tuple(
             data.get("rotation_axis_origin", [0.0, 0.0, 0.0])
         )
+        # add isentropic efficiency definition
+        helperDict["isentropic_efficiency_ratio"] = data.get("isentropic_efficiency_ratio", 'TotalToTotal')
         tempData = cleanupInputExpressions(availableKeyEl=helperDict, fileData=tempData)
         for line in tempData.splitlines():
             try:
@@ -51,9 +53,12 @@ def cleanupInputExpressions(availableKeyEl: dict, fileData: str):
             expKey = columns[1].replace('"{', "").replace('}"', "")
             if availableKeyEl.get(expKey) is not None:
                 cleanfiledata = cleanfiledata + "\n" + line
+            elif line.startswith('"BC_OUT_VolMassFlow') and availableKeyEl.get('BC_OUT_VolFlow') is not None:
+                cleanfiledata = cleanfiledata + "\n" + line
+            elif line.startswith('"BC_IN_VolMassFlow') and availableKeyEl.get('BC_IN_VolFlow') is not None:
+                cleanfiledata = cleanfiledata + "\n" + line
             else:
                 continue
-
         elif line.startswith('"GEO'):
             columns = line.split("\t")
             expKey = columns[1].replace('"{', "").replace('}"', "")

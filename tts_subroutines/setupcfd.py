@@ -180,6 +180,19 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     if solveEnergy:
                         inBC.t0 = "BC_IN_Tt"
 
+                if data["expressions"].get("BC_IN_VolFlow") is not None:
+                    print(f"Prescribing a Volumeflow-Inlet BC @{inletName}")
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[inletName], new_type="mass-flow-inlet"
+                    )
+                    inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
+                    inBC.flow_spec = "Mass Flow Rate"
+                    inBC.mass_flow = "BC_IN_VolMassFlow"
+                    inBC.gauge_pressure = "BC_IN_p_gauge"
+                    inBC.direction_spec = "Normal to Boundary"
+                    if solveEnergy:
+                        inBC.t0 = "BC_IN_Tt"
+
                 elif data["expressions"].get("BC_IN_pt") is not None:
                     solver.setup.boundary_conditions.change_type(
                         zone_list=[inletName], new_type="pressure-inlet"
@@ -297,6 +310,17 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     outBC.flow_spec = "Mass Flow Rate"
                     outBC.mass_flow = "BC_OUT_MassFlow"
 
+                elif data["expressions"].get("BC_OUT_VolFlow") is not None:
+                    print(f"Prescribing a VolumeFlow-Outlet BC @{outletName}")
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[outletName], new_type="mass-flow-outlet"
+                    )
+                    outBC = solver.setup.boundary_conditions.mass_flow_outlet[
+                        outletName
+                    ]
+                    outBC.flow_spec = "Mass Flow Rate"
+                    outBC.mass_flow = "BC_OUT_VolMassFlow"
+
                 elif data["expressions"].get("BC_OUT_p") is not None:
                     print(f"Prescribing a Pressure-Outlet BC @{outletName}")
                     solver.setup.boundary_conditions.change_type(
@@ -389,6 +413,24 @@ def boundary_01(data, solver, solveEnergy: bool = True):
             side2 = keyEl[key_if].get("side2")
             solver.tui.define.turbo_model.turbo_create(
                 key_if, side1, "()", side2, "()", "2"
+            )
+    keyEl = data["locations"].get("bz_interfaces_no_pitchscale_names")
+    if keyEl is not None:
+        for key_if in keyEl:
+            print(f"Setting up no pitch-scale interface: {key_if}")
+            side1 = keyEl[key_if].get("side1")
+            side2 = keyEl[key_if].get("side2")
+            solver.tui.define.turbo_model.turbo_create(
+                key_if, side1, "()", side2, "()", "1"
+            )
+    keyEl = data["locations"].get("bz_interfaces_pitchscale_names")
+    if keyEl is not None:
+        for key_if in keyEl:
+            print(f"Setting up pitch-scale interface: {key_if}")
+            side1 = keyEl[key_if].get("side1")
+            side2 = keyEl[key_if].get("side2")
+            solver.tui.define.turbo_model.turbo_create(
+                key_if, side1, "()", side2, "()", "0"
             )
 
     # setup turbo topology
