@@ -110,9 +110,9 @@ Restrictions when using profiles:
     - Profile for Static Pressure
     - Naming Convention
       - Profilename: "outlet-bc"
-      - Total Pressure: "p-out"
+      - Static Pressure: "p-out"
 
-Example snippet for a inlet profile data table:
+Example snippet for a inlet profile data table (csv-format):
 ```
 [Name]
 inlet-bc
