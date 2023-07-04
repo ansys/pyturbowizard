@@ -112,6 +112,8 @@ Restrictions when using profiles:
       - Profilename: "outlet-bc"
       - Static Pressure: "p-out"
 
+**Note**: If you want to use the csv-table-format as profile input, Fluent expects the specific file with the file extension "csv"!
+  
 Example snippet for a inlet profile data table (csv-format):
 ```
 [Name]
@@ -122,7 +124,7 @@ radius, pt-in, tt-in, vax-dir, vrad-dir, vtang-dir
 6.6247E-02, 5.4357E+04, 2.8787E+02, 9.9025E-01, 7.4542E-02, 4.1016E-02
 ...
 ```
-    
+  
 Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup.
 Optional objects are:
   - ```gravity_vector```:  Vector defining gravity, e.g. [0.0, 0.0, -9.81], default: not set, gravity off
