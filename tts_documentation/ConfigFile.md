@@ -30,7 +30,7 @@ Currently the following functions and corresponding options are available:
   - Specify numeric settings
   - Available functions:
     - "numerics_defaults": Use Fluent default settings    
-    - **"numerics_bp_tn_2305" (default):**  Use turbo best practice settings from May 2023 in combination with Fluent default discretization-schemes
+    - **"numerics_bp_tn_2305" (default):**  Use turbo best practice settings from May 2023 in combination with Fluent default discretization-schemes and Green-Gauss Node-based gradient discretization-scheme
     - "numerics_bp_tn_2305_lsq" : Use turbo best practice settings from May 2023, but usage of LSQ gradient discretization-scheme
     - "numerics_bp_all_2305": Use turbo best practice settings from May 2023, additionally set explicitly all discretization-schemes to second order    
      
@@ -56,7 +56,7 @@ Currently the following functions and corresponding options are available:
 Under the section ``` launching ```, different options for launching options for Fluent can be specified, like the version, number of processes and single or double precision solver.
 
 For running Fluent on Linux or a Cluster, there are two options:
-   - Submit job to a slurm-queue: ```queue_slurm``` and a maximal waiting time in sec ```queue_waiting_time``` (default: 600sec). Other options identical to usual launching options
+   - Submit job to a slurm-queue: ```queue_slurm``` (e.g. ```"ottc01"```) and a maximal waiting time in sec ```queue_waiting_time``` (default: 600sec). Other options identical to usual launching options
    - Hook on to an existing Fluent session ([How to Run on Linux](/README.md#linux--cluster-1)): For this a server file name has to be specified under ``` serverfilename ```. When hooking onto a existing Fluent session the ``` launching ``` options are not used, except for ```workingDir```.
 ```
 "launching":
