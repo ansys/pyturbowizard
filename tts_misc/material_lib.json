@@ -1,0 +1,15 @@
+{
+  "air-comp": {
+    "fl_name": "air-cfx",
+    "fl_density": "ideal-gas",
+    "fl_specific_heat": 1004.4,
+    "fl_thermal_conductivity": 0.0261,
+    "fl_viscosity": 1.831e-05,
+    "fl_mol_wight": 28.96
+  },
+  "water-incomp": {
+    "fl_name": "water",
+    "fl_density": 999.19,
+    "fl_viscosity": 0.00095622483
+  }
+}
