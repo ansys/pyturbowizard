@@ -103,6 +103,7 @@ Optional objects are:
     - ```rotation_axis_direction```: Vector defining axis direction, default: [0.0, 0.0, 1.0]
     - ```rotation_axis_origin```: Vector defining axis origin, default: [0.0, 0.0, 0.0]
   - ```isentropic_efficiency_ratio```: Calculation of Isentropic Efficiency (arguments: "TotalToTotal", "TotalToStatic", "StaticToStatic")
+
 #### Profiles
 You can choose to specify a profile for your inlet or outlet boundaries by providing the ``` profileName ``` in your Fluent working directory.
 Restrictions when using profiles:
@@ -131,25 +132,7 @@ radius, pt-in, tt-in, vax-dir, vrad-dir, vtang-dir
 6.6247E-02, 5.4357E+04, 2.8787E+02, 9.9025E-01, 7.4542E-02, 4.1016E-02
 ...
 ```
-  
-Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup.
-Optional objects are:
-  - ```gravity_vector```:  Vector defining gravity, e.g. [0.0, 0.0, -9.81], default: not set, gravity off
-  - Definition of Rotation Axis
-    - ```rotation_axis_direction```: Vector defining axis direction, default: [0.0, 0.0, 1.0]
-    - ```rotation_axis_origin```: Vector defining axis origin, default: [0.0, 0.0, 0.0] 
-      - Total Pressure: "p-out"
 
-Example snippet for a inlet profile data table:
-```
-[Name]
-inlet-bc
-
-[Data]
-radius, pt-in, tt-in, vax-dir, vrad-dir, vtang-dir
-6.6247E-02, 5.4357E+04, 2.8787E+02, 9.9025E-01, 7.4542E-02, 4.1016E-02
-...
-```
 #### Expression Templates   
 Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup, as well as for compressible and incompressible setups.
 
