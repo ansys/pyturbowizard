@@ -29,6 +29,8 @@ def init(data, solver, functionEl):
 
 def init_standard_01(data, solver):
     print(f'Using {data["locations"]["bz_inlet_names"][0]} pressure for initialization')
+    solver.solution.initialization.standard_initialize()
+
     availableBCs = dir(solver.tui.solve.initialize.compute_defaults)
     if "mass_flow_inlet" in availableBCs:
         solver.tui.solve.initialize.compute_defaults.mass_flow_inlet(

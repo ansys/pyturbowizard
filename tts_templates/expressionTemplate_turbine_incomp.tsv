@@ -9,10 +9,14 @@ name	definition	description	input-parameter	output-parameter
 "BC_IN_MassFlow"	"{BC_IN_MassFlow}"	""	#t	#f
 "BC_IN_pt"	"{BC_IN_pt}"	""	#t	#f
 "BC_IN_p_gauge"	"{BC_IN_p_gauge}"	""	#f	#f
+"BC_IN_VolumeFlow"	"{BC_IN_VolumeFlow}"	""	#t	#f
+"BC_IN_VolumeFlowDensity"	"{BC_IN_VolumeFlowDensity}"	""	#t	#f
 "BC_IN_TuIn"	"{BC_IN_TuIn}"	""	#t	#f
 "BC_IN_TuVR"	"{BC_IN_TuVR}"	""	#t	#f
 "BC_OUT_p"	"{BC_OUT_p}"	""	#t	#f
 "BC_OUT_MassFlow"	"{BC_OUT_MassFlow}"	""	#t	#f
+"BC_OUT_VolumeFlow"	"{BC_OUT_VolumeFlow}"	""	#t	#f
+"BC_OUT_VolumeFlowDensity"	"{BC_OUT_VolumeFlowDensity}"	""	#t	#f
 "MP_IN_p"	"AreaAve(StaticPressure,{bz_inlet_names})"	""	#f	#f
 "MP_IN_MassFlow"	"MassFlow({bz_inlet_names})"	""	#f	#t
 "MP_IN_MassFlow_360"	"MassFlow({bz_inlet_names}) * GEO_IN_No_Passages_360 / GEO_IN_No_Passages"	""	#f	#t
