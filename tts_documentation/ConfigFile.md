@@ -86,6 +86,7 @@ Under the ``` cases ``` section different case setups can be specified for the s
         "gravity_vector": [0.0, 0.0, -9.81],
         "rotation_axis_direction": [0.0, 0.0, 1.0],
         "rotation_axis_origin": [0.0, 0.0, 0.0],
+        "isentropic_efficiency_ratio": "TotaltoStatic"
         ...
       },
       "Case_2": {
@@ -94,8 +95,14 @@ Under the ``` cases ``` section different case setups can be specified for the s
 ```
 
 First, different general case parameters, like the final ``` caseFilename ``` and the initial ``` meshFilename ``` have to be specified. 
-
 Supported file types for meshes are .def, .cgns, .msh and .cas. Make sure that the mesh consists of a single file and is located in the Fluent working directory.
+
+Optional objects are:
+  - ```gravity_vector```:  Vector defining gravity, e.g. [0.0, 0.0, -9.81], default: not set, gravity off
+  - Definition of Rotation Axis
+    - ```rotation_axis_direction```: Vector defining axis direction, default: [0.0, 0.0, 1.0]
+    - ```rotation_axis_origin```: Vector defining axis origin, default: [0.0, 0.0, 0.0]
+  - ```isentropic_efficiency_ratio```: Calculation of Isentropic Efficiency (arguments: "TotalToTotal", "TotalToStatic", "StaticToStatic")
 #### Profiles
 You can choose to specify a profile for your inlet or outlet boundaries by providing the ``` profileName ``` in your Fluent working directory.
 Restrictions when using profiles:
@@ -122,13 +129,8 @@ radius, pt-in, tt-in, vax-dir, vrad-dir, vtang-dir
 6.6247E-02, 5.4357E+04, 2.8787E+02, 9.9025E-01, 7.4542E-02, 4.1016E-02
 ...
 ```
-#### Expression Templates & Boundary Conditions    
+#### Expression Templates   
 Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup, as well as for compressible and incompressible setups.
-Optional objects are:
-  - ```gravity_vector```:  Vector defining gravity, e.g. [0.0, 0.0, -9.81], default: not set, gravity off
-  - Definition of Rotation Axis
-    - ```rotation_axis_direction```: Vector defining axis direction, default: [0.0, 0.0, 1.0]
-    - ```rotation_axis_origin```: Vector defining axis origin, default: [0.0, 0.0, 0.0] 
 
 ```
  "Case_1": {
@@ -149,7 +151,34 @@ Optional objects are:
          },
       ...
 ```
+### Boundary Conditions
 Now you can specify values your boundary condition and geometric expressions, that are available in your expression template. Make sure to leave the corresponding values blank, if you use profile data.
+Available Boundary Conditions Include:
+- Geometric
+  - ```GEO_IN_No_Passages``` Number of inlet passages in the computational domain
+  - ```GEO_IN_No_Passages_360``` Total number of inlet passages
+  - ```GEO_OUT_No_Passages``` Number of outlet passages in the computational domain
+  - ```GEO_OUT_No_Passages_360``` Total number of outlet passages
+- General
+  - ```BC_pref``` Reference Pressure
+  - ```BC_omega``` Rotational Velocity
+- Inlet
+  - ```BC_IN_p_gauge``` Initial gauge pressure
+  - ```BC_IN_TuIn``` Turbulent intensity (from 0 - 1)
+  - ```BC_IN_TuVR``` Turbulent viscosity ratio
+  - ```BC_IN_Tt``` Total temperature
+  - ```BC_IN_MassFlow``` Mass flow inlet boundary condition
+  - ```BC_IN_pt``` Total pressure inlet boundary condition
+  - ```BC_IN_VolumeFlow``` Volume flow inlet boundary condition (mass flow inlet)
+      - ```BC_VolumeFlowDensity``` Fluid Density of inlet volume flow
+- Outlet
+  - ```BC_OUT_p``` Static pressure outlet boundary condition
+  - ```BC_OUT_MassFlow``` Mass flow outlet boundary condition
+  - ```BC_OUT_ECMassFlow``` Exit corrected mass flow outlet boundary condition
+      - ```BC_ECMassFlow_pref``` Exit corrected mass flow reference pressure
+      - ```BC_ECMassFlow_tref``` Exit corrected mass flow reference temperature
+  - ```BC_OUT_VolumeFlow``` Volume flow outlet boundary condition (mass flow inlet)
+      - ```BC_OUT_VolumeFlowDensity``` Fluid Density of outlet volume flow
 
 #### Domain mapping 
 Under the ```locations``` section the different regions of your mesh have to be mapped accordingly. Note that every location input is a list, so that you can map multiple regions, e.g. ``` ["inlet1","inlet2"] ```. Interfaces can also be specified for periodic and general interfaces or mixing plane models.
