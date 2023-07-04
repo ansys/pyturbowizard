@@ -86,7 +86,7 @@ Under the ``` cases ``` section different case setups can be specified for the s
         "gravity_vector": [0.0, 0.0, -9.81],
         "rotation_axis_direction": [0.0, 0.0, 1.0],
         "rotation_axis_origin": [0.0, 0.0, 0.0],
-        "isentropic_efficiency_ratio": "TotaltoStatic"
+        "isentropic_efficiency_ratio": "TotaltoTotal"
         ...
       },
       "Case_2": {
