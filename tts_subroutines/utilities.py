@@ -1,4 +1,5 @@
 import os.path
+import json
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -221,6 +222,21 @@ def merge_data_with_refEl(caseEl: dict, allCasesEl: dict):
     helpCaseEl = refEl.copy()
     helpCaseEl.update(caseEl)
     caseEl.update(helpCaseEl)
+    return
+
+def get_material_from_lib(caseEl: dict, scriptPath: str):
+    if type(caseEl.get("fluid_properties")) is str:
+        materialStr = caseEl.get("fluid_properties")
+        materialFileName = os.path.join(scriptPath, "tts_misc", "material_lib.json")
+        materialFile = open(materialFileName, "r")
+        materialDict = json.load(materialFile)
+        materialEl = materialDict.get(materialStr)
+        if materialEl is not None:
+            caseEl["fluid_properties"] = materialEl
+        else:
+             raise Exception(
+                f"Specified Material '{materialStr}' not found in material-lib: {materialFileName}"
+            )
     return
 
 def calcCov(reportOut):
