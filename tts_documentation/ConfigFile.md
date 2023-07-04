@@ -96,7 +96,7 @@ Under the ``` cases ``` section different case setups can be specified for the s
 First, different general case parameters, like the final ``` caseFilename ``` and the initial ``` meshFilename ``` have to be specified. 
 
 Supported file types for meshes are .def, .cgns, .msh and .cas. Make sure that the mesh consists of a single file and is located in the Fluent working directory.
-
+#### Profiles
 You can choose to specify a profile for your inlet or outlet boundaries by providing the ``` profileName ``` in your Fluent working directory.
 Restrictions when using profiles:
 - Inlet: 
@@ -122,7 +122,7 @@ radius, pt-in, tt-in, vax-dir, vrad-dir, vtang-dir
 6.6247E-02, 5.4357E+04, 2.8787E+02, 9.9025E-01, 7.4542E-02, 4.1016E-02
 ...
 ```
-    
+#### Expression Templates & Boundary Conditions    
 Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup, as well as for compressible and incompressible setups.
 Optional objects are:
   - ```gravity_vector```:  Vector defining gravity, e.g. [0.0, 0.0, -9.81], default: not set, gravity off
@@ -151,6 +151,7 @@ Optional objects are:
 ```
 Now you can specify values your boundary condition and geometric expressions, that are available in your expression template. Make sure to leave the corresponding values blank, if you use profile data.
 
+#### Domain mapping 
 Under the ```locations``` section the different regions of your mesh have to be mapped accordingly. Note that every location input is a list, so that you can map multiple regions, e.g. ``` ["inlet1","inlet2"] ```. Interfaces can also be specified for periodic and general interfaces or mixing plane models.
 
 ```
@@ -177,6 +178,16 @@ Under the ```locations``` section the different regions of your mesh have to be 
                     "a-rotor-1-b-stator-1-mpm": {
                       "side1": "b-stator-1-to-a-rotor-1-side-1",
                       "side2": "b-stator-1-to-a-rotor-1-side-2"
+                    }
+                  "bz_interfaces_no_pitchscale_names": {
+                    "c-stator-2-to-b-stator-1-nps": {
+                      "side1": "c-stator-2-to-b-stator-1-side-1",
+                      "side2": "c-stator-2-to-b-stator-1-side-2"
+                    },
+                  "bz_interfaces_pitchscale_names": {
+                    "c-stator-2-to-d-rotor-2-ps": {
+                      "side1": "c-stator-2-to-d-rotor-2-side-1",
+                      "side2": "c-stator-2-to-d-rotor-2-side-2"
                     }
                   },
                   "bz_interfaces_general_names": {
@@ -224,7 +235,7 @@ In ```reportlist``` the expressions for monitoring (plotting and file save) can 
 
 ```cov_list``` and  ``` cov_crit ``` are used to specify the parameters and convergence criteria used for a Coefficient of Variation. 
 
-```tsn``` turns on turbo machinery specific numerics as beta feature. 
+```tsn``` is an optional argument, that explicitly turns on turbo machinery specific numerics as beta feature. 
 
 The automatic time step factor and iteration count can be set via ```time_step_factor``` (length-scale-method = conservative) or ```pseudo_timestep``` and ``` iter_count ``` respectively. 
 
