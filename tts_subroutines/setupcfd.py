@@ -180,14 +180,14 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     if solveEnergy:
                         inBC.t0 = "BC_IN_Tt"
 
-                if data["expressions"].get("BC_IN_VolFlow") is not None:
+                if data["expressions"].get("BC_IN_VolumeFlow") and data["expressions"].get("BC_IN_VolumeFlowDensity") is not None:
                     print(f"Prescribing a Volumeflow-Inlet BC @{inletName}")
                     solver.setup.boundary_conditions.change_type(
                         zone_list=[inletName], new_type="mass-flow-inlet"
                     )
                     inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
                     inBC.flow_spec = "Mass Flow Rate"
-                    inBC.mass_flow = "BC_IN_VolMassFlow"
+                    inBC.mass_flow = "BC_IN_VolumeFlow*BC_IN_VolumeFlowDensity"
                     inBC.gauge_pressure = "BC_IN_p_gauge"
                     inBC.direction_spec = "Normal to Boundary"
                     if solveEnergy:
@@ -310,7 +310,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     outBC.flow_spec = "Mass Flow Rate"
                     outBC.mass_flow = "BC_OUT_MassFlow"
 
-                elif data["expressions"].get("BC_OUT_VolFlow") is not None:
+                elif data["expressions"].get("BC_OUT_VolumeFlow") and data["expressions"].get("BC_OUT_VolumeFlowDensity") is not None:
                     print(f"Prescribing a VolumeFlow-Outlet BC @{outletName}")
                     solver.setup.boundary_conditions.change_type(
                         zone_list=[outletName], new_type="mass-flow-outlet"
@@ -319,7 +319,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         outletName
                     ]
                     outBC.flow_spec = "Mass Flow Rate"
-                    outBC.mass_flow = "BC_OUT_VolMassFlow"
+                    outBC.mass_flow = "BC_OUT_VolumeFlow*BC_OUT_VolumeFlowDensity"
 
                 elif data["expressions"].get("BC_OUT_p") is not None:
                     print(f"Prescribing a Pressure-Outlet BC @{outletName}")

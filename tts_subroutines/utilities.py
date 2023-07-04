@@ -53,10 +53,6 @@ def cleanupInputExpressions(availableKeyEl: dict, fileData: str):
             expKey = columns[1].replace('"{', "").replace('}"', "")
             if availableKeyEl.get(expKey) is not None:
                 cleanfiledata = cleanfiledata + "\n" + line
-            elif line.startswith('"BC_OUT_VolMassFlow') and availableKeyEl.get('BC_OUT_VolFlow') is not None:
-                cleanfiledata = cleanfiledata + "\n" + line
-            elif line.startswith('"BC_IN_VolMassFlow') and availableKeyEl.get('BC_IN_VolFlow') is not None:
-                cleanfiledata = cleanfiledata + "\n" + line
             else:
                 continue
         elif line.startswith('"GEO'):
@@ -230,8 +226,6 @@ def merge_data_with_refEl(caseEl: dict, allCasesEl: dict):
 def calcCov(reportOut):
     data = pd.read_csv(reportOut, skiprows=2, delim_whitespace=True)
     data.columns = data.columns.str.strip('()"')
-
-
 
     # Initialize lists to store mean and COV values
     mean_values = []
