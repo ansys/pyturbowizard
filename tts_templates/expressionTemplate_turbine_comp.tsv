@@ -10,6 +10,8 @@ name	definition	description	input-parameter	output-parameter
 "BC_IN_pt"	"{BC_IN_pt}"	""	#t	#f
 "BC_IN_p_gauge"	"{BC_IN_p_gauge}"	""	#f	#f
 "BC_IN_Tt"	"{BC_IN_Tt}"	""	#t	#f
+"BC_IN_VolumeFlow"	"{BC_IN_VolumeFlow}"	""	#t	#f
+"BC_IN_VolumeFlowDensity"	"{BC_IN_VolumeFlowDensity}"	""	#t	#f
 "BC_IN_TuIn"	"{BC_IN_TuIn}"	""	#t	#f
 "BC_IN_TuVR"	"{BC_IN_TuVR}"	""	#t	#f
 "BC_OUT_p"	"{BC_OUT_p}"	""	#t	#f
@@ -17,6 +19,8 @@ name	definition	description	input-parameter	output-parameter
 "BC_OUT_ECMassFlow"	"{BC_OUT_ECMassFlow}"	""	#t	#f
 "BC_ECMassFlow_pref"	"{BC_ECMassFlow_pref}"	""	#f	#f
 "BC_ECMassFlow_tref"	"{BC_ECMassFlow_tref}"	""	#f	#f
+"BC_OUT_VolumeFlow"	"{BC_OUT_VolumeFlow}"	""	#t	#f
+"BC_OUT_VolumeFlowDensity"	"{BC_OUT_VolumeFlowDensity}"	""	#t	#f
 "MP_IN_p"	"AreaAve(StaticPressure,{bz_inlet_names})"	""	#f	#f
 "MP_IN_MassFlow"	"MassFlow({bz_inlet_names})"	""	#f	#t
 "MP_IN_MassFlow_360"	"MassFlow({bz_inlet_names}) * GEO_IN_No_Passages_360 / GEO_IN_No_Passages"	""	#f	#t
@@ -33,7 +37,7 @@ name	definition	description	input-parameter	output-parameter
 "MP_PRt"	"MP_OUT_massFlowAve_pt/ MP_IN_massFlowAve_pt"	""	#f	#t
 "MP_TRt"	"MassFlowAve(TotalTemperature,{bz_outlet_names}) / MassFlowAve(TotalTemperature,{bz_inlet_names})"	""	#f	#f
 "gamma"	"Average(SpecificHeatRatiogamma,{bz_inlet_names},Weight = 'MassFlowRate')"	""	#f	#f
-"MP_Isentropic_Efficiency"	"(MP_IN_massFlowAve_Tt - MP_OUT_massFlowAve_Tt) / (MP_IN_massFlowAve_Tt * (1 - (MP_OUT_massFlowAve_pt / MP_IN_massFlowAve_pt) ^ ((gamma-1)/gamma)))"	""	#f	#t
-"MP_Polytropic_Efficiency"	"(log10(MP_IN_massFlowAve_Tt / MP_OUT_massFlowAve_Tt) / log10(MP_IN_massFlowAve_pt / MP_OUT_massFlowAve_pt)) * (gamma/(gamma-1))"	""	#f	#t
+"MP_Isentropic_Efficiency"	"EfficiencyIsentropic(Inlets={bz_inlet_names},Outlets={bz_outlet_names},Ratio='{isentropic_efficiency_ratio}')"	""	#f	#t
+"MP_Polytropic_Efficiency"	"EfficiencyPolytropic(Inlets={bz_inlet_names},Outlets={bz_outlet_names},Ratio='{isentropic_efficiency_ratio}')"	""	#f	#t
 "MP_Torque_360"	"dot(vector{rotation_axis_direction} , Moment(vector{rotation_axis_origin},{bz_walls_torque})) * (GEO_OUT_No_Passages_360 / GEO_OUT_No_Passages)"	""	#f	#t
 "MP_Power_Torque_360"	"MP_Torque_360 * (BC_omega * PI/180 [deg])"	""	#f	#t
