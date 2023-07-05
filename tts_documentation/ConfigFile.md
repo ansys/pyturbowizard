@@ -234,6 +234,7 @@ Under the ```locations``` section the different regions of your mesh have to be 
                   "bz_ep2_Euler": ["c-stator-2-to-b-stator-1-side-1"],                     
                   ...
 ```
+
 **Notes**:
   - ```bz_walls_torque```: Define all walls which should be accounted to calculate a reference torque
   - ```bz_ep1_Euler``` / ```bz_ep2_Euler```: Inlet (1) and outlet (2) evaluation planes to calculate the efficiency based on the Euler turbine equation
