@@ -12,7 +12,7 @@ def study(data, solver, functionEl):
         defaultName="study_01",
     )
 
-    print('Running ParamatricStudy Function "' + functionName + '"...')
+    print(f"Running ParamatricStudy-Function '{functionName}' ...")
     if functionName == "study_01":
         study01(data, solver)
     else:
@@ -22,7 +22,7 @@ def study(data, solver, functionEl):
             + '" not known. Skipping Parametric Study!'
         )
 
-    print("\nRunning ParamatricStudy Function...  finished!\n")
+    print(f"\nRunning ParamatricStudy-Function '{functionName}'...  finished!\n")
 
 
 def study01(data, solver):
@@ -32,15 +32,10 @@ def study01(data, solver):
     # Init variables
     fluent_study = None
     studyIndex = 0
-    if len(studyDict) > 1:
-        print(
-            "\nNote: In the config-File more than 1 study elements are defined! "
-            "\nCurrently only executing one study is supported!"
-            "\nFirst one in your config-File will be executed\n"
-        )
 
     for studyName in studyDict:
         studyEl = studyDict[studyName]
+        print(f"\nRunning Study '{studyName}'...\n")
         # Getting all input data from json file
         # datapath = studyEl.get("datapath")
         refCase = studyEl.get("refCaseFilename")
@@ -185,6 +180,7 @@ def study01(data, solver):
             studyIndex = studyIndex + 1
 
         # Skipping after first study has been finished
+        print(f"\nRunning Study '{studyName}' finished!\n")
         # break
 
     print("All Studies finished")

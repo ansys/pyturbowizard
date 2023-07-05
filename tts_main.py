@@ -14,7 +14,7 @@ from tts_subroutines import (
     postproc,
 )
 
-version = "1.3.7"
+version = "1.3.8"
 print(f"\n*** Starting TurboTestSuite (Version {str(version)}) ***\n\n")
 
 # If solver variable does not exist, Fluent has been started in external mode
@@ -70,6 +70,8 @@ if caseDict is not None:
         # Copy data from reference if refCase is set
         if caseEl.get("refCase") is not None:
             utilities.merge_data_with_refEl(caseEl=caseEl, allCasesEl=caseDict)
+        # Check if material from lib should be used
+        utilities.get_material_from_lib(caseEl=caseEl,scriptPath=scriptPath)
 
         # Get base caseFilename and update dict
         caseFilename = caseEl.get("caseFilename", casename)

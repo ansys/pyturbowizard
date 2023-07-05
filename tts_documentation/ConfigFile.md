@@ -70,7 +70,7 @@ For running Fluent on Linux or a Cluster, there are two options:
     },
 ```
 
-Note: If ```workingDir``` is not set, the script will use the directory of the configuration file as fluent working directory.
+**Note:** If ```workingDir``` is not set, the script will use the directory of the configuration file as fluent working directory.
 
 ### Cases
 Under the ``` cases ``` section different case setups can be specified for the script to run (different meshes etc.).
@@ -103,6 +103,7 @@ Optional objects are:
     - ```rotation_axis_direction```: Vector defining axis direction, default: [0.0, 0.0, 1.0]
     - ```rotation_axis_origin```: Vector defining axis origin, default: [0.0, 0.0, 0.0]
   - ```isentropic_efficiency_ratio```: Calculation of Isentropic Efficiency (arguments: "TotalToTotal", "TotalToStatic", "StaticToStatic")
+
 #### Profiles
 You can choose to specify a profile for your inlet or outlet boundaries by providing the ``` profileName ``` in your Fluent working directory.
 Restrictions when using profiles:
@@ -117,9 +118,11 @@ Restrictions when using profiles:
     - Profile for Static Pressure
     - Naming Convention
       - Profilename: "outlet-bc"
-      - Total Pressure: "p-out"
+      - Static Pressure: "p-out"
 
-Example snippet for a inlet profile data table:
+**Note**: If you want to use the csv-table-format as profile input, Fluent expects the specific file with the file extension "csv"!
+  
+Example snippet for a inlet profile data table (csv-format):
 ```
 [Name]
 inlet-bc
@@ -129,6 +132,7 @@ radius, pt-in, tt-in, vax-dir, vrad-dir, vtang-dir
 6.6247E-02, 5.4357E+04, 2.8787E+02, 9.9025E-01, 7.4542E-02, 4.1016E-02
 ...
 ```
+
 #### Expression Templates   
 Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a compressor and a turbine setup, as well as for compressible and incompressible setups.
 

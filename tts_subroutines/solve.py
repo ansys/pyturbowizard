@@ -43,7 +43,7 @@ def init_standard_01(data, solver):
     else:
         print(f"No inlet BC specified. Initialing from 'all-zones'")
         solver.tui.solve.initialize.compute_defaults.all_zones()
-        
+
     solver.solution.initialization.standard_initialize()
 
     solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
