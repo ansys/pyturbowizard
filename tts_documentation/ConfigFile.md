@@ -229,10 +229,16 @@ Under the ```locations``` section the different regions of your mesh have to be 
                       "side2": "a-rotor-1-to-a-rotor-1-internal-side-2"
                     }
                   },
+                  "bz_walls_torque": ["r1-blade","r1-shroud","r1-hub"],
+                  "bz_ep1_Euler": ["b-stator-1-to-a-rotor-1-side-1"],
+                  "bz_ep2_Euler": ["c-stator-2-to-b-stator-1-side-1"],                     
                   ...
 ```
+**Notes**:
+  - ```bz_walls_torque```: Define all walls which should be accounted to calculate a reference torque
+  - ```bz_ep1_Euler``` / ```bz_ep2_Euler```: Inlet (1) and outlet (2) evaluation planes to calculate the efficiency based on the Euler turbine equation
 
-In the ```locations``` section a turbo topolgy for post processing in Fluent can be defined. For different mesh regions (e.g. rotors and stators), seperate topologies have to be created.
+In the ```locations``` section a turbo topolgy for post processing in Fluent can be defined. For different mesh regions (e.g. rotors and stators), separate topologies have to be created.
 
 ```
 ...
