@@ -242,7 +242,7 @@ def calcCov(reportOut):
         import pandas as pd
     except ImportError as e:
         print(f"ImportError! Could not import lib: {str(e)}")
-        print(f"Skipping writing custom reporttable!")
+        print(f"Skipping Function 'calcCov'!")
         return
 
     data = pd.read_csv(reportOut, skiprows=2, delim_whitespace=True)
