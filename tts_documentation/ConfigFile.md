@@ -257,7 +257,7 @@ In the ```locations``` section a turbo topolgy for post processing in Fluent can
           ...
 ```
 
-**Note**: Currently the turbotopolgy creation is only supported for conformal periodic interfaces
+**Note**: Currently the turbo-topology creation is only supported for conformal periodic interfaces
 
 This completes the setup of the ``` locations ``` section.
 
