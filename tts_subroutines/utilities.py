@@ -1,8 +1,6 @@
 import os.path
 import json
 import matplotlib.pyplot as plt
-import pandas as pd
-
 
 def writeExpressionFile(data: dict, script_dir: str, working_dir: str):
     fileName = data.get("expressionFilename")
@@ -240,6 +238,13 @@ def get_material_from_lib(caseEl: dict, scriptPath: str):
     return
 
 def calcCov(reportOut):
+    try:
+        import pandas as pd
+    except ImportError as e:
+        print(f"ImportError! Could not import lib: {str(e)}")
+        print(f"Skipping writing custom reporttable!")
+        return
+
     data = pd.read_csv(reportOut, skiprows=2, delim_whitespace=True)
     data.columns = data.columns.str.strip('()"')
 
