@@ -85,6 +85,13 @@ def cleanupInputExpressions(availableKeyEl: dict, fileData: str):
 
 
 def plotOperatingMap(design_point_table):
+    try:
+        import pandas as pd
+    except ImportError as e:
+        print(f"ImportError! Could not import lib: {str(e)}")
+        print(f"Skipping 'plotOperatingMap' function!")
+        return
+
     # extract unit row and drop from table
     design_point_table = design_point_table.drop(0, axis=0)
 
