@@ -3,12 +3,15 @@
 ## **Overview**
 This project aims to provide a standardized testing setup for turbomachinery-cases in Ansys Fluent through the Pythonic access with PyFluent.
 The functionalities are displayed in the following Feature-Matrix:
-| Case        | Fluid     | Inlet BC                  | Outlet BC                                            | Expression Template | Stages                  | Interface Types                 | Parametric Study Support |
-|-------------|-----------|---------------------------|------------------------------------------------------|---------------------|-------------------------|---------------------------------|--------------------------|
-| Gas Turbine | Ideal Air | Total Pressure, Mass Flow | Static Pressure, Exit Corrected Mass Flow, Mass Flow | yes                 | Unlimited (1 mesh file) | Mixing Plane, General, Periodic | yes                      |
-| Compressor  | Ideal Air | Total Pressure, Mass Flow | Static Pressure, Exit Corrected Mass Flow, Mass Flow | yes                 | Unlimited (1 mesh file) | Mixing Plane, General, Periodic | yes                      |
+| Case                      | Fluid      | Inlet BC                          | Outlet BC                                      | Expression Template | Stages              | Interface Types                                      | Parametric Study Support |
+|---------------------------|------------|----------------------------------|------------------------------------------------|---------------------|---------------------|------------------------------------------------------|--------------------------|
+| Gas Turbine (compressible)| Ideal Air  | Total Pressure, Mass Flow, Volume Flow | Static Pressure, Exit Corrected Mass Flow, Mass Flow, Volume Flow | yes                 | Unlimited (1 mesh file) | General, Periodic, No Pitch-Scale, Pitch-Scale, Mixing Plane | yes                      |
+| Compressor (compressible) | Ideal Air  | Total Pressure, Mass Flow, Volume Flow | Static Pressure, Exit Corrected Mass Flow, Mass Flow, Volume Flow | yes                 | Unlimited (1 mesh file) | General, Periodic, No Pitch-Scale, Pitch-Scale, Mixing Plane | yes                      |
+| Gas Turbine (inccompressible) | Ideal Air | Total Pressure, Mass Flow, Volume Flow | Static Pressure, Exit Corrected Mass Flow, Mass Flow, Volume Flow | yes                 | Unlimited (1 mesh file) | General, Periodic, No Pitch-Scale, Pitch-Scale, Mixing Plane | yes                      |
+| Compressor (inccompressible) | Ideal Air | Total Pressure, Mass Flow, Volume Flow | Static Pressure, Exit Corrected Mass Flow, Mass Flow, Volume Flow | yes                 | Unlimited (1 mesh file) | General, Periodic, No Pitch-Scale, Pitch-Scale, Mixing Plane | yes                      |
 
-**Note: Rotation axis is expected to be z-axis (0,0,1) with axis origin (0,0,0)**
+
+**Note: Default rotation axis is expected to be z-axis (0,0,1) with axis origin (0,0,0)**
 
 ## **Getting Started**
 ### **Fluent Installation**
@@ -37,7 +40,7 @@ Required libraries:
   - Copy all files from GitHub to a specific folder
   - Start a Fluent job on cluster with additional arguments: ```-py -sifile=<name>.txt ```
   - Open command shell in script folder
-  - execute script via: ```pyfluent tts_main.py <PathToConfigurationFile.json>```
+  - execute script via: ```pyfluent tts_main.py <PathToConfigurationFile.json/yaml>```
 #### Windows
 - Prepare data in you working directory
   - Copy Fluent data into the folder, e.g. mesh data, profiles
@@ -45,7 +48,7 @@ Required libraries:
   - Adjust the Configuration File to your setup ([Configuration File Setup](tts_documentation/ConfigFile.md))
 - Get latest Version From GitHub: [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main)
   - Copy complete file structure from GitHub to a specific folder
-  - execute script in Terminal via: ```python <FullPathToTTSMain.py> <FullPathToConfigurationFile.json>```
+  - execute script in Terminal via: ```python <PathToTTSMain.py> <PathToConfigurationFile.json/yaml>```
 
 ## Useful Documents
 - [Configuration File Setup](tts_documentation/ConfigFile.md)

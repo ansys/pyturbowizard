@@ -12,7 +12,7 @@ def study(data, solver, functionEl):
         defaultName="study_01",
     )
 
-    print('Running ParamatricStudy Function "' + functionName + '"...')
+    print(f"Running ParamatricStudy-Function '{functionName}' ...")
     if functionName == "study_01":
         study01(data, solver)
     else:
@@ -22,7 +22,7 @@ def study(data, solver, functionEl):
             + '" not known. Skipping Parametric Study!'
         )
 
-    print("ParamatricStudy finished.")
+    print(f"\nRunning ParamatricStudy-Function '{functionName}'...  finished!\n")
 
 
 def study01(data, solver):
@@ -32,15 +32,10 @@ def study01(data, solver):
     # Init variables
     fluent_study = None
     studyIndex = 0
-    if len(studyDict) > 1:
-        print(
-            "\nNote: In the config-File more than 1 study elements are defined! "
-            "\nCurrently only executing one study is supported!"
-            "\nFirst one in your config-File will be executed\n"
-        )
 
     for studyName in studyDict:
         studyEl = studyDict[studyName]
+        print(f"\nRunning Study '{studyName}'...\n")
         # Getting all input data from json file
         # datapath = studyEl.get("datapath")
         refCase = studyEl.get("refCaseFilename")
@@ -69,19 +64,18 @@ def study01(data, solver):
         if not runExisting:
             # Read Ref Case
             refCaseFilePath = os.path.join(flworking_Dir, refCase)
-            solver.file.read_case_data(file_type="case-data", file_name=refCaseFilePath)
-            # solver.tui.file.read_case_data(refCase)
-
-            # Read Ref Case
-            if studyIndex > 0:
-                solver.tui.parametric_study.study.delete()
+            if studyIndex == 0:
+                solver.file.read_case_data(
+                    file_type="case-data", file_name=refCaseFilePath
+                )
+            else:
+                tuicommand = 'file/rcd "' + refCaseFilePath + '" yes no'
+                solver.execute_tui(tuicommand)
 
             # Initialize a new parametric study
-            if fluent_study is None:
-                # fluent_study = ParametricStudy(solver.parametric_studies).initialize()
-                solver.parametric_studies.initialize(project_filename=studyName)
-                psname = refCase + "-Solve"
-                fluent_study = solver.parametric_studies[psname]
+            solver.parametric_studies.initialize(project_filename=studyName)
+            psname = refCase + "-Solve"
+            fluent_study = solver.parametric_studies[psname]
 
             designPointCounter = 1
             definitionList = studyEl.get("definition")
@@ -146,20 +140,7 @@ def study01(data, solver):
 
             # Save Study
             # solver.tui.file.parametric_project.save_as(studyName)
-            if studyIndex == 0:
-                solver.file.parametric_project.save()
-            else:
-                solver.file.parametric_project.save_as(project_filename=studyName)
-
-            # Delete Design Points for next study: a complete reset would be the better option
-            # if (len(studyDict) > 1) and (studyIndex < (len(studyDict) - 1)):
-            #    # Delete DesignPoints Current Study
-            #    # fluent_study = fluent_study.duplicate()
-            #    for dpIndex in range(designPointCounter - 1):
-            #        designPointName = "DP" + str(dpIndex + 1)
-            #        fluent_study.design_points.delete_design_points(
-            #            design_points=designPointName
-            #        )
+            solver.file.parametric_project.save()
 
             # Increasing study index
             studyIndex = studyIndex + 1
@@ -199,14 +180,20 @@ def study01(data, solver):
             studyIndex = studyIndex + 1
 
         # Skipping after first study has been finished
-        break
+        print(f"\nRunning Study '{studyName}' finished!\n")
+        # break
 
     print("All Studies finished")
 
 
 def studyPlot(data):
     # Only working in external mode
-    import pandas as pd
+    try:
+        import pandas as pd
+    except ImportError as e:
+        print(f"ImportError! Could not import lib: {str(e)}")
+        print(f"Skipping studyPlot function!")
+        return
 
     print("Running Function StudyPlot ...")
     studyDict = data.get("studies")

@@ -13,9 +13,9 @@ def init(data, solver, functionEl):
     print('\nRunning Initialization Function "' + functionName + '"...')
     if functionName == "init_standard_01":
         init_standard_01(data, solver)
-    if functionName == "init_hybrid_01":
+    elif functionName == "init_hybrid_01":
         init_hybrid_01(data, solver)
-    if functionName == "init_fmg_01":
+    elif functionName == "init_fmg_01":
         init_fmg_01(data, solver)
     else:
         print(
@@ -24,20 +24,31 @@ def init(data, solver, functionEl):
             + '" not known. Skipping Initialization!'
         )
 
-    print("Running Initialization Function... finished.")
+    print("\n\n Initialization Function... finished.\n")
 
 
 def init_standard_01(data, solver):
     print(f'Using {data["locations"]["bz_inlet_names"][0]} pressure for initialization')
-    solver.tui.solve.initialize.compute_defaults.pressure_inlet(
-        data["locations"]["bz_inlet_names"][0]
-    )
+    solver.solution.initialization.standard_initialize()
+
+    availableBCs = dir(solver.tui.solve.initialize.compute_defaults)
+    if "mass_flow_inlet" in availableBCs:
+        solver.tui.solve.initialize.compute_defaults.mass_flow_inlet(
+            data["locations"]["bz_inlet_names"][0]
+        )
+    elif "pressure_inlet" in availableBCs:
+        solver.tui.solve.initialize.compute_defaults.pressure_inlet(
+            data["locations"]["bz_inlet_names"][0]
+        )
+    else:
+        print(f"No inlet BC specified. Initialing from 'all-zones'")
+        solver.tui.solve.initialize.compute_defaults.all_zones()
+
     solver.solution.initialization.standard_initialize()
 
     solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
         "absolute"
     )
-
 
 def init_hybrid_01(data, solver):
     init_standard_01(data=data, solver=solver)
@@ -52,14 +63,13 @@ def init_hybrid_01(data, solver):
 
 def init_fmg_01(data, solver):
     init_standard_01(data=data, solver=solver)
+    # setting rp variable which is needed for version v232 when using gtis, may be obsolete in future versions
+    solver.execute_tui(r"""(rpsetvar 'fmg-init/enable-with-gti? #t)""")
     solver.solution.initialization.fmg_initialize()
 
 
 def solve_01(data, solver):
-    tsf = data["solution"].get("time_step_factor", 1)
-    iter_count = data["solution"].get("iter_count", 0)
-    print(
-        "Solving " + str(iter_count) + " iterations with time scale factor " + str(tsf)
-    )
+    iter_count = data["solution"]["iter_count"]
+    print("Solving " + str(iter_count) + " iterations")
     solver.solution.run_calculation.iterate(iter_count=iter_count)
     return

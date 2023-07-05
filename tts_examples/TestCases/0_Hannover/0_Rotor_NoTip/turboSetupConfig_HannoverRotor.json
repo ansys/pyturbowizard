@@ -1,7 +1,15 @@
 {
    "functions":
     {
+<<<<<<<< HEAD:tts_examples/TestCases/0_Hannover/0_Rotor_NoTip/turboSetupConfig_HannoverRotor.json
       "initialization": "init_fmg_01"
+========
+      "setup": "setup_01",
+      "initialization": "init_hybrid_01",
+      "numerics": "numerics_bp_all_2305",
+      "postproc": "post_01",
+      "parametricstudy": "study_01"
+>>>>>>>> origin/main:turboSetupConfig.json
     },
   "launching":
     {
@@ -9,23 +17,35 @@
       "fl_version": "23.2.0",
       "noCore": 2,
       "precision": "double",
+<<<<<<<< HEAD:tts_examples/TestCases/0_Hannover/0_Rotor_NoTip/turboSetupConfig_HannoverRotor.json
       "show_gui":  true
+========
+      "serverfilename": "",
+      "show_gui":  true,
+      "exitatend": false
+>>>>>>>> origin/main:turboSetupConfig.json
     },
   "cases": {
       "HannoverRotor_NoTip_0.6M": {
+        "functions":
+    {
+      "initialization": "init_fmg_01"
+    },
         "caseFilename": "HannoverRotor_NoTip_0.6M",
         "meshFilename": "HannoverRotor_NoTip_0.6M.def",
         "profileName_In": "InletBC_fluent_Blend.csv",
         "profileName_Out": "",
         "expressionFilename": "hr_exp.tsv",
         "expressionTemplate": "expressionTemplate_compressor_comp.tsv",
+        "rotation_axis_direction": [0.0, 0.0, 1.0],
+        "rotation_axis_origin": [0.0, 0.0, 0.0],
         "expressions": {
           "GEO_IN_No_Passages": "1",
           "GEO_IN_No_Passages_360": "1",
           "GEO_OUT_No_Passages": "1",
           "GEO_OUT_No_Passages_360"	: "1",
           "BC_pref":	"0[Pa]",
-          "BC_RPM":	"1790.71 [rad / s]",
+          "BC_omega":	"1790.71 [rad / s]",
           "BC_IN_pt":	"-1",
           "BC_IN_p_gauge": 	"58000[Pa]",
           "BC_IN_Tt":	"-1",
@@ -37,9 +57,12 @@
           "cz_rotating_names": ["b-rotor-1"],
           "bz_inlet_names": ["inlet"],
           "bz_outlet_names": ["outlet"],
+<<<<<<<< HEAD:tts_examples/TestCases/0_Hannover/0_Rotor_NoTip/turboSetupConfig_HannoverRotor.json
+========
           "bz_walls_shroud_name": "b-rotor-1-shroud",
           "bz_walls_hub_name": "b-rotor-1-hub",
           "bz_walls_blade_name": "b-rotor-1-blade",
+>>>>>>>> origin/main:turboSetupConfig.json
           "bz_walls_counterrotating_names": ["b-rotor-1-shroud"],
           "bz_walls_freeslip_names": [
             "b-rotor-1-free-slip-inlet",
@@ -51,6 +74,17 @@
                 "side2": "b-rotor-1-periodic-side-2"
               }
           },
+<<<<<<<< HEAD:tts_examples/TestCases/0_Hannover/0_Rotor_NoTip/turboSetupConfig_HannoverRotor.json
+========
+          "bz_interfaces_mixingplane_names": {
+
+          },
+          "bz_interfaces_general_names": {
+
+          },
+          "bz_eval_ip1_name": "plane_eval_ip1",
+          "bz_eval_op1_name": "plane_eval_op1",
+>>>>>>>> origin/main:turboSetupConfig.json
           "tz_turbo_topology_names":{
             "a-rotor-1-topology":{
               "tz_shroud_names": ["b-rotor-1-shroud"],
@@ -70,8 +104,7 @@
           "fl_mol_wight": 28.96
         },
         "setup": {
-          "BC_OUT_p_pbf": 0.05,
-          "BC_OUT_p_numbins": 65
+           "BC_settings_pout": [0.05, 65]
         },
         "solution": {
           "reportlist": ["MP_IN_MassFlow","MP_OUT_MassFlow","MP_Isentropic_Efficiency","MP_PRt"],
@@ -86,9 +119,8 @@
           "runSolver": true
         },
         "results": {
-          "filename_inputParameter_pf": "inputParameters.out",
-          "filename_outputParameter_pf": "outParameters.out",
-          "filename_summary_pf": "report.sum"
+          "filename_outputParameter": "outParameters.out",
+          "filename_summary": "report.sum"
         }
       }
     }

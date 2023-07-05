@@ -1,15 +1,14 @@
 import os.path
+import json
 import matplotlib.pyplot as plt
-import pandas as pd
-import subprocess
-import time
 
-
-def writeExpressionFile(data, script_dir, working_dir):
-    fileName = os.path.join(working_dir, data["expressionFilename"])
-    if fileName is None:
+def writeExpressionFile(data: dict, script_dir: str, working_dir: str):
+    fileName = data.get("expressionFilename")
+    # if nothing is set for "expressionFilename" a default value ("expressions.tsv") is set and dict will be updated
+    if fileName is None or fileName == "":
         fileName = "expressions.tsv"
-
+        data["expressionFilename"] = fileName
+    fileName = os.path.join(working_dir, fileName)
     with open(fileName, "w") as sf:
         expressionTemplatePath = os.path.join(
             script_dir, "tts_templates", data["expressionTemplate"]
@@ -20,18 +19,27 @@ def writeExpressionFile(data, script_dir, working_dir):
         helperDict = data["locations"]
         expressionEl = data.get("expressions")
         helperDict.update(expressionEl)
-        tempData = cleanupInputExpressions(expressionEl=expressionEl, fileData=tempData)
+        # add rotation axis
+        helperDict["rotation_axis_direction"] = tuple(
+            data.get("rotation_axis_direction", [0.0, 0.0, 1.0])
+        )
+        helperDict["rotation_axis_origin"] = tuple(
+            data.get("rotation_axis_origin", [0.0, 0.0, 0.0])
+        )
+        # add isentropic efficiency definition
+        helperDict["isentropic_efficiency_ratio"] = data.get("isentropic_efficiency_ratio", 'TotalToTotal')
+        tempData = cleanupInputExpressions(availableKeyEl=helperDict, fileData=tempData)
         for line in tempData.splitlines():
             try:
                 sf.write(line.format(**helperDict))
                 sf.write("\n")
-            except KeyError:
-                print(f"Expression missing: {KeyError}")
+            except KeyError as e:
+                print(f"Expression not found in ConfigFile: {str(e)}")
 
     return
 
 
-def cleanupInputExpressions(expressionEl: dict, fileData: str):
+def cleanupInputExpressions(availableKeyEl: dict, fileData: str):
     cleanfiledata = ""
 
     for line in fileData.splitlines():
@@ -42,20 +50,34 @@ def cleanupInputExpressions(expressionEl: dict, fileData: str):
         elif line.startswith('"BC'):
             columns = line.split("\t")
             expKey = columns[1].replace('"{', "").replace('}"', "")
-            if expressionEl.get(expKey) is not None:
+            if availableKeyEl.get(expKey) is not None:
                 cleanfiledata = cleanfiledata + "\n" + line
             else:
                 continue
-
         elif line.startswith('"GEO'):
             columns = line.split("\t")
             expKey = columns[1].replace('"{', "").replace('}"', "")
-            if expressionEl.get(expKey) is not None:
+            if availableKeyEl.get(expKey) is not None:
                 cleanfiledata = cleanfiledata + "\n" + line
             else:
                 columns[1] = columns[1].replace("{" + expKey + "}", "1")
                 line = "\t".join(columns)
                 cleanfiledata = cleanfiledata + "\n" + line
+
+        elif "Torque" in line:
+            if availableKeyEl.get("bz_walls_torque") is not None:
+                cleanfiledata = cleanfiledata + "\n" + line
+            else:
+                continue
+
+        elif "Euler" in line:
+            if (
+                availableKeyEl.get("bz_ep1_Euler")
+                and availableKeyEl.get("bz_ep2_Euler")
+            ) is not None:
+                cleanfiledata = cleanfiledata + "\n" + line
+            else:
+                continue
         else:
             cleanfiledata = cleanfiledata + "\n" + line
 
@@ -63,6 +85,13 @@ def cleanupInputExpressions(expressionEl: dict, fileData: str):
 
 
 def plotOperatingMap(design_point_table):
+    try:
+        import pandas as pd
+    except ImportError as e:
+        print(f"ImportError! Could not import lib: {str(e)}")
+        print(f"Skipping 'plotOperatingMap' function!")
+        return
+
     # extract unit row and drop from table
     design_point_table = design_point_table.drop(0, axis=0)
 
@@ -155,87 +184,6 @@ def plotOperatingMap(design_point_table):
     return fig
 
 
-def launchFluent(launchEl):
-    import ansys.fluent.core as pyfluent
-
-    global solver
-
-    fl_workingDir = launchEl["workingDir"]
-    serverfilename = launchEl.get("serverfilename", None)
-    queueEl = launchEl.get("queue_slurm", None)
-    # open new session in queue
-    if queueEl is not None:
-        maxtime = float(launchEl.get("queue_waiting_time", 600.0))
-        print("Trying to launching new Fluent Session on queue '" + queueEl + "'")
-        print(
-            "Max waiting time (launching-key: 'queue_waiting_time') set to: "
-            + str(maxtime)
-        )
-        serverfilename = launchEl.get("serverfilename", "server-info.txt")
-        commandlist = list()
-        commandlist.append(
-            pyfluent.launcher.launcher.get_fluent_exe_path(
-                product_version=launchEl["fl_version"]
-            )
-        )
-        precisionCommand = "3d"
-        if launchEl.get("precision", True):
-            precisionCommand = precisionCommand + "dp"
-        batch_arguments = [
-            precisionCommand,
-            "-t%s" % (int(launchEl["noCore"])),
-            "-scheduler=slurm",
-            "-scheduler_queue=%s" % (launchEl["queue_slurm"]),
-            "-sifile=%s" % (serverfilename),
-        ]
-        if not launchEl.get("show_gui", True):
-            batch_arguments.extend(["-gu", "-driver opengl"])
-        commandlist.extend(batch_arguments)
-        process_files = subprocess.Popen(
-            commandlist, cwd=fl_workingDir, stdout=subprocess.DEVNULL
-        )
-        # Check if Fluent started
-        fullpathtosfname = os.path.join(fl_workingDir, serverfilename)
-        current_time = 0
-        while current_time <= maxtime:
-            try:
-                if os.path.isfile(fullpathtosfname):
-                    time.sleep(5)
-                    break
-            except OSError:
-                print("Witing to process start...")
-                time.sleep(5)
-                current_time += 5
-        if current_time > maxtime:
-            raise TimeoutError(
-                "Maximum waiting time reached ("
-                + str(maxtime)
-                + "sec). Aborting script..."
-            )
-        # Start Session via hook
-        solver = pyfluent.launch_fluent(
-            start_instance=False, server_info_filepath=fullpathtosfname
-        )
-    # If no serverFilename is specified, a new session will be started
-    elif serverfilename is None or serverfilename == "":
-        solver = pyfluent.launch_fluent(
-            precision=launchEl.get("precision", True),
-            processor_count=int(launchEl["noCore"]),
-            mode="solver",
-            show_gui=launchEl.get("show_gui", True),
-            product_version=launchEl["fl_version"],
-            cwd=fl_workingDir,
-        )
-    # Hook to existing Session
-    else:
-        fullpathtosfname = os.path.join(fl_workingDir, serverfilename)
-        print("Connecting to Fluent Session...")
-        solver = pyfluent.launch_fluent(
-            start_instance=False, server_info_filepath=fullpathtosfname
-        )
-    return solver
-
-
 def get_funcname_and_upd_funcdict(
     parentEl: dict, functionEl: dict, funcElName: str, defaultName: str
 ):
@@ -254,3 +202,83 @@ def get_funcname_and_upd_funcdict(
     # Update Parent Element
     parentEl.update({"functions": functionEl})
     return functionName
+
+
+def merge_functionEls(caseEl: dict, glfunctionEl: dict):
+    # Merge function dicts
+    caseFunctionEl = caseEl.get("functions")
+    if glfunctionEl is not None and caseFunctionEl is not None:
+        helpDict = glfunctionEl.copy()
+        helpDict.update(caseFunctionEl)
+        caseFunctionEl = helpDict
+    elif caseFunctionEl is None:
+        caseFunctionEl = glfunctionEl
+    return caseFunctionEl
+
+
+def merge_data_with_refEl(caseEl: dict, allCasesEl: dict):
+    refCaseName = caseEl.get("refCase")
+    refEl = allCasesEl.get(refCaseName)
+    if refEl is None:
+        print(
+            f"Specified Reference Case {refCaseName} not found in Config-File!\nSkipping CopyFunction..."
+        )
+        return caseEl
+    helpCaseEl = refEl.copy()
+    helpCaseEl.update(caseEl)
+    caseEl.update(helpCaseEl)
+    return
+
+def get_material_from_lib(caseEl: dict, scriptPath: str):
+    if type(caseEl.get("fluid_properties")) is str:
+        materialStr = caseEl.get("fluid_properties")
+        materialFileName = os.path.join(scriptPath, "tts_misc", "material_lib.json")
+        materialFile = open(materialFileName, "r")
+        materialDict = json.load(materialFile)
+        materialEl = materialDict.get(materialStr)
+        if materialEl is not None:
+            caseEl["fluid_properties"] = materialEl
+        else:
+             raise Exception(
+                f"Specified material '{materialStr}' in config-file not found in material-lib: {materialFileName}"
+            )
+    return
+
+def calcCov(reportOut):
+    try:
+        import pandas as pd
+    except ImportError as e:
+        print(f"ImportError! Could not import lib: {str(e)}")
+        print(f"Skipping Function 'calcCov'!")
+        return
+
+    data = pd.read_csv(reportOut, skiprows=2, delim_whitespace=True)
+    data.columns = data.columns.str.strip('()"')
+
+    # Initialize lists to store mean and COV values
+    mean_values = []
+    cov_values = []
+
+    # Calculate mean and COV for each column
+    for column in data.columns[1:]:
+        last_50_rows = data[column].tail(50)  # Select the last 50 rows of the column
+        std = last_50_rows.std()
+        mean = last_50_rows.mean()  # Calculate mean
+        cov = std / mean  # Calculate COV
+        mean_values.append(mean)
+        cov_values.append(cov)
+
+    # Create a DataFrame with mean and COV values
+    result_dict = {}
+    result_dict[data.columns[0]] = data.iloc[-1, 0]  # Add first column header and last row value
+
+    # format dataframe
+    for i, column in enumerate(data.columns[1:]):
+        result_dict[column] = mean_values[i]
+
+    for i, column in enumerate(data.columns[1:]):
+        result_dict[column + "-cov"] = cov_values[i]
+  
+    result_df = pd.DataFrame(result_dict, index=[0])
+
+    return result_df
