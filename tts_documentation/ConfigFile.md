@@ -257,6 +257,8 @@ In the ```locations``` section a turbo topolgy for post processing in Fluent can
           ...
 ```
 
+**Note**: Currently the turbotopolgy creation is only supported for conformal periodic interfaces
+
 This completes the setup of the ``` locations ``` section.
 
 ### Solution & Results Setup
@@ -319,10 +321,6 @@ Under the section ``` launching ```, different options for launching options for
     },
 ```
 
-**Notes**: 
- - Currently only the External option is supported by the script.
- - Currently only one the first defined study is executed by the script.
-
 For running Fluent on Linux or a Cluster, the script needs to hook on to a existing Fluent session ([How to Run on Linux](/README.md)). For this a server file name has to be specified under ``` serverfilename ```
 
 ```plotResults``` specifies, whether a Operating Point Map should be plotted and saved from the results of the parametric study.
@@ -336,9 +334,9 @@ An example plot of the Operating Point Map is shown below:
 ### Study Configuration
 In the ```studies``` section different study setups can be created. 
 
-```overwriteExisting``` sets whether a existing study with the same name should be overwritten. 
+```overwriteExisting``` sets whether an existing study with the same name should be overwritten. 
 
-```runExistingProject``` specifies if a existing study setup with the same name should be used. 
+```runExistingProject``` specifies if an existing study setup with the same name should be used. 
 
 ```write_data``` gives the option to save the simulation data for all design points. 
 
