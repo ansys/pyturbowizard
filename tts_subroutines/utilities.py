@@ -235,7 +235,7 @@ def get_material_from_lib(caseEl: dict, scriptPath: str):
             caseEl["fluid_properties"] = materialEl
         else:
              raise Exception(
-                f"Specified Material '{materialStr}' not found in material-lib: {materialFileName}"
+                f"Specified material '{materialStr}' in config-file not found in material-lib: {materialFileName}"
             )
     return
 
