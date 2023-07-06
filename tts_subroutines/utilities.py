@@ -1,7 +1,6 @@
 import os.path
+import json
 import matplotlib.pyplot as plt
-import pandas as pd
-
 
 def writeExpressionFile(data: dict, script_dir: str, working_dir: str):
     fileName = data.get("expressionFilename")
@@ -86,6 +85,13 @@ def cleanupInputExpressions(availableKeyEl: dict, fileData: str):
 
 
 def plotOperatingMap(design_point_table):
+    try:
+        import pandas as pd
+    except ImportError as e:
+        print(f"ImportError! Could not import lib: {str(e)}")
+        print(f"Skipping 'plotOperatingMap' function!")
+        return
+
     # extract unit row and drop from table
     design_point_table = design_point_table.drop(0, axis=0)
 
@@ -223,7 +229,29 @@ def merge_data_with_refEl(caseEl: dict, allCasesEl: dict):
     caseEl.update(helpCaseEl)
     return
 
+def get_material_from_lib(caseEl: dict, scriptPath: str):
+    if type(caseEl.get("fluid_properties")) is str:
+        materialStr = caseEl.get("fluid_properties")
+        materialFileName = os.path.join(scriptPath, "tts_misc", "material_lib.json")
+        materialFile = open(materialFileName, "r")
+        materialDict = json.load(materialFile)
+        materialEl = materialDict.get(materialStr)
+        if materialEl is not None:
+            caseEl["fluid_properties"] = materialEl
+        else:
+             raise Exception(
+                f"Specified material '{materialStr}' in config-file not found in material-lib: {materialFileName}"
+            )
+    return
+
 def calcCov(reportOut):
+    try:
+        import pandas as pd
+    except ImportError as e:
+        print(f"ImportError! Could not import lib: {str(e)}")
+        print(f"Skipping Function 'calcCov'!")
+        return
+
     data = pd.read_csv(reportOut, skiprows=2, delim_whitespace=True)
     data.columns = data.columns.str.strip('()"')
 

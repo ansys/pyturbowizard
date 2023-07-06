@@ -5,7 +5,12 @@
       "fl_version": "23.2.0",
       "noCore": 2,
       "precision": "double",
+<<<<<<<< HEAD:tts_examples/TestCases/0_Hannover/0_Rotor_NoTip/turboStudyConfig_Hannover.json
       "plotResults": true
+========
+      "plotResults": true,
+      "exitatend": false
+>>>>>>>> origin/main:turboStudyConfig.json
     },
   "studies": {
     "HannoverRotor_NoTip_0.6M_study": {
@@ -36,5 +41,6 @@
         }
       ]
     }
+
   }
 }
