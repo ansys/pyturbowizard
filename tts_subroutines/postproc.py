@@ -53,11 +53,11 @@ def post_01(data, solver, launchEl):
     solver.report.system.time_statistics()
 
     ## write report table
-    createReportTable(data=data, fl_workingDir=fl_workingDir)
+    createReportTable(data=data, fl_workingDir=fl_workingDir, solver = solver)
 
     return
 
-def createReportTable(data: dict, fl_workingDir):
+def createReportTable(data: dict, fl_workingDir, solver):
     try:
         import pandas as pd
     except ImportError as e:
@@ -141,6 +141,9 @@ def createReportTable(data: dict, fl_workingDir):
             filtered_values = [float(val) for val in filtered_values]
             res_columns = dict(zip(filtered_headers, filtered_values))
 
+        # get pseudo time step value
+        time_step = solver.scheme_eval.string_eval("(rpgetvar 'pseudo-auto-time-step)")
+
         ## write report table
         report_table = pd.DataFrame()
         report_table = pd.concat([report_table, report_values], axis=1)
@@ -152,6 +155,7 @@ def createReportTable(data: dict, fl_workingDir):
         report_table["Ave Wall Clock Time per It"] = wall_clock_per_it
         report_table["Compute Nodes"] = nodes
         report_table.insert(0, "Case Name", caseFilename)
+        report_table.insert(2, "Pseud Time Step [s]" , time_step)
 
         # Report Table File-Name
         reportTableName = data["results"].get("filename_reporttable", "reporttable.csv")
