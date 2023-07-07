@@ -269,6 +269,24 @@ In the ```locations``` section a turbo topolgy for post processing in Fluent can
 This completes the setup of the ``` locations ``` section.
 
 ### Solution & Results Setup
+#### Solution Settings
+
+```
+       "solution": {
+          "reportlist": ["MP_IN_MassFlow_360","MP_OUT_MassFlow_360","MP_Isentropic_Efficiency","MP_PRt"],
+          "res_crit": 1.0e-4,
+          "cov_list": [
+            "MP_Isentropic_Efficiency",
+            "MP_IN_MassFlow_360",
+            "MP_PRt"
+          ],
+          "cov_crit": 1.0e-4,
+          "tsn": true,
+          "iter_count": 10,
+          "time_step_factor": 5,
+          "runSolver": true
+        }
+```
 In the section ```solution``` the convergence criteria and solve settings can be specified. 
 
 In ```reportlist``` the expressions for monitoring (plotting and file save) can be set.
@@ -282,7 +300,24 @@ In ```reportlist``` the expressions for monitoring (plotting and file save) can 
 The automatic time step factor and iteration count can be set via ```time_step_factor``` (length-scale-method = conservative) or ```pseudo_timestep``` and ``` iter_count ``` respectively. 
 
 ``` runSolver``` can be used to specify whether the simulation should start to run at the end of the setup.
+#### Results
+```
+        "results": {
+          "filename_inputParameter_pf": "inputParameters.out",
+          "filename_outputParameter_pf": "outParameters.out",
+          "filename_summary_pf": "report.sum",
+          "span_plot_var": ["total-pressure","total-temperature","velocity-magnitude"],
+          "span_plot_height": [0.2, 0.5, 0.9]
+        }
+```
+In the ```results``` section, the simulation output data can be set, as well as the creation of span-wise contour plots.
 
+```filename_inputParameter_pf``` and ```filename_outputParameter_pf``` are used to specify the names of the files containing the input and output parameters. 
+
+```span_plot_var``` is used to define the variable names, for which the contour plots are created. You can use the command:
+```solver.field_data.get_scalar_field_data.field_name.allowed_values()``` in the Fluent python console to check for the correct variable names.
+
+```span_plot_height``` is used to specify the relative channel height, at which the different variable contour plots are created. Note that all variable plots are created for each respective channel height.
 ### Working with multiple cases
 
 You can easily add various cases to your configuration file. The cases will be executed by the script step by step.
