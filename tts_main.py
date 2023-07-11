@@ -64,12 +64,12 @@ if caseDict is not None:
         print("Running Case: " + casename + "\n")
         caseEl = turboData["cases"][casename]
         # Merge function dicts
-        caseFunctionEl = utilities.merge_functionEls(
-            caseEl=caseEl, glfunctionEl=glfunctionEl
+        caseFunctionEl = utilities.merge_functionDicts(
+            caseDict=caseEl, glfunctionDict=glfunctionEl
         )
         # Copy data from reference if refCase is set
         if caseEl.get("refCase") is not None:
-            utilities.merge_data_with_refEl(caseEl=caseEl, allCasesEl=caseDict)
+            utilities.merge_data_with_refDict(caseDict=caseEl, allCasesDict=caseDict)
         # Check if material from lib should be used
         utilities.get_material_from_lib(caseDict=caseEl, scriptPath=scriptPath)
 
@@ -97,7 +97,7 @@ if caseDict is not None:
             caseEl["expressionFilename"]
         )
         # Check if all inputParameters are valid
-        utilities.check_input_parameter_b_cs(solver=solver)
+        utilities.check_input_parameter_expressions(solver=solver)
         ### Expression Definition... done!
 
         # Enable Beta-Features
