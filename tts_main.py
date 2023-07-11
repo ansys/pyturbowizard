@@ -14,7 +14,7 @@ from tts_subroutines import (
     postproc,
 )
 
-version = "1.4.0"
+version = "1.4.1"
 print(f"\n*** Starting TurboTestSuite (Version {str(version)}) ***\n\n")
 
 # If solver variable does not exist, Fluent has been started in external mode
@@ -64,14 +64,14 @@ if caseDict is not None:
         print("Running Case: " + casename + "\n")
         caseEl = turboData["cases"][casename]
         # Merge function dicts
-        caseFunctionEl = utilities.merge_functionEls(
-            caseEl=caseEl, glfunctionEl=glfunctionEl
+        caseFunctionEl = utilities.merge_functionDicts(
+            caseDict=caseEl, glfunctionDict=glfunctionEl
         )
         # Copy data from reference if refCase is set
         if caseEl.get("refCase") is not None:
-            utilities.merge_data_with_refEl(caseEl=caseEl, allCasesEl=caseDict)
+            utilities.merge_data_with_refDict(caseDict=caseEl, allCasesDict=caseDict)
         # Check if material from lib should be used
-        utilities.get_material_from_lib(caseEl=caseEl,scriptPath=scriptPath)
+        utilities.get_material_from_lib(caseDict=caseEl, scriptPath=scriptPath)
 
         # Get base caseFilename and update dict
         caseFilename = caseEl.get("caseFilename", casename)
@@ -87,12 +87,18 @@ if caseDict is not None:
         # Mesh import, expressions, profiles
         result = meshimport.import_01(caseEl, solver)
 
-        utilities.writeExpressionFile(
+        ### Expression Definition
+        # Write ExpressionFile with specified Template
+        utilities.write_expression_file(
             data=caseEl, script_dir=scriptPath, working_dir=fl_workingDir
         )
+        # Reading ExpressionFile into Fluent
         solver.tui.define.named_expressions.import_from_tsv(
             caseEl["expressionFilename"]
         )
+        # Check if all inputParameters are valid
+        utilities.check_input_parameter_expressions(solver=solver)
+        ### Expression Definition... done!
 
         # Enable Beta-Features
         solver.tui.define.beta_feature_access("yes ok")

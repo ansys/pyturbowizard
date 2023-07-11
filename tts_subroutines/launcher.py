@@ -2,6 +2,8 @@ import os
 import subprocess
 import time
 
+from tts_subroutines import utilities
+
 
 def launchFluent(launchEl):
     import ansys.fluent.core as pyfluent
@@ -19,14 +21,13 @@ def launchFluent(launchEl):
             "Max waiting time (launching-key: 'queue_waiting_time') set to: "
             + str(maxtime)
         )
+        # Get a free server-filename
         serverfilename = launchEl.get("serverfilename", "server-info.txt")
-        # Check if serverfile already exists
-        serverfilepath = os.path.join(fl_workingDir, serverfilename)
-        if os.path.isfile(serverfilepath):
-            raise FileExistsError(
-                f"Serverfile already exits {serverfilepath}!"
-                f"\nPlease remove this file or specify a different serverfilename (Key: 'serverfilename')!"
-            )
+        serverfilename = utilities.get_free_filename(
+            dirname=fl_workingDir, base_filename=serverfilename
+        )
+        launchEl["serverfilename"] = serverfilename
+        serverfilename = os.path.join(fl_workingDir, serverfilename)
 
         commandlist = list()
         commandlist.append(
