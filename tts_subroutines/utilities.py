@@ -2,7 +2,8 @@ import os.path
 import json
 import matplotlib.pyplot as plt
 
-def writeExpressionFile(data: dict, script_dir: str, working_dir: str):
+
+def write_expression_file(data: dict, script_dir: str, working_dir: str):
     fileName = data.get("expressionFilename")
     # if nothing is set for "expressionFilename" a default value ("expressions.tsv") is set and dict will be updated
     if fileName is None or fileName == "":
@@ -27,8 +28,12 @@ def writeExpressionFile(data: dict, script_dir: str, working_dir: str):
             data.get("rotation_axis_origin", [0.0, 0.0, 0.0])
         )
         # add isentropic efficiency definition
-        helperDict["isentropic_efficiency_ratio"] = data.get("isentropic_efficiency_ratio", 'TotalToTotal')
-        tempData = cleanupInputExpressions(availableKeyEl=helperDict, fileData=tempData)
+        helperDict["isentropic_efficiency_ratio"] = data.get(
+            "isentropic_efficiency_ratio", "TotalToTotal"
+        )
+        tempData = cleanup_input_expressions(
+            availableKeyEl=helperDict, fileData=tempData
+        )
         for line in tempData.splitlines():
             try:
                 sf.write(line.format(**helperDict))
@@ -39,7 +44,7 @@ def writeExpressionFile(data: dict, script_dir: str, working_dir: str):
     return
 
 
-def cleanupInputExpressions(availableKeyEl: dict, fileData: str):
+def cleanup_input_expressions(availableKeyEl: dict, fileData: str):
     cleanfiledata = ""
 
     for line in fileData.splitlines():
@@ -84,7 +89,35 @@ def cleanupInputExpressions(availableKeyEl: dict, fileData: str):
     return cleanfiledata
 
 
-def plotOperatingMap(design_point_table):
+def check_input_parameter_expressions(solver):
+    expDict = solver.setup.named_expressions()
+    for expName in expDict:
+        exp = expDict[expName]
+        if exp.get("input_parameter"):
+            expValue = solver.setup.named_expressions.get(expName).get_value()
+            if type(expValue) is not float:
+                print(
+                    f"'{expName}' seems not to be valid: '{expValue}' \n "
+                    f"Removing definition as Input Parameter..."
+                )
+                solver.setup.named_expressions.get(expName).input_parameter.set_state(
+                    False
+                )
+
+
+def get_free_filename(dirname, base_filename):
+    base_name, ext_name = os.path.splitext(base_filename)
+    filename = base_filename
+    filepath = os.path.join(dirname, filename)
+    counter = 1
+    while os.path.isfile(filepath):
+        filename = base_name + "_" + str(counter) + ext_name
+        filepath = os.path.join(dirname, filename)
+        counter += 1
+    return filename
+
+
+def plot_operating_map(design_point_table):
     try:
         import pandas as pd
     except ImportError as e:
@@ -185,64 +218,66 @@ def plotOperatingMap(design_point_table):
 
 
 def get_funcname_and_upd_funcdict(
-    parentEl: dict, functionEl: dict, funcElName: str, defaultName: str
+    parentDict: dict, functionDict: dict, funcElName: str, defaultName: str
 ):
     functionName = None
-    if functionEl is not None:
-        functionName = functionEl.get(funcElName)
+    if functionDict is not None:
+        functionName = functionDict.get(funcElName)
     # Set Default if not already set
     if functionName is None:
         functionName = defaultName
         # If the element is not existing, create a new one, otherwise update the existing
-        if functionEl is None:
-            functionEl = {"functions": {funcElName: functionName}}
+        if functionDict is None:
+            functionDict = {"functions": {funcElName: functionName}}
         else:
-            functionEl.update({funcElName: functionName})
+            functionDict.update({funcElName: functionName})
 
     # Update Parent Element
-    parentEl.update({"functions": functionEl})
+    parentDict.update({"functions": functionDict})
     return functionName
 
 
-def merge_functionEls(caseEl: dict, glfunctionEl: dict):
+def merge_functionDict(caseDict: dict, glfunctionDict: dict):
     # Merge function dicts
-    caseFunctionEl = caseEl.get("functions")
-    if glfunctionEl is not None and caseFunctionEl is not None:
-        helpDict = glfunctionEl.copy()
-        helpDict.update(caseFunctionEl)
-        caseFunctionEl = helpDict
-    elif caseFunctionEl is None:
-        caseFunctionEl = glfunctionEl
-    return caseFunctionEl
+    caseFunctionDict = caseDict.get("functions")
+    if glfunctionDict is not None and caseFunctionDict is not None:
+        helpDict = glfunctionDict.copy()
+        helpDict.update(caseFunctionDict)
+        caseFunctionDict = helpDict
+    elif caseFunctionDict is None:
+        caseFunctionDict = glfunctionDict
+    return caseFunctionDict
 
 
-def merge_data_with_refEl(caseEl: dict, allCasesEl: dict):
-    refCaseName = caseEl.get("refCase")
-    refEl = allCasesEl.get(refCaseName)
-    if refEl is None:
+def merge_data_with_refDict(caseDict: dict, allCasesDict: dict):
+    refCaseName = caseDict.get("refCase")
+    refDict = allCasesDict.get(refCaseName)
+    if refDict is None:
         print(
             f"Specified Reference Case {refCaseName} not found in Config-File!\nSkipping CopyFunction..."
         )
-        return caseEl
-    helpCaseEl = refEl.copy()
-    helpCaseEl.update(caseEl)
-    caseEl.update(helpCaseEl)
+        return caseDict
+    helpCaseDict = refDict.copy()
+    helpCaseDict.update(caseDict)
+    caseDict.update(helpCaseDict)
     return
 
-def get_material_from_lib(caseEl: dict, scriptPath: str):
-    if type(caseEl.get("fluid_properties")) is str:
-        materialStr = caseEl.get("fluid_properties")
+
+def get_material_from_lib(caseDict: dict, scriptPath: str):
+    if type(caseDict.get("fluid_properties")) is str:
+        materialStr = caseDict.get("fluid_properties")
         materialFileName = os.path.join(scriptPath, "tts_misc", "material_lib.json")
         materialFile = open(materialFileName, "r")
         materialDict = json.load(materialFile)
-        materialEl = materialDict.get(materialStr)
-        if materialEl is not None:
-            caseEl["fluid_properties"] = materialEl
+        materialDict = materialDict.get(materialStr)
+        if materialDict is not None:
+            caseDict["fluid_properties"] = materialDict
         else:
-             raise Exception(
+            raise Exception(
                 f"Specified material '{materialStr}' in config-file not found in material-lib: {materialFileName}"
             )
     return
+
 
 def calcCov(reportOut):
     try:
@@ -270,7 +305,9 @@ def calcCov(reportOut):
 
     # Create a DataFrame with mean and COV values
     result_dict = {}
-    result_dict[data.columns[0]] = data.iloc[-1, 0]  # Add first column header and last row value
+    result_dict[data.columns[0]] = data.iloc[
+        -1, 0
+    ]  # Add first column header and last row value
 
     # format dataframe
     for i, column in enumerate(data.columns[1:]):
@@ -278,7 +315,7 @@ def calcCov(reportOut):
 
     for i, column in enumerate(data.columns[1:]):
         result_dict[column + "-cov"] = cov_values[i]
-  
+
     result_df = pd.DataFrame(result_dict, index=[0])
 
     return result_df

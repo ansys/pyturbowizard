@@ -4,7 +4,7 @@ from tts_subroutines import utilities
 def numerics(data, solver, functionEl):
     # Get FunctionName & Update FunctionEl
     functionName = utilities.get_funcname_and_upd_funcdict(
-        parentEl=data,
+        parentDict=data,
         functionEl=functionEl,
         funcElName="numerics",
         defaultName="numerics_bp_tn_2305",
