@@ -237,7 +237,7 @@ def get_funcname_and_upd_funcdict(
     return functionName
 
 
-def merge_functionDict(caseDict: dict, glfunctionDict: dict):
+def merge_functionDicts(caseDict: dict, glfunctionDict: dict):
     # Merge function dicts
     caseFunctionDict = caseDict.get("functions")
     if glfunctionDict is not None and caseFunctionDict is not None:
