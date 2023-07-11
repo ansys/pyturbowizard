@@ -4,8 +4,8 @@ from tts_subroutines import utilities
 def init(data, solver, functionEl):
     # Get FunctionName & Update FunctionEl
     functionName = utilities.get_funcname_and_upd_funcdict(
-        parentEl=data,
-        functionEl=functionEl,
+        parentDict=data,
+        functionDict=functionEl,
         funcElName="initialization",
         defaultName="init_hybrid_01",
     )
@@ -49,6 +49,7 @@ def init_standard_01(data, solver):
     solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
         "absolute"
     )
+
 
 def init_hybrid_01(data, solver):
     init_standard_01(data=data, solver=solver)

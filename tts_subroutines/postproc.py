@@ -6,8 +6,8 @@ import os
 def post(data, solver, functionEl, launchEl):
     # Get FunctionName & Update FunctionEl
     functionName = utilities.get_funcname_and_upd_funcdict(
-        parentEl=data,
-        functionEl=functionEl,
+        parentDict=data,
+        functionDict=functionEl,
         funcElName="postproc",
         defaultName="post_01",
     )
@@ -57,6 +57,7 @@ def post_01(data, solver, launchEl):
 
     return
 
+
 def createReportTable(data: dict, fl_workingDir):
     try:
         import pandas as pd
@@ -89,7 +90,6 @@ def createReportTable(data: dict, fl_workingDir):
 
         report_values = utilities.calcCov(report_file)
 
-
         # Read in transcript file
         trnFileName = caseFilename + ".trn"
         trnFileName = os.path.join(fl_workingDir, trnFileName)
@@ -109,7 +109,9 @@ def createReportTable(data: dict, fl_workingDir):
             if "Average wall-clock time per iteration" in line:
                 wall_clock_per_it = line.split(":")[1].strip()
                 wall_clock_per_it = wall_clock_per_it.split(" ")[0].strip()
-                print("Detected Average Wall Clock Time per Iteration:", wall_clock_per_it)
+                print(
+                    "Detected Average Wall Clock Time per Iteration:", wall_clock_per_it
+                )
             elif "Total wall-clock time" in line:
                 wall_clock_tot = line.split(":")[1].strip()
                 wall_clock_tot = wall_clock_tot.split(" ")[0].strip()
@@ -147,7 +149,9 @@ def createReportTable(data: dict, fl_workingDir):
         if solver_trn_data_valid:
             report_table = report_table.assign(**res_columns)
         else:
-            print(f"Reading Solver-Data from transcript file failed. Data not included in report table")
+            print(
+                f"Reading Solver-Data from transcript file failed. Data not included in report table"
+            )
         report_table["Total Wall Clock Time"] = wall_clock_tot
         report_table["Ave Wall Clock Time per It"] = wall_clock_per_it
         report_table["Compute Nodes"] = nodes
@@ -156,11 +160,15 @@ def createReportTable(data: dict, fl_workingDir):
         # Report Table File-Name
         reportTableName = data["results"].get("filename_reporttable", "reporttable.csv")
         data["results"]["filename_reporttable"] = reportTableName
-        reportTableFileName = os.path.join(fl_workingDir, caseFilename + "_" + reportTableName)
+        reportTableFileName = os.path.join(
+            fl_workingDir, caseFilename + "_" + reportTableName
+        )
         print("Writing Report Table to: " + reportTableFileName)
         report_table.to_csv(reportTableFileName, index=None)
     except:
-        print("An error occured during function 'createReportTable' -> Skipping creation of case report table!")
+        print(
+            "An error occured during function 'createReportTable' -> Skipping creation of case report table!"
+        )
 
     return
 
@@ -169,7 +177,9 @@ def spanPlots(data, solver):
     # Create spanwise surfaces
     spansSurf = data["results"].get("span_plot_height")
     contVars = data["results"].get("span_plot_var")
-    availableFieldDataNames = solver.field_data.get_scalar_field_data.field_name.allowed_values()
+    availableFieldDataNames = (
+        solver.field_data.get_scalar_field_data.field_name.allowed_values()
+    )
     for contVar in contVars:
         if contVar not in availableFieldDataNames:
             print(f"FieldVariable: '{contVar}' not available in Solution-Data!")
@@ -191,11 +201,12 @@ def spanPlots(data, solver):
                 contName = spanName + "-" + contVar
                 print("Creating spanwise contour-plot: " + contName)
                 solver.results.graphics.contour[contName] = {}
-                solver.results.graphics.contour[contName](field=contVar, contour_lines=True, surfaces_list=spanName)
+                solver.results.graphics.contour[contName](
+                    field=contVar, contour_lines=True, surfaces_list=spanName
+                )
                 solver.results.graphics.contour[
                     contName
                 ].range_option.auto_range_on.global_range = False
-
 
 
 def mergeReportTables(turboData, solver):

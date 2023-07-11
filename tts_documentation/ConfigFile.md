@@ -184,6 +184,8 @@ Available Boundary Conditions Include:
   - ```BC_OUT_VolumeFlow``` Volume flow outlet boundary condition (mass flow inlet)
       - ```BC_OUT_VolumeFlowDensity``` Fluid Density of outlet volume flow
 
+**Note**: If you want to use profile data for inlet/outlet you still need to define a corresponding expression (you can specify a dummy value). Example: A profile for outlet pressure is specified: ```"BC_OUT_p": "-1 [Pa]"```
+
 #### Domain mapping 
 Under the ```locations``` section the different regions of your mesh have to be mapped accordingly. Note that every location input is a list, so that you can map multiple regions, e.g. ``` ["inlet1","inlet2"] ```. Interfaces can also be specified for periodic and general interfaces or mixing plane models.
 

@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 def study(data, solver, functionEl):
     # Get FunctionName & Update FunctionEl
     functionName = utilities.get_funcname_and_upd_funcdict(
-        parentEl=data,
-        functionEl=functionEl,
+        parentDict=data,
+        functionDict=functionEl,
         funcElName="parametricstudy",
         defaultName="study_01",
     )
@@ -207,7 +207,7 @@ def studyPlot(data):
                 design_point_table_path, delimiter=",", header=0
             )
 
-            fig = utilities.plotOperatingMap(design_point_table)
+            fig = utilities.plot_operating_map(design_point_table)
             fig
             study_plot_name = (
                 flworking_Dir + "/" + studyName + "_operating_point_map.svg"
