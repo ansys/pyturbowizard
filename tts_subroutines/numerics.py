@@ -5,7 +5,7 @@ def numerics(data, solver, functionEl):
     # Get FunctionName & Update FunctionEl
     functionName = utilities.get_funcname_and_upd_funcdict(
         parentDict=data,
-        functionEl=functionEl,
+        functionDict=functionEl,
         funcElName="numerics",
         defaultName="numerics_bp_tn_2305",
     )
