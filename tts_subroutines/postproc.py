@@ -48,7 +48,6 @@ def post_01(data, solver, launchEl):
         except Exception as e:
             print(f"No span plots have been created: {e}")
 
-    ## get wall clock time
     # Write out system time
     solver.report.system.time_statistics()
 
@@ -106,11 +105,7 @@ def createReportTable(data: dict, fl_workingDir, solver):
         filtered_headers = []
 
         for line in lines:
-            if "Average wall-clock time per iteration" in line:
-                wall_clock_per_it = line.split(":")[1].strip()
-                wall_clock_per_it = wall_clock_per_it.split(" ")[0].strip()
-                print("Detected Average Wall Clock Time per Iteration:", wall_clock_per_it)
-            elif "Total wall-clock time" in line:
+            if "Total wall-clock time" in line:
                 wall_clock_tot = line.split(":")[1].strip()
                 wall_clock_tot = wall_clock_tot.split(" ")[0].strip()
                 print("Detected Total Wall Clock Time:", wall_clock_tot)
@@ -144,6 +139,12 @@ def createReportTable(data: dict, fl_workingDir, solver):
         # get pseudo time step value
         time_step = solver.scheme_eval.string_eval("(rpgetvar 'pseudo-auto-time-step)")
 
+        # write out flux reports
+        massBalance = solver.report.fluxes.mass_flow()
+        solveEnergy = solver.setup.models.energy.enabled()
+        if solveEnergy:
+            heatBalance = solver.report.fluxes.heat_transfer()
+
         ## write report table
         report_table = pd.DataFrame()
         report_table = pd.concat([report_table, report_values], axis=1)
@@ -151,8 +152,10 @@ def createReportTable(data: dict, fl_workingDir, solver):
             report_table = report_table.assign(**res_columns)
         else:
             print(f"Reading Solver-Data from transcript file failed. Data not included in report table")
+        report_table["Mass Balance [kg/s]"] = massBalance
+        if solveEnergy:
+            report_table["Mass Balance [W]"] = heatBalance
         report_table["Total Wall Clock Time"] = wall_clock_tot
-        report_table["Ave Wall Clock Time per It"] = wall_clock_per_it
         report_table["Compute Nodes"] = nodes
         report_table.insert(0, "Case Name", caseFilename)
         report_table.insert(2, "Pseud Time Step [s]" , time_step)
