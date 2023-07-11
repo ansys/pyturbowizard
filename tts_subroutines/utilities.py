@@ -2,7 +2,6 @@ import os.path
 import json
 import matplotlib.pyplot as plt
 
-
 def write_expression_file(data: dict, script_dir: str, working_dir: str):
     fileName = data.get("expressionFilename")
     # if nothing is set for "expressionFilename" a default value ("expressions.tsv") is set and dict will be updated
@@ -87,7 +86,6 @@ def cleanup_input_expressions(availableKeyEl: dict, fileData: str):
             cleanfiledata = cleanfiledata + "\n" + line
 
     return cleanfiledata
-
 
 def check_input_parameter_expressions(solver):
     expDict = solver.setup.named_expressions()
@@ -277,7 +275,6 @@ def get_material_from_lib(caseDict: dict, scriptPath: str):
                 f"Specified material '{materialStr}' in config-file not found in material-lib: {materialFileName}"
             )
     return
-
 
 def calcCov(reportOut):
     try:
