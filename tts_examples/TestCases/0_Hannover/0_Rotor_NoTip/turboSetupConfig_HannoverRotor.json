@@ -9,9 +9,8 @@
       "fl_version": "23.2.0",
       "noCore": 2,
       "precision": "double",
-      "show_gui":  true
-      "serverfilename": "",
       "show_gui":  true,
+      "serverfilename": "",
       "exitatend": false
     },
   "cases": {
@@ -23,16 +22,14 @@
         "caseFilename": "HannoverRotor_NoTip_0.6M",
         "meshFilename": "HannoverRotor_NoTip_0.6M.def",
         "profileName_In": "InletBC_fluent_Blend.csv",
-        "profileName_Out": "",
-        "expressionFilename": "hr_exp.tsv",
         "expressionTemplate": "expressionTemplate_compressor_comp.tsv",
         "rotation_axis_direction": [0.0, 0.0, 1.0],
         "rotation_axis_origin": [0.0, 0.0, 0.0],
         "expressions": {
           "GEO_IN_No_Passages": "1",
-          "GEO_IN_No_Passages_360": "1",
+          "GEO_IN_No_Passages_360": "23",
           "GEO_OUT_No_Passages": "1",
-          "GEO_OUT_No_Passages_360"	: "1",
+          "GEO_OUT_No_Passages_360"	: "23",
           "BC_pref":	"0[Pa]",
           "BC_omega":	"1790.71 [rad / s]",
           "BC_IN_pt":	"-1",
@@ -46,6 +43,7 @@
           "cz_rotating_names": ["b-rotor-1"],
           "bz_inlet_names": ["inlet"],
           "bz_outlet_names": ["outlet"],
+          "bz_walls_torque": ["b-rotor-1-blade", "b-rotor-1-hub"],
           "bz_walls_counterrotating_names": ["b-rotor-1-shroud"],
           "bz_walls_freeslip_names": [
             "b-rotor-1-free-slip-inlet",
