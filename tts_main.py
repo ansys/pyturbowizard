@@ -106,12 +106,13 @@ if caseDict is not None:
         # Case Setup
         setupcfd.setup(data=caseEl, solver=solver, functionEl=caseFunctionEl)
         setupcfd.report_01(caseEl, solver)
-        # Read Additional Journals, if specified
-        utilities.read_journals(data=caseEl, solver=solver, element_name="setup_journal_filenames")
 
         # Solution
         # Set Solver Settings
         numerics.numerics(data=caseEl, solver=solver, functionEl=caseFunctionEl)
+
+        # Read Additional Journals, if specified
+        utilities.read_journals(data=caseEl, solver=solver, element_name="pre_init_journal_filenames")
 
         # Initialization
         solve.init(data=caseEl, solver=solver, functionEl=caseFunctionEl)
@@ -129,6 +130,9 @@ if caseDict is not None:
                 "Skipping Writing of Initial Solution Data: No Solution Data available\n"
             )
 
+        # Read Additional Journals, if specified
+        utilities.read_journals(data=caseEl, solver=solver, element_name="pre_solve_journal_filenames")
+
         # Solve
         if caseEl["solution"].get("runSolver", False):
             solve.solve_01(caseEl, solver)
@@ -145,7 +149,10 @@ if caseDict is not None:
         else:
             print("Skipping Postprocessing: No Solution Data available\n")
 
-            # Finalize
+        # Read Additional Journals, if specified
+        utilities.read_journals(data=caseEl, solver=solver, element_name="pre_exit_journal_filenames")
+
+        # Finalize
         solver.file.stop_transcript()
         # End of Case-Loop
 
