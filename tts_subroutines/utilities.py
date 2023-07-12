@@ -90,17 +90,15 @@ def cleanup_input_expressions(availableKeyEl: dict, fileData: str):
 def check_input_parameter_expressions(solver):
     expDict = solver.setup.named_expressions()
     for expName in expDict:
-        exp = expDict[expName]
-        if exp.get("input_parameter"):
-            expValue = solver.setup.named_expressions.get(expName).get_value()
+        exp = solver.setup.named_expressions.get(expName)
+        if expName.startswith("BC_"):
+            expValue = exp.get_value()
             if type(expValue) is not float:
                 print(
                     f"'{expName}' seems not to be valid: '{expValue}' \n "
                     f"Removing definition as Input Parameter..."
                 )
-                solver.setup.named_expressions.get(expName).input_parameter.set_state(
-                    False
-                )
+                exp.set_state({'input_parameter': False})
 
 
 def get_free_filename(dirname, base_filename):
