@@ -27,9 +27,12 @@ def write_expression_file(data: dict, script_dir: str, working_dir: str):
             data.get("rotation_axis_origin", [0.0, 0.0, 0.0])
         )
         # add isentropic efficiency definition
-        helperDict["isentropic_efficiency_ratio"] = data.get("isentropic_efficiency_ratio", 'TotalToTotal')
->>>>>>>>> Temporary merge branch 2
-        tempData = cleanupInputExpressions(availableKeyEl=helperDict, fileData=tempData)
+        helperDict["isentropic_efficiency_ratio"] = data.get(
+            "isentropic_efficiency_ratio", "TotalToTotal"
+        )
+        tempData = cleanup_input_expressions(
+            availableKeyEl=helperDict, fileData=tempData
+        )
         for line in tempData.splitlines():
             try:
                 sf.write(line.format(**helperDict))
