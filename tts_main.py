@@ -107,12 +107,12 @@ if caseDict is not None:
         setupcfd.setup(data=caseEl, solver=solver, functionEl=caseFunctionEl)
         setupcfd.report_01(caseEl, solver)
 
-        # Read Additional Journals, if specified
-        setupcfd.read_addon_journals(data=caseEl, solver=solver)
-
         # Solution
         # Set Solver Settings
         numerics.numerics(data=caseEl, solver=solver, functionEl=caseFunctionEl)
+
+        # Read Additional Journals, if specified
+        utilities.read_addon_journals(data=caseEl, solver=solver)
 
         # Initialization
         solve.init(data=caseEl, solver=solver, functionEl=caseFunctionEl)

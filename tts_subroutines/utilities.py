@@ -274,6 +274,16 @@ def get_material_from_lib(caseDict: dict, scriptPath: str):
             )
     return
 
+def read_addon_journals(data:dict,solver):
+    element_name = "addon_journal_filenames"
+    journal_list = data.get(element_name)
+    if journal_list is not None and len(journal_list) > 0:
+        print(
+            f"Reading specified additional journal files specified in ConfigFile '{element_name}': {journal_list}"
+        )
+        solver.file.read_journal(file_name_list=journal_list)
+    return
+
 def calcCov(reportOut):
     try:
         import pandas as pd
