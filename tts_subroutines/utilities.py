@@ -88,8 +88,7 @@ def cleanup_input_expressions(availableKeyEl: dict, fileData: str):
     return cleanfiledata
 
 def check_input_parameter_expressions(solver):
-    expDict = solver.setup.named_expressions()
-    for expName in expDict:
+    for expName in solver.setup.named_expressions():
         exp = solver.setup.named_expressions.get(expName)
         if expName.startswith("BC_"):
             expValue = exp.get_value()
@@ -99,7 +98,22 @@ def check_input_parameter_expressions(solver):
                     f"Removing definition as Input Parameter..."
                 )
                 exp.set_state({'input_parameter': False})
+    return
 
+def check_output_parameter_expressions(solutionDict:dict , solver):
+    reportlist = solutionDict.get("reportlist")
+    if reportlist is None:
+        return
+
+    for expName in solver.setup.named_expressions():
+        exp = solver.setup.named_expressions.get(expName)
+        if expName in reportlist:
+            print(
+                f"Expression '{expName}' found in Config-File: 'Case/Solution/reportlist'"
+                f"Setting expression '{expName}' as output-parameter"
+            )
+            exp.set_state({'output_parameter': True})
+    return
 
 def get_free_filename(dirname, base_filename):
     base_name, ext_name = os.path.splitext(base_filename)
