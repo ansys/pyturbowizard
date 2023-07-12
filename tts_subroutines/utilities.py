@@ -90,17 +90,15 @@ def cleanup_input_expressions(availableKeyEl: dict, fileData: str):
 def check_input_parameter_expressions(solver):
     expDict = solver.setup.named_expressions()
     for expName in expDict:
-        exp = expDict[expName]
-        if exp.get("input_parameter"):
-            expValue = solver.setup.named_expressions.get(expName).get_value()
+        exp = solver.setup.named_expressions.get(expName)
+        if expName.startswith("BC_"):
+            expValue = exp.get_value()
             if type(expValue) is not float:
                 print(
                     f"'{expName}' seems not to be valid: '{expValue}' \n "
                     f"Removing definition as Input Parameter..."
                 )
-                solver.setup.named_expressions.get(expName).input_parameter.set_state(
-                    False
-                )
+                exp.set_state({'input_parameter': False})
 
 
 def get_free_filename(dirname, base_filename):
@@ -216,19 +214,19 @@ def plot_operating_map(design_point_table):
 
 
 def get_funcname_and_upd_funcdict(
-    parentDict: dict, functionDict: dict, funcElName: str, defaultName: str
+    parentDict: dict, functionDict: dict, funcDictName: str, defaultName: str
 ):
     functionName = None
     if functionDict is not None:
-        functionName = functionDict.get(funcElName)
+        functionName = functionDict.get(funcDictName)
     # Set Default if not already set
     if functionName is None:
         functionName = defaultName
         # If the element is not existing, create a new one, otherwise update the existing
         if functionDict is None:
-            functionDict = {"functions": {funcElName: functionName}}
+            functionDict = {"functions": {funcDictName: functionName}}
         else:
-            functionDict.update({funcElName: functionName})
+            functionDict.update({funcDictName: functionName})
 
     # Update Parent Element
     parentDict.update({"functions": functionDict})
@@ -274,6 +272,15 @@ def get_material_from_lib(caseDict: dict, scriptPath: str):
             raise Exception(
                 f"Specified material '{materialStr}' in config-file not found in material-lib: {materialFileName}"
             )
+    return
+
+def read_journals(data:dict, solver, element_name:str):
+    journal_list = data.get(element_name)
+    if journal_list is not None and len(journal_list) > 0:
+        print(
+            f"Reading specified journal files specified in ConfigFile '{element_name}': {journal_list}"
+        )
+        solver.file.read_journal(file_name_list=journal_list)
     return
 
 def calcCov(reportOut):

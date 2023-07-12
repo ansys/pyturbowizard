@@ -6,7 +6,7 @@ def init(data, solver, functionEl):
     functionName = utilities.get_funcname_and_upd_funcdict(
         parentDict=data,
         functionDict=functionEl,
-        funcElName="initialization",
+        funcDictName="initialization",
         defaultName="init_hybrid_01",
     )
 
