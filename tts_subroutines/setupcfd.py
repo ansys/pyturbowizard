@@ -6,7 +6,7 @@ def setup(data, solver, functionEl):
     functionName = utilities.get_funcname_and_upd_funcdict(
         parentDict=data,
         functionDict=functionEl,
-        funcElName="setup",
+        funcDictName="setup",
         defaultName="setup_compressible_01",
     )
     print('Running Setup Function "' + functionName + '"...')

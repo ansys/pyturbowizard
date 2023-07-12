@@ -214,19 +214,19 @@ def plot_operating_map(design_point_table):
 
 
 def get_funcname_and_upd_funcdict(
-    parentDict: dict, functionDict: dict, funcElName: str, defaultName: str
+    parentDict: dict, functionDict: dict, funcDictName: str, defaultName: str
 ):
     functionName = None
     if functionDict is not None:
-        functionName = functionDict.get(funcElName)
+        functionName = functionDict.get(funcDictName)
     # Set Default if not already set
     if functionName is None:
         functionName = defaultName
         # If the element is not existing, create a new one, otherwise update the existing
         if functionDict is None:
-            functionDict = {"functions": {funcElName: functionName}}
+            functionDict = {"functions": {funcDictName: functionName}}
         else:
-            functionDict.update({funcElName: functionName})
+            functionDict.update({funcDictName: functionName})
 
     # Update Parent Element
     parentDict.update({"functions": functionDict})
