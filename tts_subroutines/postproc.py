@@ -6,8 +6,8 @@ import os
 def post(data, solver, functionEl, launchEl):
     # Get FunctionName & Update FunctionEl
     functionName = utilities.get_funcname_and_upd_funcdict(
-        parentEl=data,
-        functionEl=functionEl,
+        parentDict=data,
+        functionDict=functionEl,
         funcElName="postproc",
         defaultName="post_01",
     )
@@ -56,6 +56,7 @@ def post_01(data, solver, launchEl):
 
     return
 
+
 def createReportTable(data: dict, fl_workingDir, solver):
     try:
         import pandas as pd
@@ -87,8 +88,6 @@ def createReportTable(data: dict, fl_workingDir, solver):
             report_file = os.path.join(fl_workingDir, report_file)
 
         report_values = utilities.calcCov(report_file)
-
-
         # Read in transcript file
         trnFileName = caseFilename + ".trn"
         trnFileName = os.path.join(fl_workingDir, trnFileName)
@@ -155,6 +154,7 @@ def createReportTable(data: dict, fl_workingDir, solver):
         report_table["Mass Balance [kg/s]"] = massBalance
         if solveEnergy:
             report_table["Mass Balance [W]"] = heatBalance
+
         report_table["Total Wall Clock Time"] = wall_clock_tot
         report_table["Compute Nodes"] = nodes
         report_table.insert(0, "Case Name", caseFilename)
@@ -163,11 +163,15 @@ def createReportTable(data: dict, fl_workingDir, solver):
         # Report Table File-Name
         reportTableName = data["results"].get("filename_reporttable", "reporttable.csv")
         data["results"]["filename_reporttable"] = reportTableName
-        reportTableFileName = os.path.join(fl_workingDir, caseFilename + "_" + reportTableName)
+        reportTableFileName = os.path.join(
+            fl_workingDir, caseFilename + "_" + reportTableName
+        )
         print("Writing Report Table to: " + reportTableFileName)
         report_table.to_csv(reportTableFileName, index=None)
     except:
-        print("An error occured during function 'createReportTable' -> Skipping creation of case report table!")
+        print(
+            "An error occured during function 'createReportTable' -> Skipping creation of case report table!"
+        )
 
     return
 
@@ -176,7 +180,9 @@ def spanPlots(data, solver):
     # Create spanwise surfaces
     spansSurf = data["results"].get("span_plot_height")
     contVars = data["results"].get("span_plot_var")
-    availableFieldDataNames = solver.field_data.get_scalar_field_data.field_name.allowed_values()
+    availableFieldDataNames = (
+        solver.field_data.get_scalar_field_data.field_name.allowed_values()
+    )
     for contVar in contVars:
         if contVar not in availableFieldDataNames:
             print(f"FieldVariable: '{contVar}' not available in Solution-Data!")
@@ -198,11 +204,12 @@ def spanPlots(data, solver):
                 contName = spanName + "-" + contVar
                 print("Creating spanwise contour-plot: " + contName)
                 solver.results.graphics.contour[contName] = {}
-                solver.results.graphics.contour[contName](field=contVar, contour_lines=True, surfaces_list=spanName)
+                solver.results.graphics.contour[contName](
+                    field=contVar, contour_lines=True, surfaces_list=spanName
+                )
                 solver.results.graphics.contour[
                     contName
                 ].range_option.auto_range_on.global_range = False
-
 
 
 def mergeReportTables(turboData, solver):

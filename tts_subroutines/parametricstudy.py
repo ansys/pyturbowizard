@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 def study(data, solver, functionEl):
     # Get FunctionName & Update FunctionEl
     functionName = utilities.get_funcname_and_upd_funcdict(
-        parentEl=data,
-        functionEl=functionEl,
+        parentDict=data,
+        functionDict=functionEl,
         funcElName="parametricstudy",
         defaultName="study_01",
     )
@@ -32,12 +32,6 @@ def study01(data, solver):
     # Init variables
     fluent_study = None
     studyIndex = 0
-    if len(studyDict) > 1:
-        print(
-            "\nNote: In the config-File more than 1 study elements are defined! "
-            "\nCurrently only executing one study is supported!"
-            "\nFirst one in your config-File will be executed\n"
-        )
 
     for studyName in studyDict:
         studyEl = studyDict[studyName]
@@ -213,7 +207,7 @@ def studyPlot(data):
                 design_point_table_path, delimiter=",", header=0
             )
 
-            fig = utilities.plotOperatingMap(design_point_table)
+            fig = utilities.plot_operating_map(design_point_table)
             fig
             study_plot_name = (
                 flworking_Dir + "/" + studyName + "_operating_point_map.svg"

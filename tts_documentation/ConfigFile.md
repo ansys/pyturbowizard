@@ -184,6 +184,8 @@ Available Boundary Conditions Include:
   - ```BC_OUT_VolumeFlow``` Volume flow outlet boundary condition (mass flow inlet)
       - ```BC_OUT_VolumeFlowDensity``` Fluid Density of outlet volume flow
 
+**Note**: If you want to use profile data for inlet/outlet you still need to define a corresponding expression (you can specify a dummy value). Example: A profile for outlet pressure is specified: ```"BC_OUT_p": "-1 [Pa]"```
+
 #### Domain mapping 
 Under the ```locations``` section the different regions of your mesh have to be mapped accordingly. Note that every location input is a list, so that you can map multiple regions, e.g. ``` ["inlet1","inlet2"] ```. Interfaces can also be specified for:
 - General Connection under ```bz_interfaces_general_names```
@@ -217,6 +219,16 @@ Under the ```locations``` section the different regions of your mesh have to be 
                       "side1": "b-stator-1-to-a-rotor-1-side-1",
                       "side2": "b-stator-1-to-a-rotor-1-side-2"
                     }
+                  "bz_interfaces_no_pitchscale_names": {
+                    "c-stator-2-to-b-stator-1-nps": {
+                      "side1": "c-stator-2-to-b-stator-1-side-1",
+                      "side2": "c-stator-2-to-b-stator-1-side-2"
+                    },
+                  "bz_interfaces_pitchscale_names": {
+                    "c-stator-2-to-d-rotor-2-ps": {
+                      "side1": "c-stator-2-to-d-rotor-2-side-1",
+                      "side2": "c-stator-2-to-d-rotor-2-side-2"
+                    }
                   },
                   "bz_interfaces_general_names": {
                     "a-rotor-1-tip": {
@@ -234,6 +246,7 @@ Under the ```locations``` section the different regions of your mesh have to be 
   - ```bz_walls_torque```: Define all walls which should be accounted to calculate a reference torque
   - ```bz_ep1_Euler``` / ```bz_ep2_Euler```: Inlet (1) and outlet (2) evaluation planes to calculate the efficiency based on the Euler turbine equation
   - periodic interfaces have to be conformal for the turbo-toplogy setup to function properly
+
 
 In the ```locations``` section a turbo topolgy for post processing in Fluent can be defined. For different mesh regions (e.g. rotors and stators), separate topologies have to be created.
 
