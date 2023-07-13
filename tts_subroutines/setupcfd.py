@@ -377,7 +377,15 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         }
                     else:
                         outBC.gauge_pressure = "BC_OUT_p"
-                    outBC.avg_press_spec = True
+                    if data["setup"].get("BC_OUT_avg_p"):
+                        outBC.avg_press_spec = True
+                    reverse =data["setup"].get("BC_OUT_reverse")
+                    if reverse or reverse == None:
+                        outBC.prevent_reverse_flow = True
+                    else:
+                        outBC.prevent_reverse_flow = False
+                        if not data["setup"].get("BC_OUT_pressure_pt") == None:
+                            outBC.p_backflow_spec_gen = data["setup"].get("BC_OUT_pressure_pt")
                     # Set additional pressure-outlet-bc settings if available in config file
                     try:
                         pout_settings = data["setup"]["BC_settings_pout"]

@@ -88,7 +88,10 @@
           "fl_mol_wight": 28.96
         },
         "setup": {
-           "BC_settings_pout": [0.05, 65]
+           "BC_settings_pout": [0.05, 65],
+			"BC_OUT_reverse": false,
+			"BC_OUT_avg_p": true,
+			"BC_OUT_pressure_pt": "Static Pressure"
         },
         "solution": {
           "reportlist": ["MP_IN_MassFlow","MP_OUT_MassFlow","MP_IN_MassFlow_360","MP_OUT_MassFlow_360","MP_Isentropic_Efficiency","MP_PRt"],

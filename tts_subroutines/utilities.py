@@ -100,6 +100,7 @@ def check_input_parameter_expressions(solver):
                 exp.set_state({'input_parameter': False})
     return
 
+
 def check_output_parameter_expressions(solutionDict:dict , solver):
     reportlist = solutionDict.get("reportlist")
     if reportlist is None:
