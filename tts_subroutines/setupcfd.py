@@ -548,7 +548,7 @@ def report_01(data, solver):
 
     resCrit = data["solution"]["res_crit"]
     resCritList = [resCrit] * number_eqs
-    if len(resCritList)>0:
+    if len(resCritList) > 0:
         solver.tui.solve.monitors.residual.convergence_criteria(
             *resCritList
         )
