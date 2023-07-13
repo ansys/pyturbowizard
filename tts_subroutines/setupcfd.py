@@ -377,10 +377,11 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         }
                     else:
                         outBC.gauge_pressure = "BC_OUT_p"
-                    if data["setup"].get("BC_OUT_avg_p"):
+                    pavg_set =data["setup"].get("BC_OUT_avg_p")
+                    if pavg_set or pavg_set is None:
                         outBC.avg_press_spec = True
                     reverse =data["setup"].get("BC_OUT_reverse")
-                    if reverse or reverse == None:
+                    if reverse or reverse is None:
                         outBC.prevent_reverse_flow = True
                     else:
                         outBC.prevent_reverse_flow = False
