@@ -8,7 +8,7 @@ def study(data, solver, functionEl):
     functionName = utilities.get_funcname_and_upd_funcdict(
         parentDict=data,
         functionDict=functionEl,
-        funcElName="parametricstudy",
+        funcDictName="parametricstudy",
         defaultName="study_01",
     )
 
@@ -69,8 +69,9 @@ def study01(data, solver):
                     file_type="case-data", file_name=refCaseFilePath
                 )
             else:
-                tuicommand = 'file/rcd "' + refCaseFilePath + '" yes no'
+                tuicommand = 'file/rcd "' + refCaseFilePath + '" yes'
                 solver.execute_tui(tuicommand)
+                #solver.tui.file.read_case_data(refCaseFilePath, "yes")
 
             # Initialize a new parametric study
             solver.parametric_studies.initialize(project_filename=studyName)

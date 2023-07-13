@@ -14,7 +14,8 @@ from tts_subroutines import (
     postproc,
 )
 
-version = "1.4.1"
+
+version = "1.4.3"
 print(f"\n*** Starting TurboTestSuite (Version {str(version)}) ***\n\n")
 
 # If solver variable does not exist, Fluent has been started in external mode
@@ -111,6 +112,9 @@ if caseDict is not None:
         # Set Solver Settings
         numerics.numerics(data=caseEl, solver=solver, functionEl=caseFunctionEl)
 
+        # Read Additional Journals, if specified
+        utilities.read_journals(data=caseEl, solver=solver, element_name="pre_init_journal_filenames")
+
         # Initialization
         solve.init(data=caseEl, solver=solver, functionEl=caseFunctionEl)
 
@@ -126,6 +130,9 @@ if caseDict is not None:
             print(
                 "Skipping Writing of Initial Solution Data: No Solution Data available\n"
             )
+
+        # Read Additional Journals, if specified
+        utilities.read_journals(data=caseEl, solver=solver, element_name="pre_solve_journal_filenames")
 
         # Solve
         if caseEl["solution"].get("runSolver", False):
@@ -143,7 +150,10 @@ if caseDict is not None:
         else:
             print("Skipping Postprocessing: No Solution Data available\n")
 
-            # Finalize
+        # Read Additional Journals, if specified
+        utilities.read_journals(data=caseEl, solver=solver, element_name="pre_exit_journal_filenames")
+
+        # Finalize
         solver.file.stop_transcript()
         # End of Case-Loop
 

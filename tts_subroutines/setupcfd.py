@@ -6,7 +6,7 @@ def setup(data, solver, functionEl):
     functionName = utilities.get_funcname_and_upd_funcdict(
         parentDict=data,
         functionDict=functionEl,
-        funcElName="setup",
+        funcDictName="setup",
         defaultName="setup_compressible_01",
     )
     print('Running Setup Function "' + functionName + '"...')
@@ -377,7 +377,15 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         }
                     else:
                         outBC.gauge_pressure = "BC_OUT_p"
-                    outBC.avg_press_spec = True
+                    if data["setup"].get("BC_OUT_avg_p"):
+                        outBC.avg_press_spec = True
+                    reverse =data["setup"].get("BC_OUT_reverse")
+                    if reverse or reverse == None:
+                        outBC.prevent_reverse_flow = True
+                    else:
+                        outBC.prevent_reverse_flow = False
+                        if not data["setup"].get("BC_OUT_pressure_pt") == None:
+                            outBC.p_backflow_spec_gen = data["setup"].get("BC_OUT_pressure_pt")
                     # Set additional pressure-outlet-bc settings if available in config file
                     try:
                         pout_settings = data["setup"]["BC_settings_pout"]
@@ -535,15 +543,23 @@ def report_01(data, solver):
     # solver.tui.preferences.simulation.local_residual_scaling("yes")
     solver.tui.solve.monitors.residual.scale_by_coefficient("yes", "yes", "yes")
 
-    solver.tui.solve.monitors.residual.convergence_criteria(
-        data["solution"]["cov_crit"],
-        data["solution"]["cov_crit"],
-        data["solution"]["cov_crit"],
-        data["solution"]["cov_crit"],
-        data["solution"]["cov_crit"],
-        data["solution"]["cov_crit"],
-        data["solution"]["cov_crit"],
-    )
+    # Check active number of equations
+    equDict = solver.solution.controls.equations()
+    number_eqs = 0
+    for equ in equDict:
+        if equ == "flow":
+            number_eqs += 4
+        if equ == "kw":
+            number_eqs += 2
+        if equ == "temperature":
+            number_eqs += 1
+
+    resCrit = data["solution"]["res_crit"]
+    resCritList = [resCrit] * number_eqs
+    if len(resCritList) > 0:
+        solver.tui.solve.monitors.residual.convergence_criteria(
+            *resCritList
+        )
 
     # Set CoVs
     for solve_cov in data["solution"]["cov_list"]:

@@ -8,7 +8,7 @@ def post(data, solver, functionEl, launchEl):
     functionName = utilities.get_funcname_and_upd_funcdict(
         parentDict=data,
         functionDict=functionEl,
-        funcElName="postproc",
+        funcDictName="postproc",
         defaultName="post_01",
     )
 
