@@ -535,15 +535,26 @@ def report_01(data, solver):
     # solver.tui.preferences.simulation.local_residual_scaling("yes")
     solver.tui.solve.monitors.residual.scale_by_coefficient("yes", "yes", "yes")
 
-    solver.tui.solve.monitors.residual.convergence_criteria(
-        data["solution"]["cov_crit"],
-        data["solution"]["cov_crit"],
-        data["solution"]["cov_crit"],
-        data["solution"]["cov_crit"],
-        data["solution"]["cov_crit"],
-        data["solution"]["cov_crit"],
-        data["solution"]["cov_crit"],
-    )
+    solveEnergy = solver.setup.models.energy.enabled()
+    if solveEnergy:
+        solver.tui.solve.monitors.residual.convergence_criteria(
+            data["solution"]["res_crit"],
+            data["solution"]["res_crit"],
+            data["solution"]["res_crit"],
+            data["solution"]["res_crit"],
+            data["solution"]["res_crit"],
+            data["solution"]["res_crit"],
+            data["solution"]["res_crit"]
+        )
+    else:
+        solver.tui.solve.monitors.residual.convergence_criteria(
+            data["solution"]["res_crit"],
+            data["solution"]["res_crit"],
+            data["solution"]["res_crit"],
+            data["solution"]["res_crit"],
+            data["solution"]["res_crit"],
+            data["solution"]["res_crit"]
+        )
 
     # Set CoVs
     for solve_cov in data["solution"]["cov_list"]:
