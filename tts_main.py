@@ -14,7 +14,8 @@ from tts_subroutines import (
     postproc,
 )
 
-version = "1.4.2"
+
+version = "1.4.3"
 print(f"\n*** Starting TurboTestSuite (Version {str(version)}) ***\n\n")
 
 # If solver variable does not exist, Fluent has been started in external mode

@@ -543,15 +543,23 @@ def report_01(data, solver):
     # solver.tui.preferences.simulation.local_residual_scaling("yes")
     solver.tui.solve.monitors.residual.scale_by_coefficient("yes", "yes", "yes")
 
-    solver.tui.solve.monitors.residual.convergence_criteria(
-        data["solution"]["cov_crit"],
-        data["solution"]["cov_crit"],
-        data["solution"]["cov_crit"],
-        data["solution"]["cov_crit"],
-        data["solution"]["cov_crit"],
-        data["solution"]["cov_crit"],
-        data["solution"]["cov_crit"],
-    )
+    # Check active number of equations
+    equDict = solver.solution.controls.equations()
+    number_eqs = 0
+    for equ in equDict:
+        if equ == "flow":
+            number_eqs += 4
+        if equ == "kw":
+            number_eqs += 2
+        if equ == "temperature":
+            number_eqs += 1
+
+    resCrit = data["solution"]["res_crit"]
+    resCritList = [resCrit] * number_eqs
+    if len(resCritList) > 0:
+        solver.tui.solve.monitors.residual.convergence_criteria(
+            *resCritList
+        )
 
     # Set CoVs
     for solve_cov in data["solution"]["cov_list"]:
