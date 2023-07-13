@@ -1,6 +1,7 @@
 import os.path
 import json
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 
 def write_expression_file(data: dict, script_dir: str, working_dir: str):
     fileName = data.get("expressionFilename")
@@ -115,103 +116,38 @@ def get_free_filename(dirname, base_filename):
     return filename
 
 
-def plot_operating_map(design_point_table):
+def plot_figure(x_values,y_values,x_label,y_label,colors,criterion):
     try:
         import pandas as pd
     except ImportError as e:
         print(f"ImportError! Could not import lib: {str(e)}")
         print(f"Skipping 'plotOperatingMap' function!")
         return
+    
+    # Create the figure and axis
+    fig, ax = plt.subplots()
 
-    # extract unit row and drop from table
-    design_point_table = design_point_table.drop(0, axis=0)
-
-    # filter out failed design points
-    design_point_table = design_point_table.loc[
-        design_point_table["Status"] != "Failed"
-    ]
-
-    # Filter out converged cases
-    MP_MassFlow_conv = pd.to_numeric(
-        design_point_table.loc[
-            design_point_table["Status"] == "Updated : Converged", "MP_IN_MassFlow"
-        ],
-        errors="coerce",
-    )
-    MP_PRt_conv = pd.to_numeric(
-        design_point_table.loc[
-            design_point_table["Status"] == "Updated : Converged", "MP_PRt"
-        ],
-        errors="coerce",
-    )
-    MP_Isentropic_Efficiency_conv = pd.to_numeric(
-        design_point_table.loc[
-            design_point_table["Status"] == "Updated : Converged",
-            "MP_Isentropic_Efficiency",
-        ],
-        errors="coerce",
-    )
-
-    # Filter out non converged cases
-    MP_MassFlow_nconv = pd.to_numeric(
-        design_point_table.loc[
-            design_point_table["Status"] == "Updated : Not Converged", "MP_IN_MassFlow"
-        ],
-        errors="coerce",
-    )
-    MP_PRt_nconv = pd.to_numeric(
-        design_point_table.loc[
-            design_point_table["Status"] == "Updated : Not Converged", "MP_PRt"
-        ],
-        errors="coerce",
-    )
-    MP_Isentropic_Efficiency_nconv = pd.to_numeric(
-        design_point_table.loc[
-            design_point_table["Status"] == "Updated : Not Converged",
-            "MP_Isentropic_Efficiency",
-        ],
-        errors="coerce",
-    )
-
-    # Merge
-    MP_MassFlow = pd.concat([MP_MassFlow_conv, MP_MassFlow_nconv])
-    MP_PRt = pd.concat([MP_PRt_conv, MP_PRt_nconv])
-    MP_Isentropic_Efficiency = pd.concat(
-        [MP_Isentropic_Efficiency_conv, MP_Isentropic_Efficiency_nconv]
-    )
-
-    # generate plots
-    fig, axs = plt.subplots(1, 2, figsize=(12, 6))
-    fig.suptitle("Operating Point Map")
     if (
-        (len(MP_PRt) > 0)
-        and (len(MP_MassFlow) > 0)
-        and (len(MP_Isentropic_Efficiency) > 0)
+    (len(x_values) > 0)
+    and (len(y_values) > 0)
     ):
-        # Total Pressure Ratio
-        axs[0].set_xlim([MP_MassFlow.min() * 0.99, MP_MassFlow.max() * 1.01])
-        axs[0].set_ylim([MP_PRt.min() * 0.99, MP_PRt.max() * 1.01])
-        axs[0].grid()
-        axs[0].set_xlabel("inlet mass flow rate [kg/s]")
-        axs[0].set_ylabel("total pressure ratio [-]")
-        axs[0].scatter(MP_MassFlow_conv, MP_PRt_conv, marker="^")
-        axs[0].scatter(MP_MassFlow_nconv, MP_PRt_nconv, marker="x")
+        ax.set_xlim([x_values.min() * 0.99, x_values.max() * 1.01])
+        ax.set_ylim([y_values.min() * 0.99, y_values.max() * 1.01])
+        ax.grid()
+        ax.set_xlabel(x_label)  # Set x-axis label dynamically
+        ax.set_ylabel(y_label)  # Set y-axis label as DataFrame column header
 
-        # Isentropic Efficiency
-        axs[1].set_xlim([MP_MassFlow.min() * 0.99, MP_MassFlow.max() * 1.01])
-        axs[1].set_ylim(
-            [
-                MP_Isentropic_Efficiency.min() * 0.99,
-                MP_Isentropic_Efficiency.max() * 1.01,
-            ]
-        )
-        axs[1].grid()
-        axs[1].set_xlabel("inlet mass flow rate [kg/s]")
-        axs[1].set_ylabel("isentropic efficiency [-]")
-        axs[1].scatter(MP_MassFlow_conv, MP_Isentropic_Efficiency_conv, marker="^")
-        axs[1].scatter(MP_MassFlow_nconv, MP_Isentropic_Efficiency_nconv, marker="x")
-        fig.legend(["Converged", "Not Converged"])
+        # plot values
+        ax.scatter(x_values, y_values, marker="o",c=colors,edgecolor='black')
+        ax.plot(x_values, y_values)
 
+        # Create legend handles for color coding
+        legend_colors = [
+            mpatches.Patch(color='green', label=f'CoV < {"{:.0e}".format(criterion)}'),
+            mpatches.Patch(color='yellow', label=f'CoV < {"{:.0e}".format(5*criterion)}'),
+            mpatches.Patch(color='red', label=f'CoV > {"{:.0e}".format(5*criterion)}')
+        ]
+        ax.legend(handles=legend_colors,loc='best')
     return fig
 
 
@@ -315,4 +251,34 @@ def calcCov(reportOut):
 
     result_df = pd.DataFrame(result_dict, index=[0])
 
+    return result_df
+
+def getStudyReports(pathtostudy):
+    try:
+        import pandas as pd
+    except ImportError as e:
+        print(f"ImportError! Could not import lib: {str(e)}")
+        print(f"Skipping 'getStudyReports' function!")
+        return
+
+    # Filter and get only the subdirectories within pathtostudy
+    subdirectories = [name for name in os.listdir(pathtostudy) if os.path.isdir(os.path.join(pathtostudy, name))]
+    result_dfs = []  # List to store result report files
+    for dpname in subdirectories:
+        folder_path = os.path.join(pathtostudy, dpname)
+
+        # Check if the folder_path contains a .out file
+        out_files = [file for file in os.listdir(folder_path) if file.endswith('.out')]
+
+        # Check if any .out file exists in the folder_path
+        if out_files:
+            # Take the first .out file as the csv_file_path
+            report_file_path = os.path.join(folder_path, out_files[0])
+            report_table = calcCov(report_file_path)
+            result_dfs.append(report_table)
+
+        else:
+            continue
+    # Concatenate the list of result DataFrames into a single DataFrame
+    result_df = pd.concat(result_dfs, ignore_index=True)
     return result_df

@@ -159,7 +159,6 @@ def study01(data, solver):
                     solver.tui.parametric_study.study.use_base_data("yes")
                 else:
                     solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
-
             # Run all Design Points
             if studyEl.get("updateAllDPs", False):
                 fluent_study.design_points.update_all()
@@ -186,7 +185,7 @@ def study01(data, solver):
     print("All Studies finished")
 
 
-def studyPlot(data):
+def studyPlot(data,solver):
     # Only working in external mode
     try:
         import pandas as pd
@@ -194,27 +193,115 @@ def studyPlot(data):
         print(f"ImportError! Could not import lib: {str(e)}")
         print(f"Skipping studyPlot function!")
         return
-
+                    
     print("Running Function StudyPlot ...")
     studyDict = data.get("studies")
     for studyName in studyDict:
         flworking_Dir = data.get("launching")["workingDir"]
-        design_point_table_path = flworking_Dir + "/" + studyName + "_dp_table.csv"
-        design_point_table_path = os.path.normpath(design_point_table_path)
-        if os.path.isfile(design_point_table_path):
-            # read in design point table csv
-            design_point_table = pd.read_csv(
-                design_point_table_path, delimiter=",", header=0
-            )
+        baseCaseName = studyDict[studyName].get('refCaseFilename')
+        pathtostudy = os.path.join(flworking_Dir,f"{studyName}.cffdb\{baseCaseName}-Solve")
 
-            fig = utilities.plot_operating_map(design_point_table)
-            fig
-            study_plot_name = (
-                flworking_Dir + "/" + studyName + "_operating_point_map.svg"
-            )
-            print("generating figure: " + study_plot_name)
-            plt.savefig(study_plot_name)
-        else:
-            print("No designpoint table CSV-file found")
+        # Define a Folder to store plots
+        studyPlotFolder = flworking_Dir+f'/{studyName}_study_plots'
+        os.makedirs(studyPlotFolder, exist_ok=True)  # Create the folder if it doesn't exist
+        
+        # Get the study result table
+        result_df = utilities.getStudyReports(pathtostudy)
+
+        # Extract CoV information for traffic light notation
+        covDict = solver.solution.monitor.convergence_conditions.convergence_reports()
+        filtCovDict = {
+                            key: value
+                            for key, value in covDict.items()
+                            if value.get('active', False) and value.get('cov', False)
+                        }
+
+        # Get the list of columns ending with '-cov'
+        cov_columns = [col for col in result_df.columns if col.endswith('-cov')]
+
+        # Initialize a list to store convergence results
+        convergence_results = []
+
+        # Check if Convergence is reached
+        for _, row in result_df.iterrows():
+            convergence = 'good'
+            for col in cov_columns:
+                criterion = filtCovDict.get(col, {}).get('stop_criterion')
+                if criterion is not None:
+                    if row[col] > 5 * criterion:
+                        convergence = 'bad'
+                        break
+                    elif row[col] > criterion:
+                        convergence = 'ok'
+                    cov_criterion = criterion
+            convergence_results.append(convergence)
+
+        # Priority order to consider volume/massflow for plotting
+        mf_fallback_columns = ['rep-mp-in-massflow-360','rep-mp-out-massflow-360', 'rep-mp-in-massflow', 'rep-mp-out-massflow']
+        vf_fallback_columns = ['rep-mp-in-volumeflow-360','rep-mp-out-volumeflow-360', 'rep-mp-in-volumeflow', 'rep-mp-out-volumeflow']
+
+        # Combine volume flow and mass flow columns
+        fallback_columns = vf_fallback_columns + mf_fallback_columns
+
+        # Sort the DataFrame using the first available definition in the fallback list
+        sorted_df = None
+        for column in fallback_columns:
+            if column in result_df.columns:
+                sorted_df = result_df.sort_values(by=column, ascending=True, ignore_index=True)
+                break
+
+        MP_MassFlow = None
+        for column in mf_fallback_columns:
+            if column in sorted_df.columns:
+                MP_MassFlow = sorted_df[column].values
+                break
+        MP_VolumeFlow = None
+        for column in vf_fallback_columns:
+            if column in sorted_df.columns:
+                MP_VolumeFlow = sorted_df[column].values
+                break
+
+        # Assign the convergence results to the 'convergence' column
+        sorted_df['convergence'] = convergence_results
+        # Filter out the dataframe to plot monitor points
+        plot_df = sorted_df.iloc[:, 1:-1].drop(columns=[col for col in sorted_df.columns if '-cov' in col or col in fallback_columns])
+        # Generate traffic light notation for convergence
+        color_map = {'good': 'green', 'ok': 'yellow', 'bad': 'red'}
+        colors = sorted_df['convergence'].map(color_map)
+
+
+        # Create Plots for monitor points with mass flow, volume flow or both
+        if MP_MassFlow is not None and MP_VolumeFlow is not None:
+            for column in plot_df.columns:
+                    y_values = plot_df[column].values
+                    # Create Plot with massflow
+                    plt.figure()
+                    figure_plot = utilities.plot_figure(MP_MassFlow, y_values,'mass flow [kg/s]',column,colors,cov_criterion)
+                    plt.savefig(os.path.join(studyPlotFolder+f'/plot_massflow_{column}.svg'))
+                    plt.close()
+                    # Create Plot with massflow
+                    plt.figure()
+                    figure_plot = utilities.plot_figure(MP_VolumeFlow, y_values,'volume flow',colors,cov_criterion)
+                    plt.savefig(os.path.join(studyPlotFolder+f'/plot_volumeflow_{column}.svg'))
+                    plt.close()               
+        elif MP_MassFlow is not None and MP_VolumeFlow is None:
+            for column in plot_df.columns:
+                    y_values = plot_df[column].values
+                    # Create Plot with massflow
+                    plt.figure()
+                    figure_plot = utilities.plot_figure(MP_MassFlow, y_values,'mass flow',column,colors,cov_criterion)
+                    plt.savefig(os.path.join(studyPlotFolder+f'/plot_massflow_{column}.svg'))
+                    plt.close()
+        elif MP_VolumeFlow is not None and MP_MassFlow is None:
+            for column in plot_df.columns:
+                    y_values = plot_df[column].values
+                    # Create Plot with volume flow
+                    plt.figure()
+                    figure_plot = utilities.plot_figure(MP_VolumeFlow, y_values,'volume flow',column,colors,cov_criterion)
+                    plt.savefig(os.path.join(studyPlotFolder+f'/plot_volumeflow_{column}.svg'))
+                    plt.close() 
+        sorted_df.to_csv(studyPlotFolder+f'/plot_table_{studyName}.csv', index=None)
+        
+
 
     print("Running Function StudyPlot finished!")
