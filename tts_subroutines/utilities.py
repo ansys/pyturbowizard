@@ -297,6 +297,8 @@ def getStudyReports(pathtostudy):
             # Take the first .out file as the csv_file_path
             report_file_path = os.path.join(folder_path, out_files[0])
             report_table = calcCov(report_file_path)
+            # Add Design Point Name to the table
+            report_table.insert(0, 'Design Point', dpname)
             result_dfs.append(report_table)
 
         else:
