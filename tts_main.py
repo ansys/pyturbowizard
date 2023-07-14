@@ -26,7 +26,7 @@ scriptPath = os.path.dirname(sys.argv[0])
 
 # Load Json File
 # Suggest Config File in python working Dir
-config_filename = "turboStudyConfig_axial_turbine.json"
+config_filename = "turboSetupConfig_axial_turbine.json"
 # If arguments are passed take first argument as fullpath to the json file
 if len(sys.argv) > 1:
     config_filename = sys.argv[1]
@@ -169,7 +169,7 @@ if studyDict is not None:
 
     # Postprocessing of studies
     if launchEl.get("plotResults"):
-        parametricstudy.studyPlot(data=turboData)
+        parametricstudy.studyPlot(data=turboData, solver = solver)
 
 # Exit Solver
 solverExit = True #launchEl.get("exitatend", False)

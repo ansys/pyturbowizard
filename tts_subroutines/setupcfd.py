@@ -139,6 +139,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
     # 2. Search for periodic interfaces
     peri_if_El = data["locations"].get("bz_interfaces_periodic_names")
     if peri_if_El is not None:
+        non_conformal_list = []
         for key_if in peri_if_El:
             print(f"Setting up periodic BC: {key_if}")
             side1 = peri_if_El[key_if].get("side1")
@@ -159,6 +160,18 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                 solver.tui.mesh.modify_zones.create_periodic_interface(
                     "auto", key_if, side1, side2, "yes", "no", "no", "yes", "yes"
                 )
+
+                #check for non-conformal periodics (fluent creates normal interfaces if non-conformal)
+                intf_check_side1 = solver.setup.boundary_conditions.interface.get(side1)
+                intf_check_side2 = solver.setup.boundary_conditions.interface.get(side2)
+                
+                if intf_check_side1 is not None and intf_check_side2 is not None:
+                    print(
+                        f"'{key_if}' is a non-conformal periodic interface\n"
+                        f"Adjusting turbo-topology accordingly"
+                    )
+                    # Add the non conformal interface to the list for correct turbo topology definition
+                    non_conformal_list.append(key_if)
 
     # after important steps loop over all keys -> no order important
     for key in data["locations"]:
@@ -489,23 +502,57 @@ def boundary_01(data, solver, solveEnergy: bool = True):
             blade_names = keyEl[key_topo].get("tz_blade_names")
             periodic_names = keyEl[key_topo].get("tz_theta_periodic_names")
             try:
-                solver.tui.define.turbo_model.turbo_topology.define_topology(
-                    turbo_name,
-                    *hub_names,
-                    [],
-                    *shroud_names,
-                    [],
-                    *inlet_names,
-                    [],
-                    *outlet_names,
-                    [],
-                    *blade_names,
-                    [],
-                    *periodic_names,
-                    [],
-                )
+                for periodic_name in periodic_names:
+                    if periodic_name in non_conformal_list:
+                        print(f'encountered a non-conformal periodic interface: {periodic_name}\n')
+                        print('Adjusting turbo topology')
+                        theta_min = []
+                        theta_max = []
+                        theta_min.append(data["locations"]["bz_interfaces_periodic_names"][periodic_name].get("side1"))
+                        theta_max.append(data["locations"]["bz_interfaces_periodic_names"][periodic_name].get("side2"))
+                if len(theta_min) > 0 and len(theta_max) > 0:           
+                    solver.tui.define.turbo_model.turbo_topology.define_topology(
+                        turbo_name,
+                        *hub_names,
+                        [],
+                        *shroud_names,
+                        [],
+                        *inlet_names,
+                        [],
+                        *outlet_names,
+                        [],
+                        *blade_names,
+                        [],
+                        [],                        
+                        *theta_min,
+                        [],
+                        *theta_max,
+                        []
+                    )
+                    theta_min = []
+                    theta_max = []
+                else:
+                    solver.tui.define.turbo_model.turbo_topology.define_topology(
+                        turbo_name,
+                        *hub_names,
+                        [],
+                        *shroud_names,
+                        [],
+                        *inlet_names,
+                        [],
+                        *outlet_names,
+                        [],
+                        *blade_names,
+                        [],
+                        *periodic_names,
+                        []
+                    )
             except Exception as e:
-                print(f"An error occurred while defining topology: {e}")
+                print(f"An error occurred while defining topology: {e}\n")
+
+            
+
+
 
     return
 
