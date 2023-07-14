@@ -64,15 +64,17 @@ if caseDict is not None:
     for casename in caseDict:
         print("Running Case: " + casename + "\n")
         caseEl = turboData["cases"][casename]
+        # Basic Dict Stuff...
         # First: Copy data from reference if refCase is set
         if caseEl.get("refCase") is not None:
             utilities.merge_data_with_refDict(caseDict=caseEl, allCasesDict=caseDict)
-        # Create base case-function-dict
+        # Second: Update initial case-function-dict
         caseFunctionEl = utilities.merge_functionDicts(
             caseDict=caseEl, glfunctionDict=glfunctionEl
         )
         # Check if material from lib should be used
         utilities.get_material_from_lib(caseDict=caseEl, scriptPath=scriptPath)
+        # Basic Dict Stuff -> done
 
         # Get base caseFilename and update dict
         caseFilename = caseEl.get("caseFilename", casename)
@@ -172,8 +174,6 @@ if studyDict is not None:
         parametricstudy.studyPlot(data=turboData, solver = solver)
 
 # Exit Solver
-solverExit = True #launchEl.get("exitatend", False)
-if solverExit:
-    solver.exit()
+solver.exit()
 
 print("Script successfully finished! \n")
