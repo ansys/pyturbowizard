@@ -15,7 +15,7 @@ from tts_subroutines import (
 )
 
 
-version = "1.4.4"
+version = "1.4.5"
 print(f"\n*** Starting TurboTestSuite (Version {str(version)}) ***\n\n")
 
 # If solver variable does not exist, Fluent has been started in external mode
@@ -26,7 +26,7 @@ scriptPath = os.path.dirname(sys.argv[0])
 
 # Load Json File
 # Suggest Config File in python working Dir
-config_filename = "turboSetupConfig_axial_turbine.json"
+config_filename = "turboSetupConfig.json"
 # If arguments are passed take first argument as fullpath to the json file
 if len(sys.argv) > 1:
     config_filename = sys.argv[1]
