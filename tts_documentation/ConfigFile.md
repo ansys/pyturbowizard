@@ -353,7 +353,8 @@ Here´s an example for a mesh study:
 ```
 
 In the example "Case_CoarseMesh" includes all setup definitions, case "Case_FineMesh" just refers with ```refCase``` to "Case_CoarseMesh". 
-This means all objects are copied from case "Case_CoarseMesh" except the elements prescribed in the case itself, in this case the objects ```caseFilename``` and ```meshFilename```.
+This means all objects are copied from case "Case_CoarseMesh" except the elements prescribed in the case itself, in this case the objects ```caseFilename``` and ```meshFilename```. 
+**Note:** If you specify a new element with sub-elements (i.e. a new dict) all sub-elements need to be specified!
 
 ## Parametric Study Setup
 The Configuration file for a parametric study can be found in the [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main) as ``` TurboStudyConfig.json ```.
