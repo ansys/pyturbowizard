@@ -15,8 +15,9 @@ The functionalities are displayed in the following Feature-Matrix:
 
 ## **Getting Started**
 ### **Fluent Installation**
-The script has been developed for Ansys Fluent versions 2023R2 and latter versions
+**The script has been developed for Ansys Fluent versions 2023R2 and latter versions**
 ### **PyFluent Installation**
+
 Required libraries:
 - PyFluent
 - Matplotlib
