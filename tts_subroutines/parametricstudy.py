@@ -200,10 +200,10 @@ def studyPlot(data,solver):
     for studyName in studyDict:
         flworking_Dir = data.get("launching")["workingDir"]
         baseCaseName = studyDict[studyName].get('refCaseFilename')
-        pathtostudy = os.path.join(flworking_Dir,f"{studyName}.cffdb\{baseCaseName}-Solve")
+        pathtostudy = os.path.join(flworking_Dir,f"{studyName}.cffdb",f"{baseCaseName}-Solve")
 
         # Define a Folder to store plots
-        studyPlotFolder = flworking_Dir+f'/{studyName}_study_plots'
+        studyPlotFolder = os.path.join(flworking_Dir,f'{studyName}_study_plots')
         os.makedirs(studyPlotFolder, exist_ok=True)  # Create the folder if it doesn't exist
         
         # Get the study result table
