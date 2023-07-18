@@ -15,7 +15,7 @@ from tts_subroutines import (
 )
 
 
-version = "1.4.3"
+version = "1.4.5"
 print(f"\n*** Starting TurboTestSuite (Version {str(version)}) ***\n\n")
 
 # If solver variable does not exist, Fluent has been started in external mode
@@ -26,7 +26,7 @@ scriptPath = os.path.dirname(sys.argv[0])
 
 # Load Json File
 # Suggest Config File in python working Dir
-config_filename = "turboSetupConfig_axial_turbine.json"
+config_filename = "turboSetupConfig.json"
 # If arguments are passed take first argument as fullpath to the json file
 if len(sys.argv) > 1:
     config_filename = sys.argv[1]
@@ -64,15 +64,21 @@ if caseDict is not None:
     for casename in caseDict:
         print("Running Case: " + casename + "\n")
         caseEl = turboData["cases"][casename]
-        # Merge function dicts
+        # Check if case should be executed
+        if caseEl.get("skip_execution", False):
+            print(f"Case '{casename}' is skipped: 'skip_execution' is set to 'True' in Case-Definition\n")
+            continue
+        # Basic Dict Stuff...
+        # First: Copy data from reference if refCase is set
+        if caseEl.get("refCase") is not None:
+            utilities.merge_data_with_refDict(caseDict=caseEl, allCasesDict=caseDict)
+        # Second: Update initial case-function-dict
         caseFunctionEl = utilities.merge_functionDicts(
             caseDict=caseEl, glfunctionDict=glfunctionEl
         )
-        # Copy data from reference if refCase is set
-        if caseEl.get("refCase") is not None:
-            utilities.merge_data_with_refDict(caseDict=caseEl, allCasesDict=caseDict)
         # Check if material from lib should be used
         utilities.get_material_from_lib(caseDict=caseEl, scriptPath=scriptPath)
+        # Basic Dict Stuff -> done
 
         # Get base caseFilename and update dict
         caseFilename = caseEl.get("caseFilename", casename)
@@ -172,8 +178,6 @@ if studyDict is not None:
         parametricstudy.studyPlot(data=turboData, solver = solver)
 
 # Exit Solver
-solverExit = True #launchEl.get("exitatend", False)
-if solverExit:
-    solver.exit()
+solver.exit()
 
 print("Script successfully finished! \n")
