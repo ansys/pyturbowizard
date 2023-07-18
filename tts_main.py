@@ -64,6 +64,10 @@ if caseDict is not None:
     for casename in caseDict:
         print("Running Case: " + casename + "\n")
         caseEl = turboData["cases"][casename]
+        # Check if case should be executed
+        if caseEl.get("skipExecution", False):
+            print(f"Case '{casename}' is skipped: 'skipExecution' is set to 'True' in Case-Definition\n")
+            continue
         # Basic Dict Stuff...
         # First: Copy data from reference if refCase is set
         if caseEl.get("refCase") is not None:
