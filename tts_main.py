@@ -46,8 +46,10 @@ else:
 launchEl = turboData.get("launching")
 glfunctionEl = turboData.get("functions")
 
-# Use directory of jason-file if not specified in config-file
-fl_workingDir = launchEl.get("workingDir", os.path.dirname(config_filename))
+# Use abs path of json-file-directory if 'workingDir' not specified in config-file
+fl_workingDir = launchEl.get(
+    "workingDir", os.path.dirname(os.path.abspath(config_filename))
+)
 fl_workingDir = os.path.normpath(fl_workingDir)
 # Reset working dir in dict
 launchEl["workingDir"] = fl_workingDir
@@ -66,7 +68,9 @@ if caseDict is not None:
         caseEl = turboData["cases"][casename]
         # Check if case should be executed
         if caseEl.get("skip_execution", False):
-            print(f"Case '{casename}' is skipped: 'skip_execution' is set to 'True' in Case-Definition\n")
+            print(
+                f"Case '{casename}' is skipped: 'skip_execution' is set to 'True' in Case-Definition\n"
+            )
             continue
         # Basic Dict Stuff...
         # First: Copy data from reference if refCase is set
@@ -119,7 +123,9 @@ if caseDict is not None:
         numerics.numerics(data=caseEl, solver=solver, functionEl=caseFunctionEl)
 
         # Read Additional Journals, if specified
-        utilities.read_journals(data=caseEl, solver=solver, element_name="pre_init_journal_filenames")
+        utilities.read_journals(
+            data=caseEl, solver=solver, element_name="pre_init_journal_filenames"
+        )
 
         # Initialization
         solve.init(data=caseEl, solver=solver, functionEl=caseFunctionEl)
@@ -138,7 +144,9 @@ if caseDict is not None:
             )
 
         # Read Additional Journals, if specified
-        utilities.read_journals(data=caseEl, solver=solver, element_name="pre_solve_journal_filenames")
+        utilities.read_journals(
+            data=caseEl, solver=solver, element_name="pre_solve_journal_filenames"
+        )
 
         # Solve
         if caseEl["solution"].get("runSolver", False):
@@ -157,7 +165,9 @@ if caseDict is not None:
             print("Skipping Postprocessing: No Solution Data available\n")
 
         # Read Additional Journals, if specified
-        utilities.read_journals(data=caseEl, solver=solver, element_name="pre_exit_journal_filenames")
+        utilities.read_journals(
+            data=caseEl, solver=solver, element_name="pre_exit_journal_filenames"
+        )
 
         # Finalize
         solver.file.stop_transcript()
@@ -175,7 +185,7 @@ if studyDict is not None:
 
     # Postprocessing of studies
     if launchEl.get("plotResults"):
-        parametricstudy.studyPlot(data=turboData, solver = solver)
+        parametricstudy.studyPlot(data=turboData, solver=solver)
 
 # Exit Solver
 solver.exit()
