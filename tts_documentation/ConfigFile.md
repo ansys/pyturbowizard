@@ -98,11 +98,12 @@ First, different general case parameters, like the final ``` caseFilename ``` an
 Supported file types for meshes are .def, .cgns, .msh and .cas. Make sure that the mesh consists of a single file and is located in the Fluent working directory.
 
 Optional objects are:
-  - ```gravity_vector```:  Vector defining gravity, e.g. [0.0, 0.0, -9.81], default: not set, gravity off
+  - ```gravity_vector```:  Vector defining gravity, e.g. ```[0.0, 0.0, -9.81]```, default: not set, gravity off
   - Definition of Rotation Axis
-    - ```rotation_axis_direction```: Vector defining axis direction, default: [0.0, 0.0, 1.0]
-    - ```rotation_axis_origin```: Vector defining axis origin, default: [0.0, 0.0, 0.0]
+    - ```rotation_axis_direction```: Vector defining axis direction, default: ```[0.0, 0.0, 1.0]```
+    - ```rotation_axis_origin```: Vector defining axis origin, default: ```[0.0, 0.0, 0.0]```
   - ```isentropic_efficiency_ratio```: Calculation of Isentropic Efficiency (arguments: "TotalToTotal", "TotalToStatic", "StaticToStatic")
+  - ```skip_execution```: Skips the execution of the case, default: ```False```
 
 #### Profiles
 You can choose to specify a profile for your inlet or outlet boundaries by providing the ``` profileName ``` in your Fluent working directory.
@@ -386,6 +387,8 @@ An example plot of the Operating Point Map is shown below:
 ### Study Configuration
 In the ```studies``` section different study setups can be created. 
 
+```skip_execution``` sets whether a study should be executed or not, default: ```False```
+
 ```overwriteExisting``` sets whether an existing study with the same name should be overwritten. 
 
 ```runExistingProject``` specifies if an existing study setup with the same name should be used. 
@@ -396,7 +399,8 @@ The reference case file name for the base case has to be specified under ```refC
 
 ```updateAllDPs``` specifies whether the study should be run after the setup.
 
-If ```updateFromBaseDP``` is ```true``` the simulation of each design point is initialized from the base design point. If ```updateFromBaseDP``` is set to ```false``` the previous design point is used for initialization.
+If ```updateFromBaseDP``` is ```true``` the simulation of each design point is initialized from the base design point. If ```updateFromBaseDP``` is set to ```false``` the previous design point is used for initialization. 
+**Note:** If this element is not set, the initialization method from the base case will be used!
 
 The expressions to be varied for the different design points are specified in the  ```inputparameters```. The option ```useScaleFactor``` can be set to ```true``` for each selected Inputparameter to use a scale factor from the base case value.
 
