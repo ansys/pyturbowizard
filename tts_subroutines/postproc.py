@@ -228,15 +228,19 @@ def mergeReportTables(turboData, solver):
         for casename in caseDict:
             caseEl = turboData["cases"][casename]
             caseFilename = caseEl["caseFilename"]
-            reportTableName = caseEl["results"].get(
-                "filename_reporttable", "reporttable.csv"
-            )
-            reportTableName = caseFilename + "_" + reportTableName
-            reportTableFilePath = os.path.join(fl_workingDir, reportTableName)
-            if os.path.isfile(reportTableFilePath):
-                reportFiles.append(reportTableFilePath)
-        df = pd.concat((pd.read_csv(f, header=0) for f in reportFiles))
-        mergedFileName = os.path.join(fl_workingDir, "mergedReporttable.csv")
-        df.to_csv(mergedFileName)
+            resultEl = caseEl.get("results")
+            if resultEl is not None:
+                reportTableName = resultEl.get(
+                    "filename_reporttable", "reporttable.csv"
+                )
+                reportTableName = caseFilename + "_" + reportTableName
+                reportTableFilePath = os.path.join(fl_workingDir, reportTableName)
+                if os.path.isfile(reportTableFilePath):
+                    reportFiles.append(reportTableFilePath)
+
+        if len(reportFiles) > 1:
+            df = pd.concat((pd.read_csv(f, header=0) for f in reportFiles))
+            mergedFileName = os.path.join(fl_workingDir, "mergedReporttable.csv")
+            df.to_csv(mergedFileName)
 
     return

@@ -38,7 +38,7 @@ def study01(data, solver):
         print(f"\nRunning Study '{studyName}'...\n")
         #Check if study should be executed
         if studyEl.get("skip_execution", False):
-            print(f"Study '{studyEl}' is skipped: 'skip_execution' is set to 'True' in Study-Definition\n")
+            print(f"Study '{studyName}' is skipped: 'skip_execution' is set to 'True' in Study-Definition\n")
             continue
 
         # Getting all input data from json file
