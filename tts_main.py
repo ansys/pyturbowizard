@@ -46,8 +46,8 @@ else:
 launchEl = turboData.get("launching")
 glfunctionEl = turboData.get("functions")
 
-# Use directory of jason-file if not specified in config-file
-fl_workingDir = launchEl.get("workingDir", os.path.dirname(config_filename))
+# Use directory of json-file if not specified in config-file
+fl_workingDir = launchEl.get("workingDir", os.path.dirname(os.path.abspath(config_filename)))
 fl_workingDir = os.path.normpath(fl_workingDir)
 # Reset working dir in dict
 launchEl["workingDir"] = fl_workingDir
