@@ -387,24 +387,24 @@ An example plot of the Operating Point Map is shown below:
 ### Study Configuration
 In the ```studies``` section different study setups can be created. 
 
-```skip_execution``` sets whether a study should be executed or not, default: ```False```
+- ```skip_execution``` sets whether a study should be executed or not, default: ```False```
 
-```overwriteExisting``` sets whether an existing study with the same name should be overwritten. 
+- ```overwriteExisting``` sets whether an existing study with the same name should be overwritten. 
 
-```runExistingProject``` specifies if an existing study setup with the same name should be used. 
+- ```runExistingProject``` specifies if an existing study setup with the same name should be used. 
 
-```write_data``` gives the option to save the simulation data for all design points. 
+- ```write_data``` gives the option to save the simulation data for all design points. 
 
-The reference case file name for the base case has to be specified under ```refCaseFilename``` and has to be in the Fluent working directory.
+- The reference case file name for the base case has to be specified under ```refCaseFilename``` and has to be in the Fluent working directory.
 
-```updateAllDPs``` specifies whether the study should be run after the setup.
+- ```updateAllDPs``` specifies whether the study should be run after the setup.
 
-If ```updateFromBaseDP``` is ```true``` the simulation of each design point is initialized from the base design point. If ```updateFromBaseDP``` is set to ```false``` the previous design point is used for initialization. 
-**Note:** If this element is not set, the initialization method from the base case will be used!
+- If ```updateFromBaseDP``` is ```true``` the simulation of each design point is initialized from the base design point. **Note:** If ```updateFromBaseDP``` is set to ```false``` the previous design point is used for initialization. 
+**Note:** If this element is not set, the initialization method from the base case will be used.
 
-The expressions to be varied for the different design points are specified in the  ```inputparameters```. The option ```useScaleFactor``` can be set to ```true``` for each selected Inputparameter to use a scale factor from the base case value.
+- The expressions to be varied for the different design points are specified in the  ```inputparameters```. The option ```useScaleFactor``` can be set to ```true``` for each selected Inputparameter to use a scale factor from the base case value.
 
-The ```valueList``` holds either the scale factors or the specific values to be used for the different design points of the study.
+- The ```valueList``` holds either the scale factors or the specific values to be used for the different design points of the study.
 
 ```
 ...
