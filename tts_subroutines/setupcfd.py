@@ -397,7 +397,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     data["setup"]["BC_OUT_avg_p"] = pavg_set
 
                     #Set reverse BC
-                    reverse = data["setup"].get("BC_OUT_reverse", False)
+                    reverse = data["setup"].get("BC_OUT_reverse", True)
                     outBC.prevent_reverse_flow = reverse
                     data["setup"]["BC_OUT_reverse"] = reverse
 
