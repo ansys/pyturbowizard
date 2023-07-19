@@ -407,7 +407,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         )
                     # Set additional pressure-outlet-bc settings if available in config file
                     pout_settings = data["setup"].get("BC_settings_pout")
-                    if (pout_settings is not None) and (type(pout_settings) is list) and (len(pout_settings) > 1):
+                    if (type(pout_settings) is list) and (len(pout_settings) > 1):
                         solver.tui.define.boundary_conditions.bc_settings.pressure_outlet(
                             pout_settings[0], pout_settings[1]
                         )
