@@ -406,14 +406,10 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                             "BC_OUT_pressure_pt"
                         )
                     # Set additional pressure-outlet-bc settings if available in config file
-                    try:
-                        pout_settings = data["setup"]["BC_settings_pout"]
+                    pout_settings = data["setup"].get("BC_settings_pout")
+                    if (pout_settings is not None) and (type(pout_settings) is list) and (len(pout_settings) > 1):
                         solver.tui.define.boundary_conditions.bc_settings.pressure_outlet(
                             pout_settings[0], pout_settings[1]
-                        )
-                    except KeyError as e:
-                        print(
-                            f"Key not found in ConfigFile: {str(e)} \nAdditional pressure-outlet-bc settings skipped!"
                         )
 
             # Walls
