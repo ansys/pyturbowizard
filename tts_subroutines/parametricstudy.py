@@ -120,7 +120,9 @@ def study01(data, solver):
 
                         # new_dp[ipName] = modValue
                         new_dp.input_parameters = {ipName: modValue}
-                        new_dp.write_data = studyEl.get("write_data")
+                        write_data_flag = studyEl.get("write_data", False)
+                        new_dp.write_data = write_data_flag
+                        studyEl["write_data"] = write_data_flag
 
                     # fluent_study.design_points[designPointName].input_parameters = new_dp
                     designPointCounter = designPointCounter + 1
@@ -167,6 +169,7 @@ def study01(data, solver):
                     solver.tui.parametric_study.study.use_base_data("yes")
                 else:
                     solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
+
             # Run all Design Points
             if studyEl.get("updateAllDPs", False):
                 fluent_study.design_points.update_all()
