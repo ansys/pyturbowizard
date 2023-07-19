@@ -3,6 +3,7 @@ import json
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
+
 def write_expression_file(data: dict, script_dir: str, working_dir: str):
     fileName = data.get("expressionFilename")
     # if nothing is set for "expressionFilename" a default value ("expressions.tsv") is set and dict will be updated
@@ -88,6 +89,7 @@ def cleanup_input_expressions(availableKeyEl: dict, fileData: str):
 
     return cleanfiledata
 
+
 def check_input_parameter_expressions(solver):
     for expName in solver.setup.named_expressions():
         exp = solver.setup.named_expressions.get(expName)
@@ -98,11 +100,11 @@ def check_input_parameter_expressions(solver):
                     f"'{expName}' seems not to be valid: '{expValue}' \n "
                     f"Removing definition as Input Parameter..."
                 )
-                exp.set_state({'input_parameter': False})
+                exp.set_state({"input_parameter": False})
     return
 
 
-def check_output_parameter_expressions(solutionDict:dict , solver):
+def check_output_parameter_expressions(solutionDict: dict, solver):
     reportlist = solutionDict.get("reportlist")
     if reportlist is None:
         return
@@ -114,8 +116,9 @@ def check_output_parameter_expressions(solutionDict:dict , solver):
                 f"Expression '{expName}' found in Config-File: 'Case/Solution/reportlist'"
                 f"Setting expression '{expName}' as output-parameter"
             )
-            exp.set_state({'output_parameter': True})
+            exp.set_state({"output_parameter": True})
     return
+
 
 def get_free_filename(dirname, base_filename):
     base_name, ext_name = os.path.splitext(base_filename)
@@ -129,21 +132,18 @@ def get_free_filename(dirname, base_filename):
     return filename
 
 
-def plot_figure(x_values,y_values,x_label,y_label,colors,criterion):
+def plot_figure(x_values, y_values, x_label, y_label, colors, criterion):
     try:
         import pandas as pd
     except ImportError as e:
         print(f"ImportError! Could not import lib: {str(e)}")
         print(f"Skipping 'plotOperatingMap' function!")
         return
-    
+
     # Create the figure and axis
     fig, ax = plt.subplots()
 
-    if (
-    (len(x_values) > 0)
-    and (len(y_values) > 0)
-    ):
+    if (len(x_values) > 0) and (len(y_values) > 0):
         ax.set_xlim([x_values.min() * 0.99, x_values.max() * 1.01])
         ax.set_ylim([y_values.min() * 0.99, y_values.max() * 1.01])
         ax.grid()
@@ -151,16 +151,18 @@ def plot_figure(x_values,y_values,x_label,y_label,colors,criterion):
         ax.set_ylabel(y_label)  # Set y-axis label as DataFrame column header
 
         # plot values
-        ax.scatter(x_values, y_values, marker="o",c=colors,edgecolor='black')
+        ax.scatter(x_values, y_values, marker="o", c=colors, edgecolor="black")
         ax.plot(x_values, y_values)
 
         # Create legend handles for color coding
         legend_colors = [
-            mpatches.Patch(color='green', label=f'CoV < {"{:.0e}".format(criterion)}'),
-            mpatches.Patch(color='yellow', label=f'CoV < {"{:.0e}".format(5*criterion)}'),
-            mpatches.Patch(color='red', label=f'CoV > {"{:.0e}".format(5*criterion)}')
+            mpatches.Patch(color="green", label=f'CoV < {"{:.0e}".format(criterion)}'),
+            mpatches.Patch(
+                color="yellow", label=f'CoV < {"{:.0e}".format(5*criterion)}'
+            ),
+            mpatches.Patch(color="red", label=f'CoV > {"{:.0e}".format(5*criterion)}'),
         ]
-        ax.legend(handles=legend_colors,loc='best')
+        ax.legend(handles=legend_colors, loc="best")
     return fig
 
 
@@ -225,7 +227,8 @@ def get_material_from_lib(caseDict: dict, scriptPath: str):
             )
     return
 
-def read_journals(data:dict, solver, element_name:str):
+
+def read_journals(data: dict, solver, element_name: str):
     journal_list = data.get(element_name)
     if journal_list is not None and len(journal_list) > 0:
         print(
@@ -233,6 +236,7 @@ def read_journals(data:dict, solver, element_name:str):
         )
         solver.file.read_journal(file_name_list=journal_list)
     return
+
 
 def calcCov(reportOut):
     try:
@@ -275,6 +279,7 @@ def calcCov(reportOut):
 
     return result_df
 
+
 def getStudyReports(pathtostudy):
     try:
         import pandas as pd
@@ -284,21 +289,23 @@ def getStudyReports(pathtostudy):
         return
 
     # Filter and get only the subdirectories within pathtostudy
-    subdirectories = [name for name in os.listdir(pathtostudy) if os.path.isdir(os.path.join(pathtostudy, name))]
+    subdirectories = [
+        name
+        for name in os.listdir(pathtostudy)
+        if os.path.isdir(os.path.join(pathtostudy, name))
+    ]
     result_dfs = []  # List to store result report files
     for dpname in subdirectories:
         folder_path = os.path.join(pathtostudy, dpname)
 
         # Check if the folder_path contains a .out file
-        out_files = [file for file in os.listdir(folder_path) if file.endswith('.out')]
+        out_files = [file for file in os.listdir(folder_path) if file.endswith(".out")]
 
         # Check if any .out file exists in the folder_path
         if out_files:
             # Take the first .out file as the csv_file_path
             report_file_path = os.path.join(folder_path, out_files[0])
             report_table = calcCov(report_file_path)
-            # Add Design Point Name to the table
-            report_table.insert(0, 'Design Point', dpname)
             result_dfs.append(report_table)
 
         else:

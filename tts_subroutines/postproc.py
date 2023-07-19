@@ -52,7 +52,7 @@ def post_01(data, solver, launchEl):
     solver.report.system.time_statistics()
 
     ## write report table
-    createReportTable(data=data, fl_workingDir=fl_workingDir, solver = solver)
+    createReportTable(data=data, fl_workingDir=fl_workingDir, solver=solver)
 
     return
 
@@ -150,7 +150,9 @@ def createReportTable(data: dict, fl_workingDir, solver):
         if solver_trn_data_valid:
             report_table = report_table.assign(**res_columns)
         else:
-            print(f"Reading Solver-Data from transcript file failed. Data not included in report table")
+            print(
+                f"Reading Solver-Data from transcript file failed. Data not included in report table"
+            )
         report_table["Mass Balance [kg/s]"] = massBalance
         if solveEnergy:
             report_table["Mass Balance [W]"] = heatBalance
@@ -158,7 +160,7 @@ def createReportTable(data: dict, fl_workingDir, solver):
         report_table["Total Wall Clock Time"] = wall_clock_tot
         report_table["Compute Nodes"] = nodes
         report_table.insert(0, "Case Name", caseFilename)
-        report_table.insert(2, "Pseud Time Step [s]" , time_step)
+        report_table.insert(2, "Pseud Time Step [s]", time_step)
 
         # Report Table File-Name
         reportTableName = data["results"].get("filename_reporttable", "reporttable.csv")
@@ -228,15 +230,19 @@ def mergeReportTables(turboData, solver):
         for casename in caseDict:
             caseEl = turboData["cases"][casename]
             caseFilename = caseEl["caseFilename"]
-            reportTableName = caseEl["results"].get(
-                "filename_reporttable", "reporttable.csv"
-            )
-            reportTableName = caseFilename + "_" + reportTableName
-            reportTableFilePath = os.path.join(fl_workingDir, reportTableName)
-            if os.path.isfile(reportTableFilePath):
-                reportFiles.append(reportTableFilePath)
-        df = pd.concat((pd.read_csv(f, header=0) for f in reportFiles))
-        mergedFileName = os.path.join(fl_workingDir, "mergedReporttable.csv")
-        df.to_csv(mergedFileName)
+            resultEl = caseEl.get("results")
+            if resultEl is not None:
+                reportTableName = resultEl.get(
+                    "filename_reporttable", "reporttable.csv"
+                )
+                reportTableName = caseFilename + "_" + reportTableName
+                reportTableFilePath = os.path.join(fl_workingDir, reportTableName)
+                if os.path.isfile(reportTableFilePath):
+                    reportFiles.append(reportTableFilePath)
+
+        if len(reportFiles) > 1:
+            df = pd.concat((pd.read_csv(f, header=0) for f in reportFiles))
+            mergedFileName = os.path.join(fl_workingDir, "mergedReporttable.csv")
+            df.to_csv(mergedFileName)
 
     return

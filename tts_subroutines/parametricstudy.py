@@ -36,6 +36,13 @@ def study01(data, solver):
     for studyName in studyDict:
         studyEl = studyDict[studyName]
         print(f"\nRunning Study '{studyName}'...\n")
+        # Check if study should be executed
+        if studyEl.get("skip_execution", False):
+            print(
+                f"Study '{studyName}' is skipped: 'skip_execution' is set to 'True' in Study-Definition\n"
+            )
+            continue
+
         # Getting all input data from json file
         # datapath = studyEl.get("datapath")
         refCase = studyEl.get("refCaseFilename")
@@ -71,7 +78,7 @@ def study01(data, solver):
             else:
                 tuicommand = 'file/rcd "' + refCaseFilePath + '" yes'
                 solver.execute_tui(tuicommand)
-                #solver.tui.file.read_case_data(refCaseFilePath, "yes")
+                # solver.tui.file.read_case_data(refCaseFilePath, "yes")
 
             # Initialize a new parametric study
             solver.parametric_studies.initialize(project_filename=studyName)
@@ -186,7 +193,7 @@ def study01(data, solver):
     print("All Studies finished")
 
 
-def studyPlot(data,solver):
+def studyPlot(data, solver):
     # Only working in external mode
     try:
         import pandas as pd
@@ -194,11 +201,12 @@ def studyPlot(data,solver):
         print(f"ImportError! Could not import lib: {str(e)}")
         print(f"Skipping studyPlot function!")
         return
-                    
+
     print("Running Function StudyPlot ...")
     studyDict = data.get("studies")
     for studyName in studyDict:
         flworking_Dir = data.get("launching")["workingDir"]
+<<<<<<< HEAD
         baseCaseName = studyDict[studyName].get('refCaseFilename')
         pathtostudy = os.path.join(flworking_Dir,f"{studyName}.cffdb",f"{baseCaseName}-Solve")
 
@@ -206,40 +214,63 @@ def studyPlot(data,solver):
         studyPlotFolder = os.path.join(flworking_Dir,f'{studyName}_study_plots')
         os.makedirs(studyPlotFolder, exist_ok=True)  # Create the folder if it doesn't exist
         
+=======
+        baseCaseName = studyDict[studyName].get("refCaseFilename")
+        pathtostudy = os.path.join(
+            flworking_Dir, f"{studyName}.cffdb", f"{baseCaseName}-Solve"
+        )
+
+        # Define a Folder to store plots
+        studyPlotFolder = os.path.join(flworking_Dir, f"{studyName}_study_plots")
+        os.makedirs(
+            studyPlotFolder, exist_ok=True
+        )  # Create the folder if it doesn't exist
+
+>>>>>>> 08ca548c46c560869c6037843dec0aee85e3eb4d
         # Get the study result table
         result_df = utilities.getStudyReports(pathtostudy)
 
         # Extract CoV information for traffic light notation
         covDict = solver.solution.monitor.convergence_conditions.convergence_reports()
         filtCovDict = {
-                            key: value
-                            for key, value in covDict.items()
-                            if value.get('active', False) and value.get('cov', False)
-                        }
+            key: value
+            for key, value in covDict.items()
+            if value.get("active", False) and value.get("cov", False)
+        }
 
         # Get the list of columns ending with '-cov'
-        cov_columns = [col for col in result_df.columns if col.endswith('-cov')]
+        cov_columns = [col for col in result_df.columns if col.endswith("-cov")]
 
         # Initialize a list to store convergence results
         convergence_results = []
 
         # Check if Convergence is reached
         for _, row in result_df.iterrows():
-            convergence = 'good'
+            convergence = "good"
             for col in cov_columns:
-                criterion = filtCovDict.get(col, {}).get('stop_criterion')
+                criterion = filtCovDict.get(col, {}).get("stop_criterion")
                 if criterion is not None:
                     if row[col] > 5 * criterion:
-                        convergence = 'bad'
+                        convergence = "bad"
                         break
                     elif row[col] > criterion:
-                        convergence = 'ok'
+                        convergence = "ok"
                     cov_criterion = criterion
             convergence_results.append(convergence)
 
         # Priority order to consider volume/massflow for plotting
-        mf_fallback_columns = ['rep-mp-in-massflow-360','rep-mp-out-massflow-360', 'rep-mp-in-massflow', 'rep-mp-out-massflow']
-        vf_fallback_columns = ['rep-mp-in-volumeflow-360','rep-mp-out-volumeflow-360', 'rep-mp-in-volumeflow', 'rep-mp-out-volumeflow']
+        mf_fallback_columns = [
+            "rep-mp-in-massflow-360",
+            "rep-mp-out-massflow-360",
+            "rep-mp-in-massflow",
+            "rep-mp-out-massflow",
+        ]
+        vf_fallback_columns = [
+            "rep-mp-in-volumeflow-360",
+            "rep-mp-out-volumeflow-360",
+            "rep-mp-in-volumeflow",
+            "rep-mp-out-volumeflow",
+        ]
 
         # Combine volume flow and mass flow columns
         fallback_columns = vf_fallback_columns + mf_fallback_columns
@@ -248,7 +279,9 @@ def studyPlot(data,solver):
         sorted_df = None
         for column in fallback_columns:
             if column in result_df.columns:
-                sorted_df = result_df.sort_values(by=column, ascending=True, ignore_index=True)
+                sorted_df = result_df.sort_values(
+                    by=column, ascending=True, ignore_index=True
+                )
                 break
 
         MP_MassFlow = None
@@ -263,46 +296,75 @@ def studyPlot(data,solver):
                 break
 
         # Assign the convergence results to the 'convergence' column
-        sorted_df['convergence'] = convergence_results
+        sorted_df["convergence"] = convergence_results
         # Filter out the dataframe to plot monitor points
-        plot_df = sorted_df.iloc[:, 1:-1].drop(columns=[col for col in sorted_df.columns if '-cov' in col or col in fallback_columns])
+        plot_df = sorted_df.iloc[:, 1:-1].drop(
+            columns=[
+                col
+                for col in sorted_df.columns
+                if "-cov" in col or col in fallback_columns
+            ]
+        )
         # Generate traffic light notation for convergence
-        color_map = {'good': 'green', 'ok': 'yellow', 'bad': 'red'}
-        colors = sorted_df['convergence'].map(color_map)
-
+        color_map = {"good": "green", "ok": "yellow", "bad": "red"}
+        colors = sorted_df["convergence"].map(color_map)
 
         # Create Plots for monitor points with mass flow, volume flow or both
         if MP_MassFlow is not None and MP_VolumeFlow is not None:
             for column in plot_df.columns:
-                    y_values = plot_df[column].values
-                    # Create Plot with massflow
-                    plt.figure()
-                    figure_plot = utilities.plot_figure(MP_MassFlow, y_values,'mass flow [kg/s]',column,colors,cov_criterion)
-                    plt.savefig(os.path.join(studyPlotFolder+f'/plot_massflow_{column}.svg'))
-                    plt.close()
-                    # Create Plot with massflow
-                    plt.figure()
-                    figure_plot = utilities.plot_figure(MP_VolumeFlow, y_values,'volume flow',colors,cov_criterion)
-                    plt.savefig(os.path.join(studyPlotFolder+f'/plot_volumeflow_{column}.svg'))
-                    plt.close()               
+                y_values = plot_df[column].values
+                # Create Plot with massflow
+                plt.figure()
+                figure_plot = utilities.plot_figure(
+                    MP_MassFlow,
+                    y_values,
+                    "mass flow [kg/s]",
+                    column,
+                    colors,
+                    cov_criterion,
+                )
+                plt.savefig(
+                    os.path.join(studyPlotFolder + f"/plot_massflow_{column}.svg")
+                )
+                plt.close()
+                # Create Plot with massflow
+                plt.figure()
+                figure_plot = utilities.plot_figure(
+                    MP_VolumeFlow, y_values, "volume flow", colors, cov_criterion
+                )
+                plt.savefig(
+                    os.path.join(studyPlotFolder + f"/plot_volumeflow_{column}.svg")
+                )
+                plt.close()
         elif MP_MassFlow is not None and MP_VolumeFlow is None:
             for column in plot_df.columns:
-                    y_values = plot_df[column].values
-                    # Create Plot with massflow
-                    plt.figure()
-                    figure_plot = utilities.plot_figure(MP_MassFlow, y_values,'mass flow',column,colors,cov_criterion)
-                    plt.savefig(os.path.join(studyPlotFolder+f'/plot_massflow_{column}.svg'))
-                    plt.close()
+                y_values = plot_df[column].values
+                # Create Plot with massflow
+                plt.figure()
+                figure_plot = utilities.plot_figure(
+                    MP_MassFlow, y_values, "mass flow", column, colors, cov_criterion
+                )
+                plt.savefig(
+                    os.path.join(studyPlotFolder + f"/plot_massflow_{column}.svg")
+                )
+                plt.close()
         elif MP_VolumeFlow is not None and MP_MassFlow is None:
             for column in plot_df.columns:
-                    y_values = plot_df[column].values
-                    # Create Plot with volume flow
-                    plt.figure()
-                    figure_plot = utilities.plot_figure(MP_VolumeFlow, y_values,'volume flow',column,colors,cov_criterion)
-                    plt.savefig(os.path.join(studyPlotFolder+f'/plot_volumeflow_{column}.svg'))
-                    plt.close() 
-        sorted_df.to_csv(studyPlotFolder+f'/plot_table_{studyName}.csv', index=None)
-        
-
+                y_values = plot_df[column].values
+                # Create Plot with volume flow
+                plt.figure()
+                figure_plot = utilities.plot_figure(
+                    MP_VolumeFlow,
+                    y_values,
+                    "volume flow",
+                    column,
+                    colors,
+                    cov_criterion,
+                )
+                plt.savefig(
+                    os.path.join(studyPlotFolder + f"/plot_volumeflow_{column}.svg")
+                )
+                plt.close()
+        sorted_df.to_csv(studyPlotFolder + f"/plot_table_{studyName}.csv", index=None)
 
     print("Running Function StudyPlot finished!")

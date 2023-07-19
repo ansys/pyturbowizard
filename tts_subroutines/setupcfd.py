@@ -161,10 +161,10 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     "auto", key_if, side1, side2, "yes", "no", "no", "yes", "yes"
                 )
 
-                #check for non-conformal periodics (fluent creates normal interfaces if non-conformal)
+                # check for non-conformal periodics (fluent creates normal interfaces if non-conformal)
                 intf_check_side1 = solver.setup.boundary_conditions.interface.get(side1)
                 intf_check_side2 = solver.setup.boundary_conditions.interface.get(side2)
-                
+
                 if intf_check_side1 is not None and intf_check_side2 is not None:
                     print(
                         f"'{key_if}' is a non-conformal periodic interface\n"
@@ -390,16 +390,17 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         }
                     else:
                         outBC.gauge_pressure = "BC_OUT_p"
-                    pavg_set =data["setup"].get("BC_OUT_avg_p")
-                    if pavg_set or pavg_set is None:
+                    if data["setup"].get("BC_OUT_avg_p"):
                         outBC.avg_press_spec = True
-                    reverse =data["setup"].get("BC_OUT_reverse")
+                    reverse = data["setup"].get("BC_OUT_reverse")
                     if reverse or reverse is None:
                         outBC.prevent_reverse_flow = True
                     else:
                         outBC.prevent_reverse_flow = False
-                        if not data["setup"].get("BC_OUT_pressure_pt") == None:
-                            outBC.p_backflow_spec_gen = data["setup"].get("BC_OUT_pressure_pt")
+                        if data["setup"].get("BC_OUT_pressure_pt") is not None:
+                            outBC.p_backflow_spec_gen = data["setup"].get(
+                                "BC_OUT_pressure_pt"
+                            )
                     # Set additional pressure-outlet-bc settings if available in config file
                     try:
                         pout_settings = data["setup"]["BC_settings_pout"]
@@ -505,13 +506,23 @@ def boundary_01(data, solver, solveEnergy: bool = True):
             try:
                 for periodic_name in periodic_names:
                     if periodic_name in non_conformal_list:
-                        print(f'encountered a non-conformal periodic interface: {periodic_name}\n')
-                        print('Adjusting turbo topology')
+                        print(
+                            f"encountered a non-conformal periodic interface: {periodic_name}\n"
+                        )
+                        print("Adjusting turbo topology")
                         theta_min = []
                         theta_max = []
-                        theta_min.append(data["locations"]["bz_interfaces_periodic_names"][periodic_name].get("side1"))
-                        theta_max.append(data["locations"]["bz_interfaces_periodic_names"][periodic_name].get("side2"))
-                if len(theta_min) > 0 and len(theta_max) > 0:           
+                        theta_min.append(
+                            data["locations"]["bz_interfaces_periodic_names"][
+                                periodic_name
+                            ].get("side1")
+                        )
+                        theta_max.append(
+                            data["locations"]["bz_interfaces_periodic_names"][
+                                periodic_name
+                            ].get("side2")
+                        )
+                if len(theta_min) > 0 and len(theta_max) > 0:
                     solver.tui.define.turbo_model.turbo_topology.define_topology(
                         turbo_name,
                         *hub_names,
@@ -524,11 +535,11 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         [],
                         *blade_names,
                         [],
-                        [],                        
+                        [],
                         *theta_min,
                         [],
                         *theta_max,
-                        []
+                        [],
                     )
                     theta_min = []
                     theta_max = []
@@ -546,7 +557,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         *blade_names,
                         [],
                         *periodic_names,
-                        []
+                        [],
                     )
             except Exception as e:
                 print(f"An error occurred while defining topology: {e}\n")
@@ -605,9 +616,7 @@ def report_01(data, solver):
     resCrit = data["solution"]["res_crit"]
     resCritList = [resCrit] * number_eqs
     if len(resCritList) > 0:
-        solver.tui.solve.monitors.residual.convergence_criteria(
-            *resCritList
-        )
+        solver.tui.solve.monitors.residual.convergence_criteria(*resCritList)
 
     # Set CoVs
     for solve_cov in data["solution"]["cov_list"]:

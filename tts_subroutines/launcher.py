@@ -72,8 +72,9 @@ def launchFluent(launchEl):
             )
         # Start Session via hook
         solver = pyfluent.launch_fluent(
-            start_instance=False, server_info_filepath=fullpathtosfname,
-            cleanup_on_exit= launchEl.get("exitatend", False)
+            start_instance=False,
+            server_info_filepath=fullpathtosfname,
+            cleanup_on_exit=launchEl.get("exitatend", False),
         )
     # If no serverFilename is specified, a new session will be started
     elif serverfilename is None or serverfilename == "":
@@ -84,14 +85,15 @@ def launchFluent(launchEl):
             show_gui=launchEl.get("show_gui", True),
             product_version=launchEl["fl_version"],
             cwd=fl_workingDir,
-            cleanup_on_exit= launchEl.get("exitatend", False)
+            cleanup_on_exit=launchEl.get("exitatend", False),
         )
     # Hook to existing Session
     else:
         fullpathtosfname = os.path.join(fl_workingDir, serverfilename)
         print("Connecting to Fluent Session...")
         solver = pyfluent.launch_fluent(
-            start_instance=False, server_info_filepath=fullpathtosfname,
-            cleanup_on_exit= launchEl.get("exitatend", False)            
+            start_instance=False,
+            server_info_filepath=fullpathtosfname,
+            cleanup_on_exit=launchEl.get("exitatend", False),
         )
     return solver

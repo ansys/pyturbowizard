@@ -15,7 +15,7 @@ from tts_subroutines import (
 )
 
 
-version = "1.4.3"
+version = "1.4.6"
 print(f"\n*** Starting TurboTestSuite (Version {str(version)}) ***\n\n")
 
 # If solver variable does not exist, Fluent has been started in external mode
@@ -26,7 +26,7 @@ scriptPath = os.path.dirname(sys.argv[0])
 
 # Load Json File
 # Suggest Config File in python working Dir
-config_filename = "turboSetupConfig_axial_turbine.json"
+config_filename = "turboSetupConfig.json"
 # If arguments are passed take first argument as fullpath to the json file
 if len(sys.argv) > 1:
     config_filename = sys.argv[1]
@@ -46,8 +46,10 @@ else:
 launchEl = turboData.get("launching")
 glfunctionEl = turboData.get("functions")
 
-# Use directory of jason-file if not specified in config-file
-fl_workingDir = launchEl.get("workingDir", os.path.dirname(config_filename))
+# Use abs path of json-file-directory if 'workingDir' not specified in config-file
+fl_workingDir = launchEl.get(
+    "workingDir", os.path.dirname(os.path.abspath(config_filename))
+)
 fl_workingDir = os.path.normpath(fl_workingDir)
 # Reset working dir in dict
 launchEl["workingDir"] = fl_workingDir
@@ -64,15 +66,23 @@ if caseDict is not None:
     for casename in caseDict:
         print("Running Case: " + casename + "\n")
         caseEl = turboData["cases"][casename]
-        # Merge function dicts
+        # Basic Dict Stuff...
+        # First: Copy data from reference if refCase is set
+        if caseEl.get("refCase") is not None:
+            utilities.merge_data_with_refDict(caseDict=caseEl, allCasesDict=caseDict)
+        # Check if case should be executed
+        if caseEl.get("skip_execution", False):
+            print(
+                f"Case '{casename}' is skipped: 'skip_execution' is set to 'True' in Case-Definition\n"
+            )
+            continue
+        # Update initial case-function-dict
         caseFunctionEl = utilities.merge_functionDicts(
             caseDict=caseEl, glfunctionDict=glfunctionEl
         )
-        # Copy data from reference if refCase is set
-        if caseEl.get("refCase") is not None:
-            utilities.merge_data_with_refDict(caseDict=caseEl, allCasesDict=caseDict)
         # Check if material from lib should be used
         utilities.get_material_from_lib(caseDict=caseEl, scriptPath=scriptPath)
+        # Basic Dict Stuff -> done
 
         # Get base caseFilename and update dict
         caseFilename = caseEl.get("caseFilename", casename)
@@ -113,7 +123,9 @@ if caseDict is not None:
         numerics.numerics(data=caseEl, solver=solver, functionEl=caseFunctionEl)
 
         # Read Additional Journals, if specified
-        utilities.read_journals(data=caseEl, solver=solver, element_name="pre_init_journal_filenames")
+        utilities.read_journals(
+            data=caseEl, solver=solver, element_name="pre_init_journal_filenames"
+        )
 
         # Initialization
         solve.init(data=caseEl, solver=solver, functionEl=caseFunctionEl)
@@ -132,7 +144,9 @@ if caseDict is not None:
             )
 
         # Read Additional Journals, if specified
-        utilities.read_journals(data=caseEl, solver=solver, element_name="pre_solve_journal_filenames")
+        utilities.read_journals(
+            data=caseEl, solver=solver, element_name="pre_solve_journal_filenames"
+        )
 
         # Solve
         if caseEl["solution"].get("runSolver", False):
@@ -151,7 +165,9 @@ if caseDict is not None:
             print("Skipping Postprocessing: No Solution Data available\n")
 
         # Read Additional Journals, if specified
-        utilities.read_journals(data=caseEl, solver=solver, element_name="pre_exit_journal_filenames")
+        utilities.read_journals(
+            data=caseEl, solver=solver, element_name="pre_exit_journal_filenames"
+        )
 
         # Finalize
         solver.file.stop_transcript()
@@ -169,11 +185,9 @@ if studyDict is not None:
 
     # Postprocessing of studies
     if launchEl.get("plotResults"):
-        parametricstudy.studyPlot(data=turboData, solver = solver)
+        parametricstudy.studyPlot(data=turboData, solver=solver)
 
 # Exit Solver
-solverExit = True #launchEl.get("exitatend", False)
-if solverExit:
-    solver.exit()
+solver.exit()
 
 print("Script successfully finished! \n")

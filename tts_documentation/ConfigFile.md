@@ -98,11 +98,12 @@ First, different general case parameters, like the final ``` caseFilename ``` an
 Supported file types for meshes are .def, .cgns, .msh and .cas. Make sure that the mesh consists of a single file and is located in the Fluent working directory.
 
 Optional objects are:
-  - ```gravity_vector```:  Vector defining gravity, e.g. [0.0, 0.0, -9.81], default: not set, gravity off
+  - ```gravity_vector```:  Vector defining gravity, e.g. ```[0.0, 0.0, -9.81]```, default: not set, gravity off
   - Definition of Rotation Axis
-    - ```rotation_axis_direction```: Vector defining axis direction, default: [0.0, 0.0, 1.0]
-    - ```rotation_axis_origin```: Vector defining axis origin, default: [0.0, 0.0, 0.0]
+    - ```rotation_axis_direction```: Vector defining axis direction, default: ```[0.0, 0.0, 1.0]```
+    - ```rotation_axis_origin```: Vector defining axis origin, default: ```[0.0, 0.0, 0.0]```
   - ```isentropic_efficiency_ratio```: Calculation of Isentropic Efficiency (arguments: "TotalToTotal", "TotalToStatic", "StaticToStatic")
+  - ```skip_execution```: Skips the execution of the case, default: ```False```
 
 #### Profiles
 You can choose to specify a profile for your inlet or outlet boundaries by providing the ``` profileName ``` in your Fluent working directory.
@@ -353,7 +354,8 @@ Here´s an example for a mesh study:
 ```
 
 In the example "Case_CoarseMesh" includes all setup definitions, case "Case_FineMesh" just refers with ```refCase``` to "Case_CoarseMesh". 
-This means all objects are copied from case "Case_CoarseMesh" except the elements prescribed in the case itself, in this case the objects ```caseFilename``` and ```meshFilename```.
+This means all objects are copied from case "Case_CoarseMesh" except the elements prescribed in the case itself, in this case the objects ```caseFilename``` and ```meshFilename```. 
+**Note:** If you specify a new element with sub-elements (i.e. a new dict) all sub-elements need to be specified!
 
 ## Parametric Study Setup
 The Configuration file for a parametric study can be found in the [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main) as ``` TurboStudyConfig.json ```.
@@ -385,21 +387,24 @@ An example plot of the Operating Point Map is shown below:
 ### Study Configuration
 In the ```studies``` section different study setups can be created. 
 
-```overwriteExisting``` sets whether an existing study with the same name should be overwritten. 
+- ```skip_execution``` sets whether a study should be executed or not, default: ```False```
 
-```runExistingProject``` specifies if an existing study setup with the same name should be used. 
+- ```overwriteExisting``` sets whether an existing study with the same name should be overwritten. 
 
-```write_data``` gives the option to save the simulation data for all design points. 
+- ```runExistingProject``` specifies if an existing study setup with the same name should be used. 
 
-The reference case file name for the base case has to be specified under ```refCaseFilename``` and has to be in the Fluent working directory.
+- ```write_data``` gives the option to save the simulation data for all design points. 
 
-```updateAllDPs``` specifies whether the study should be run after the setup.
+- The reference case file name for the base case has to be specified under ```refCaseFilename``` and has to be in the Fluent working directory.
 
-If ```updateFromBaseDP``` is ```true``` the simulation of each design point is initialized from the base design point. If ```updateFromBaseDP``` is set to ```false``` the previous design point is used for initialization.
+- ```updateAllDPs``` specifies whether the study should be run after the setup.
 
-The expressions to be varied for the different design points are specified in the  ```inputparameters```. The option ```useScaleFactor``` can be set to ```true``` for each selected Inputparameter to use a scale factor from the base case value.
+- If ```updateFromBaseDP``` is ```true``` the simulation of each design point is initialized from the base design point. **Note:** If ```updateFromBaseDP``` is set to ```false``` the previous design point is used for initialization. 
+**Note:** If this element is not set, the initialization method from the base case will be used.
 
-The ```valueList``` holds either the scale factors or the specific values to be used for the different design points of the study.
+- The expressions to be varied for the different design points are specified in the  ```inputparameters```. The option ```useScaleFactor``` can be set to ```true``` for each selected Inputparameter to use a scale factor from the base case value.
+
+- The ```valueList``` holds either the scale factors or the specific values to be used for the different design points of the study.
 
 ```
 ...
