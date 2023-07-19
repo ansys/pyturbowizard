@@ -15,7 +15,7 @@ from tts_subroutines import (
 )
 
 
-version = "1.4.5"
+version = "1.4.6"
 print(f"\n*** Starting TurboTestSuite (Version {str(version)}) ***\n\n")
 
 # If solver variable does not exist, Fluent has been started in external mode
@@ -66,17 +66,17 @@ if caseDict is not None:
     for casename in caseDict:
         print("Running Case: " + casename + "\n")
         caseEl = turboData["cases"][casename]
+        # Basic Dict Stuff...
+        # First: Copy data from reference if refCase is set
+        if caseEl.get("refCase") is not None:
+            utilities.merge_data_with_refDict(caseDict=caseEl, allCasesDict=caseDict)
         # Check if case should be executed
         if caseEl.get("skip_execution", False):
             print(
                 f"Case '{casename}' is skipped: 'skip_execution' is set to 'True' in Case-Definition\n"
             )
             continue
-        # Basic Dict Stuff...
-        # First: Copy data from reference if refCase is set
-        if caseEl.get("refCase") is not None:
-            utilities.merge_data_with_refDict(caseDict=caseEl, allCasesDict=caseDict)
-        # Second: Update initial case-function-dict
+        # Update initial case-function-dict
         caseFunctionEl = utilities.merge_functionDicts(
             caseDict=caseEl, glfunctionDict=glfunctionEl
         )
