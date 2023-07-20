@@ -5,18 +5,20 @@ import time
 from tts_subroutines import utilities
 
 
-def launchFluent(launchEl):
+def launchFluent(launchEl:dict):
     import ansys.fluent.core as pyfluent
 
     global solver
 
     fl_workingDir = launchEl["workingDir"]
-    serverfilename = launchEl.get("serverfilename", None)
-    queueEl = launchEl.get("queue_slurm", None)
+    serverfilename = launchEl.get("serverfilename")
+    queueEl = launchEl.get("queue_slurm")
+    set_launcher_defaults(launchEl=launchEl)
 
     # open new session in queue
     if queueEl is not None:
         maxtime = float(launchEl.get("queue_waiting_time", 600.0))
+        launchEl["queue_waiting_time"] = maxtime
         print("Trying to launching new Fluent Session on queue '" + queueEl + "'")
         print(
             "Max waiting time (launching-key: 'queue_waiting_time') set to: "
@@ -37,7 +39,7 @@ def launchFluent(launchEl):
             )
         )
         precisionCommand = "3d"
-        if launchEl.get("precision", True):
+        if launchEl["precision"]:
             precisionCommand = precisionCommand + "dp"
         batch_arguments = [
             precisionCommand,
@@ -46,18 +48,18 @@ def launchFluent(launchEl):
             "-scheduler_queue=%s" % (launchEl["queue_slurm"]),
             "-sifile=%s" % (serverfilename),
         ]
-        if not launchEl.get("show_gui", True):
+        if not launchEl["show_gui"]:
             batch_arguments.extend(["-gu", "-driver opengl"])
         commandlist.extend(batch_arguments)
         process_files = subprocess.Popen(
             commandlist, cwd=fl_workingDir, stdout=subprocess.DEVNULL
         )
         # Check if Fluent started
-        fullpathtosfname = os.path.join(fl_workingDir, serverfilename)
+        fullpath_to_sf = os.path.join(fl_workingDir, serverfilename)
         current_time = 0
         while current_time <= maxtime:
             try:
-                if os.path.isfile(fullpathtosfname):
+                if os.path.isfile(fullpath_to_sf):
                     time.sleep(5)
                     break
             except OSError:
@@ -73,27 +75,33 @@ def launchFluent(launchEl):
         # Start Session via hook
         solver = pyfluent.launch_fluent(
             start_instance=False,
-            server_info_filepath=fullpathtosfname,
-            cleanup_on_exit=launchEl.get("exitatend", False),
+            server_info_filepath=fullpath_to_sf,
+            cleanup_on_exit=launchEl["exitatend"],
         )
     # If no serverFilename is specified, a new session will be started
     elif serverfilename is None or serverfilename == "":
         solver = pyfluent.launch_fluent(
-            precision=launchEl.get("precision", True),
+            precision=launchEl["precision"],
             processor_count=int(launchEl["noCore"]),
             mode="solver",
-            show_gui=launchEl.get("show_gui", True),
+            show_gui=launchEl["show_gui"],
             product_version=launchEl["fl_version"],
             cwd=fl_workingDir,
-            cleanup_on_exit=launchEl.get("exitatend", False),
+            cleanup_on_exit=launchEl["exitatend"],
         )
     # Hook to existing Session
     else:
-        fullpathtosfname = os.path.join(fl_workingDir, serverfilename)
+        fullpath_to_sf = os.path.join(fl_workingDir, serverfilename)
         print("Connecting to Fluent Session...")
         solver = pyfluent.launch_fluent(
             start_instance=False,
-            server_info_filepath=fullpathtosfname,
-            cleanup_on_exit=launchEl.get("exitatend", False),
+            server_info_filepath=fullpath_to_sf,
+            cleanup_on_exit=launchEl["exitatend"],
         )
     return solver
+
+def set_launcher_defaults(launchEl:dict):
+    launchEl["exitatend"] = False
+    launchEl["show_gui"] = True
+    launchEl["precision"] = True
+

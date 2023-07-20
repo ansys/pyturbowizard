@@ -191,11 +191,13 @@ if studyDict is not None:
 solver.exit()
 
 #Write out Debug info
-if turboData.get("debug"):
+if turboData.get("debug", 0) > 0:
     import ntpath
     debug_filename = "ptw_" + ntpath.basename(config_filename)
-    debugJsonFile = os.path.join(fl_workingDir, debug_filename)
-    with open(debugJsonFile, "w") as outfile:
-        outfile.write(turboData)
+    debug_file_path = os.path.join(fl_workingDir, debug_filename)
+    jsonString = json.dumps(turboData)
+    with open(debug_file_path, "w") as jsonFile:
+        print(f"Writing ptw-json-File: {debug_file_path}")
+        jsonFile.write(jsonString)
 
 print("Script successfully finished! \n")
