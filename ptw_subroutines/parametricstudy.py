@@ -1,5 +1,5 @@
 import os
-from tts_subroutines import utilities
+from ptw_subroutines import utilities
 import matplotlib.pyplot as plt
 import json
 
@@ -37,7 +37,7 @@ def study01(data, solver):
         studyEl = studyDict[studyName]
         print(f"\nRunning Study '{studyName}'...\n")
         # Check if study should be executed
-        if studyEl.get("skip_execution", False):
+        if studyEl.setdefault("skip_execution", False):
             print(
                 f"Study '{studyName}' is skipped: 'skip_execution' is set to 'True' in Study-Definition\n"
             )
@@ -46,7 +46,7 @@ def study01(data, solver):
         # Getting all input data from json file
         # datapath = studyEl.get("datapath")
         refCase = studyEl.get("refCaseFilename")
-        runExisting = studyEl.get("runExistingProject", False)
+        runExisting = studyEl.setdefault("runExistingProject", False)
 
         # Do some checks to skip if a run is not possible
         studyFileName = studyName + ".flprj"
@@ -54,7 +54,7 @@ def study01(data, solver):
         studyFolderPath = studyName + ".cffdb"
         studyFolderPath = os.path.join(flworking_Dir, studyFolderPath)
         if os.path.isfile(studyFileName) or os.path.isdir(studyFolderPath):
-            if not studyEl.get("overwriteExisting", False):
+            if not studyEl.setdefault("overwriteExisting", False):
                 print("Fluent-Project already exists " + studyFileName)
                 print(
                     'and "overwriteExisting"-flag is set to False or not existing in Config-File'
@@ -120,7 +120,7 @@ def study01(data, solver):
 
                         # new_dp[ipName] = modValue
                         new_dp.input_parameters = {ipName: modValue}
-                        write_data_flag = studyEl.get("write_data", False)
+                        write_data_flag = studyEl.setdefault("write_data", False)
                         new_dp.write_data = write_data_flag
                         studyEl["write_data"] = write_data_flag
 
@@ -128,7 +128,7 @@ def study01(data, solver):
                     designPointCounter = designPointCounter + 1
 
             # Set Initialization Method
-            initMethod = studyEl.get("initMethod","default")
+            initMethod = studyEl.setdefault("initMethod", "default")
             if initMethod == "default":
                 print("Using base case initialization method")
             elif initMethod == "baseDP":
@@ -139,7 +139,7 @@ def study01(data, solver):
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
             # Run all Design Points
-            if studyEl.get("updateAllDPs", False):
+            if studyEl.setdefault("updateAllDPs", False):
                 fluent_study.design_points.update_all()
 
             # Export results to table
@@ -165,16 +165,19 @@ def study01(data, solver):
             psname = refCase + "-Solve"
             fluent_study = solver.parametric_studies[psname]
 
-            # Set Update Method
-            updateFromBaseDP = studyEl.get("updateFromBaseDP")
-            if updateFromBaseDP is not None:
-                if updateFromBaseDP:
-                    solver.tui.parametric_study.study.use_base_data("yes")
-                else:
-                    solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
+            # Set Initialization Method
+            initMethod = studyEl.setdefault("initMethod", "default")
+            if initMethod == "default":
+                print("Using base case initialization method")
+            elif initMethod == "baseDP":
+                print("Using base DP data for Initialization")
+                solver.tui.parametric_study.study.use_base_data("yes")
+            elif initMethod == "prevDP":
+                print("Using previous DP data for Initialization")
+                solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
             # Run all Design Points
-            if studyEl.get("updateAllDPs", False):
+            if studyEl.setdefault("updateAllDPs", False):
                 fluent_study.design_points.update_all()
 
             # Export results to table
@@ -231,7 +234,7 @@ def studyPlot(data):
     for studyName in studyDict:
 
         studyData = studyDict[studyName]
-        runPostProc = studyData.get("postProc",True)
+        runPostProc = studyData.setdefault("postProc", True)
         studyData["postProc"] = runPostProc
         
         if runPostProc:

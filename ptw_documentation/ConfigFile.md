@@ -393,7 +393,7 @@ For running Fluent on Linux or a Cluster, the script needs to hook on to a exist
 
 An example plot of the Operating Point Map is shown below:
 
-<img src="/tts_documentation/images/operating_map_example.png" alt="operating point map example" style="height: 400px; width:800px;"/>
+<img src="/ptw_documentation/images/operating_map_example.png" alt="operating point map example" style="height: 400px; width:800px;"/>
 
 Available options:
 - ```precision ``` can be used to enable/disable double-precision mode, default: ```True```
@@ -413,10 +413,12 @@ In the ```studies``` section different study setups can be created.
 
 - The reference case file name for the base case has to be specified under ```refCaseFilename``` and has to be in the Fluent working directory.
 
-- ```updateAllDPs``` specifies whether the study should be run after the setup.
+- ```initMethod``` specifies initialization method for design-points, following options are available:
+  - ```default```: Use initialization method of base case **(default)**
+  - ```baseDP```: Use solution of base design point
+  - ```prevDP```: Use solution of previous design point
 
-- If ```updateFromBaseDP``` is ```true``` the simulation of each design point is initialized from the base design point. **Note:** If ```updateFromBaseDP``` is set to ```false``` the previous design point is used for initialization. 
-**Note:** If this element is not set, the initialization method from the base case will be used.
+- ```updateAllDPs``` specifies whether the study should be run after the setup.
 
 - The expressions to be varied for the different design points are specified in the  ```inputparameters```. The option ```useScaleFactor``` can be set to ```true``` for each selected Inputparameter to use a scale factor from the base case value.
 

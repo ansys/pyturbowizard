@@ -13,7 +13,7 @@ def write_expression_file(data: dict, script_dir: str, working_dir: str):
     fileName = os.path.join(working_dir, fileName)
     with open(fileName, "w") as sf:
         expressionTemplatePath = os.path.join(
-            script_dir, "tts_templates", data["expressionTemplate"]
+            script_dir, "ptw_templates", data["expressionTemplate"]
         )
         with open(expressionTemplatePath, "r") as templateFile:
             tempData = templateFile.read()
@@ -215,7 +215,7 @@ def merge_data_with_refDict(caseDict: dict, allCasesDict: dict):
 def get_material_from_lib(caseDict: dict, scriptPath: str):
     if type(caseDict.get("fluid_properties")) is str:
         materialStr = caseDict.get("fluid_properties")
-        materialFileName = os.path.join(scriptPath, "tts_misc", "material_lib.json")
+        materialFileName = os.path.join(scriptPath, "ptw_misc", "material_lib.json")
         materialFile = open(materialFileName, "r")
         materialDict = json.load(materialFile)
         materialDict = materialDict.get(materialStr)
@@ -311,5 +311,7 @@ def getStudyReports(pathtostudy):
         else:
             continue
     # Concatenate the list of result DataFrames into a single DataFrame
-    result_df = pd.concat(result_dfs, ignore_index=True)
+    result_df = pd.DataFrame
+    if len(result_dfs) > 0:
+        result_df = pd.concat(result_dfs, ignore_index=True)
     return result_df

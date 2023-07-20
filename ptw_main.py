@@ -3,7 +3,7 @@ import json
 import sys
 
 # Load Script Modules
-from tts_subroutines import (
+from ptw_subroutines import (
     launcher,
     numerics,
     parametricstudy,
@@ -16,7 +16,7 @@ from tts_subroutines import (
 
 
 version = "1.4.7"
-print(f"\n*** Starting PyTurboVersion (Version {str(version)}) ***\n\n")
+print(f"\n*** Starting PyTurboWizard (Version {str(version)}) ***\n\n")
 
 # If solver variable does not exist, Fluent has been started in external mode
 external = "solver" not in globals()
@@ -194,7 +194,7 @@ if turboData.setdefault("debug", 0) > 0:
     import ntpath
     debug_filename = "ptw_" + ntpath.basename(config_filename)
     debug_file_path = os.path.join(fl_workingDir, debug_filename)
-    jsonString = json.dumps(turboData)
+    jsonString = json.dumps(turboData, indent=4, sort_keys=True)
     with open(debug_file_path, "w") as jsonFile:
         print(f"Writing ptw-json-File: {debug_file_path}")
         jsonFile.write(jsonString)
