@@ -566,6 +566,10 @@ def boundary_01(data, solver, solveEnergy: bool = True):
             except Exception as e:
                 print(f"An error occurred while defining topology: {e}\n")
 
+            
+
+
+
     return
 
 
