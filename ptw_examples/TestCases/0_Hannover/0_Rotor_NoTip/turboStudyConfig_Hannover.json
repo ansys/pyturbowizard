@@ -1,24 +1,22 @@
 {
  "launching":
     {
-      "workingDir": "D:/TestTurbo/launch_test",
+      "workingDir": "D:/TestTurbo/HannoverRotor",
       "fl_version": "23.2.0",
       "noCore": 2,
       "precision": "double",
-      "plotResults": true
+      "exitatend": false
     },
   "studies": {
-    "TUDA_R1S7_study": {
-      "overwriteExisting": true,
-      "runExistingProject": false,
+    "HannoverRotor_NoTip_0.6M_study": {
       "write_data": false,
-      "refCaseFilename": "TUDA_R1S7",
+      "refCaseFilename": "HannoverRotor_NoTip_0.6M",
       "updateAllDPs": false,
       "updateFromBaseDP": false,
       "definition": [
         {
           "inputparameters": [
-            "BC_OUT_ECMassFlow"
+            "BC_OUT_p"
           ],
           "useScaleFactor": [true],
           "valueList": [
@@ -34,7 +32,9 @@
             ]
           ]
         }
-      ]
+      ],
+      "postProc": true
     }
+
   }
 }
