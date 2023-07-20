@@ -76,7 +76,7 @@ def launchFluent(launchEl:dict):
         solver = pyfluent.launch_fluent(
             start_instance=False,
             server_info_filepath=fullpath_to_sf,
-            cleanup_on_exit=launchEl["exitatend"],
+            cleanup_on_exit=launchEl["exitatend"]
         )
     # If no serverFilename is specified, a new session will be started
     elif serverfilename is None or serverfilename == "":
@@ -87,7 +87,7 @@ def launchFluent(launchEl:dict):
             show_gui=launchEl["show_gui"],
             product_version=launchEl["fl_version"],
             cwd=fl_workingDir,
-            cleanup_on_exit=launchEl["exitatend"],
+            cleanup_on_exit=launchEl["exitatend"]
         )
     # Hook to existing Session
     else:
@@ -96,7 +96,7 @@ def launchFluent(launchEl:dict):
         solver = pyfluent.launch_fluent(
             start_instance=False,
             server_info_filepath=fullpath_to_sf,
-            cleanup_on_exit=launchEl["exitatend"],
+            cleanup_on_exit=launchEl["exitatend"]
         )
     return solver
 
