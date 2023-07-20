@@ -128,6 +128,14 @@ def study01(data, solver):
                     designPointCounter = designPointCounter + 1
 
             # Set Initialization Method
+            # convert oldkeyword definition (pre v1.4.7)
+            updateFromBaseDP = studyEl.get("updateFromBaseDP")
+            if (studyEl.get("initMethod") is None) and (updateFromBaseDP is not None):
+                if updateFromBaseDP:
+                    studyEl["initMethod"] = "baseDP"
+                else:
+                    studyEl["initMethod"] = "prevDP"
+
             initMethod = studyEl.setdefault("initMethod", "default")
             if initMethod == "default":
                 print("Using base case initialization method")
@@ -166,6 +174,14 @@ def study01(data, solver):
             fluent_study = solver.parametric_studies[psname]
 
             # Set Initialization Method
+            # convert oldkeyword definition (pre v1.4.7)
+            updateFromBaseDP = studyEl.get("updateFromBaseDP")
+            if (studyEl.get("initMethod") is None) and (updateFromBaseDP is not None):
+                if updateFromBaseDP:
+                    studyEl["initMethod"] = "baseDP"
+                else:
+                    studyEl["initMethod"] = "prevDP"
+
             initMethod = studyEl.setdefault("initMethod", "default")
             if initMethod == "default":
                 print("Using base case initialization method")
