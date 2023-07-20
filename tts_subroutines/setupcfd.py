@@ -121,8 +121,8 @@ def boundary_01(data, solver, solveEnergy: bool = True):
     solver.tui.define.turbo_model.enable_turbo_model("yes")
 
     # Get rotation axis info: default is z-axis
-    rot_ax_dir = data.get("rotation_axis_direction", [0.0, 0.0, 1.0])
-    rot_ax_orig = data.get("rotation_axis_origin", [0.0, 0.0, 0.0])
+    rot_ax_dir = data.setdefault("rotation_axis_direction", [0.0, 0.0, 1.0])
+    rot_ax_orig = data.setdefault("rotation_axis_origin", [0.0, 0.0, 0.0])
 
     # Do important steps at startup in specified order
     # 1. Fluid cell zone conditions
@@ -401,14 +401,12 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         outBC.gauge_pressure = "BC_OUT_p"
 
                     #Set AVG Pressure
-                    pavg_set = data["setup"].get("BC_OUT_avg_p", True)
+                    pavg_set = data["setup"].setdefault("BC_OUT_avg_p", True)
                     outBC.avg_press_spec = pavg_set
-                    data["setup"]["BC_OUT_avg_p"] = pavg_set
 
                     #Set reverse BC
-                    reverse = data["setup"].get("BC_OUT_reverse", True)
+                    reverse = data["setup"].setdefault("BC_OUT_reverse", True)
                     outBC.prevent_reverse_flow = reverse
-                    data["setup"]["BC_OUT_reverse"] = reverse
 
                     if data["setup"].get("BC_OUT_pressure_pt") is not None:
                         outBC.p_backflow_spec_gen = data["setup"].get(
@@ -687,7 +685,5 @@ def report_01(data, solver):
         # Update dict
         data["solution"]["time_step_factor"] = tsf
 
-    iter_count = data["solution"].get("iter_count", 500)
-    # Update dict
-    data["solution"]["iter_count"] = iter_count
+    iter_count = data["solution"].setdefault("iter_count", 500)
     solver.solution.run_calculation.iter_count = int(iter_count)

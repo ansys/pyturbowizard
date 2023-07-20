@@ -23,13 +23,13 @@ def write_expression_file(data: dict, script_dir: str, working_dir: str):
         helperDict.update(expressionEl)
         # add rotation axis
         helperDict["rotation_axis_direction"] = tuple(
-            data.get("rotation_axis_direction", [0.0, 0.0, 1.0])
+            data.setdefault("rotation_axis_direction", [0.0, 0.0, 1.0])
         )
         helperDict["rotation_axis_origin"] = tuple(
-            data.get("rotation_axis_origin", [0.0, 0.0, 0.0])
+            data.setdefault("rotation_axis_origin", [0.0, 0.0, 0.0])
         )
         # add isentropic efficiency definition
-        helperDict["isentropic_efficiency_ratio"] = data.get(
+        helperDict["isentropic_efficiency_ratio"] = data.setdefault(
             "isentropic_efficiency_ratio", "TotalToTotal"
         )
         tempData = cleanup_input_expressions(
