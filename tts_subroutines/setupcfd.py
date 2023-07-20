@@ -97,12 +97,20 @@ def physics_01(data, solver, solveEnergy: bool = True):
     if solveEnergy:
         solver.setup.models.energy = {"enabled": True, "viscous_dissipation": True}
     gravityVector = data.get("gravity_vector")
-    if (gravityVector is not None) and (type(gravityVector) is list):
+    if (type(gravityVector) is list) and (len(gravityVector) == 3):
         print(
             f"\nSpecification of Gravity-Vector found: {gravityVector} \nEnabling and setting Gravity-Vector"
         )
         solver.setup.general.operating_conditions.gravity.enable = True
         solver.setup.general.operating_conditions.gravity.components = gravityVector
+
+    #Set turbulence model
+    turb_model = data["setup"].get("turbulence_model")
+    supported_kw_models = solver.setup.models.viscous.k_omega_model.allowed_values()
+    if turb_model in supported_kw_models:
+        print(f"Setting kw-turbulence-model '{turb_model}'")
+        solver.setup.models.viscous.model = "k-omega"
+        solver.setup.models.viscous.k_omega_model = turb_model
 
     return
 
