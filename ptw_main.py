@@ -15,7 +15,7 @@ from ptw_subroutines import (
 )
 
 
-version = "1.4.7"
+version = "1.4.8"
 print(f"\n*** Starting PyTurboWizard (Version {str(version)}) ***\n\n")
 
 # If solver variable does not exist, Fluent has been started in external mode
