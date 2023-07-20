@@ -395,7 +395,10 @@ An example plot of the Operating Point Map is shown below:
 
 <img src="/tts_documentation/images/operating_map_example.png" alt="operating point map example" style="height: 400px; width:800px;"/>
 
-```exitatend ``` can be used to specify whether you want to close Fluent after the script is finished.
+Available options:
+- ```precision ``` can be used to enable/disable double-precision mode, default: ```True```
+- ```show_gui ``` can be used to enable/disable GUI, default: ```True```
+- ```exitatend ``` can be used to specify whether you want to close Fluent after the script is finished, default: ```False```
 
 ### Study Configuration
 In the ```studies``` section different study setups can be created. 
