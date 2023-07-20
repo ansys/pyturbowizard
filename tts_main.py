@@ -190,4 +190,12 @@ if studyDict is not None:
 # Exit Solver
 solver.exit()
 
+#Write out Debug info
+if turboData.get("debug"):
+    import ntpath
+    debug_filename = "ptw_" + ntpath.basename(config_filename)
+    debugJsonFile = os.path.join(fl_workingDir, debug_filename)
+    with open(debugJsonFile, "w") as outfile:
+        outfile.write(turboData)
+
 print("Script successfully finished! \n")
