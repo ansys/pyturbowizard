@@ -73,7 +73,7 @@ if caseDict is not None:
         if caseEl.get("refCase") is not None:
             utilities.merge_data_with_refDict(caseDict=caseEl, allCasesDict=caseDict)
         # Check if case should be executed
-        if caseEl.get("skip_execution", False):
+        if caseEl.setdefault("skip_execution", False):
             print(
                 f"Case '{casename}' is skipped: 'skip_execution' is set to 'True' in Case-Definition\n"
             )
@@ -87,8 +87,7 @@ if caseDict is not None:
         # Basic Dict Stuff -> done
 
         # Get base caseFilename and update dict
-        caseFilename = caseEl.get("caseFilename", casename)
-        caseEl["caseFilename"] = caseFilename
+        caseFilename = caseEl.setdefault("caseFilename", casename)
 
         # Set Batch options
         solver.file.confirm_overwrite = False
@@ -151,7 +150,7 @@ if caseDict is not None:
         )
 
         # Solve
-        if caseEl["solution"].get("runSolver", False):
+        if caseEl["solution"].setdefault("runSolver", False):
             solve.solve_01(caseEl, solver)
             filename = caseFilename + "_fin"
             solver.file.write(file_type="case-data", file_name=filename)
@@ -191,7 +190,7 @@ if studyDict is not None:
 solver.exit()
 
 #Write out Debug info
-if turboData.get("debug", 0) > 0:
+if turboData.setdefault("debug", 0) > 0:
     import ntpath
     debug_filename = "ptw_" + ntpath.basename(config_filename)
     debug_file_path = os.path.join(fl_workingDir, debug_filename)
