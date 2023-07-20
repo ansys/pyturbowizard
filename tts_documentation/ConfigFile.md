@@ -336,7 +336,7 @@ If there are no subelements defined, Fluent defaults will be used.
 
 Available options:
 
-- ```BC_settings_pout```: pressure-outlet BC-settings: pressure_blend & num_bins (defined as list), e.g. ```[0.05, 65]```
+- ```BC_settings_pout```: pressure-outlet BC-settings: 'Pressure blending factor' & 'Number of bins' (defined as list), e.g. ```[0.05, 65]```
 - ```turbulence_model```: Use a specific turbulence model, currently only k-omega variants are supported: ```wj-bsl-earsm```, ```standard```, ```sst```, ```geko```,```bsl```
 
 
