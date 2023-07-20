@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/turbotestsuite.iml" filepath="$PROJECT_DIR$/.idea/turbotestsuite.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/pyturbowizard.iml" filepath="$PROJECT_DIR$/.idea/pyturbowizard.iml" />
     </modules>
   </component>
 </project>

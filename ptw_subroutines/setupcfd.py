@@ -1,4 +1,4 @@
-from tts_subroutines import utilities
+from ptw_subroutines import utilities
 
 
 def setup(data, solver, functionEl):
@@ -93,16 +93,25 @@ def material_01(data, solver, solveEnergy: bool = True):
     return
 
 
-def physics_01(data, solver, solveEnergy: bool = True):
+def physics_01(data, solver, solveEnergy:bool = True):
     if solveEnergy:
         solver.setup.models.energy = {"enabled": True, "viscous_dissipation": True}
+
     gravityVector = data.get("gravity_vector")
-    if (gravityVector is not None) and (type(gravityVector) is list):
+    if (type(gravityVector) is list) and (len(gravityVector) == 3):
         print(
             f"\nSpecification of Gravity-Vector found: {gravityVector} \nEnabling and setting Gravity-Vector"
         )
         solver.setup.general.operating_conditions.gravity.enable = True
         solver.setup.general.operating_conditions.gravity.components = gravityVector
+
+    #Set turbulence model
+    turb_model = data["setup"].get("turbulence_model")
+    supported_kw_models = solver.setup.models.viscous.k_omega_model.allowed_values()
+    if turb_model in supported_kw_models:
+        print(f"Setting kw-turbulence-model '{turb_model}'")
+        solver.setup.models.viscous.model = "k-omega"
+        solver.setup.models.viscous.k_omega_model = turb_model
 
     return
 
@@ -112,8 +121,8 @@ def boundary_01(data, solver, solveEnergy: bool = True):
     solver.tui.define.turbo_model.enable_turbo_model("yes")
 
     # Get rotation axis info: default is z-axis
-    rot_ax_dir = data.get("rotation_axis_direction", [0.0, 0.0, 1.0])
-    rot_ax_orig = data.get("rotation_axis_origin", [0.0, 0.0, 0.0])
+    rot_ax_dir = data.setdefault("rotation_axis_direction", [0.0, 0.0, 1.0])
+    rot_ax_orig = data.setdefault("rotation_axis_origin", [0.0, 0.0, 0.0])
 
     # Do important steps at startup in specified order
     # 1. Fluid cell zone conditions
@@ -392,28 +401,22 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         outBC.gauge_pressure = "BC_OUT_p"
 
                     #Set AVG Pressure
-                    pavg_set = data["setup"].get("BC_OUT_avg_p", True)
+                    pavg_set = data["setup"].setdefault("BC_OUT_avg_p", True)
                     outBC.avg_press_spec = pavg_set
-                    data["setup"]["BC_OUT_avg_p"] = pavg_set
 
                     #Set reverse BC
-                    reverse = data["setup"].get("BC_OUT_reverse", True)
+                    reverse = data["setup"].setdefault("BC_OUT_reverse", True)
                     outBC.prevent_reverse_flow = reverse
-                    data["setup"]["BC_OUT_reverse"] = reverse
 
                     if data["setup"].get("BC_OUT_pressure_pt") is not None:
                         outBC.p_backflow_spec_gen = data["setup"].get(
                             "BC_OUT_pressure_pt"
                         )
                     # Set additional pressure-outlet-bc settings if available in config file
-                    try:
-                        pout_settings = data["setup"]["BC_settings_pout"]
+                    pout_settings = data["setup"].get("BC_settings_pout")
+                    if (type(pout_settings) is list) and (len(pout_settings) > 1):
                         solver.tui.define.boundary_conditions.bc_settings.pressure_outlet(
                             pout_settings[0], pout_settings[1]
-                        )
-                    except KeyError as e:
-                        print(
-                            f"Key not found in ConfigFile: {str(e)} \nAdditional pressure-outlet-bc settings skipped!"
                         )
 
             # Walls
@@ -682,7 +685,5 @@ def report_01(data, solver):
         # Update dict
         data["solution"]["time_step_factor"] = tsf
 
-    iter_count = data["solution"].get("iter_count", 500)
-    # Update dict
-    data["solution"]["iter_count"] = iter_count
+    iter_count = data["solution"].setdefault("iter_count", 500)
     solver.solution.run_calculation.iter_count = int(iter_count)
