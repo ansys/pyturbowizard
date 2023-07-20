@@ -70,7 +70,7 @@ def init_fmg_01(data, solver):
 
 
 def solve_01(data, solver):
-    iter_count = data["solution"]["iter_count"]
+    iter_count = data["solution"].setdefault("iter_count", 500)
     print("Solving " + str(iter_count) + " iterations")
     solver.solution.run_calculation.iterate(iter_count=iter_count)
     return
