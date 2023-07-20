@@ -42,6 +42,8 @@ if config_filename.endswith("yaml"):
 else:
     turboData = json.load(config_file)
 
+# Set Version to turboData
+turboData["ptw_version"] = version
 # Get important Elements from json file
 launchEl = turboData.get("launching")
 glfunctionEl = turboData.get("functions")
