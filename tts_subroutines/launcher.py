@@ -101,7 +101,12 @@ def launchFluent(launchEl:dict):
     return solver
 
 def set_launcher_defaults(launchEl:dict):
-    launchEl["exitatend"] = False
-    launchEl["show_gui"] = True
-    launchEl["precision"] = True
+    exitatend =  launchEl.get("exitatend", False)
+    launchEl["exitatend"] = exitatend
+
+    show_gui = launchEl.get("show_gui", True)
+    launchEl["show_gui"] = show_gui
+
+    precision = launchEl.get("precision", True)
+    launchEl["precision"] = precision
 
