@@ -13,12 +13,11 @@ def launchFluent(launchEl:dict):
     fl_workingDir = launchEl["workingDir"]
     serverfilename = launchEl.get("serverfilename")
     queueEl = launchEl.get("queue_slurm")
-    set_launcher_defaults(launchEl=launchEl)
+    get_launcher_defaults(launchEl=launchEl)
 
     # open new session in queue
     if queueEl is not None:
-        maxtime = float(launchEl.get("queue_waiting_time", 600.0))
-        launchEl["queue_waiting_time"] = maxtime
+        maxtime = float(launchEl.setdefault("queue_waiting_time", 600.0))
         print("Trying to launching new Fluent Session on queue '" + queueEl + "'")
         print(
             "Max waiting time (launching-key: 'queue_waiting_time') set to: "
@@ -100,13 +99,9 @@ def launchFluent(launchEl:dict):
         )
     return solver
 
-def set_launcher_defaults(launchEl:dict):
-    exitatend = launchEl.get("exitatend", True)
-    launchEl["exitatend"] = exitatend
-
-    show_gui = launchEl.get("show_gui", True)
-    launchEl["show_gui"] = show_gui
-
-    precision = launchEl.get("precision", True)
-    launchEl["precision"] = precision
+def get_launcher_defaults(launchEl:dict):
+    #Set defaults
+    launchEl.setdefault("exitatend", True)
+    launchEl.setdefault("show_gui", True)
+    launchEl.setdefault("precision", True)
 

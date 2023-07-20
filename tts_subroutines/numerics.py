@@ -40,7 +40,8 @@ def numerics_bp_tn_2305(data, solver):
     solver.solution.methods.gradient_scheme = "green-gauss-node-based"
     print("Best Practice and turbo numerics with green-gauss-node-based will be used")
 
-    if data["solution"]["tsn"]:
+    use_tsn = data["solution"].setdefault("tsn", True)
+    if use_tsn:
         solver.tui.solve.set.advanced.turbomachinery_specific_numerics.enable("yes")
     return
 
@@ -48,7 +49,8 @@ def numerics_bp_tn_2305(data, solver):
 def numerics_bp_tn_2305_lsq(data, solver):
     print("Best Practice and turbo numerics with least-sqaure-cell-based will be used")
     solver.solution.methods.gradient_scheme = "least-square-cell-based"
-    if data["solution"]["tsn"]:
+    use_tsn = data["solution"].setdefault("tsn", True)
+    if use_tsn:
         solver.tui.solve.set.advanced.turbomachinery_specific_numerics.enable("yes")
     return
 
@@ -63,3 +65,4 @@ def numerics_bp_all_2305(data, solver):
 
     numerics_bp_tn_2305(data=data, solver=solver)
     return
+
