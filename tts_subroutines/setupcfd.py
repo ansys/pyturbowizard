@@ -96,6 +96,7 @@ def material_01(data, solver, solveEnergy: bool = True):
 def physics_01(data, solver, solveEnergy: bool = True):
     if solveEnergy:
         solver.setup.models.energy = {"enabled": True, "viscous_dissipation": True}
+
     gravityVector = data.get("gravity_vector")
     if (type(gravityVector) is list) and (len(gravityVector) == 3):
         print(
