@@ -93,7 +93,7 @@ def material_01(data, solver, solveEnergy: bool = True):
     return
 
 
-def physics_01(data, solver, solveEnergy: bool = True):
+def physics_01(data, solver, solveEnergy:bool = True):
     if solveEnergy:
         solver.setup.models.energy = {"enabled": True, "viscous_dissipation": True}
 
