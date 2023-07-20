@@ -184,10 +184,8 @@ studyDict = turboData.get("studies")
 
 if studyDict is not None:
     parametricstudy.study(data=turboData, solver=solver, functionEl=glfunctionEl)
-
-    # Postprocessing of studies
-    if launchEl.get("plotResults"):
-        parametricstudy.studyPlot(data=turboData, solver=solver)
+    # Post Process Studies
+    parametricstudy.studyPlot(data=turboData)
 
 # Exit Solver
 solver.exit()
