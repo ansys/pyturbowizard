@@ -101,7 +101,7 @@ def launchFluent(launchEl:dict):
     return solver
 
 def set_launcher_defaults(launchEl:dict):
-    exitatend =  launchEl.get("exitatend", False)
+    exitatend = launchEl.get("exitatend", False)
     launchEl["exitatend"] = exitatend
 
     show_gui = launchEl.get("show_gui", True)
