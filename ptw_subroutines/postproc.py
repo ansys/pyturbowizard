@@ -31,7 +31,7 @@ def post_01(data, solver, launchEl):
     filename = (
         caseFilename
         + "_"
-        + data["results"].get("filename_outputParameter", "outParameters.out")
+        + data["results"].setdefault("filename_outputParameter", "outParameters.out")
     )
     # solver.tui.define.parameters.output_parameters.write_all_to_file('filename')
     tuicommand = (
@@ -39,7 +39,7 @@ def post_01(data, solver, launchEl):
     )
     solver.execute_tui(tuicommand)
     filename = (
-        caseFilename + "_" + data["results"].get("filename_summary", "report.sum")
+        caseFilename + "_" + data["results"].setdefault("filename_summary", "report.sum")
     )
     solver.results.report.summary(write_to_file=True, file_name=filename)
     if data["locations"].get("tz_turbo_topology_names") is not None:
@@ -87,7 +87,7 @@ def createReportTable(data: dict, fl_workingDir, solver):
             )
             report_file = os.path.join(fl_workingDir, report_file)
 
-        report_values = utilities.calcCov(report_file)
+        report_values,_,_ = utilities.calcCov(report_file)
         # Read in transcript file
         trnFileName = caseFilename + ".trn"
         trnFileName = os.path.join(fl_workingDir, trnFileName)
@@ -155,7 +155,7 @@ def createReportTable(data: dict, fl_workingDir, solver):
             )
         report_table["Mass Balance [kg/s]"] = massBalance
         if solveEnergy:
-            report_table["Mass Balance [W]"] = heatBalance
+            report_table["Heat Balance [W]"] = heatBalance
 
         report_table["Total Wall Clock Time"] = wall_clock_tot
         report_table["Compute Nodes"] = nodes
@@ -163,8 +163,7 @@ def createReportTable(data: dict, fl_workingDir, solver):
         report_table.insert(2, "Pseud Time Step [s]", time_step)
 
         # Report Table File-Name
-        reportTableName = data["results"].get("filename_reporttable", "reporttable.csv")
-        data["results"]["filename_reporttable"] = reportTableName
+        reportTableName = data["results"].setdefault("filename_reporttable", "reporttable.csv")
         reportTableFileName = os.path.join(
             fl_workingDir, caseFilename + "_" + reportTableName
         )
@@ -185,10 +184,6 @@ def spanPlots(data, solver):
     availableFieldDataNames = (
         solver.field_data.get_scalar_field_data.field_name.allowed_values()
     )
-    for contVar in contVars:
-        if contVar not in availableFieldDataNames:
-            print(f"FieldVariable: '{contVar}' not available in Solution-Data!")
-            print(f"Available Scalar Values are: '{availableFieldDataNames}'")
 
     for spanVal in spansSurf:
         spanName = f"span-{spanVal}"
@@ -202,16 +197,20 @@ def spanPlots(data, solver):
         )
 
         for contVar in contVars:
-            if contVar in availableFieldDataNames:
-                contName = spanName + "-" + contVar
-                print("Creating spanwise contour-plot: " + contName)
-                solver.results.graphics.contour[contName] = {}
-                solver.results.graphics.contour[contName](
-                    field=contVar, contour_lines=True, surfaces_list=spanName
-                )
-                solver.results.graphics.contour[
-                    contName
-                ].range_option.auto_range_on.global_range = False
+            if contVar not in availableFieldDataNames:
+                print(f"FieldVariable: '{contVar}' not available in Solution-Data!")
+                print(f"Available Scalar Values are: '{availableFieldDataNames}'")
+                contVars.remove(contVar)
+                continue
+            contName = spanName + "-" + contVar
+            print("Creating spanwise contour-plot: " + contName)
+            solver.results.graphics.contour[contName] = {}
+            solver.results.graphics.contour[contName](
+                field=contVar, contour_lines=True, surfaces_list=spanName
+            )
+            solver.results.graphics.contour[
+                contName
+            ].range_option.auto_range_on.global_range = False
 
 
 def mergeReportTables(turboData, solver):
@@ -232,7 +231,7 @@ def mergeReportTables(turboData, solver):
             caseFilename = caseEl["caseFilename"]
             resultEl = caseEl.get("results")
             if resultEl is not None:
-                reportTableName = resultEl.get(
+                reportTableName = resultEl.setdefault(
                     "filename_reporttable", "reporttable.csv"
                 )
                 reportTableName = caseFilename + "_" + reportTableName

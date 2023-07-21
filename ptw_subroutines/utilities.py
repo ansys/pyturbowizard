@@ -238,7 +238,7 @@ def read_journals(data: dict, solver, element_name: str):
     return
 
 
-def calcCov(reportOut):
+def calcCov(reportOut,window_size=50):
     try:
         import pandas as pd
     except ImportError as e:
@@ -246,38 +246,34 @@ def calcCov(reportOut):
         print(f"Skipping Function 'calcCov'!")
         return
 
-    data = pd.read_csv(reportOut, skiprows=2, delim_whitespace=True)
-    data.columns = data.columns.str.strip('()"')
+    mp_df = pd.read_csv(reportOut, skiprows=2, delim_whitespace=True)
+    mp_df.columns = mp_df.columns.str.strip('()"')
+
+    # Subtract the first entry in the 'Iteration' column from all other entries
+    mp_df['Iteration'] = mp_df['Iteration'] - mp_df['Iteration'].iloc[0]
 
     # Initialize lists to store mean and COV values
     mean_values = []
     cov_values = []
 
-    # Calculate mean and COV for each column
-    for column in data.columns[1:]:
-        last_50_rows = data[column].tail(50)  # Select the last 50 rows of the column
-        std = last_50_rows.std()
-        mean = last_50_rows.mean()  # Calculate mean
-        cov = std / mean  # Calculate COV
-        mean_values.append(mean)
-        cov_values.append(cov)
+    cv_df =mp_df.copy()
+    cv_df.iloc[:,1:] = mp_df.iloc[:, 1:].rolling(window=window_size).std() / mp_df.iloc[:, 1:].rolling(window=window_size).mean()
 
-    # Create a DataFrame with mean and COV values
-    result_dict = {}
-    result_dict[data.columns[0]] = data.iloc[
-        -1, 0
-    ]  # Add first column header and last row value
+    mean_values = mp_df.iloc[:, 1:].rolling(window=window_size).mean().iloc[-1]
+    cov_values = cv_df.iloc[-1]
 
-    # format dataframe
-    for i, column in enumerate(data.columns[1:]):
-        result_dict[column] = mean_values[i]
+    formatted_report_df = pd.DataFrame({mp_df.columns[0]: [mp_df[mp_df.columns[0]].iloc[-1]]}, index=[0])  # Initialize with the first column values
+    # Add mean values to the DataFrame
+    for column in mp_df.columns[1:]:
+        col_name_mean = column
+        formatted_report_df[col_name_mean] = mean_values[column]
 
-    for i, column in enumerate(data.columns[1:]):
-        result_dict[column + "-cov"] = cov_values[i]
+    # Add COV values to the DataFrame with modified column headers
+    for column in mp_df.columns[1:]:
+        col_name_cov = column + "-cov"
+        formatted_report_df[col_name_cov] = cov_values[column]
 
-    result_df = pd.DataFrame(result_dict, index=[0])
-
-    return result_df
+    return formatted_report_df, cv_df, mp_df
 
 
 def getStudyReports(pathtostudy):
@@ -287,14 +283,20 @@ def getStudyReports(pathtostudy):
         print(f"ImportError! Could not import lib: {str(e)}")
         print(f"Skipping 'getStudyReports' function!")
         return
-
+    
     # Filter and get only the subdirectories within pathtostudy
     subdirectories = [
         name
         for name in os.listdir(pathtostudy)
         if os.path.isdir(os.path.join(pathtostudy, name))
     ]
-    result_dfs = []  # List to store result report files
+
+    # Initialize the lists to store result DataFrames
+    repot_df = []  # List to store report_table DataFrames
+    cov_df_list = []  # List to store cov_df DataFrames
+    mp_df_list = []  # List to store mp_df DataFrames
+    residual_df_list = []  # List to store residual_df DataFrames
+
     for dpname in subdirectories:
         folder_path = os.path.join(pathtostudy, dpname)
 
@@ -305,13 +307,28 @@ def getStudyReports(pathtostudy):
         if out_files:
             # Take the first .out file as the csv_file_path
             report_file_path = os.path.join(folder_path, out_files[0])
-            report_table = calcCov(report_file_path)
-            result_dfs.append(report_table)
+            report_table,cov_df,mp_df = calcCov(report_file_path)
 
         else:
             continue
-    # Concatenate the list of result DataFrames into a single DataFrame
+
+        # Check if the file 'Auto-generated-residuals-data-static.csv' exists in the folder
+        csv_file_path = os.path.join(folder_path, 'Auto-generated-residuals-data-static.csv')
+        if os.path.exists(csv_file_path):
+            # If the file exists, read it into a pandas DataFrame
+            residual_df = pd.read_csv(csv_file_path)
+        else: continue
+
+        # Append the DataFrames to their respective lists
+        repot_df.append(report_table)
+        cov_df_list.append(cov_df)
+        mp_df_list.append(mp_df)
+        residual_df_list.append(residual_df)
+
+    # Concatenate the list of designpoints into a single DataFrame
     result_df = pd.DataFrame
-    if len(result_dfs) > 0:
-        result_df = pd.concat(result_dfs, ignore_index=True)
-    return result_df
+    if len(repot_df) > 0:
+        result_df = pd.concat(repot_df, ignore_index=True)
+
+    # Return dataframes of operating map, residuals
+    return result_df, cov_df_list, residual_df_list, mp_df_list

@@ -15,7 +15,7 @@ from ptw_subroutines import (
 )
 
 
-version = "1.4.7"
+version = "1.4.8"
 print(f"\n*** Starting PyTurboWizard (Version {str(version)}) ***\n\n")
 
 # If solver variable does not exist, Fluent has been started in external mode
@@ -190,7 +190,7 @@ if studyDict is not None:
 solver.exit()
 
 #Write out Debug info
-if turboData.setdefault("debug", 0) > 0:
+if turboData.setdefault("debug_level", 0) > 0:
     import ntpath
     debug_filename = "ptw_" + ntpath.basename(config_filename)
     debug_file_path = os.path.join(fl_workingDir, debug_filename)

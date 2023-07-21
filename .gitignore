@@ -1,2 +1,3 @@
 /*.log.*
 /fluent*.trn
+.vscode/launch.json
