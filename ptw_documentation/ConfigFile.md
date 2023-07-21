@@ -414,7 +414,7 @@ In the ```studies``` section different study setups can be created.
 - The reference case file name for the base case has to be specified under ```refCaseFilename``` and has to be in the Fluent working directory.
 
 - ```initMethod``` specifies initialization method for design-points, following options are available:
-  - ```default```: Use initialization method of base case **(default)**
+  - ```base_ini```: Use initialization method of base case **(default)**
   - ```baseDP```: Use solution of base design point
   - ```prevDP```: Use solution of previous design point
 
