@@ -136,8 +136,8 @@ def study01(data, solver):
                 else:
                     studyEl["initMethod"] = "prevDP"
 
-            initMethod = studyEl.setdefault("initMethod", "default")
-            if initMethod == "default":
+            initMethod = studyEl.setdefault("initMethod", "baseDP")
+            if initMethod == "base_ini":
                 print("Using base case initialization method")
             elif initMethod == "baseDP":
                 print("Using base DP data for Initialization")
@@ -182,8 +182,8 @@ def study01(data, solver):
                 else:
                     studyEl["initMethod"] = "prevDP"
 
-            initMethod = studyEl.setdefault("initMethod", "default")
-            if initMethod == "default":
+            initMethod = studyEl.setdefault("initMethod", "base_ini")
+            if initMethod == "base_ini":
                 print("Using base case initialization method")
             elif initMethod == "baseDP":
                 print("Using base DP data for Initialization")
