@@ -313,21 +313,34 @@ The automatic time step factor and iteration count can be set via ```time_step_f
 #### Results
 ```
         "results": {
-          "filename_inputParameter_pf": "inputParameters.out",
-          "filename_outputParameter_pf": "outParameters.out",
-          "filename_summary_pf": "report.sum",
+          "filename_inputParameter": "inputParameters.out",
+          "filename_outputParameter": "outParameters.out",
+          "filename_summary": "report.sum",
           "span_plot_var": ["total-pressure","total-temperature","velocity-magnitude"],
           "span_plot_height": [0.2, 0.5, 0.9]
         }
 ```
 In the ```results``` section, the simulation output data can be set, as well as the creation of span-wise contour plots.
 
-```filename_inputParameter_pf``` and ```filename_outputParameter_pf``` are used to specify the names of the files containing the input and output parameters. 
+```filename_inputParameter``` and ```filename_outputParameter``` are used to specify the names of the files containing the input and output parameters. 
 
 ```span_plot_var``` is used to define the variable names, for which the contour plots are created. You can use the command:
 ```solver.field_data.get_scalar_field_data.field_name.allowed_values()``` in the Fluent python console to check for the correct variable names.
 
 ```span_plot_height``` is used to specify the relative channel height, at which the different variable contour plots are created. Note that all variable plots are created for each respective channel height.
+
+### Additional Setup Specifications
+
+In the ```setup``` section you can modify basic settings of your setup, all subelements are optional.
+If there are no subelements defined, Fluent defaults will be used.
+
+Available options:
+
+- ```BC_settings_pout```: pressure-outlet BC-settings: 'Pressure blending factor' & 'Number of bins' (defined as list), e.g. ```[0.05, 65]```
+- ```turbulence_model```: Use a specific turbulence model, currently only k-omega variants are supported: ```wj-bsl-earsm```, ```standard```, ```sst```, ```geko```,```bsl```
+
+
+
 ### Working with multiple cases
 
 You can easily add various cases to your configuration file. The cases will be executed by the script step by step.
@@ -355,7 +368,7 @@ Here´s an example for a mesh study:
 
 In the example "Case_CoarseMesh" includes all setup definitions, case "Case_FineMesh" just refers with ```refCase``` to "Case_CoarseMesh". 
 This means all objects are copied from case "Case_CoarseMesh" except the elements prescribed in the case itself, in this case the objects ```caseFilename``` and ```meshFilename```. 
-**Note:** If you specify a new element with sub-elements (i.e. a new dict) all sub-elements need to be specified!
+**Note:** If you specify a new element with sub-elements (i.e. a new dict), all sub-elements need to be specified in the new element!
 
 ## Parametric Study Setup
 The Configuration file for a parametric study can be found in the [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main) as ``` TurboStudyConfig.json ```.
@@ -380,9 +393,12 @@ For running Fluent on Linux or a Cluster, the script needs to hook on to a exist
 
 An example plot of the Operating Point Map is shown below:
 
-<img src="/tts_documentation/images/operating_map_example.png" alt="operating point map example" style="height: 400px; width:800px;"/>
+<img src="/ptw_documentation/images/operating_map_example.png" alt="operating point map example" style="height: 400px; width:800px;"/>
 
-```exitatend ``` can be used to specify whether you want to close Fluent after the script is finished.
+Available options:
+- ```precision ``` can be used to enable/disable double-precision mode, default: ```True```
+- ```show_gui ``` can be used to enable/disable GUI, default: ```True```
+- ```exitatend ``` can be used to specify whether you want to close Fluent after the script is finished, default: ```False```
 
 ### Study Configuration
 In the ```studies``` section different study setups can be created. 
@@ -397,10 +413,12 @@ In the ```studies``` section different study setups can be created.
 
 - The reference case file name for the base case has to be specified under ```refCaseFilename``` and has to be in the Fluent working directory.
 
-- ```updateAllDPs``` specifies whether the study should be run after the setup.
+- ```initMethod``` specifies initialization method for design-points, following options are available:
+  - ```base_ini```: Use initialization method of base case 
+  - ```baseDP```: Use solution of base design point **(default)**
+  - ```prevDP```: Use solution of previous design point
 
-- If ```updateFromBaseDP``` is ```true``` the simulation of each design point is initialized from the base design point. **Note:** If ```updateFromBaseDP``` is set to ```false``` the previous design point is used for initialization. 
-**Note:** If this element is not set, the initialization method from the base case will be used.
+- ```updateAllDPs``` specifies whether the study should be run after the setup.
 
 - The expressions to be varied for the different design points are specified in the  ```inputparameters```. The option ```useScaleFactor``` can be set to ```true``` for each selected Inputparameter to use a scale factor from the base case value.
 

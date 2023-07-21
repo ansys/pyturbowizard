@@ -1,4 +1,4 @@
-# **TurboTestSuite**
+# **PyTurboWizard**
 
 ## **Overview**
 This project aims to provide a standardized testing setup for turbomachinery-cases in Ansys Fluent through the Pythonic access with PyFluent.
@@ -36,20 +36,20 @@ Required libraries:
 - Prepare data in your working directory
   - Copy Fluent data into the folder, e.g. mesh data, profiles
   - Copy a Configuration File (GitHub) to your Fluent working directory
-  - Adjust the Configuration File to your setup ([Configuration File Setup](tts_documentation/ConfigFile.md))
+  - Adjust the Configuration File to your setup ([Configuration File Setup](ptw_documentation/ConfigFile.md))
 - Get latest Version From GitHub: [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main)
   - Copy all files from GitHub to a specific folder
   - Start a Fluent job on cluster with additional arguments: ```-py -sifile=<name>.txt ```
   - Open command shell in script folder
-  - execute script via: ```pyfluent tts_main.py <PathToConfigurationFile.json/yaml>```
+  - execute script via: ```pyfluent ptw_main.py <PathToConfigurationFile.json/yaml>```
 #### Windows
 - Prepare data in you working directory
   - Copy Fluent data into the folder, e.g. mesh data, profiles
   - Copy a Configuration File (GitHub) to your Fluent working directory
-  - Adjust the Configuration File to your setup ([Configuration File Setup](tts_documentation/ConfigFile.md))
+  - Adjust the Configuration File to your setup ([Configuration File Setup](ptw_documentation/ConfigFile.md))
 - Get latest Version From GitHub: [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main)
   - Copy complete file structure from GitHub to a specific folder
-  - execute script in Terminal via: ```python <PathToTTSMain.py> <PathToConfigurationFile.json/yaml>```
+  - execute script in Terminal via: ```python <PathToPTWMain.py> <PathToConfigurationFile.json/yaml>```
 
 ## Useful Documents
-- [Configuration File Setup](tts_documentation/ConfigFile.md)
+- [Configuration File Setup](ptw_documentation/ConfigFile.md)

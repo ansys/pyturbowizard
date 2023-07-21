@@ -1,4 +1,4 @@
-from tts_subroutines import utilities
+from ptw_subroutines import utilities
 
 
 def init(data, solver, functionEl):
@@ -70,7 +70,7 @@ def init_fmg_01(data, solver):
 
 
 def solve_01(data, solver):
-    iter_count = data["solution"]["iter_count"]
+    iter_count = data["solution"].setdefault("iter_count", 500)
     print("Solving " + str(iter_count) + " iterations")
     solver.solution.run_calculation.iterate(iter_count=iter_count)
     return

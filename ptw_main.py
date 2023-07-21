@@ -3,7 +3,7 @@ import json
 import sys
 
 # Load Script Modules
-from tts_subroutines import (
+from ptw_subroutines import (
     launcher,
     numerics,
     parametricstudy,
@@ -15,8 +15,8 @@ from tts_subroutines import (
 )
 
 
-version = "1.4.6"
-print(f"\n*** Starting TurboTestSuite (Version {str(version)}) ***\n\n")
+version = "1.4.8"
+print(f"\n*** Starting PyTurboWizard (Version {str(version)}) ***\n\n")
 
 # If solver variable does not exist, Fluent has been started in external mode
 external = "solver" not in globals()
@@ -42,6 +42,8 @@ if config_filename.endswith("yaml"):
 else:
     turboData = json.load(config_file)
 
+# Set Version to turboData
+turboData["ptw_version"] = version
 # Get important Elements from json file
 launchEl = turboData.get("launching")
 glfunctionEl = turboData.get("functions")
@@ -71,7 +73,7 @@ if caseDict is not None:
         if caseEl.get("refCase") is not None:
             utilities.merge_data_with_refDict(caseDict=caseEl, allCasesDict=caseDict)
         # Check if case should be executed
-        if caseEl.get("skip_execution", False):
+        if caseEl.setdefault("skip_execution", False):
             print(
                 f"Case '{casename}' is skipped: 'skip_execution' is set to 'True' in Case-Definition\n"
             )
@@ -85,8 +87,7 @@ if caseDict is not None:
         # Basic Dict Stuff -> done
 
         # Get base caseFilename and update dict
-        caseFilename = caseEl.get("caseFilename", casename)
-        caseEl["caseFilename"] = caseFilename
+        caseFilename = caseEl.setdefault("caseFilename", casename)
 
         # Set Batch options
         solver.file.confirm_overwrite = False
@@ -149,7 +150,7 @@ if caseDict is not None:
         )
 
         # Solve
-        if caseEl["solution"].get("runSolver", False):
+        if caseEl["solution"].setdefault("runSolver", False):
             solve.solve_01(caseEl, solver)
             filename = caseFilename + "_fin"
             solver.file.write(file_type="case-data", file_name=filename)
@@ -187,5 +188,15 @@ if studyDict is not None:
 
 # Exit Solver
 solver.exit()
+
+#Write out Debug info
+if turboData.setdefault("debug_level", 0) > 0:
+    import ntpath
+    debug_filename = "ptw_" + ntpath.basename(config_filename)
+    debug_file_path = os.path.join(fl_workingDir, debug_filename)
+    jsonString = json.dumps(turboData, indent=4, sort_keys=True)
+    with open(debug_file_path, "w") as jsonFile:
+        print(f"Writing ptw-json-File: {debug_file_path}")
+        jsonFile.write(jsonString)
 
 print("Script successfully finished! \n")
