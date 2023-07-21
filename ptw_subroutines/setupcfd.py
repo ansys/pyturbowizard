@@ -512,13 +512,13 @@ def boundary_01(data, solver, solveEnergy: bool = True):
             periodic_names = keyEl[key_topo].get("tz_theta_periodic_names")
             try:
                 for periodic_name in periodic_names:
+                    theta_min = []
+                    theta_max = []
                     if periodic_name in non_conformal_list:
                         print(
                             f"encountered a non-conformal periodic interface: {periodic_name}\n"
                         )
                         print("Adjusting turbo topology")
-                        theta_min = []
-                        theta_max = []
                         theta_min.append(
                             data["locations"]["bz_interfaces_periodic_names"][
                                 periodic_name
@@ -548,8 +548,6 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         *theta_max,
                         [],
                     )
-                    theta_min = []
-                    theta_max = []
                 else:
                     solver.tui.define.turbo_model.turbo_topology.define_topology(
                         turbo_name,

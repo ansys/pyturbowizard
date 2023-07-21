@@ -266,21 +266,12 @@ def studyPlot(data):
             studyPlotFolder = os.path.join(flworking_Dir,f'{studyName}_study_plots')
             os.makedirs(studyPlotFolder, exist_ok=True)  # Create the folder if it doesn't exist
             
-            studyPlotFolder = os.path.join(flworking_Dir, f"{studyName}_study_plots")
-            os.makedirs(
-                studyPlotFolder, exist_ok=True
-            )  # Create the folder if it doesn't exist
-
             # Get the study result table
-            result_df = utilities.getStudyReports(pathtostudy)
-
-            # check if study data is available
-            if result_df.empty:
-                continue
+            result_df, cov_df_list,residual_df_list, mp_df_list = utilities.getStudyReports(pathtostudy)
 
             # Extract CoV information for traffic light notation
-            try:
-                temp_data_path = os.path.join(pathtostudy, "temp_data.json")
+            temp_data_path = os.path.join(pathtostudy, "temp_data.json")
+            if os.path.exists(temp_data_path):
                 with open(temp_data_path, "r") as file:
                     covDict = json.load(file)
                 filtCovDict = {
@@ -288,9 +279,92 @@ def studyPlot(data):
                     for key, value in covDict.items()
                     if value.get("active", False) and value.get("cov", False)
                 }
-            except:
-                print('No Study Data has been found\n')
-                print('Skipping Post-Processing')
+            else:
+                print('No base case information for CoVs has been found!')
+
+
+            # Loop through each DataFrame in the list
+            for idx, (cov_df, residual_df, mp_df) in enumerate(zip(cov_df_list, residual_df_list, mp_df_list), 1):  # Start index from 1
+                # Create the subdirectory with the naming convention "DP<noOfEntry>"
+                dp_name = f"DP{idx}"
+                dpdirectory_path = os.path.join(studyPlotFolder, dp_name)
+
+                # Create the subdirectory if it doesn't exist
+                if not os.path.exists(dpdirectory_path):
+                    os.makedirs(dpdirectory_path
+                )
+                if not cov_df.empty:
+
+                    cov_df.reset_index(inplace=True)
+
+                    # Get the list of columns excluding 'Iteration'
+                    y_columns = cov_df.columns[2:]
+                    filtered_y_columns = [col for col in y_columns if any(col.startswith(key[:-4]) for key in filtCovDict)]
+
+
+                    plt.figure(figsize=(10, 6))
+                    # Plot each column separately on the same plot
+                    for col in filtered_y_columns:
+                        plt.plot(cov_df['Iteration'], cov_df[col], label=col)
+                    
+                    plt.xlabel('Iteration')
+                    plt.ylabel('')
+                    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+                    plt.title(f'Coefficient of Variation (CoV) - {dp_name}')
+                    plt.grid(True)
+                    plt.yscale('log')
+
+                    # Save the plot in the /test/[plot] folder
+                    plot_filename = os.path.join(dpdirectory_path, f'cov_plot_{dp_name}.png')
+                    plt.tight_layout()
+                    plt.savefig(plot_filename)
+                    plt.close()  # Close the figure to release memory
+
+                if not mp_df.empty:
+                    mp_df.reset_index(inplace=True)
+
+                    # Get the list of columns excluding 'Iteration'
+                    y_columns = mp_df.columns[2:]
+
+                    # Plot each column separately and store them in separate plots
+                    for col in y_columns:
+                        plt.figure()  # Create a new figure for each plot
+                        plt.plot(mp_df['Iteration'], mp_df[col])
+                        plt.xlabel('Iteration')
+                        plt.ylabel(col)
+                        plt.title(f'{col} - {dp_name}')
+                        plt.grid(True)
+
+                        # Save the plot in the /test/[plot] folder
+                        plot_filename = os.path.join(dpdirectory_path, f'mp_plot_{col}_{dp_name}.png')
+                        plt.savefig(plot_filename)
+                        plt.close()  # Close the figure to release memory
+
+                if not residual_df.empty:
+    
+                    residual_df.reset_index(inplace=True)
+                    # Get the list of columns excluding 'Iteration'
+                    y_columns = residual_df.columns[2:]
+                    plt.figure(figsize=(10, 6))
+                    # Plot each column separately on the same plot
+                    for col in y_columns:
+                        plt.plot(residual_df['Iterations'], residual_df[col], label=col)
+
+                    plt.xlabel('Iteration')
+                    plt.ylabel('')
+                    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+                    plt.title(f'Residuals - {dp_name}')
+                    plt.grid(True)
+                    plt.yscale('log')
+
+                    # Save the plot in the /test/[plot] folder
+                    plot_filename = os.path.join(dpdirectory_path, f'residual_plot_{dp_name}.png')
+                    plt.tight_layout()
+                    plt.savefig(plot_filename)
+                    plt.close()  # Close the figure to release memory
+
+            # check if study data is available
+            if result_df.empty:
                 continue
 
 
@@ -421,6 +495,7 @@ def studyPlot(data):
                         os.path.join(studyPlotFolder + f"/plot_volumeflow_{column}.svg")
                     )
                     plt.close()
+            
             sorted_df.to_csv(studyPlotFolder + f"/plot_table_{studyName}.csv", index=None)
 
     print("Running Function StudyPlot finished!")

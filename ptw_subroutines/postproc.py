@@ -87,7 +87,7 @@ def createReportTable(data: dict, fl_workingDir, solver):
             )
             report_file = os.path.join(fl_workingDir, report_file)
 
-        report_values = utilities.calcCov(report_file)
+        report_values,_,_ = utilities.calcCov(report_file)
         # Read in transcript file
         trnFileName = caseFilename + ".trn"
         trnFileName = os.path.join(fl_workingDir, trnFileName)
@@ -184,10 +184,6 @@ def spanPlots(data, solver):
     availableFieldDataNames = (
         solver.field_data.get_scalar_field_data.field_name.allowed_values()
     )
-    for contVar in contVars:
-        if contVar not in availableFieldDataNames:
-            print(f"FieldVariable: '{contVar}' not available in Solution-Data!")
-            print(f"Available Scalar Values are: '{availableFieldDataNames}'")
 
     for spanVal in spansSurf:
         spanName = f"span-{spanVal}"
@@ -201,16 +197,20 @@ def spanPlots(data, solver):
         )
 
         for contVar in contVars:
-            if contVar in availableFieldDataNames:
-                contName = spanName + "-" + contVar
-                print("Creating spanwise contour-plot: " + contName)
-                solver.results.graphics.contour[contName] = {}
-                solver.results.graphics.contour[contName](
-                    field=contVar, contour_lines=True, surfaces_list=spanName
-                )
-                solver.results.graphics.contour[
-                    contName
-                ].range_option.auto_range_on.global_range = False
+            if contVar not in availableFieldDataNames:
+                print(f"FieldVariable: '{contVar}' not available in Solution-Data!")
+                print(f"Available Scalar Values are: '{availableFieldDataNames}'")
+                contVars.remove(contVar)
+                continue
+            contName = spanName + "-" + contVar
+            print("Creating spanwise contour-plot: " + contName)
+            solver.results.graphics.contour[contName] = {}
+            solver.results.graphics.contour[contName](
+                field=contVar, contour_lines=True, surfaces_list=spanName
+            )
+            solver.results.graphics.contour[
+                contName
+            ].range_option.auto_range_on.global_range = False
 
 
 def mergeReportTables(turboData, solver):
