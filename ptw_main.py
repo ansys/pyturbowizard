@@ -1,6 +1,7 @@
 import os
 import json
 import sys
+import logging
 
 # Load Script Modules
 from ptw_subroutines import (
@@ -14,9 +15,11 @@ from ptw_subroutines import (
     postproc,
 )
 
+# Init Logger
+logger = utilities.init_logger(console_output=True)
 
 version = "1.4.8"
-print(f"\n*** Starting PyTurboWizard (Version {str(version)}) ***\n\n")
+logger.info(f"\n*** Starting PyTurboWizard (Version {str(version)}) ***\n\n")
 
 # If solver variable does not exist, Fluent has been started in external mode
 external = "solver" not in globals()
@@ -31,7 +34,7 @@ config_filename = "turboSetupConfig.json"
 if len(sys.argv) > 1:
     config_filename = sys.argv[1]
 config_filename = os.path.normpath(config_filename)
-print("Opening ConfigFile: " + os.path.abspath(config_filename))
+logger.info("Opening ConfigFile: " + os.path.abspath(config_filename))
 config_file = open(config_filename, "r")
 turboData = dict()
 # Load a yaml file if specified, otherwise json
@@ -55,18 +58,18 @@ fl_workingDir = launchEl.get(
 fl_workingDir = os.path.normpath(fl_workingDir)
 # Reset working dir in dict
 launchEl["workingDir"] = fl_workingDir
-print("Used Fluent Working-Directory: " + fl_workingDir)
+logger.info("Used Fluent Working-Directory: " + fl_workingDir)
 
 if external:
     # Fluent starts externally
-    print("Launching Fluent...")
+    logger.info("Launching Fluent...")
     solver = launcher.launchFluent(launchEl)
 
 # Start Setup
 caseDict = turboData.get("cases")
 if caseDict is not None:
     for casename in caseDict:
-        print("Running Case: " + casename + "\n")
+        logger.info("Running Case: " + casename + "\n")
         caseEl = turboData["cases"][casename]
         # Basic Dict Stuff...
         # First: Copy data from reference if refCase is set
@@ -74,7 +77,7 @@ if caseDict is not None:
             utilities.merge_data_with_refDict(caseDict=caseEl, allCasesDict=caseDict)
         # Check if case should be executed
         if caseEl.setdefault("skip_execution", False):
-            print(
+            logger.info(
                 f"Case '{casename}' is skipped: 'skip_execution' is set to 'True' in Case-Definition\n"
             )
             continue
@@ -132,15 +135,15 @@ if caseDict is not None:
         solve.init(data=caseEl, solver=solver, functionEl=caseFunctionEl)
 
         # Write case and ini-data & settings file
-        print("\nWriting initial case & settings file\n")
+        logger.info("\nWriting initial case & settings file\n")
         solver.file.write(file_type="case", file_name=caseFilename)
         settingsFilename = '"' + caseFilename + '.set"'
         solver.tui.file.write_settings(settingsFilename)
         if solver.field_data.is_data_valid():
-            print("\nWriting initial dat file\n")
+            logger.info("\nWriting initial dat file\n")
             solver.file.write(file_type="data", file_name=caseFilename)
         else:
-            print(
+            logger.info(
                 "Skipping Writing of Initial Solution Data: No Solution Data available\n"
             )
 
@@ -163,7 +166,7 @@ if caseDict is not None:
             filename = caseFilename + "_fin"
             solver.file.write(file_type="case-data", file_name=filename)
         else:
-            print("Skipping Postprocessing: No Solution Data available\n")
+            logger.info("Skipping Postprocessing: No Solution Data available\n")
 
         # Read Additional Journals, if specified
         utilities.read_journals(
@@ -196,7 +199,7 @@ if turboData.setdefault("debug_level", 0) > 0:
     debug_file_path = os.path.join(fl_workingDir, debug_filename)
     jsonString = json.dumps(turboData, indent=4, sort_keys=True)
     with open(debug_file_path, "w") as jsonFile:
-        print(f"Writing ptw-json-File: {debug_file_path}")
+        logger.info(f"Writing ptw-json-File: {debug_file_path}")
         jsonFile.write(jsonString)
 
-print("Script successfully finished! \n")
+logger.info("Script successfully finished! \n")

@@ -1,7 +1,8 @@
 from ptw_subroutines import utilities
-import pandas as pd
+import logging
 import os
 
+from ptw_subroutines.utilities import getLogger
 
 def post(data, solver, functionEl, launchEl):
     # Get FunctionName & Update FunctionEl
@@ -12,17 +13,17 @@ def post(data, solver, functionEl, launchEl):
         defaultName="post_01",
     )
 
-    print('\nRunning Postprocessing Function "' + functionName + '"...')
+    getLogger().info('\nRunning Postprocessing Function "' + functionName + '"...')
     if functionName == "post_01":
         post_01(data, solver, launchEl)
     else:
-        print(
+        getLogger().info(
             'Prescribed Function "'
             + functionName
             + '" not known. Skipping Postprocessing!'
         )
 
-    print("\nRunning Postprocessing Function... finished!\n")
+    getLogger().info("\nRunning Postprocessing Function... finished!\n")
 
 
 def post_01(data, solver, launchEl):
@@ -46,7 +47,7 @@ def post_01(data, solver, launchEl):
         try:
             spanPlots(data, solver)
         except Exception as e:
-            print(f"No span plots have been created: {e}")
+            getLogger().info(f"No span plots have been created: {e}")
 
     # Write out system time
     solver.report.system.time_statistics()
@@ -61,8 +62,8 @@ def createReportTable(data: dict, fl_workingDir, solver):
     try:
         import pandas as pd
     except ImportError as e:
-        print(f"ImportError! Could not import lib: {str(e)}")
-        print(f"Skipping writing custom reporttable!")
+        getLogger().info(f"ImportError! Could not import lib: {str(e)}")
+        getLogger().info(f"Skipping writing custom reporttable!")
         return
 
     caseFilename = data["caseFilename"]
@@ -87,7 +88,7 @@ def createReportTable(data: dict, fl_workingDir, solver):
             )
             report_file = os.path.join(fl_workingDir, report_file)
 
-        report_values,_,_ = utilities.calcCov(report_file)
+        report_values = utilities.calcCov(report_file)
         # Read in transcript file
         trnFileName = caseFilename + ".trn"
         trnFileName = os.path.join(fl_workingDir, trnFileName)
@@ -107,10 +108,10 @@ def createReportTable(data: dict, fl_workingDir, solver):
             if "Total wall-clock time" in line:
                 wall_clock_tot = line.split(":")[1].strip()
                 wall_clock_tot = wall_clock_tot.split(" ")[0].strip()
-                print("Detected Total Wall Clock Time:", wall_clock_tot)
+                getLogger().info("Detected Total Wall Clock Time:", wall_clock_tot)
             elif "compute nodes" in line:
                 nodes = line.split(" ")[6].strip()
-                print("Detected Number of Nodes:", nodes)
+                getLogger().info("Detected Number of Nodes:", nodes)
             elif "iter  continuity  x-velocity" in line:
                 headers = line.split()
                 filtered_headers = headers[1:8]
@@ -150,7 +151,7 @@ def createReportTable(data: dict, fl_workingDir, solver):
         if solver_trn_data_valid:
             report_table = report_table.assign(**res_columns)
         else:
-            print(
+            getLogger().info(
                 f"Reading Solver-Data from transcript file failed. Data not included in report table"
             )
         report_table["Mass Balance [kg/s]"] = massBalance
@@ -167,10 +168,10 @@ def createReportTable(data: dict, fl_workingDir, solver):
         reportTableFileName = os.path.join(
             fl_workingDir, caseFilename + "_" + reportTableName
         )
-        print("Writing Report Table to: " + reportTableFileName)
+        getLogger().info("Writing Report Table to: " + reportTableFileName)
         report_table.to_csv(reportTableFileName, index=None)
     except:
-        print(
+        getLogger().info(
             "An error occured during function 'createReportTable' -> Skipping creation of case report table!"
         )
 
@@ -184,10 +185,14 @@ def spanPlots(data, solver):
     availableFieldDataNames = (
         solver.field_data.get_scalar_field_data.field_name.allowed_values()
     )
+    for contVar in contVars:
+        if contVar not in availableFieldDataNames:
+            getLogger().info(f"FieldVariable: '{contVar}' not available in Solution-Data!")
+            getLogger().info(f"Available Scalar Values are: '{availableFieldDataNames}'")
 
     for spanVal in spansSurf:
         spanName = f"span-{spanVal}"
-        print("Creating spanwise ISO-surface: " + spanName)
+        getLogger().info("Creating spanwise ISO-surface: " + spanName)
         solver.results.surfaces.iso_surface[spanName] = {}
         zones = solver.results.surfaces.iso_surface[spanName].zone.get_attr(
             "allowed-values"
@@ -197,20 +202,16 @@ def spanPlots(data, solver):
         )
 
         for contVar in contVars:
-            if contVar not in availableFieldDataNames:
-                print(f"FieldVariable: '{contVar}' not available in Solution-Data!")
-                print(f"Available Scalar Values are: '{availableFieldDataNames}'")
-                contVars.remove(contVar)
-                continue
-            contName = spanName + "-" + contVar
-            print("Creating spanwise contour-plot: " + contName)
-            solver.results.graphics.contour[contName] = {}
-            solver.results.graphics.contour[contName](
-                field=contVar, contour_lines=True, surfaces_list=spanName
-            )
-            solver.results.graphics.contour[
-                contName
-            ].range_option.auto_range_on.global_range = False
+            if contVar in availableFieldDataNames:
+                contName = spanName + "-" + contVar
+                getLogger().info("Creating spanwise contour-plot: " + contName)
+                solver.results.graphics.contour[contName] = {}
+                solver.results.graphics.contour[contName](
+                    field=contVar, contour_lines=True, surfaces_list=spanName
+                )
+                solver.results.graphics.contour[
+                    contName
+                ].range_option.auto_range_on.global_range = False
 
 
 def mergeReportTables(turboData, solver):
@@ -218,8 +219,8 @@ def mergeReportTables(turboData, solver):
     try:
         import pandas as pd
     except ImportError as e:
-        print(f"ImportError! Could not import lib: {str(e)}")
-        print(f"Skipping mergeReportTables function!")
+        getLogger().info(f"ImportError! Could not import lib: {str(e)}")
+        getLogger().info(f"Skipping mergeReportTables function!")
         return
 
     fl_workingDir = turboData["launching"].get("workingDir")
