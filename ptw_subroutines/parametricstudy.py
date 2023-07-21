@@ -136,7 +136,7 @@ def study01(data, solver):
                 else:
                     studyEl["initMethod"] = "prevDP"
 
-            initMethod = studyEl.setdefault("initMethod", "base_ini")
+            initMethod = studyEl.setdefault("initMethod", "baseDP")
             if initMethod == "base_ini":
                 print("Using base case initialization method")
             elif initMethod == "baseDP":
