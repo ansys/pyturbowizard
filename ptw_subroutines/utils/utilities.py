@@ -43,7 +43,7 @@ def write_expression_file(data: dict, script_dir: str, working_dir: str):
                 sf.write(line.format(**helperDict))
                 sf.write("\n")
             except KeyError as e:
-                print(f"Expression not found in ConfigFile: {str(e)}")
+                logger.info(f"Expression not found in ConfigFile: {str(e)}")
 
     return
 
@@ -99,7 +99,7 @@ def check_input_parameter_expressions(solver):
         if expName.startswith("BC_"):
             expValue = exp.get_value()
             if type(expValue) is not float:
-                print(
+                logger.info(
                     f"'{expName}' seems not to be valid: '{expValue}' \n "
                     f"Removing definition as Input Parameter..."
                 )
@@ -115,7 +115,7 @@ def check_output_parameter_expressions(solutionDict: dict, solver):
     for expName in solver.setup.named_expressions():
         exp = solver.setup.named_expressions.get(expName)
         if expName in reportlist:
-            print(
+            logger.info(
                 f"Expression '{expName}' found in Config-File: 'Case/Solution/reportlist'"
                 f"Setting expression '{expName}' as output-parameter"
             )
@@ -139,8 +139,8 @@ def plot_figure(x_values, y_values, x_label, y_label, colors, criterion):
     try:
         import pandas as pd
     except ImportError as e:
-        print(f"ImportError! Could not import lib: {str(e)}")
-        print(f"Skipping 'plotOperatingMap' function!")
+        logger.info(f"ImportError! Could not import lib: {str(e)}")
+        logger.info(f"Skipping 'plotOperatingMap' function!")
         return
 
     # Create the figure and axis
@@ -205,7 +205,7 @@ def merge_data_with_refDict(caseDict: dict, allCasesDict: dict):
     refCaseName = caseDict.get("refCase")
     refDict = allCasesDict.get(refCaseName)
     if refDict is None:
-        print(
+        logger.info(
             f"Specified Reference Case {refCaseName} not found in Config-File!\nSkipping CopyFunction..."
         )
         return caseDict
@@ -234,7 +234,7 @@ def get_material_from_lib(caseDict: dict, scriptPath: str):
 def read_journals(data: dict, solver, element_name: str):
     journal_list = data.get(element_name)
     if journal_list is not None and len(journal_list) > 0:
-        print(
+        logger.info(
             f"Reading specified journal files specified in ConfigFile '{element_name}': {journal_list}"
         )
         solver.file.read_journal(file_name_list=journal_list)
@@ -245,8 +245,8 @@ def calcCov(reportOut,window_size=50):
     try:
         import pandas as pd
     except ImportError as e:
-        print(f"ImportError! Could not import lib: {str(e)}")
-        print(f"Skipping Function 'calcCov'!")
+        logger.info(f"ImportError! Could not import lib: {str(e)}")
+        logger.info(f"Skipping Function 'calcCov'!")
         return
 
     mp_df = pd.read_csv(reportOut, skiprows=2, delim_whitespace=True)
@@ -259,11 +259,11 @@ def calcCov(reportOut,window_size=50):
     mean_values = []
     cov_values = []
 
-    cv_df =mp_df.copy()
-    cv_df.iloc[:,1:] = mp_df.iloc[:, 1:].rolling(window=window_size).std() / mp_df.iloc[:, 1:].rolling(window=window_size).mean()
+    cov_df =mp_df.copy()
+    cov_df.iloc[:,1:] = mp_df.iloc[:, 1:].rolling(window=window_size).std() / mp_df.iloc[:, 1:].rolling(window=window_size).mean()
 
     mean_values = mp_df.iloc[:, 1:].rolling(window=window_size).mean().iloc[-1]
-    cov_values = cv_df.iloc[-1]
+    cov_values = cov_df.iloc[-1]
 
     formatted_report_df = pd.DataFrame({mp_df.columns[0]: [mp_df[mp_df.columns[0]].iloc[-1]]}, index=[0])  # Initialize with the first column values
     # Add mean values to the DataFrame
@@ -276,15 +276,15 @@ def calcCov(reportOut,window_size=50):
         col_name_cov = column + "-cov"
         formatted_report_df[col_name_cov] = cov_values[column]
 
-    return formatted_report_df, cv_df, mp_df
+    return formatted_report_df, cov_df, mp_df
 
 
 def getStudyReports(pathtostudy):
     try:
         import pandas as pd
     except ImportError as e:
-        print(f"ImportError! Could not import lib: {str(e)}")
-        print(f"Skipping 'getStudyReports' function!")
+        logger.info(f"ImportError! Could not import lib: {str(e)}")
+        logger.info(f"Skipping 'getStudyReports' function!")
         return
     
     # Filter and get only the subdirectories within pathtostudy
