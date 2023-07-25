@@ -1,3 +1,4 @@
+import os
 import logging
 
 logger = logging.getLogger('PyTurboWizard')
@@ -18,7 +19,9 @@ def init_logger(console_output:bool = True, file_output:bool = True):
         handler.setFormatter(formatter)
         handler.setLevel(logging.DEBUG)
         logger.addHandler(handler)
-        logger.info(f"Logger-File-Handler: {logger_file_name}")
+        if not console_output:
+            print(f"Logger-File-Handler: {os.path.abspath(logger_file_name)}")
+        logger.info(f"Logger-File-Handler: {os.path.abspath(logger_file_name)}")
     logger.info(f"Logger initialized")
     return logger
 
