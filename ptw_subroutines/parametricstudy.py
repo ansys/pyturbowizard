@@ -270,8 +270,10 @@ def studyPlot(data):
             result_df, cov_df_list,residual_df_list, mp_df_list = utilities.getStudyReports(pathtostudy)
 
             # Extract CoV information for traffic light notation
+            cov_data_exists = False
             temp_data_path = os.path.join(pathtostudy, "temp_data.json")
             if os.path.exists(temp_data_path):
+                cov_data_exists = True
                 with open(temp_data_path, "r") as file:
                     covDict = json.load(file)
                 filtCovDict = {
@@ -281,12 +283,14 @@ def studyPlot(data):
                 }
             else:
                 print('No base case information for CoVs has been found!')
+                cov_data_exists = False
+
 
 
             # Loop through each DataFrame in the list
             for idx, (cov_df, residual_df, mp_df) in enumerate(zip(cov_df_list, residual_df_list, mp_df_list), 1):  # Start index from 1
                 # Create the subdirectory with the naming convention "DP<noOfEntry>"
-                dp_name = f"DP{idx}"
+                dp_name = result_df.iloc[idx-1]["Design Point"]
                 dpdirectory_path = os.path.join(studyPlotFolder, dp_name)
 
                 # Create the subdirectory if it doesn't exist
@@ -299,8 +303,10 @@ def studyPlot(data):
 
                     # Get the list of columns excluding 'Iteration'
                     y_columns = cov_df.columns[2:]
-                    filtered_y_columns = [col for col in y_columns if any(col.startswith(key[:-4]) for key in filtCovDict)]
-
+                    if cov_data_exists:
+                        filtered_y_columns = [col for col in y_columns if any(col.startswith(key[:-4]) for key in filtCovDict)]
+                    else:
+                        filtered_y_columns = y_columns
 
                     plt.figure(figsize=(10, 6))
                     # Plot each column separately on the same plot
@@ -378,14 +384,14 @@ def studyPlot(data):
             for _, row in result_df.iterrows():
                 convergence = "good"
                 for col in cov_columns:
-                    criterion = filtCovDict.get(col, {}).get("stop_criterion")
-                    if criterion is not None:
-                        if row[col] > 5 * criterion:
+                    cov_criterion = filtCovDict.get(col, {}).get("stop_criterion",1e-4)
+                    if cov_criterion is not None:
+                        if row[col] > 5 * cov_criterion:
                             convergence = 'poor'
                             break
-                        elif row[col] > criterion:
+                        elif row[col] > cov_criterion:
                             convergence = "ok"
-                        cov_criterion = criterion
+
                 convergence_results.append(convergence)
 
             # Priority order to consider volume/massflow for plotting
