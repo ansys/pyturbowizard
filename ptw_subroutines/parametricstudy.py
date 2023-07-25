@@ -1,7 +1,11 @@
 import os
-from ptw_subroutines import utilities
 import matplotlib.pyplot as plt
 import json
+
+#Logger
+from ptw_subroutines.utils import ptw_logger, utilities
+
+logger = ptw_logger.getLogger()
 
 def study(data, solver, functionEl):
     # Get FunctionName & Update FunctionEl
@@ -12,17 +16,17 @@ def study(data, solver, functionEl):
         defaultName="study_01",
     )
 
-    print(f"Running ParamatricStudy-Function '{functionName}' ...")
+    logger.info(f"Running ParamatricStudy-Function '{functionName}' ...")
     if functionName == "study_01":
         study01(data, solver)
     else:
-        print(
+        logger.info(
             'Prescribed Function "'
             + functionName
             + '" not known. Skipping Parametric Study!'
         )
 
-    print(f"\nRunning ParamatricStudy-Function '{functionName}'...  finished!\n")
+    logger.info(f"\nRunning ParamatricStudy-Function '{functionName}'...  finished!\n")
 
 
 def study01(data, solver):
@@ -35,10 +39,10 @@ def study01(data, solver):
 
     for studyName in studyDict:
         studyEl = studyDict[studyName]
-        print(f"\nRunning Study '{studyName}'...\n")
+        logger.info(f"\nRunning Study '{studyName}'...\n")
         # Check if study should be executed
         if studyEl.setdefault("skip_execution", False):
-            print(
+            logger.info(
                 f"Study '{studyName}' is skipped: 'skip_execution' is set to 'True' in Study-Definition\n"
             )
             continue
@@ -55,16 +59,16 @@ def study01(data, solver):
         studyFolderPath = os.path.join(flworking_Dir, studyFolderPath)
         if os.path.isfile(studyFileName) or os.path.isdir(studyFolderPath):
             if not studyEl.setdefault("overwriteExisting", False):
-                print("Fluent-Project already exists " + studyFileName)
-                print(
+                logger.info("Fluent-Project already exists " + studyFileName)
+                logger.info(
                     'and "overwriteExisting"-flag is set to False or not existing in Config-File'
                 )
-                print('Skipping Parametric Study "' + studyName + '"\n')
+                logger.info('Skipping Parametric Study "' + studyName + '"\n')
                 break
         else:
             if runExisting:
-                print("Specified Fluent-Project does not exist " + studyFileName)
-                print('Skipping Parametric Study "' + studyName + '"\n')
+                logger.info("Specified Fluent-Project does not exist " + studyFileName)
+                logger.info('Skipping Parametric Study "' + studyName + '"\n')
                 break
 
         # Check if a new Project should be created or an existing is executed
@@ -138,12 +142,12 @@ def study01(data, solver):
 
             initMethod = studyEl.setdefault("initMethod", "baseDP")
             if initMethod == "base_ini":
-                print("Using base case initialization method")
+                logger.info("Using base case initialization method")
             elif initMethod == "baseDP":
-                print("Using base DP data for Initialization")
+                logger.info("Using base DP data for Initialization")
                 solver.tui.parametric_study.study.use_base_data("yes")
             elif initMethod == "prevDP":
-                print("Using previous DP data for Initialization")
+                logger.info("Using previous DP data for Initialization")
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
             # Run all Design Points
@@ -182,14 +186,14 @@ def study01(data, solver):
                 else:
                     studyEl["initMethod"] = "prevDP"
 
-            initMethod = studyEl.setdefault("initMethod", "baseDP")
+            initMethod = studyEl.setdefault("initMethod", "base_ini")
             if initMethod == "base_ini":
-                print("Using base case initialization method")
+                logger.info("Using base case initialization method")
             elif initMethod == "baseDP":
-                print("Using base DP data for Initialization")
+                logger.info("Using base DP data for Initialization")
                 solver.tui.parametric_study.study.use_base_data("yes")
             elif initMethod == "prevDP":
-                print("Using previous DP data for Initialization")
+                logger.info("Using previous DP data for Initialization")
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
             # Run all Design Points
@@ -212,7 +216,7 @@ def study01(data, solver):
             studyIndex = studyIndex + 1
 
         # Skipping after first study has been finished
-        print(f"\nRunning Study '{studyName}' finished!\n")
+        logger.info(f"\nRunning Study '{studyName}' finished!\n")
         # break
 
         # Extract CoV information and store in temporary file for post processing
@@ -223,8 +227,8 @@ def study01(data, solver):
         )
         # Check if the folder exists
         if not os.path.exists(pathtostudy):
-            print('No Study data has been found!\n')
-            print('Skipping Post-Processing!')
+            logger.info('No Study data has been found!\n')
+            logger.info('Skipping Post-Processing!')
         else:
             # Define the file path
             temp_data_path = os.path.join(pathtostudy, "temp_data.json")
@@ -233,7 +237,7 @@ def study01(data, solver):
             with open(temp_data_path, "w") as file:
                 json.dump(covDict, file)
 
-    print("All Studies finished")
+    logger.info("All Studies finished")
 
 
 def studyPlot(data):
@@ -241,11 +245,11 @@ def studyPlot(data):
     try:
         import pandas as pd
     except ImportError as e:
-        print(f"ImportError! Could not import lib: {str(e)}")
-        print(f"Skipping studyPlot function!")
+        logger.info(f"ImportError! Could not import lib: {str(e)}")
+        logger.info(f"Skipping studyPlot function!")
         return
 
-    print("Running Function StudyPlot ...")
+    logger.info("Running Function StudyPlot ...")
     studyDict = data.get("studies")
     for studyName in studyDict:
 
@@ -266,8 +270,17 @@ def studyPlot(data):
             studyPlotFolder = os.path.join(flworking_Dir,f'{studyName}_study_plots')
             os.makedirs(studyPlotFolder, exist_ok=True)  # Create the folder if it doesn't exist
             
+            studyPlotFolder = os.path.join(flworking_Dir, f"{studyName}_study_plots")
+            os.makedirs(
+                studyPlotFolder, exist_ok=True
+            )  # Create the folder if it doesn't exist
+
             # Get the study result table
-            result_df, cov_df_list,residual_df_list, mp_df_list = utilities.getStudyReports(pathtostudy)
+            result_df = utilities.getStudyReports(pathtostudy)
+
+            # check if study data is available
+            if result_df.empty:
+                continue
 
             # Extract CoV information for traffic light notation
             cov_data_exists = False
@@ -501,7 +514,6 @@ def studyPlot(data):
                         os.path.join(studyPlotFolder + f"/plot_volumeflow_{column}.svg")
                     )
                     plt.close()
-            
             sorted_df.to_csv(studyPlotFolder + f"/plot_table_{studyName}.csv", index=None)
 
-    print("Running Function StudyPlot finished!")
+    logger.info("Running Function StudyPlot finished!")
