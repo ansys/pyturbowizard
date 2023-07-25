@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
 #Logger
-from ptw_subroutines import ptw_logger
+from ptw_subroutines.utils import ptw_logger
+
 logger = ptw_logger.getLogger()
 
 def write_expression_file(data: dict, script_dir: str, working_dir: str):

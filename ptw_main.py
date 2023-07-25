@@ -4,19 +4,17 @@ import sys
 
 # Load Script Modules
 from ptw_subroutines import (
-    launcher,
     numerics,
     parametricstudy,
     solve,
     meshimport,
     setupcfd,
-    utilities,
     postproc,
-    ptw_logger,
 )
+from ptw_subroutines.utils import ptw_logger, launcher, utilities
 
 #Set Logger
-logger = ptw_logger.init_logger()
+logger = ptw_logger.init_logger(console_output=False)
 
 version = "1.4.9"
 logger.info(f"\n*** Starting PyTurboWizard (Version {str(version)}) ***\n\n")

@@ -3,7 +3,7 @@ import logging
 logger = logging.getLogger('PyTurboWizard')
 
 def init_logger(console_output:bool = True, file_output:bool = True):
-    from ptw_subroutines import utilities
+    from ptw_subroutines.utils import utilities
     logger.setLevel(logging.INFO)
     if console_output:
         handler = logging.StreamHandler()

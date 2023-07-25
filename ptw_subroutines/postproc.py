@@ -1,8 +1,8 @@
-from ptw_subroutines import utilities
 import os
 
 #Logger
-from ptw_subroutines import ptw_logger
+from ptw_subroutines.utils import ptw_logger, utilities
+
 logger = ptw_logger.getLogger()
 
 def post(data, solver, functionEl, launchEl):

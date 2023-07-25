@@ -1,10 +1,10 @@
 import os
-from ptw_subroutines import utilities
 import matplotlib.pyplot as plt
 import json
 
 #Logger
-from ptw_subroutines import ptw_logger
+from ptw_subroutines.utils import ptw_logger, utilities
+
 logger = ptw_logger.getLogger()
 
 def study(data, solver, functionEl):

@@ -1,5 +1,6 @@
 #Logger
-from ptw_subroutines import ptw_logger
+from ptw_subroutines.utils import ptw_logger
+
 logger = ptw_logger.getLogger()
 
 def import_01(data, solver):
