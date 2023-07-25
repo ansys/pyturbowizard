@@ -258,6 +258,7 @@ def studyPlot(data):
         studyData["postProc"] = runPostProc
         
         if runPostProc:
+
             flworking_Dir = data.get("launching")["workingDir"]
             baseCaseName = studyDict[studyName].get('refCaseFilename')
             pathtostudy = os.path.join(flworking_Dir,f"{studyName}.cffdb",f"{baseCaseName}-Solve")
@@ -269,14 +270,9 @@ def studyPlot(data):
             # Define a Folder to store plots
             studyPlotFolder = os.path.join(flworking_Dir,f'{studyName}_study_plots')
             os.makedirs(studyPlotFolder, exist_ok=True)  # Create the folder if it doesn't exist
-            
-            studyPlotFolder = os.path.join(flworking_Dir, f"{studyName}_study_plots")
-            os.makedirs(
-                studyPlotFolder, exist_ok=True
-            )  # Create the folder if it doesn't exist
-
+            logger.info(f"Writing Study Plots to Directory: {studyPlotFolder}")
             # Get the study result table
-            result_df = utilities.getStudyReports(pathtostudy)
+            result_df, cov_df_list, residual_df_list, mp_df_list = utilities.getStudyReports(pathtostudy)
 
             # check if study data is available
             if result_df.empty:
@@ -295,7 +291,7 @@ def studyPlot(data):
                     if value.get("active", False) and value.get("cov", False)
                 }
             else:
-                print('No base case information for CoVs has been found!')
+                logger.info('No base case information for CoVs has been found!')
                 cov_data_exists = False
 
 
@@ -310,8 +306,7 @@ def studyPlot(data):
                 if not os.path.exists(dpdirectory_path):
                     os.makedirs(dpdirectory_path
                 )
-                if not cov_df.empty:
-
+                if not cov_df.empty:    
                     cov_df.reset_index(inplace=True)
 
                     # Get the list of columns excluding 'Iteration'
@@ -333,9 +328,10 @@ def studyPlot(data):
                     plt.grid(True)
                     plt.yscale('log')
 
-                    # Save the plot in the /test/[plot] folder
+                    # Save the plot in folder
                     plot_filename = os.path.join(dpdirectory_path, f'cov_plot_{dp_name}.png')
                     plt.tight_layout()
+                    logger.info(f"Writing CoV Plot to Directory: {plot_filename}")
                     plt.savefig(plot_filename)
                     plt.close()  # Close the figure to release memory
 
@@ -356,6 +352,7 @@ def studyPlot(data):
 
                         # Save the plot in the /test/[plot] folder
                         plot_filename = os.path.join(dpdirectory_path, f'mp_plot_{col}_{dp_name}.png')
+                        logger.info(f"Writing Monitor Plot to Directory: {plot_filename}")
                         plt.savefig(plot_filename)
                         plt.close()  # Close the figure to release memory
 
@@ -376,9 +373,10 @@ def studyPlot(data):
                     plt.grid(True)
                     plt.yscale('log')
 
-                    # Save the plot in the /test/[plot] folder
+                    # Save the plot in the folder
                     plot_filename = os.path.join(dpdirectory_path, f'residual_plot_{dp_name}.png')
                     plt.tight_layout()
+                    logger.info(f"Writing Residual Plot to Directory: {plot_filename}")
                     plt.savefig(plot_filename)
                     plt.close()  # Close the figure to release memory
 
@@ -472,17 +470,22 @@ def studyPlot(data):
                         colors,
                         cov_criterion,
                     )
+                    plot_filename = os.path.join(studyPlotFolder + f"/plot_massflow_{column}.svg")
+                    logger.info(f"Writing Operating Map Plot to Directory: {plot_filename}")
                     plt.savefig(
-                        os.path.join(studyPlotFolder + f"/plot_massflow_{column}.svg")
+                        plot_filename
                     )
                     plt.close()
-                    # Create Plot with massflow
+                    # Create Plot with volume flow
                     plt.figure()
                     figure_plot = utilities.plot_figure(
                         MP_VolumeFlow, y_values, "volume flow", colors, cov_criterion
                     )
+                    
+                    plot_filename = os.path.join(studyPlotFolder + f"/plot_volumeflow_{column}.svg")
+                    logger.info(f"Writing Operating Map Plot to Directory: {plot_filename}")
                     plt.savefig(
-                        os.path.join(studyPlotFolder + f"/plot_volumeflow_{column}.svg")
+                        plot_filename
                     )
                     plt.close()
             elif MP_MassFlow is not None and MP_VolumeFlow is None:
@@ -493,8 +496,10 @@ def studyPlot(data):
                     figure_plot = utilities.plot_figure(
                         MP_MassFlow, y_values, "mass flow", column, colors, cov_criterion
                     )
+                    plot_filename = os.path.join(studyPlotFolder + f"/plot_massflow_{column}.svg")
+                    logger.info(f"Writing Operating Map Plot to Directory: {plot_filename}")
                     plt.savefig(
-                        os.path.join(studyPlotFolder + f"/plot_massflow_{column}.svg")
+                        plot_filename
                     )
                     plt.close()
             elif MP_VolumeFlow is not None and MP_MassFlow is None:
@@ -510,8 +515,10 @@ def studyPlot(data):
                         colors,
                         cov_criterion,
                     )
+                    plot_filename = os.path.join(studyPlotFolder + f"/plot_volumeflow_{column}.svg")
+                    logger.info(f"Writing Operating Map Plot to Directory: {plot_filename}")
                     plt.savefig(
-                        os.path.join(studyPlotFolder + f"/plot_volumeflow_{column}.svg")
+                        plot_filename
                     )
                     plt.close()
             sorted_df.to_csv(studyPlotFolder + f"/plot_table_{studyName}.csv", index=None)
