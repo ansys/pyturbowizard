@@ -13,7 +13,7 @@ def init_logger(console_output:bool = True, file_output:bool = True):
     if file_output:
         loggerFileName = utilities.get_free_filename(dirname=".", base_filename='PyTurboWizard.log')
         handler = logging.FileHandler(filename=loggerFileName, encoding='utf-8')
-        formatter = logging.Formatter(fmt='[%(asctime)s] {%(filename)s:%(lineno)d} %(levelname)s - %(message)s')
+        formatter = logging.Formatter(fmt='[%(asctime)s] {%(filename)s:%(lineno)d} %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
         handler.setFormatter(formatter)
         handler.setLevel(logging.DEBUG)
         logger.addHandler(handler)
