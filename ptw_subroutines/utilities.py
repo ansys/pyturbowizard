@@ -2,24 +2,10 @@ import os.path
 import json
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-import logging, sys
 
-def init_logger(console_output:bool = True):
-    loggerFileName = get_free_filename(dirname=".", base_filename='PyTurboWizard.log')
-    logger = getLogger()
-    logger.setLevel(logging.DEBUG)
-    format = '%(asctime)s - {%(filename)s:%(lineno)d} - %(levelname)s - %(message)s'
-    logging.basicConfig(filename=loggerFileName, encoding='utf-8', level=logging.DEBUG, format=format)
-    if console_output:
-        handler = logging.StreamHandler(sys.stdout)
-        handler.setLevel(logging.INFO)
-        logger.addHandler(handler)
-    logger.info(f"Logger initialized: {loggerFileName}")
-    return logger
-
-def getLogger():
-    logger = logging.getLogger('PyTurboWizard')
-    return logger
+#Logger
+from ptw_subroutines import ptw_logger
+logger = ptw_logger.getLogger()
 
 def write_expression_file(data: dict, script_dir: str, working_dir: str):
     fileName = data.get("expressionFilename")
@@ -57,7 +43,7 @@ def write_expression_file(data: dict, script_dir: str, working_dir: str):
                 sf.write(line.format(**helperDict))
                 sf.write("\n")
             except KeyError as e:
-                getLogger().info(f"Expression not found in ConfigFile: {str(e)}")
+                logger.info(f"Expression not found in ConfigFile: {str(e)}")
 
     return
 
@@ -113,7 +99,7 @@ def check_input_parameter_expressions(solver):
         if expName.startswith("BC_"):
             expValue = exp.get_value()
             if type(expValue) is not float:
-                logging.info(
+                logger.info(
                     f"'{expName}' seems not to be valid: '{expValue}' \n "
                     f"Removing definition as Input Parameter..."
                 )
@@ -129,7 +115,7 @@ def check_output_parameter_expressions(solutionDict: dict, solver):
     for expName in solver.setup.named_expressions():
         exp = solver.setup.named_expressions.get(expName)
         if expName in reportlist:
-            logging.info(
+            logger.info(
                 f"Expression '{expName}' found in Config-File: 'Case/Solution/reportlist'"
                 f"Setting expression '{expName}' as output-parameter"
             )
@@ -153,8 +139,8 @@ def plot_figure(x_values, y_values, x_label, y_label, colors, criterion):
     try:
         import pandas as pd
     except ImportError as e:
-        getLogger().info(f"ImportError! Could not import lib: {str(e)}")
-        getLogger().info(f"Skipping 'plotOperatingMap' function!")
+        logger.info(f"ImportError! Could not import lib: {str(e)}")
+        logger.info(f"Skipping 'plotOperatingMap' function!")
         return
 
     # Create the figure and axis
@@ -219,7 +205,7 @@ def merge_data_with_refDict(caseDict: dict, allCasesDict: dict):
     refCaseName = caseDict.get("refCase")
     refDict = allCasesDict.get(refCaseName)
     if refDict is None:
-        getLogger().info(
+        logger.info(
             f"Specified Reference Case {refCaseName} not found in Config-File!\nSkipping CopyFunction..."
         )
         return caseDict
@@ -248,7 +234,7 @@ def get_material_from_lib(caseDict: dict, scriptPath: str):
 def read_journals(data: dict, solver, element_name: str):
     journal_list = data.get(element_name)
     if journal_list is not None and len(journal_list) > 0:
-        getLogger().info(
+        logger.info(
             f"Reading specified journal files specified in ConfigFile '{element_name}': {journal_list}"
         )
         solver.file.read_journal(file_name_list=journal_list)
@@ -259,8 +245,8 @@ def calcCov(reportOut):
     try:
         import pandas as pd
     except ImportError as e:
-        getLogger().info(f"ImportError! Could not import lib: {str(e)}")
-        getLogger().info(f"Skipping Function 'calcCov'!")
+        logger.info(f"ImportError! Could not import lib: {str(e)}")
+        logger.info(f"Skipping Function 'calcCov'!")
         return
 
     data = pd.read_csv(reportOut, skiprows=2, delim_whitespace=True)
@@ -301,8 +287,8 @@ def getStudyReports(pathtostudy):
     try:
         import pandas as pd
     except ImportError as e:
-        getLogger().info(f"ImportError! Could not import lib: {str(e)}")
-        getLogger().info(f"Skipping 'getStudyReports' function!")
+        logger.info(f"ImportError! Could not import lib: {str(e)}")
+        logger.info(f"Skipping 'getStudyReports' function!")
         return
 
     # Filter and get only the subdirectories within pathtostudy

@@ -1,7 +1,6 @@
 import os
 import json
 import sys
-import logging
 
 # Load Script Modules
 from ptw_subroutines import (
@@ -13,10 +12,11 @@ from ptw_subroutines import (
     setupcfd,
     utilities,
     postproc,
+    ptw_logger,
 )
 
-# Init Logger
-logger = utilities.init_logger(console_output=True)
+#Logger
+logger = ptw_logger.init_logger(console_output=True)
 
 version = "1.4.9"
 logger.info(f"\n*** Starting PyTurboWizard (Version {str(version)}) ***\n\n")

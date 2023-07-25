@@ -1,10 +1,12 @@
 import os
 import subprocess
 import time
-import logging
 
 from ptw_subroutines import utilities
-from ptw_subroutines.utilities import getLogger
+
+#Logger
+from ptw_subroutines import ptw_logger
+logger = ptw_logger.getLogger()
 
 def launchFluent(launchEl:dict):
     import ansys.fluent.core as pyfluent
@@ -19,8 +21,8 @@ def launchFluent(launchEl:dict):
     # open new session in queue
     if queueEl is not None:
         maxtime = float(launchEl.setdefault("queue_waiting_time", 600.0))
-        getLogger().info("Trying to launching new Fluent Session on queue '" + queueEl + "'")
-        getLogger().info(
+        logger.info("Trying to launching new Fluent Session on queue '" + queueEl + "'")
+        logger.info(
             "Max waiting time (launching-key: 'queue_waiting_time') set to: "
             + str(maxtime)
         )
@@ -63,7 +65,7 @@ def launchFluent(launchEl:dict):
                     time.sleep(5)
                     break
             except OSError:
-                getLogger().info("Waiting to process start...")
+                logger.info("Waiting to process start...")
                 time.sleep(5)
                 current_time += 5
         if current_time > maxtime:
@@ -92,7 +94,7 @@ def launchFluent(launchEl:dict):
     # Hook to existing Session
     else:
         fullpath_to_sf = os.path.join(fl_workingDir, serverfilename)
-        getLogger().info("Connecting to Fluent Session...")
+        logger.info("Connecting to Fluent Session...")
         solver = pyfluent.launch_fluent(
             start_instance=False,
             server_info_filepath=fullpath_to_sf,

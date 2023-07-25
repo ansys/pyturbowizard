@@ -1,7 +1,8 @@
 from ptw_subroutines import utilities
-import logging
 
-from ptw_subroutines.utilities import getLogger
+#Logger
+from ptw_subroutines import ptw_logger
+logger = ptw_logger.getLogger()
 
 def setup(data, solver, functionEl):
     # Get FunctionName & Update FunctionEl
@@ -11,15 +12,15 @@ def setup(data, solver, functionEl):
         funcDictName="setup",
         defaultName="setup_compressible_01",
     )
-    getLogger().info('Running Setup Function "' + functionName + '"...')
+    logger.info('Running Setup Function "' + functionName + '"...')
     if functionName == "setup_compressible_01":
         setup_compressible_01(data, solver)
     elif functionName == "setup_incompressible_01":
         setup_incompressible_01(data, solver)
     else:
-        getLogger().info('Prescribed Function "' + functionName + '" not known. Skipping Setup!')
+        logger.info('Prescribed Function "' + functionName + '" not known. Skipping Setup!')
 
-    getLogger().info("\nRunning Setup Function... finished!\n")
+    logger.info("\nRunning Setup Function... finished!\n")
 
 
 def setup_compressible_01(data, solver):
@@ -101,7 +102,7 @@ def physics_01(data, solver, solveEnergy:bool = True):
 
     gravityVector = data.get("gravity_vector")
     if (type(gravityVector) is list) and (len(gravityVector) == 3):
-        getLogger().info(
+        logger.info(
             f"\nSpecification of Gravity-Vector found: {gravityVector} \nEnabling and setting Gravity-Vector"
         )
         solver.setup.general.operating_conditions.gravity.enable = True
@@ -111,7 +112,7 @@ def physics_01(data, solver, solveEnergy:bool = True):
     turb_model = data["setup"].get("turbulence_model")
     supported_kw_models = solver.setup.models.viscous.k_omega_model.allowed_values()
     if turb_model in supported_kw_models:
-        getLogger().info(f"Setting kw-turbulence-model '{turb_model}'")
+        logger.info(f"Setting kw-turbulence-model '{turb_model}'")
         solver.setup.models.viscous.model = "k-omega"
         solver.setup.models.viscous.k_omega_model = turb_model
 
@@ -132,7 +133,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
     for cz_name in solver.setup.cell_zone_conditions.fluid():
         # Check if it´s a rotating cell-zone
         if (cz_rot_list is not None) and (cz_name in cz_rot_list):
-            getLogger().info(f"Prescribing rotating cell zone: {cz_name}")
+            logger.info(f"Prescribing rotating cell zone: {cz_name}")
             solver.setup.cell_zone_conditions.fluid[cz_name] = {
                 "reference_frame_axis_origin": rot_ax_orig,
                 "reference_frame_axis_direction": rot_ax_dir,
@@ -141,7 +142,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
             }
         # otherwise its stationary
         else:
-            getLogger().info(f"Prescribing stationary cell zone: {cz_name}")
+            logger.info(f"Prescribing stationary cell zone: {cz_name}")
             solver.setup.cell_zone_conditions.fluid[cz_name] = {
                 "reference_frame_axis_origin": rot_ax_orig,
                 "reference_frame_axis_direction": rot_ax_dir,
@@ -152,18 +153,18 @@ def boundary_01(data, solver, solveEnergy: bool = True):
     if peri_if_El is not None:
         non_conformal_list = []
         for key_if in peri_if_El:
-            getLogger().info(f"Setting up periodic BC: {key_if}")
+            logger.info(f"Setting up periodic BC: {key_if}")
             side1 = peri_if_El[key_if].get("side1")
             side2 = peri_if_El[key_if].get("side2")
             # check if spcified sides are not already defined as periodics
             periodicIFs = solver.setup.boundary_conditions.periodic
             if periodicIFs.get(side1) is not None:
-                getLogger().info(
+                logger.info(
                     f"Prescribed Boundary-Zones '{side1}' is already defined as periodic interface. "
                     f"Creation of periodic interface is skipped!"
                 )
             elif periodicIFs.get(side2) is not None:
-                getLogger().info(
+                logger.info(
                     f"Prescribed Boundary-Zones '{side2}' is already defined as periodic interface. "
                     f"Creation of periodic interface is skipped!"
                 )
@@ -177,7 +178,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                 intf_check_side2 = solver.setup.boundary_conditions.interface.get(side2)
 
                 if intf_check_side1 is not None and intf_check_side2 is not None:
-                    getLogger().info(
+                    logger.info(
                         f"'{key_if}' is a non-conformal periodic interface\n"
                         f"Adjusting turbo-topology accordingly"
                     )
@@ -194,7 +195,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                 profileName = data.get("profileName_In")
                 useProfileData = (profileName is not None) and (profileName != "")
                 if data["expressions"].get("BC_IN_MassFlow") is not None:
-                    getLogger().info(f"Prescribing a Massflow-Inlet BC @{inletName}")
+                    logger.info(f"Prescribing a Massflow-Inlet BC @{inletName}")
                     # not working in 241 (23/7/7)
                     # solver.setup.boundary_conditions.change_type(
                     #    zone_list=[inletName], new_type="mass-flow-inlet"
@@ -214,7 +215,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     data["expressions"].get("BC_IN_VolumeFlow")
                     and data["expressions"].get("BC_IN_VolumeFlowDensity") is not None
                 ):
-                    getLogger().info(f"Prescribing a Volumeflow-Inlet BC @{inletName}")
+                    logger.info(f"Prescribing a Volumeflow-Inlet BC @{inletName}")
                     # not working in 241 (23/7/7)
                     # solver.setup.boundary_conditions.change_type(
                     #    zone_list=[inletName], new_type="mass-flow-inlet"
@@ -320,7 +321,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
             bz_outlet_names = data["locations"].get(key)
             for outletName in bz_outlet_names:
                 if data["expressions"].get("BC_OUT_ECMassFlow") is not None:
-                    getLogger().info(
+                    logger.info(
                         f"Prescribing a Exit-Corrected Massflow-Outlet BC @{outletName}"
                     )
                     # not working in 241 (23/7/7)
@@ -345,7 +346,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         outBC.tref = "BC_IN_Tt"
 
                 elif data["expressions"].get("BC_OUT_MassFlow") is not None:
-                    getLogger().info(f"Prescribing a Massflow-Outlet BC @{outletName}")
+                    logger.info(f"Prescribing a Massflow-Outlet BC @{outletName}")
                     # solver.setup.boundary_conditions.change_type(
                     #    zone_list=[outletName], new_type="mass-flow-outlet"
                     # )
@@ -362,7 +363,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     data["expressions"].get("BC_OUT_VolumeFlow")
                     and data["expressions"].get("BC_OUT_VolumeFlowDensity") is not None
                 ):
-                    getLogger().info(f"Prescribing a VolumeFlow-Outlet BC @{outletName}")
+                    logger.info(f"Prescribing a VolumeFlow-Outlet BC @{outletName}")
                     # not working in 241 (23/7/7)
                     # solver.setup.boundary_conditions.change_type(
                     #    zone_list=[outletName], new_type="mass-flow-outlet"
@@ -377,7 +378,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     outBC.mass_flow = "BC_OUT_VolumeFlow*BC_OUT_VolumeFlowDensity"
 
                 elif data["expressions"].get("BC_OUT_p") is not None:
-                    getLogger().info(f"Prescribing a Pressure-Outlet BC @{outletName}")
+                    logger.info(f"Prescribing a Pressure-Outlet BC @{outletName}")
                     # not working in 241 (23/7/7)
                     # solver.setup.boundary_conditions.change_type(
                     #    zone_list=[outletName], new_type="pressure-outlet"
@@ -428,7 +429,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
         elif key == "bz_walls_counterrotating_names":
             keyEl = data["locations"].get(key)
             for key_cr in keyEl:
-                getLogger().info(f"Prescribing a counter-rotating wall: {key_cr}")
+                logger.info(f"Prescribing a counter-rotating wall: {key_cr}")
                 solver.setup.boundary_conditions.wall[key_cr] = {
                     "motion_bc": "Moving Wall",
                     "relative": False,
@@ -440,7 +441,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
         elif key == "bz_walls_rotating_names":
             keyEl = data["locations"].get(key)
             for key_r in keyEl:
-                getLogger().info(f"Prescribing a rotating wall: {key_r}")
+                logger.info(f"Prescribing a rotating wall: {key_r}")
                 solver.setup.boundary_conditions.wall[key_r] = {
                     "motion_bc": "Moving Wall",
                     "relative": False,
@@ -453,7 +454,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
         elif key == "bz_walls_freeslip_names":
             keyEl = data["locations"].get(key)
             for key_free in keyEl:
-                getLogger().info(f"Prescribing a free slip wall: {key_free}")
+                logger.info(f"Prescribing a free slip wall: {key_free}")
                 solver.setup.boundary_conditions.wall[key_free] = {
                     "shear_bc": "Specified Shear"
                 }
@@ -463,7 +464,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
             solver.tui.define.mesh_interfaces.one_to_one_pairing("no")
             keyEl = data["locations"].get(key)
             for key_if in keyEl:
-                getLogger().info(f"Setting up general interface: {key_if}")
+                logger.info(f"Setting up general interface: {key_if}")
                 side1 = keyEl[key_if].get("side1")
                 side2 = keyEl[key_if].get("side2")
                 # solver.tui.define.mesh_interfaces.create(key_if, side1, '()', side2,'()', 'no', 'no', 'no', 'yes', 'no')
@@ -475,7 +476,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
     keyEl = data["locations"].get("bz_interfaces_mixingplane_names")
     if keyEl is not None:
         for key_if in keyEl:
-            getLogger().info(f"Setting up mixing plane interface: {key_if}")
+            logger.info(f"Setting up mixing plane interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
             solver.tui.define.turbo_model.turbo_create(
@@ -484,7 +485,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
     keyEl = data["locations"].get("bz_interfaces_no_pitchscale_names")
     if keyEl is not None:
         for key_if in keyEl:
-            getLogger().info(f"Setting up no pitch-scale interface: {key_if}")
+            logger.info(f"Setting up no pitch-scale interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
             solver.tui.define.turbo_model.turbo_create(
@@ -493,7 +494,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
     keyEl = data["locations"].get("bz_interfaces_pitchscale_names")
     if keyEl is not None:
         for key_if in keyEl:
-            getLogger().info(f"Setting up pitch-scale interface: {key_if}")
+            logger.info(f"Setting up pitch-scale interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
             solver.tui.define.turbo_model.turbo_create(
@@ -503,7 +504,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
     # setup turbo topology
     keyEl = data["locations"].get("tz_turbo_topology_names")
     if keyEl is not None:
-        getLogger().info("Setting up turbo topology for post processing.\n")
+        logger.info("Setting up turbo topology for post processing.\n")
         for key_topo in keyEl:
             turbo_name = f'"{key_topo}"'
             hub_names = keyEl[key_topo].get("tz_hub_names")
@@ -515,10 +516,10 @@ def boundary_01(data, solver, solveEnergy: bool = True):
             try:
                 for periodic_name in periodic_names:
                     if periodic_name in non_conformal_list:
-                        getLogger().info(
+                        logger.info(
                             f"encountered a non-conformal periodic interface: {periodic_name}\n"
                         )
-                        getLogger().info("Adjusting turbo topology")
+                        logger.info("Adjusting turbo topology")
                         theta_min = []
                         theta_max = []
                         theta_min.append(
@@ -569,7 +570,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         [],
                     )
             except Exception as e:
-                getLogger().info(f"An error occurred while defining topology: {e}\n")
+                logger.warning(f"An error occurred while defining topology: {e}\n")
 
             
 
@@ -658,7 +659,7 @@ def report_01(data, solver):
     pseudo_timestep = data["solution"].get("pseudo_timestep")
     if pseudo_timestep is not None:
         # Use pseudo timestep
-        getLogger().info(
+        logger.info(
             f"Direct Specification of pseudo timestep size from Configfile: {pseudo_timestep}"
         )
         solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = (
@@ -672,7 +673,7 @@ def report_01(data, solver):
             data["solution"].pop("time_step_factor")
     else:
         # Use timescale factor
-        getLogger().info(
+        logger.info(
             f"Using 'conservative'-'automatic' timestep method with timescale-factor: {tsf}"
         )
         solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = (

@@ -1,7 +1,8 @@
 from ptw_subroutines import utilities
-import logging
 
-from ptw_subroutines.utilities import getLogger
+#Logger
+from ptw_subroutines import ptw_logger
+logger = ptw_logger.getLogger()
 
 def numerics(data, solver, functionEl):
     # Get FunctionName & Update FunctionEl
@@ -12,7 +13,7 @@ def numerics(data, solver, functionEl):
         defaultName="numerics_bp_tn_2305",
     )
 
-    getLogger().info('\nSpecifying Numerics: "' + functionName + '"...')
+    logger.info('\nSpecifying Numerics: "' + functionName + '"...')
     if functionName == "numerics_defaults":
         numerics_defaults(data, solver)
     elif functionName == "numerics_bp_tn_2305":
@@ -22,17 +23,17 @@ def numerics(data, solver, functionEl):
     elif functionName == "numerics_bp_all_2305":
         numerics_bp_all_2305(data, solver)
     else:
-        getLogger().info(
+        logger.info(
             'Prescribed Function "'
             + functionName
             + '" not known. Skipping Specifying Numerics!'
         )
 
-    getLogger().info("\nSpecifying Numerics... finished!\n")
+    logger.info("\nSpecifying Numerics... finished!\n")
 
 
 def numerics_defaults(data, solver):
-    getLogger().info(
+    logger.info(
         "No changes of numerics-settings are made. Fluent defaults-settings are used..."
     )
     return
@@ -40,7 +41,7 @@ def numerics_defaults(data, solver):
 
 def numerics_bp_tn_2305(data, solver):
     solver.solution.methods.gradient_scheme = "green-gauss-node-based"
-    getLogger().info("Best Practice and turbo numerics with green-gauss-node-based will be used")
+    logger.info("Best Practice and turbo numerics with green-gauss-node-based will be used")
 
     use_tsn = data["solution"].setdefault("tsn", True)
     if use_tsn:
@@ -49,7 +50,7 @@ def numerics_bp_tn_2305(data, solver):
 
 
 def numerics_bp_tn_2305_lsq(data, solver):
-    getLogger().info("Best Practice and turbo numerics with least-sqaure-cell-based will be used")
+    logger.info("Best Practice and turbo numerics with least-sqaure-cell-based will be used")
     solver.solution.methods.gradient_scheme = "least-square-cell-based"
     use_tsn = data["solution"].setdefault("tsn", True)
     if use_tsn:
