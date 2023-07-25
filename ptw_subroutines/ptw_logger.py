@@ -6,7 +6,7 @@ def init_logger(console_output:bool = True, file_output:bool = True):
     logger.setLevel(logging.INFO)
     if console_output:
         handler = logging.StreamHandler(sys.stdout)
-        formatter = logging.Formatter(fmt='%(name)-12s: %(levelname)-8s %(message)s')
+        formatter = logging.Formatter(fmt='%(name)-12s: %(levelname)-8s - %(message)s')
         handler.setFormatter(formatter)
         handler.setLevel(logging.INFO)
         logger.addHandler(handler)
