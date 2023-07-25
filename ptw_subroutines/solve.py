@@ -1,5 +1,7 @@
-from ptw_subroutines import utilities
+#Logger
+from ptw_subroutines.utils import ptw_logger, utilities
 
+logger = ptw_logger.getLogger()
 
 def init(data, solver, functionEl):
     # Get FunctionName & Update FunctionEl
@@ -10,7 +12,7 @@ def init(data, solver, functionEl):
         defaultName="init_hybrid_01",
     )
 
-    print('\nRunning Initialization Function "' + functionName + '"...')
+    logger.info('\nRunning Initialization Function "' + functionName + '"...')
     if functionName == "init_standard_01":
         init_standard_01(data, solver)
     elif functionName == "init_hybrid_01":
@@ -18,17 +20,17 @@ def init(data, solver, functionEl):
     elif functionName == "init_fmg_01":
         init_fmg_01(data, solver)
     else:
-        print(
+        logger.info(
             'Prescribed Function "'
             + functionName
             + '" not known. Skipping Initialization!'
         )
 
-    print("\n\n Initialization Function... finished.\n")
+    logger.info("\n\n Initialization Function... finished.\n")
 
 
 def init_standard_01(data, solver):
-    print(f'Using {data["locations"]["bz_inlet_names"][0]} pressure for initialization')
+    logger.info(f'Using {data["locations"]["bz_inlet_names"][0]} pressure for initialization')
     solver.solution.initialization.standard_initialize()
 
     availableBCs = dir(solver.tui.solve.initialize.compute_defaults)
@@ -41,7 +43,7 @@ def init_standard_01(data, solver):
             data["locations"]["bz_inlet_names"][0]
         )
     else:
-        print(f"No inlet BC specified. Initialing from 'all-zones'")
+        logger.info(f"No inlet BC specified. Initialing from 'all-zones'")
         solver.tui.solve.initialize.compute_defaults.all_zones()
 
     solver.solution.initialization.standard_initialize()
@@ -71,6 +73,6 @@ def init_fmg_01(data, solver):
 
 def solve_01(data, solver):
     iter_count = data["solution"].setdefault("iter_count", 500)
-    print("Solving " + str(iter_count) + " iterations")
+    logger.info("Solving " + str(iter_count) + " iterations")
     solver.solution.run_calculation.iterate(iter_count=iter_count)
     return
