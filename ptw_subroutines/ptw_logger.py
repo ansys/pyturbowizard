@@ -1,8 +1,9 @@
 import logging, sys
 
+logger = logging.getLogger('PyTurboWizard')
+
 def init_logger(console_output:bool = True, file_output:bool = True):
     from ptw_subroutines import utilities
-    logger = getLogger()
     logger.setLevel(logging.INFO)
     if console_output:
         handler = logging.StreamHandler(sys.stdout)
@@ -22,5 +23,4 @@ def init_logger(console_output:bool = True, file_output:bool = True):
     return logger
 
 def getLogger():
-    logger = logging.getLogger('PyTurboWizard')
     return logger
