@@ -1,7 +1,11 @@
 import os
-from ptw_subroutines import utilities
 import matplotlib.pyplot as plt
 import json
+
+#Logger
+from ptw_subroutines.utils import ptw_logger, utilities
+
+logger = ptw_logger.getLogger()
 
 def study(data, solver, functionEl):
     # Get FunctionName & Update FunctionEl
@@ -12,17 +16,17 @@ def study(data, solver, functionEl):
         defaultName="study_01",
     )
 
-    print(f"Running ParamatricStudy-Function '{functionName}' ...")
+    logger.info(f"Running ParamatricStudy-Function '{functionName}' ...")
     if functionName == "study_01":
         study01(data, solver)
     else:
-        print(
+        logger.info(
             'Prescribed Function "'
             + functionName
             + '" not known. Skipping Parametric Study!'
         )
 
-    print(f"\nRunning ParamatricStudy-Function '{functionName}'...  finished!\n")
+    logger.info(f"\nRunning ParamatricStudy-Function '{functionName}'...  finished!\n")
 
 
 def study01(data, solver):
@@ -35,10 +39,10 @@ def study01(data, solver):
 
     for studyName in studyDict:
         studyEl = studyDict[studyName]
-        print(f"\nRunning Study '{studyName}'...\n")
+        logger.info(f"\nRunning Study '{studyName}'...\n")
         # Check if study should be executed
         if studyEl.setdefault("skip_execution", False):
-            print(
+            logger.info(
                 f"Study '{studyName}' is skipped: 'skip_execution' is set to 'True' in Study-Definition\n"
             )
             continue
@@ -55,16 +59,16 @@ def study01(data, solver):
         studyFolderPath = os.path.join(flworking_Dir, studyFolderPath)
         if os.path.isfile(studyFileName) or os.path.isdir(studyFolderPath):
             if not studyEl.setdefault("overwriteExisting", False):
-                print("Fluent-Project already exists " + studyFileName)
-                print(
+                logger.info("Fluent-Project already exists " + studyFileName)
+                logger.info(
                     'and "overwriteExisting"-flag is set to False or not existing in Config-File'
                 )
-                print('Skipping Parametric Study "' + studyName + '"\n')
+                logger.info('Skipping Parametric Study "' + studyName + '"\n')
                 break
         else:
             if runExisting:
-                print("Specified Fluent-Project does not exist " + studyFileName)
-                print('Skipping Parametric Study "' + studyName + '"\n')
+                logger.info("Specified Fluent-Project does not exist " + studyFileName)
+                logger.info('Skipping Parametric Study "' + studyName + '"\n')
                 break
 
         # Check if a new Project should be created or an existing is executed
@@ -138,12 +142,12 @@ def study01(data, solver):
 
             initMethod = studyEl.setdefault("initMethod", "baseDP")
             if initMethod == "base_ini":
-                print("Using base case initialization method")
+                logger.info("Using base case initialization method")
             elif initMethod == "baseDP":
-                print("Using base DP data for Initialization")
+                logger.info("Using base DP data for Initialization")
                 solver.tui.parametric_study.study.use_base_data("yes")
             elif initMethod == "prevDP":
-                print("Using previous DP data for Initialization")
+                logger.info("Using previous DP data for Initialization")
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
             # Run all Design Points
@@ -182,14 +186,14 @@ def study01(data, solver):
                 else:
                     studyEl["initMethod"] = "prevDP"
 
-            initMethod = studyEl.setdefault("initMethod", "baseDP")
+            initMethod = studyEl.setdefault("initMethod", "base_ini")
             if initMethod == "base_ini":
-                print("Using base case initialization method")
+                logger.info("Using base case initialization method")
             elif initMethod == "baseDP":
-                print("Using base DP data for Initialization")
+                logger.info("Using base DP data for Initialization")
                 solver.tui.parametric_study.study.use_base_data("yes")
             elif initMethod == "prevDP":
-                print("Using previous DP data for Initialization")
+                logger.info("Using previous DP data for Initialization")
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
             # Run all Design Points
@@ -212,7 +216,7 @@ def study01(data, solver):
             studyIndex = studyIndex + 1
 
         # Skipping after first study has been finished
-        print(f"\nRunning Study '{studyName}' finished!\n")
+        logger.info(f"\nRunning Study '{studyName}' finished!\n")
         # break
 
         # Extract CoV information and store in temporary file for post processing
@@ -223,8 +227,8 @@ def study01(data, solver):
         )
         # Check if the folder exists
         if not os.path.exists(pathtostudy):
-            print('No Study data has been found!\n')
-            print('Skipping Post-Processing!')
+            logger.info('No Study data has been found!\n')
+            logger.info('Skipping Post-Processing!')
         else:
             # Define the file path
             temp_data_path = os.path.join(pathtostudy, "temp_data.json")
@@ -233,7 +237,7 @@ def study01(data, solver):
             with open(temp_data_path, "w") as file:
                 json.dump(covDict, file)
 
-    print("All Studies finished")
+    logger.info("All Studies finished")
 
 
 def studyPlot(data):
@@ -241,11 +245,11 @@ def studyPlot(data):
     try:
         import pandas as pd
     except ImportError as e:
-        print(f"ImportError! Could not import lib: {str(e)}")
-        print(f"Skipping studyPlot function!")
+        logger.info(f"ImportError! Could not import lib: {str(e)}")
+        logger.info(f"Skipping studyPlot function!")
         return
 
-    print("Running Function StudyPlot ...")
+    logger.info("Running Function StudyPlot ...")
     studyDict = data.get("studies")
     for studyName in studyDict:
 
@@ -254,6 +258,7 @@ def studyPlot(data):
         studyData["postProc"] = runPostProc
         
         if runPostProc:
+
             flworking_Dir = data.get("launching")["workingDir"]
             baseCaseName = studyDict[studyName].get('refCaseFilename')
             pathtostudy = os.path.join(flworking_Dir,f"{studyName}.cffdb",f"{baseCaseName}-Solve")
@@ -265,13 +270,19 @@ def studyPlot(data):
             # Define a Folder to store plots
             studyPlotFolder = os.path.join(flworking_Dir,f'{studyName}_study_plots')
             os.makedirs(studyPlotFolder, exist_ok=True)  # Create the folder if it doesn't exist
-            
+            logger.info(f"Writing Study Plots to Directory: {studyPlotFolder}")
             # Get the study result table
-            result_df, cov_df_list,residual_df_list, mp_df_list = utilities.getStudyReports(pathtostudy)
+            result_df, cov_df_list, residual_df_list, mp_df_list = utilities.getStudyReports(pathtostudy)
+
+            # check if study data is available
+            if result_df.empty:
+                continue
 
             # Extract CoV information for traffic light notation
+            cov_data_exists = False
             temp_data_path = os.path.join(pathtostudy, "temp_data.json")
             if os.path.exists(temp_data_path):
+                cov_data_exists = True
                 with open(temp_data_path, "r") as file:
                     covDict = json.load(file)
                 filtCovDict = {
@@ -280,27 +291,30 @@ def studyPlot(data):
                     if value.get("active", False) and value.get("cov", False)
                 }
             else:
-                print('No base case information for CoVs has been found!')
+                logger.info('No base case information for CoVs has been found!')
+                cov_data_exists = False
+
 
 
             # Loop through each DataFrame in the list
             for idx, (cov_df, residual_df, mp_df) in enumerate(zip(cov_df_list, residual_df_list, mp_df_list), 1):  # Start index from 1
                 # Create the subdirectory with the naming convention "DP<noOfEntry>"
-                dp_name = f"DP{idx}"
+                dp_name = result_df.iloc[idx-1]["Design Point"]
                 dpdirectory_path = os.path.join(studyPlotFolder, dp_name)
 
                 # Create the subdirectory if it doesn't exist
                 if not os.path.exists(dpdirectory_path):
                     os.makedirs(dpdirectory_path
                 )
-                if not cov_df.empty:
-
+                if not cov_df.empty:    
                     cov_df.reset_index(inplace=True)
 
                     # Get the list of columns excluding 'Iteration'
                     y_columns = cov_df.columns[2:]
-                    filtered_y_columns = [col for col in y_columns if any(col.startswith(key[:-4]) for key in filtCovDict)]
-
+                    if cov_data_exists:
+                        filtered_y_columns = [col for col in y_columns if any(col.startswith(key[:-4]) for key in filtCovDict)]
+                    else:
+                        filtered_y_columns = y_columns
 
                     plt.figure(figsize=(10, 6))
                     # Plot each column separately on the same plot
@@ -314,9 +328,10 @@ def studyPlot(data):
                     plt.grid(True)
                     plt.yscale('log')
 
-                    # Save the plot in the /test/[plot] folder
+                    # Save the plot in folder
                     plot_filename = os.path.join(dpdirectory_path, f'cov_plot_{dp_name}.png')
                     plt.tight_layout()
+                    logger.info(f"Writing CoV Plot to Directory: {plot_filename}")
                     plt.savefig(plot_filename)
                     plt.close()  # Close the figure to release memory
 
@@ -337,6 +352,7 @@ def studyPlot(data):
 
                         # Save the plot in the /test/[plot] folder
                         plot_filename = os.path.join(dpdirectory_path, f'mp_plot_{col}_{dp_name}.png')
+                        logger.info(f"Writing Monitor Plot to Directory: {plot_filename}")
                         plt.savefig(plot_filename)
                         plt.close()  # Close the figure to release memory
 
@@ -357,9 +373,10 @@ def studyPlot(data):
                     plt.grid(True)
                     plt.yscale('log')
 
-                    # Save the plot in the /test/[plot] folder
+                    # Save the plot in the folder
                     plot_filename = os.path.join(dpdirectory_path, f'residual_plot_{dp_name}.png')
                     plt.tight_layout()
+                    logger.info(f"Writing Residual Plot to Directory: {plot_filename}")
                     plt.savefig(plot_filename)
                     plt.close()  # Close the figure to release memory
 
@@ -378,15 +395,18 @@ def studyPlot(data):
             for _, row in result_df.iterrows():
                 convergence = "good"
                 for col in cov_columns:
-                    criterion = filtCovDict.get(col, {}).get("stop_criterion")
-                    if criterion is not None:
-                        if row[col] > 5 * criterion:
+                    cov_criterion = filtCovDict.get(col, {}).get("stop_criterion",1e-4)
+                    if cov_criterion is not None:
+                        if row[col] > 5 * cov_criterion:
                             convergence = 'poor'
                             break
-                        elif row[col] > criterion:
+                        elif row[col] > cov_criterion:
                             convergence = "ok"
-                        cov_criterion = criterion
+
                 convergence_results.append(convergence)
+
+            # Assign the convergence results to the 'convergence' column
+            result_df["convergence"] = convergence_results
 
             # Priority order to consider volume/massflow for plotting
             mf_fallback_columns = [
@@ -425,8 +445,6 @@ def studyPlot(data):
                     MP_VolumeFlow = sorted_df[column].values
                     break
 
-            # Assign the convergence results to the 'convergence' column
-            sorted_df["convergence"] = convergence_results
             # Filter out the dataframe to plot monitor points
             plot_df = sorted_df.iloc[:, 1:-1].drop(
                 columns=[
@@ -453,17 +471,22 @@ def studyPlot(data):
                         colors,
                         cov_criterion,
                     )
+                    plot_filename = os.path.join(studyPlotFolder + f"/plot_massflow_{column}.svg")
+                    logger.info(f"Writing Operating Map Plot to Directory: {plot_filename}")
                     plt.savefig(
-                        os.path.join(studyPlotFolder + f"/plot_massflow_{column}.svg")
+                        plot_filename
                     )
                     plt.close()
-                    # Create Plot with massflow
+                    # Create Plot with volume flow
                     plt.figure()
                     figure_plot = utilities.plot_figure(
                         MP_VolumeFlow, y_values, "volume flow", colors, cov_criterion
                     )
+                    
+                    plot_filename = os.path.join(studyPlotFolder + f"/plot_volumeflow_{column}.svg")
+                    logger.info(f"Writing Operating Map Plot to Directory: {plot_filename}")
                     plt.savefig(
-                        os.path.join(studyPlotFolder + f"/plot_volumeflow_{column}.svg")
+                        plot_filename
                     )
                     plt.close()
             elif MP_MassFlow is not None and MP_VolumeFlow is None:
@@ -474,8 +497,10 @@ def studyPlot(data):
                     figure_plot = utilities.plot_figure(
                         MP_MassFlow, y_values, "mass flow", column, colors, cov_criterion
                     )
+                    plot_filename = os.path.join(studyPlotFolder + f"/plot_massflow_{column}.svg")
+                    logger.info(f"Writing Operating Map Plot to Directory: {plot_filename}")
                     plt.savefig(
-                        os.path.join(studyPlotFolder + f"/plot_massflow_{column}.svg")
+                        plot_filename
                     )
                     plt.close()
             elif MP_VolumeFlow is not None and MP_MassFlow is None:
@@ -491,11 +516,12 @@ def studyPlot(data):
                         colors,
                         cov_criterion,
                     )
+                    plot_filename = os.path.join(studyPlotFolder + f"/plot_volumeflow_{column}.svg")
+                    logger.info(f"Writing Operating Map Plot to Directory: {plot_filename}")
                     plt.savefig(
-                        os.path.join(studyPlotFolder + f"/plot_volumeflow_{column}.svg")
+                        plot_filename
                     )
                     plt.close()
-            
             sorted_df.to_csv(studyPlotFolder + f"/plot_table_{studyName}.csv", index=None)
 
-    print("Running Function StudyPlot finished!")
+    logger.info("Running Function StudyPlot finished!")
