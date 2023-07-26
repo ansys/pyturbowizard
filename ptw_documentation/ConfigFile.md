@@ -1,7 +1,7 @@
 # Setup of the Configuration File
 This guide aims to give an overview on how to adjust the Configuration File for single case setups and parametric studies.
 ## Single Case Setup
-The Configuration file for single case setups can be found in the [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main) as ``` TurboSetupConfig.json ```.
+The Configuration file for single case setups can be found in the [main branch](https://github.com/ansys-internal/pyturbowizard/tree/main) as ``` TurboSetupConfig.json ```.
 
 When running the script from outside Fluent, you can also use the yaml-file format for the configuration file.
 
@@ -371,7 +371,7 @@ This means all objects are copied from case "Case_CoarseMesh" except the element
 **Note:** If you specify a new element with sub-elements (i.e. a new dict), all sub-elements need to be specified in the new element!
 
 ## Parametric Study Setup
-The Configuration file for a parametric study can be found in the [main branch](https://github.com/ansys-internal/turbotestsuite/tree/main) as ``` TurboStudyConfig.json ```.
+The Configuration file for a parametric study can be found in the [main branch](https://github.com/ansys-internal/pyturbowizard/tree/main) as ``` TurboStudyConfig.json ```.
 ### Launch Options
 Under the section ``` launching ```, different options for launching options for Fluent can be specified, like the version, number of processes and single or double precision solver.
 
