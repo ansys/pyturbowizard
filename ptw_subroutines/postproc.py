@@ -55,7 +55,7 @@ def post_01(data, solver, launchEl, trn_name):
     solver.report.system.time_statistics()
 
     ## write report table
-    createReportTable(data=data, fl_workingDir=fl_workingDir, solver=solver, trn_name = trn_name)
+    createReportTable(data=data, fl_workingDir=fl_workingDir, solver=solver, trn_filename = trn_name)
 
     return
 
