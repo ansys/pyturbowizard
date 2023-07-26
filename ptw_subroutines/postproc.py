@@ -6,7 +6,7 @@ from ptw_subroutines.utils import ptw_logger, utilities
 
 logger = ptw_logger.getLogger()
 
-def post(data, solver, functionEl, launchEl):
+def post(data, solver, functionEl, launchEl, trn_name):
     # Get FunctionName & Update FunctionEl
     functionName = utilities.get_funcname_and_upd_funcdict(
         parentDict=data,
@@ -17,7 +17,7 @@ def post(data, solver, functionEl, launchEl):
 
     logger.info('\nRunning Postprocessing Function "' + functionName + '"...')
     if functionName == "post_01":
-        post_01(data, solver, launchEl)
+        post_01(data, solver, launchEl, trn_name)
     else:
         logger.info(
             'Prescribed Function "'
@@ -28,7 +28,7 @@ def post(data, solver, functionEl, launchEl):
     logger.info("\nRunning Postprocessing Function... finished!\n")
 
 
-def post_01(data, solver, launchEl):
+def post_01(data, solver, launchEl, trn_name):
     fl_workingDir = launchEl.get("workingDir")
     caseFilename = data["caseFilename"]
     filename = (
@@ -55,12 +55,12 @@ def post_01(data, solver, launchEl):
     solver.report.system.time_statistics()
 
     ## write report table
-    createReportTable(data=data, fl_workingDir=fl_workingDir, solver=solver)
+    createReportTable(data=data, fl_workingDir=fl_workingDir, solver=solver, trn_filename = trn_name)
 
     return
 
 
-def createReportTable(data: dict, fl_workingDir, solver):
+def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
     try:
         import pandas as pd
     except ImportError as e:
@@ -161,8 +161,12 @@ def createReportTable(data: dict, fl_workingDir, solver):
             logger.info("Missing Report File data: CoV Plot not created")
 
     # Read in transcript file
-    trnFileName = caseFilename + ".trn"
-    trnFileName = os.path.join(fl_workingDir, trnFileName)
+
+    trnFileName = os.path.join(fl_workingDir, trn_filename)
+    wall_clock_tot = 0
+    nodes = 0
+    filtered_values = []
+    filtered_headers = []
 
     if os.path.isfile(trnFileName):
         with open(trnFileName, "r") as file:
@@ -171,10 +175,6 @@ def createReportTable(data: dict, fl_workingDir, solver):
         solver_trn_data_valid = False
         table_started = False
         lines = transcript.split("\n")
-        wall_clock_tot = 0
-        nodes = 0
-        filtered_values = []
-        filtered_headers = []
 
         for line in lines:
             if "Total wall-clock time" in line:
