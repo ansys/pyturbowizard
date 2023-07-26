@@ -305,13 +305,12 @@ def getStudyReports(pathtostudy):
 
         # Check if the folder_path contains a .out file
         out_files = [file for file in os.listdir(folder_path) if file.endswith(".out")]
-
         # Check if any .out file exists in the folder_path
         if out_files:
             # Take the first .out file as the csv_file_path
             report_file_path = os.path.join(folder_path, out_files[0])
             report_table,cov_df,mp_df = calcCov(report_file_path)
-
+            report_table.insert(0,"Design Point",dpname)
         else:
             continue
 

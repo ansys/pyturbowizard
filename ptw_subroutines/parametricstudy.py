@@ -405,6 +405,9 @@ def studyPlot(data):
 
                 convergence_results.append(convergence)
 
+            # Assign the convergence results to the 'convergence' column
+            result_df["convergence"] = convergence_results
+
             # Priority order to consider volume/massflow for plotting
             mf_fallback_columns = [
                 "rep-mp-in-massflow-360",
@@ -442,8 +445,6 @@ def studyPlot(data):
                     MP_VolumeFlow = sorted_df[column].values
                     break
 
-            # Assign the convergence results to the 'convergence' column
-            sorted_df["convergence"] = convergence_results
             # Filter out the dataframe to plot monitor points
             plot_df = sorted_df.iloc[:, 1:-1].drop(
                 columns=[
