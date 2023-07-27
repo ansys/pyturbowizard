@@ -108,7 +108,7 @@ def physics_01(data, solver, solveEnergy:bool = True):
         solver.setup.general.operating_conditions.gravity.components = gravityVector
 
     #Set turbulence model
-    turb_model = data["setup"].get("turbulence_model")
+    turb_model = data["setup"].get("turbulence_model", "k-omega" )
     supported_kw_models = solver.setup.models.viscous.k_omega_model.allowed_values()
     if turb_model in supported_kw_models:
         logger.info(f"Setting kw-turbulence-model '{turb_model}'")
