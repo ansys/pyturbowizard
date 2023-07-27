@@ -186,7 +186,7 @@ studyDict = turboData.get("studies")
 if studyDict is not None:
     parametricstudy.study(data=turboData, solver=solver, functionEl=glfunctionEl)
     # Post Process Studies
-    parametricstudy_post.study_post(data=turboData, solver=solver)
+    parametricstudy_post.study_post(data=turboData, solver=solver, functionEl=glfunctionEl)
 
 # Exit Solver
 solver.exit()
