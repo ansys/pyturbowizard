@@ -10,6 +10,7 @@ from ptw_subroutines import (
     meshimport,
     setupcfd,
     postproc,
+    parametricstudy_post,
 )
 from ptw_subroutines.utils import ptw_logger, launcher, utilities
 
@@ -185,7 +186,7 @@ studyDict = turboData.get("studies")
 if studyDict is not None:
     parametricstudy.study(data=turboData, solver=solver, functionEl=glfunctionEl)
     # Post Process Studies
-    parametricstudy.studyPlot(data=turboData)
+    parametricstudy_post.study_post(data=turboData, solver=solver)
 
 # Exit Solver
 solver.exit()
