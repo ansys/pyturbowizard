@@ -160,7 +160,7 @@ if caseDict is not None:
         # Postprocessing
         if solver.field_data.is_data_valid():
             postproc.post(
-                data=caseEl, solver=solver, functionEl=caseFunctionEl, launchEl=launchEl
+                data=caseEl, solver=solver, functionEl=caseFunctionEl, launchEl=launchEl ,trn_name = trnFileName
             )
             filename = caseFilename + "_fin"
             solver.file.write(file_type="case-data", file_name=filename)
