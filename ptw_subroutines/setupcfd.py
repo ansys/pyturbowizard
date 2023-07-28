@@ -108,12 +108,19 @@ def physics_01(data, solver, solveEnergy:bool = True):
         solver.setup.general.operating_conditions.gravity.components = gravityVector
 
     #Set turbulence model
-    turb_model = data["setup"].get("turbulence_model", "k-omega" )
+    #if not set or in supported list, sst
+    default_turb_model = "sst"
+    turb_model = data["setup"].setdefault("turbulence_model", default_turb_model)
     supported_kw_models = solver.setup.models.viscous.k_omega_model.allowed_values()
     if turb_model in supported_kw_models:
-        logger.info(f"Setting kw-turbulence-model '{turb_model}'")
+        logger.info(f"Setting kw-turbulence-model: '{turb_model}'")
         solver.setup.models.viscous.model = "k-omega"
         solver.setup.models.viscous.k_omega_model = turb_model
+    else:
+        logger.warning(f"Specified turbulence-model not supported: '{turb_model}'! Default turbulence model will be used: '{default_turb_model}'!")
+        data["setup"]["turbulence_model"] = default_turb_model
+        solver.setup.models.viscous.model = "k-omega"
+        solver.setup.models.viscous.k_omega_model = default_turb_model
 
     return
 
