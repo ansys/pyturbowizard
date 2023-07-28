@@ -12,7 +12,7 @@ from ptw_subroutines import (
     postproc,
     parametricstudy_post,
 )
-from ptw_subroutines.utils import ptw_logger, launcher, utilities
+from ptw_subroutines.utils import ptw_logger, launcher, utilities, dict_utils, expressions_utils
 
 #Set Logger
 logger = ptw_logger.init_logger(console_output=False)
@@ -73,7 +73,7 @@ if caseDict is not None:
         # Basic Dict Stuff...
         # First: Copy data from reference if refCase is set
         if caseEl.get("refCase") is not None:
-            utilities.merge_data_with_refDict(caseDict=caseEl, allCasesDict=caseDict)
+            dict_utils.merge_data_with_refDict(caseDict=caseEl, allCasesDict=caseDict)
         # Check if case should be executed
         if caseEl.setdefault("skip_execution", False):
             logger.info(
@@ -81,11 +81,11 @@ if caseDict is not None:
             )
             continue
         # Update initial case-function-dict
-        caseFunctionEl = utilities.merge_functionDicts(
+        caseFunctionEl = dict_utils.merge_functionDicts(
             caseDict=caseEl, glfunctionDict=glfunctionEl
         )
         # Check if material from lib should be used
-        utilities.get_material_from_lib(caseDict=caseEl, scriptPath=scriptPath)
+        dict_utils.get_material_from_lib(caseDict=caseEl, scriptPath=scriptPath)
         # Basic Dict Stuff -> done
 
         # Get base caseFilename and update dict
@@ -103,7 +103,7 @@ if caseDict is not None:
 
         ### Expression Definition
         # Write ExpressionFile with specified Template
-        utilities.write_expression_file(
+        expressions_utils.write_expression_file(
             data=caseEl, script_dir=scriptPath, working_dir=fl_workingDir
         )
         # Reading ExpressionFile into Fluent
@@ -111,7 +111,7 @@ if caseDict is not None:
             caseEl["expressionFilename"]
         )
         # Check if all inputParameters are valid
-        utilities.check_input_parameter_expressions(solver=solver)
+        expressions_utils.check_input_parameter_expressions(solver=solver)
         ### Expression Definition... done!
 
         # Enable Beta-Features

@@ -1,11 +1,11 @@
 #Logger
-from ptw_subroutines.utils import ptw_logger, utilities
+from ptw_subroutines.utils import ptw_logger, dict_utils
 
 logger = ptw_logger.getLogger()
 
 def setup(data, solver, functionEl):
     # Get FunctionName & Update FunctionEl
-    functionName = utilities.get_funcname_and_upd_funcdict(
+    functionName = dict_utils.get_funcname_and_upd_funcdict(
         parentDict=data,
         functionDict=functionEl,
         funcDictName="setup",
