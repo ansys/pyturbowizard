@@ -2,13 +2,13 @@ import os
 import matplotlib.pyplot as plt
 
 #Logger
-from ptw_subroutines.utils import ptw_logger, utilities
+from ptw_subroutines.utils import ptw_logger, utilities, dict_utils
 
 logger = ptw_logger.getLogger()
 
 def post(data, solver, functionEl, launchEl, trn_name):
     # Get FunctionName & Update FunctionEl
-    functionName = utilities.get_funcname_and_upd_funcdict(
+    functionName = dict_utils.get_funcname_and_upd_funcdict(
         parentDict=data,
         functionDict=functionEl,
         funcDictName="postproc",
