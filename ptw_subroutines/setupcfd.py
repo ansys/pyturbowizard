@@ -1,11 +1,11 @@
 #Logger
-from ptw_subroutines.utils import ptw_logger, utilities
+from ptw_subroutines.utils import ptw_logger, dict_utils
 
 logger = ptw_logger.getLogger()
 
 def setup(data, solver, functionEl):
     # Get FunctionName & Update FunctionEl
-    functionName = utilities.get_funcname_and_upd_funcdict(
+    functionName = dict_utils.get_funcname_and_upd_funcdict(
         parentDict=data,
         functionDict=functionEl,
         funcDictName="setup",
@@ -108,12 +108,19 @@ def physics_01(data, solver, solveEnergy:bool = True):
         solver.setup.general.operating_conditions.gravity.components = gravityVector
 
     #Set turbulence model
-    turb_model = data["setup"].get("turbulence_model", "k-omega" )
+    #if not set or in supported list, sst
+    default_turb_model = "sst"
+    turb_model = data["setup"].setdefault("turbulence_model", default_turb_model)
     supported_kw_models = solver.setup.models.viscous.k_omega_model.allowed_values()
     if turb_model in supported_kw_models:
-        logger.info(f"Setting kw-turbulence-model '{turb_model}'")
+        logger.info(f"Setting kw-turbulence-model: '{turb_model}'")
         solver.setup.models.viscous.model = "k-omega"
         solver.setup.models.viscous.k_omega_model = turb_model
+    else:
+        logger.warning(f"Specified turbulence-model not supported: '{turb_model}'! Default turbulence model will be used: '{default_turb_model}'!")
+        data["setup"]["turbulence_model"] = default_turb_model
+        solver.setup.models.viscous.model = "k-omega"
+        solver.setup.models.viscous.k_omega_model = default_turb_model
 
     return
 
@@ -513,14 +520,14 @@ def boundary_01(data, solver, solveEnergy: bool = True):
             blade_names = keyEl[key_topo].get("tz_blade_names")
             periodic_names = keyEl[key_topo].get("tz_theta_periodic_names")
             try:
+                theta_min = []
+                theta_max = []
                 for periodic_name in periodic_names:
                     if periodic_name in non_conformal_list:
                         logger.info(
                             f"encountered a non-conformal periodic interface: {periodic_name}\n"
                         )
                         logger.info("Adjusting turbo topology")
-                        theta_min = []
-                        theta_max = []
                         theta_min.append(
                             data["locations"]["bz_interfaces_periodic_names"][
                                 periodic_name
@@ -550,8 +557,6 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         *theta_max,
                         [],
                     )
-                    theta_min = []
-                    theta_max = []
                 else:
                     solver.tui.define.turbo_model.turbo_topology.define_topology(
                         turbo_name,
@@ -570,10 +575,6 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     )
             except Exception as e:
                 logger.warning(f"An error occurred while defining topology: {e}\n")
-
-            
-
-
 
     return
 
