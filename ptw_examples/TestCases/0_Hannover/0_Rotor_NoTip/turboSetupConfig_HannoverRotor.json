@@ -16,9 +16,9 @@
   "cases": {
       "HannoverRotor_NoTip_0.6M": {
         "functions":
-    {
-      "initialization": "init_fmg_01"
-    },
+        {
+          "initialization": "init_fmg_01"
+        },
         "caseFilename": "HannoverRotor_NoTip_0.6M",
         "meshFilename": "HannoverRotor_NoTip_0.6M.def",
         "profileName_In": "InletBC_fluent_Blend.csv",
