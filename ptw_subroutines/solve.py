@@ -15,6 +15,8 @@ def init(data, solver, functionEl):
     logger.info('\nRunning Initialization Function "' + functionName + '"...')
     if functionName == "init_standard_01":
         init_standard_01(data, solver)
+    elif functionName == "init_standard_02":
+        init_standard_02(data, solver)
     elif functionName == "init_hybrid_01":
         init_hybrid_01(data, solver)
     elif functionName == "init_fmg_01":
@@ -46,6 +48,14 @@ def init_standard_01(data, solver):
         logger.info(f"No inlet BC specified. Initialing from 'all-zones'")
         solver.tui.solve.initialize.compute_defaults.all_zones()
 
+    solver.solution.initialization.standard_initialize()
+
+    solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
+        "absolute"
+    )
+
+def init_standard_02(data, solver):
+    logger.info(f'Using {data["locations"]["bz_inlet_names"][0]} pressure for initialization')
     solver.solution.initialization.standard_initialize()
 
     solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
