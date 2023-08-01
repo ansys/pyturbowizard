@@ -47,7 +47,7 @@ def post_01(data, solver, launchEl):
     solver.results.report.summary(write_to_file=True, file_name=filename)
     if data["locations"].get("tz_turbo_topology_names") is not None:
         try:
-            spanPlots(data, solver)
+            spanPlots(data=data, solver=solver,fl_workingDir=fl_workingDir)
         except Exception as e:
             logger.info(f"No span plots have been created: {e}")
 
@@ -251,10 +251,19 @@ def createReportTable(data: dict, fl_workingDir, solver):
     return
 
 
-def spanPlots(data, solver):
+def spanPlots(data, solver,fl_workingDir):
     # Create spanwise surfaces
     spansSurf = data["results"].get("span_plot_height")
     contVars = data["results"].get("span_plot_var")
+    caseFilename = data["caseFilename"]
+
+    # Declare a string to store all the commands
+    all_commands_str = ""
+    
+    # Set picture format for output to AVZ (Python and TUI)
+    #solver.tui.display.set.picture.driver.avz
+    setAVZ = '/preferences/graphics/hardcopy-settings/hardcopy-driver \"AVZ\"'
+    all_commands_str = setAVZ
     availableFieldDataNames = (
         solver.field_data.get_scalar_field_data.field_name.allowed_values()
     )
@@ -263,8 +272,9 @@ def spanPlots(data, solver):
             logger.info(f"FieldVariable: '{contVar}' not available in Solution-Data!")
             logger.info(f"Available Scalar Values are: '{availableFieldDataNames}'")
 
+    # Create Contour Plots for every surface
     for spanVal in spansSurf:
-        spanName = f"span-{spanVal}"
+        spanName = f"span-{int(spanVal*100)}"
         logger.info("Creating spanwise ISO-surface: " + spanName)
         solver.results.surfaces.iso_surface[spanName] = {}
         zones = solver.results.surfaces.iso_surface[spanName].zone.get_attr(
@@ -274,18 +284,47 @@ def spanPlots(data, solver):
             field="spanwise-coordinate", zone=zones, iso_value=[spanVal]
         )
 
+
         for contVar in contVars:
             if contVar in availableFieldDataNames:
                 contName = spanName + "-" + contVar
                 logger.info("Creating spanwise contour-plot: " + contName)
                 solver.results.graphics.contour[contName] = {}
                 solver.results.graphics.contour[contName](
-                    field=contVar, contour_lines=True, surfaces_list=spanName
+                    field=contVar, contour_lines=True, surfaces_list=spanName,
                 )
+                #set range to local range
                 solver.results.graphics.contour[
                     contName
                 ].range_option.auto_range_on.global_range = False
 
+                # Set color map to banded and reduce size
+                solver.results.graphics.contour[contName].color_map(size=20)
+                solver.results.graphics.contour[contName].coloring(option='banded')
+                solver.results.graphics.contour[contName].display()
+
+                # Save contour plos as avz files
+                # Python commands (not supported yet):
+                # plot_folder = os.path.join(fl_workingDir, f'plots_{caseFilename}')
+                # os.makedirs(plot_folder, exist_ok=True)  # Create the folder if it doesn't exist
+                # plot_filename = os.path.join(plot_folder, f'{contName}_plot')
+                # solver.tui.display.save_picture(plot_filename)
+
+                # TUI commands:
+                plot_filename = "./"+f"{contName}_plot"
+                contour_display_command = f"/results/graphics/contour/display {contName}"
+                contour_save_command = f"/display/save-picture {plot_filename} ok"
+                command_str = contour_display_command + "\n" + contour_save_command + "\n"
+                all_commands_str += command_str
+    command_name = "save-contour-plots"
+    addExecuteCommand(solver,all_commands_str,command_name)
+    return
+
+
+
+def addExecuteCommand(solver,command,command_name):
+    #add to utils
+    solver.tui.solve.execute_commands.add_edit(f"{command_name}","yes","yes","yes",f'"{command}"')
 
 def mergeReportTables(turboData, solver):
     # Only working with pandas lib
@@ -317,5 +356,4 @@ def mergeReportTables(turboData, solver):
             df = pd.concat((pd.read_csv(f, header=0) for f in reportFiles))
             mergedFileName = os.path.join(fl_workingDir, "mergedReporttable.csv")
             df.to_csv(mergedFileName)
-
     return
