@@ -53,6 +53,7 @@ def plot_figure(x_values, y_values, x_label, y_label, colors, criterion):
         ax.legend(handles=legend_colors, loc="best")
     return fig
 
+
 def calcCov(reportOut, window_size=50):
     try:
         import pandas as pd

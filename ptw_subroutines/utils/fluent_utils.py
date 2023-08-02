@@ -3,6 +3,7 @@ from ptw_subroutines.utils import ptw_logger
 
 logger = ptw_logger.getLogger()
 
+
 def read_journals(data: dict, solver, element_name: str):
     journal_list = data.get(element_name)
     if journal_list is not None and len(journal_list) > 0:
@@ -11,6 +12,7 @@ def read_journals(data: dict, solver, element_name: str):
         )
         solver.file.read_journal(file_name_list=journal_list)
     return
+
 
 def getNumberOfEquations(solver):
     # Check active number of equations
