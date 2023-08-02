@@ -156,3 +156,7 @@ def getStudyReports(pathtostudy):
 
     # Return dataframes of operating map, residuals
     return result_df, cov_df_list, residual_df_list, mp_df_list
+
+def addExecuteCommand(solver,command,command_name):
+    #add to utils
+    solver.tui.solve.execute_commands.add_edit(f"{command_name}","yes","yes","yes",f'"{command}"')
