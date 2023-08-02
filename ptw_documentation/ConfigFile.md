@@ -38,6 +38,7 @@ Currently the following functions and corresponding options are available:
   - Specify initialization settings
   - Available functions:
     - "init_standard_01": standard initialization, using inlet data as reference    
+    - "init_standard_02": standard initialization, using 0 velocity,  1 TKE , 1 Omega, inlet temperature 
     - **"init_hybrid_01" (default):** Hybrid initialization, using standard "init_standard_01" for pre-initialization
     - "init_fmg_01": FMG initialization, using standard "init_standard_01" for pre-initialization
 - "postproc":
@@ -389,11 +390,16 @@ Under the section ``` launching ```, different options for launching options for
 
 For running Fluent on Linux or a Cluster, the script needs to hook on to a existing Fluent session ([How to Run on Linux](/README.md)). For this a server file name has to be specified under ``` serverfilename ```
 
-```plotResults``` specifies, whether a Operating Point Map should be plotted and saved from the results of the parametric study.
+```plotResults``` specifies, whether Result Plots should be created and saved from the results of the parametric study.
 
-An example plot of the Operating Point Map is shown below:
+The plots include:
+- Operating Point Maps for each Monitor Point (Value over mass/volume flow)
+- For each design point: Residual, CoV and Monitor Point plots over iteration number
+
+Examples of the plots are shown below:
 
 <img src="/ptw_documentation/images/operating_map_example.png" alt="operating point map example" style="height: 400px; width:800px;"/>
+<img src="/ptw_documentation/images/cov_plot_DP10.png" alt="cov plot" style="height: 400px; width:400px;"/>
 
 Available options:
 - ```precision ``` can be used to enable/disable double-precision mode, default: ```True```

@@ -1,10 +1,11 @@
 import os
 import matplotlib.pyplot as plt
 
-#Logger
-from ptw_subroutines.utils import ptw_logger, utilities, dict_utils
+# Logger
+from ptw_subroutines.utils import ptw_logger, utilities, dict_utils, fluent_utils
 
 logger = ptw_logger.getLogger()
+
 
 def post(data, solver, functionEl, launchEl, trn_name):
     # Get FunctionName & Update FunctionEl
@@ -42,7 +43,9 @@ def post_01(data, solver, launchEl, trn_name):
     )
     solver.execute_tui(tuicommand)
     filename = (
-        caseFilename + "_" + data["results"].setdefault("filename_summary", "report.sum")
+        caseFilename
+        + "_"
+        + data["results"].setdefault("filename_summary", "report.sum")
     )
     solver.results.report.summary(write_to_file=True, file_name=filename)
     if data["locations"].get("tz_turbo_topology_names") is not None:
@@ -55,7 +58,9 @@ def post_01(data, solver, launchEl, trn_name):
     solver.report.system.time_statistics()
 
     ## write report table
-    createReportTable(data=data, fl_workingDir=fl_workingDir, solver=solver, trn_filename = trn_name)
+    createReportTable(
+        data=data, fl_workingDir=fl_workingDir, solver=solver, trn_filename=trn_name
+    )
 
     return
 
@@ -92,13 +97,13 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
             key=lambda x: [int(num) for num in x.split("_") if num.isdigit()],
         )
         report_file = os.path.join(fl_workingDir, report_file)
-        report_values,cov_df, mp_df = utilities.calcCov(report_file)
-    
+        report_values, cov_df, mp_df = utilities.calcCov(report_file)
+
     else:
         logger.info("No Report File found: data not included in final report")
 
     # Write CoV and MP Plot
-    plot_folder = os.path.join(fl_workingDir, f'plots_{caseFilename}')
+    plot_folder = os.path.join(fl_workingDir, f"plots_{caseFilename}")
     os.makedirs(plot_folder, exist_ok=True)  # Create the folder if it doesn't exist
     if not mp_df.empty:
         mp_df.reset_index(inplace=True)
@@ -109,14 +114,14 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
         # Plot each column separately and store them in separate plots
         for col in y_columns:
             plt.figure()  # Create a new figure for each plot
-            plt.plot(mp_df['Iteration'], mp_df[col])
-            plt.xlabel('Iteration')
+            plt.plot(mp_df["Iteration"], mp_df[col])
+            plt.xlabel("Iteration")
             plt.ylabel(col)
-            plt.title(f'{col} - {caseFilename}')
+            plt.title(f"{col} - {caseFilename}")
             plt.grid(True)
 
             # Save the plot in folder
-            plot_filename = os.path.join(plot_folder,f'mp_plot_{col}.png')
+            plot_filename = os.path.join(plot_folder, f"mp_plot_{col}.png")
             logger.info(f"Writing Monitor Plot to Directory: {plot_filename}")
             plt.savefig(plot_filename)
             plt.close()  # Close the figure to release memory
@@ -124,39 +129,44 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
             logger.info("Missing Report File data: Monitor Plots not created")
 
         if not cov_df.empty:
-            #Get CoV information
-            covDict = solver.solution.monitor.convergence_conditions.convergence_reports()
+            # Get CoV information
+            covDict = (
+                solver.solution.monitor.convergence_conditions.convergence_reports()
+            )
             filtCovDict = {
-                    key: value
-                    for key, value in covDict.items()
-                    if value.get("active", False) and value.get("cov", False)
-                }
-            
+                key: value
+                for key, value in covDict.items()
+                if value.get("active", False) and value.get("cov", False)
+            }
+
             cov_df.reset_index(inplace=True)
 
             # Get the list of columns excluding 'Iteration'
             y_columns = cov_df.columns[2:]
-            filtered_y_columns = [col for col in y_columns if any(col.startswith(key[:-4]) for key in filtCovDict)]
-        
+            filtered_y_columns = [
+                col
+                for col in y_columns
+                if any(col.startswith(key[:-4]) for key in filtCovDict)
+            ]
 
             plt.figure(figsize=(10, 6))
             # Plot each column separately on the same plot
             for col in filtered_y_columns:
-                plt.plot(cov_df['Iteration'], cov_df[col], label=col)
-            
-            plt.xlabel('Iteration')
-            plt.ylabel('')
-            plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-            plt.title(f'Coefficient of Variation (CoV)')
+                plt.plot(cov_df["Iteration"], cov_df[col], label=col)
+
+            plt.xlabel("Iteration")
+            plt.ylabel("")
+            plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
+            plt.title(f"Coefficient of Variation (CoV)")
             plt.grid(True)
-            plt.yscale('log')
+            plt.yscale("log")
 
             # Save the plot in folder
-            plot_filename = os.path.join(plot_folder, f'cov_plot.png')
+            plot_filename = os.path.join(plot_folder, f"cov_plot.png")
             plt.tight_layout()
             logger.info(f"Writing CoV Plot to Directory: {plot_filename}")
             plt.savefig(plot_filename)
-            plt.close()  # Close the figure to release memory    
+            plt.close()  # Close the figure to release memory
         else:
             logger.info("Missing Report File data: CoV Plot not created")
 
@@ -177,41 +187,31 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
         lines = transcript.split("\n")
         headers = []
         # fix for incompressible
-        max_colum = 6
+        number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
         for line in lines:
-            if "iter  continuity  x-velocity" in line:
+            if "Total wall-clock time" in line:
+                wall_clock_tot = line.split(":")[1].strip()
+                wall_clock_tot = wall_clock_tot.split(" ")[0].strip()
+                logger.info("Detected Total Wall Clock Time:", wall_clock_tot)
+            elif "compute nodes" in line:
+                nodes = line.split(" ")[6].strip()
+                logger.info("Detected Number of Nodes:", nodes)
+            elif "iter  continuity  x-velocity" in line:
                 headers = line.split()
-                max_colum = len(headers)
-                break
-        if len(headers)>0:
-            for i in range(0,max_colum):
-                if headers[i] == "k":
-                    max_colum = i + 1
-                    break
-            for line in lines:
-                if "Total wall-clock time" in line:
-                    wall_clock_tot = line.split(":")[1].strip()
-                    wall_clock_tot = wall_clock_tot.split(" ")[0].strip()
-                    logger.info("Detected Total Wall Clock Time:", wall_clock_tot)
-                elif "compute nodes" in line:
-                    nodes = line.split(" ")[6].strip()
-                    logger.info("Detected Number of Nodes:", nodes)
-                elif "iter  continuity  x-velocity" in line:
-                    headers = line.split()
-                    filtered_headers = headers[1:max_colum]
-                    table_started = True
-                elif table_started:
-                    values = line.split()
-                    if len(values) == 0:
+                filtered_headers = headers[1:number_eqs]
+                table_started = True
+            elif table_started:
+                values = line.split()
+                if len(values) == 0:
+                    table_started = False
+                elif len(values[1:number_eqs]) == len(filtered_headers):
+                    filtered_values = values[1:number_eqs]
+                    solver_trn_data_valid = True
+                else:
+                    try:
+                        values = int(values[0])
+                    except ValueError:
                         table_started = False
-                    elif len(values[1:max_colum]) == len(filtered_headers):
-                        filtered_values = values[1:max_colum]
-                        solver_trn_data_valid = True
-                    else:
-                        try:
-                            values = int(values[0])
-                        except ValueError:
-                            table_started = False
 
             for i in range(len(filtered_headers)):
                 filtered_headers[i] = "res-" + filtered_headers[i]
@@ -220,7 +220,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
                 filtered_values = [float(val) for val in filtered_values]
                 res_columns = dict(zip(filtered_headers, filtered_values))
     else:
-        logger.info('No trn-file found!: Skipping data')
+        logger.info("No trn-file found!: Skipping data")
         solver_trn_data_valid = False
 
     # get pseudo time step value
@@ -253,7 +253,9 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
     report_table.insert(1, "Pseud Time Step [s]", time_step)
 
     # Report Table File-Name
-    reportTableName = data["results"].setdefault("filename_reporttable", "reporttable.csv")
+    reportTableName = data["results"].setdefault(
+        "filename_reporttable", "reporttable.csv"
+    )
     reportTableFileName = os.path.join(
         fl_workingDir, caseFilename + "_" + reportTableName
     )
