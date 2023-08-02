@@ -177,16 +177,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
         lines = transcript.split("\n")
 
         # fix for incompressible
-        max_colum = 6
-        for line in lines:
-            if "iter  continuity  x-velocity" in line:
-                headers = line.split()
-                max_colum = len(headers)
-                break
-        for i in range(0,max_colum):
-            if headers[i] == "k":
-                max_colum = i + 1
-                break
+        number_eqs = utilities.getNumberOfEquations(solver)
         for line in lines:
             if "Total wall-clock time" in line:
                 wall_clock_tot = line.split(":")[1].strip()
@@ -197,7 +188,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
                 logger.info("Detected Number of Nodes:", nodes)
             elif "iter  continuity  x-velocity" in line:
                 headers = line.split()
-                filtered_headers = headers[1:max_colum]
+                filtered_headers = headers[1:number_eqs]
                 table_started = True
             elif table_started:
                 values = line.split()
