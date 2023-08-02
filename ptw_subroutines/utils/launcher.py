@@ -2,12 +2,13 @@ import os
 import subprocess
 import time
 
-#Logger
+# Logger
 from ptw_subroutines.utils import ptw_logger, utilities
 
 logger = ptw_logger.getLogger()
 
-def launchFluent(launchEl:dict):
+
+def launchFluent(launchEl: dict):
     import ansys.fluent.core as pyfluent
 
     global solver
@@ -77,7 +78,7 @@ def launchFluent(launchEl:dict):
         solver = pyfluent.launch_fluent(
             start_instance=False,
             server_info_filepath=fullpath_to_sf,
-            cleanup_on_exit=launchEl["exitatend"]
+            cleanup_on_exit=launchEl["exitatend"],
         )
     # If no serverFilename is specified, a new session will be started
     elif serverfilename is None or serverfilename == "":
@@ -88,7 +89,7 @@ def launchFluent(launchEl:dict):
             show_gui=launchEl["show_gui"],
             product_version=launchEl["fl_version"],
             cwd=fl_workingDir,
-            cleanup_on_exit=launchEl["exitatend"]
+            cleanup_on_exit=launchEl["exitatend"],
         )
     # Hook to existing Session
     else:
@@ -97,13 +98,13 @@ def launchFluent(launchEl:dict):
         solver = pyfluent.launch_fluent(
             start_instance=False,
             server_info_filepath=fullpath_to_sf,
-            cleanup_on_exit=launchEl["exitatend"]
+            cleanup_on_exit=launchEl["exitatend"],
         )
     return solver
 
-def get_launcher_defaults(launchEl:dict):
-    #Set defaults
+
+def get_launcher_defaults(launchEl: dict):
+    # Set defaults
     launchEl.setdefault("exitatend", True)
     launchEl.setdefault("show_gui", True)
     launchEl.setdefault("precision", True)
-
