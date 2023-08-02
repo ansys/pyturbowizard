@@ -1,7 +1,8 @@
-#Logger
+# Logger
 from ptw_subroutines.utils import ptw_logger, dict_utils
 
 logger = ptw_logger.getLogger()
+
 
 def numerics(data, solver, functionEl):
     # Get FunctionName & Update FunctionEl
@@ -40,7 +41,9 @@ def numerics_defaults(data, solver):
 
 def numerics_bp_tn_2305(data, solver):
     solver.solution.methods.gradient_scheme = "green-gauss-node-based"
-    logger.info("Best Practice and turbo numerics with green-gauss-node-based will be used")
+    logger.info(
+        "Best Practice and turbo numerics with green-gauss-node-based will be used"
+    )
 
     use_tsn = data["solution"].setdefault("tsn", True)
     if use_tsn:
@@ -49,7 +52,9 @@ def numerics_bp_tn_2305(data, solver):
 
 
 def numerics_bp_tn_2305_lsq(data, solver):
-    logger.info("Best Practice and turbo numerics with least-sqaure-cell-based will be used")
+    logger.info(
+        "Best Practice and turbo numerics with least-sqaure-cell-based will be used"
+    )
     solver.solution.methods.gradient_scheme = "least-square-cell-based"
     use_tsn = data["solution"].setdefault("tsn", True)
     if use_tsn:
@@ -67,4 +72,3 @@ def numerics_bp_all_2305(data, solver):
 
     numerics_bp_tn_2305(data=data, solver=solver)
     return
-

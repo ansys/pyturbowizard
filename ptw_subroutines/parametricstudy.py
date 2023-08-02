@@ -1,10 +1,11 @@
 import os
 import json
 
-#Logger
+# Logger
 from ptw_subroutines.utils import ptw_logger, dict_utils
 
 logger = ptw_logger.getLogger()
+
 
 def study(data, solver, functionEl):
     # Get FunctionName & Update FunctionEl
@@ -220,14 +221,14 @@ def study01(data, solver):
 
         # Extract CoV information and store in temporary file for post processing
         covDict = solver.solution.monitor.convergence_conditions.convergence_reports()
-        baseCaseName = studyDict[studyName].get('refCaseFilename')
+        baseCaseName = studyDict[studyName].get("refCaseFilename")
         pathtostudy = os.path.join(
             flworking_Dir, f"{studyName}.cffdb", f"{baseCaseName}-Solve"
         )
         # Check if the folder exists
         if not os.path.exists(pathtostudy):
-            logger.info('No Study data has been found!\n')
-            logger.info('Skipping Post-Processing!')
+            logger.info("No Study data has been found!\n")
+            logger.info("Skipping Post-Processing!")
         else:
             # Define the file path
             temp_data_path = os.path.join(pathtostudy, "temp_data.json")

@@ -12,9 +12,15 @@ from ptw_subroutines import (
     postproc,
     parametricstudy_post,
 )
-from ptw_subroutines.utils import ptw_logger, launcher, utilities, dict_utils, expressions_utils
+from ptw_subroutines.utils import (
+    ptw_logger,
+    launcher,
+    utilities,
+    dict_utils,
+    expressions_utils,
+)
 
-#Set Logger
+# Set Logger
 logger = ptw_logger.init_logger(console_output=False)
 
 version = "1.5.0"
@@ -160,7 +166,11 @@ if caseDict is not None:
         # Postprocessing
         if solver.field_data.is_data_valid():
             postproc.post(
-                data=caseEl, solver=solver, functionEl=caseFunctionEl, launchEl=launchEl ,trn_name = trnFileName
+                data=caseEl,
+                solver=solver,
+                functionEl=caseFunctionEl,
+                launchEl=launchEl,
+                trn_name=trnFileName,
             )
             filename = caseFilename + "_fin"
             solver.file.write(file_type="case-data", file_name=filename)
@@ -186,14 +196,17 @@ studyDict = turboData.get("studies")
 if studyDict is not None:
     parametricstudy.study(data=turboData, solver=solver, functionEl=glfunctionEl)
     # Post Process Studies
-    parametricstudy_post.study_post(data=turboData, solver=solver, functionEl=glfunctionEl)
+    parametricstudy_post.study_post(
+        data=turboData, solver=solver, functionEl=glfunctionEl
+    )
 
 # Exit Solver
 solver.exit()
 
-#Write out Debug info
+# Write out Debug info
 if turboData.setdefault("debug_level", 0) > 0:
     import ntpath
+
     debug_filename = "ptw_" + ntpath.basename(config_filename)
     debug_file_path = os.path.join(fl_workingDir, debug_filename)
     jsonString = json.dumps(turboData, indent=4, sort_keys=True)

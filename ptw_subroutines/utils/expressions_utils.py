@@ -1,9 +1,10 @@
 import os
 
-#Logger
+# Logger
 from ptw_subroutines.utils import ptw_logger
 
 logger = ptw_logger.getLogger()
+
 
 def write_expression_file(data: dict, script_dir: str, working_dir: str):
     fileName = data.get("expressionFilename")
@@ -119,4 +120,3 @@ def check_output_parameter_expressions(solutionDict: dict, solver):
             )
             exp.set_state({"output_parameter": True})
     return
-
