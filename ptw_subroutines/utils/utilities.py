@@ -53,17 +53,6 @@ def plot_figure(x_values, y_values, x_label, y_label, colors, criterion):
         ax.legend(handles=legend_colors, loc="best")
     return fig
 
-
-def read_journals(data: dict, solver, element_name: str):
-    journal_list = data.get(element_name)
-    if journal_list is not None and len(journal_list) > 0:
-        logger.info(
-            f"Reading specified journal files specified in ConfigFile '{element_name}': {journal_list}"
-        )
-        solver.file.read_journal(file_name_list=journal_list)
-    return
-
-
 def calcCov(reportOut, window_size=50):
     try:
         import pandas as pd
@@ -165,18 +154,3 @@ def getStudyReports(pathtostudy):
 
     # Return dataframes of operating map, residuals
     return result_df, cov_df_list, residual_df_list, mp_df_list
-
-
-def getNumberOfEquations(solver):
-    # Check active number of equations
-    equDict = solver.solution.controls.equations()
-    number_eqs = 0
-    for equ in equDict:
-        if equ == "flow":
-            number_eqs += 4
-        if equ == "kw":
-            number_eqs += 2
-        if equ == "temperature":
-            number_eqs += 1
-
-    return number_eqs

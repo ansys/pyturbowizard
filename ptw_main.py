@@ -18,6 +18,7 @@ from ptw_subroutines.utils import (
     utilities,
     dict_utils,
     expressions_utils,
+    fluent_utils,
 )
 
 # Set Logger
@@ -132,7 +133,7 @@ if caseDict is not None:
         numerics.numerics(data=caseEl, solver=solver, functionEl=caseFunctionEl)
 
         # Read Additional Journals, if specified
-        utilities.read_journals(
+        fluent_utils.read_journals(
             data=caseEl, solver=solver, element_name="pre_init_journal_filenames"
         )
 
@@ -153,7 +154,7 @@ if caseDict is not None:
             )
 
         # Read Additional Journals, if specified
-        utilities.read_journals(
+        fluent_utils.read_journals(
             data=caseEl, solver=solver, element_name="pre_solve_journal_filenames"
         )
 
@@ -178,7 +179,7 @@ if caseDict is not None:
             logger.info("Skipping Postprocessing: No Solution Data available\n")
 
         # Read Additional Journals, if specified
-        utilities.read_journals(
+        fluent_utils.read_journals(
             data=caseEl, solver=solver, element_name="pre_exit_journal_filenames"
         )
 

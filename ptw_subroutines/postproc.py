@@ -2,7 +2,7 @@ import os
 import matplotlib.pyplot as plt
 
 # Logger
-from ptw_subroutines.utils import ptw_logger, utilities, dict_utils
+from ptw_subroutines.utils import ptw_logger, utilities, dict_utils, fluent_utils
 
 logger = ptw_logger.getLogger()
 
@@ -187,7 +187,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
         lines = transcript.split("\n")
 
         # fix for incompressible
-        number_eqs = utilities.getNumberOfEquations(solver)
+        number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
         for line in lines:
             if "Total wall-clock time" in line:
                 wall_clock_tot = line.split(":")[1].strip()
@@ -204,8 +204,8 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
                 values = line.split()
                 if len(values) == 0:
                     table_started = False
-                elif len(values[1:max_colum]) == len(filtered_headers):
-                    filtered_values = values[1:max_colum]
+                elif len(values[1:number_eqs]) == len(filtered_headers):
+                    filtered_values = values[1:number_eqs]
                     solver_trn_data_valid = True
                 else:
                     try:
