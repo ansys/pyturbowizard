@@ -1,5 +1,5 @@
 #Logger
-from ptw_subroutines.utils import ptw_logger, dict_utils
+from ptw_subroutines.utils import ptw_logger, dict_utils, utilities
 
 logger = ptw_logger.getLogger()
 
@@ -612,16 +612,8 @@ def report_01(data, solver):
     # solver.tui.preferences.simulation.local_residual_scaling("yes")
     solver.tui.solve.monitors.residual.scale_by_coefficient("yes", "yes", "yes")
 
+    number_eqs = utilities.getNumberOfEquations(solver)
     # Check active number of equations
-    equDict = solver.solution.controls.equations()
-    number_eqs = 0
-    for equ in equDict:
-        if equ == "flow":
-            number_eqs += 4
-        if equ == "kw":
-            number_eqs += 2
-        if equ == "temperature":
-            number_eqs += 1
 
     resCrit = data["solution"]["res_crit"]
     resCritList = [resCrit] * number_eqs

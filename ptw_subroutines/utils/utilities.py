@@ -156,3 +156,18 @@ def getStudyReports(pathtostudy):
 
     # Return dataframes of operating map, residuals
     return result_df, cov_df_list, residual_df_list, mp_df_list
+
+
+def getNumberOfEquations(solver):
+    # Check active number of equations
+    equDict = solver.solution.controls.equations()
+    number_eqs = 0
+    for equ in equDict:
+        if equ == "flow":
+            number_eqs += 4
+        if equ == "kw":
+            number_eqs += 2
+        if equ == "temperature":
+            number_eqs += 1
+
+    return number_eqs
