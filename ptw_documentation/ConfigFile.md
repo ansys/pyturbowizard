@@ -38,6 +38,7 @@ Currently the following functions and corresponding options are available:
   - Specify initialization settings
   - Available functions:
     - "init_standard_01": standard initialization, using inlet data as reference    
+    - "init_standard_02": standard initialization, using 0 velocity,  1 TKE , 1 Omega, inlet temperature 
     - **"init_hybrid_01" (default):** Hybrid initialization, using standard "init_standard_01" for pre-initialization
     - "init_fmg_01": FMG initialization, using standard "init_standard_01" for pre-initialization
 - "postproc":
