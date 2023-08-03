@@ -5,7 +5,7 @@ logger = logging.getLogger("PyTurboWizard")
 
 
 def init_logger(console_output: bool = True, file_output: bool = True):
-    from ptw_subroutines.utils import utilities
+    from ptw_subroutines.utils import misc_utils
 
     logger.setLevel(logging.INFO)
     if console_output:

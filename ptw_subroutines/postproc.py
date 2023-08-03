@@ -2,7 +2,7 @@ import os
 import matplotlib.pyplot as plt
 
 # Logger
-from ptw_subroutines.utils import ptw_logger, utilities, dict_utils, fluent_utils
+from ptw_subroutines.utils import ptw_logger, misc_utils, dict_utils, fluent_utils
 
 logger = ptw_logger.getLogger()
 

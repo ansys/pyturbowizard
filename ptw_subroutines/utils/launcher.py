@@ -3,7 +3,7 @@ import subprocess
 import time
 
 # Logger
-from ptw_subroutines.utils import ptw_logger, utilities
+from ptw_subroutines.utils import ptw_logger, misc_utils
 
 logger = ptw_logger.getLogger()
 
