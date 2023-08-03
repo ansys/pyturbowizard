@@ -1,10 +1,12 @@
 import os.path
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-#Logger
+
+# Logger
 from ptw_subroutines.utils import ptw_logger
 
 logger = ptw_logger.getLogger()
+
 
 def get_free_filename(dirname, base_filename):
     base_name, ext_name = os.path.splitext(base_filename)
@@ -52,18 +54,7 @@ def plot_figure(x_values, y_values, x_label, y_label, colors, criterion):
     return fig
 
 
-
-def read_journals(data: dict, solver, element_name: str):
-    journal_list = data.get(element_name)
-    if journal_list is not None and len(journal_list) > 0:
-        logger.info(
-            f"Reading specified journal files specified in ConfigFile '{element_name}': {journal_list}"
-        )
-        solver.file.read_journal(file_name_list=journal_list)
-    return
-
-
-def calcCov(reportOut,window_size=50):
+def calcCov(reportOut, window_size=50):
     try:
         import pandas as pd
     except ImportError as e:
@@ -75,19 +66,24 @@ def calcCov(reportOut,window_size=50):
     mp_df.columns = mp_df.columns.str.strip('()"')
 
     # Subtract the first entry in the 'Iteration' column from all other entries
-    mp_df['Iteration'] = mp_df['Iteration'] - mp_df['Iteration'].iloc[0]
+    mp_df["Iteration"] = mp_df["Iteration"] - mp_df["Iteration"].iloc[0]
 
     # Initialize lists to store mean and COV values
     mean_values = []
     cov_values = []
 
-    cov_df =mp_df.copy()
-    cov_df.iloc[:,1:] = mp_df.iloc[:, 1:].rolling(window=window_size).std() / mp_df.iloc[:, 1:].rolling(window=window_size).mean()
+    cov_df = mp_df.copy()
+    cov_df.iloc[:, 1:] = (
+        mp_df.iloc[:, 1:].rolling(window=window_size).std()
+        / mp_df.iloc[:, 1:].rolling(window=window_size).mean()
+    )
 
     mean_values = mp_df.iloc[:, 1:].rolling(window=window_size).mean().iloc[-1]
     cov_values = cov_df.iloc[-1]
 
-    formatted_report_df = pd.DataFrame({mp_df.columns[0]: [mp_df[mp_df.columns[0]].iloc[-1]]}, index=[0])  # Initialize with the first column values
+    formatted_report_df = pd.DataFrame(
+        {mp_df.columns[0]: [mp_df[mp_df.columns[0]].iloc[-1]]}, index=[0]
+    )  # Initialize with the first column values
     # Add mean values to the DataFrame
     for column in mp_df.columns[1:]:
         col_name_mean = column
@@ -108,7 +104,7 @@ def getStudyReports(pathtostudy):
         logger.info(f"ImportError! Could not import lib: {str(e)}")
         logger.info(f"Skipping 'getStudyReports' function!")
         return
-    
+
     # Filter and get only the subdirectories within pathtostudy
     subdirectories = [
         name
@@ -131,17 +127,20 @@ def getStudyReports(pathtostudy):
         if out_files:
             # Take the first .out file as the csv_file_path
             report_file_path = os.path.join(folder_path, out_files[0])
-            report_table,cov_df,mp_df = calcCov(report_file_path)
-            report_table.insert(0,"Design Point",dpname)
+            report_table, cov_df, mp_df = calcCov(report_file_path)
+            report_table.insert(0, "Design Point", dpname)
         else:
             continue
 
         # Check if the file 'Auto-generated-residuals-data-static.csv' exists in the folder
-        csv_file_path = os.path.join(folder_path, 'Auto-generated-residuals-data-static.csv')
+        csv_file_path = os.path.join(
+            folder_path, "Auto-generated-residuals-data-static.csv"
+        )
         if os.path.exists(csv_file_path):
             # If the file exists, read it into a pandas DataFrame
             residual_df = pd.read_csv(csv_file_path)
-        else: continue
+        else:
+            continue
 
         # Append the DataFrames to their respective lists
         repot_df.append(report_table)

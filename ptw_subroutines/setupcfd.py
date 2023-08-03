@@ -1,7 +1,8 @@
-#Logger
-from ptw_subroutines.utils import ptw_logger, dict_utils, utilities
+# Logger
+from ptw_subroutines.utils import ptw_logger, dict_utils, utilities, fluent_utils
 
 logger = ptw_logger.getLogger()
+
 
 def setup(data, solver, functionEl):
     # Get FunctionName & Update FunctionEl
@@ -17,7 +18,9 @@ def setup(data, solver, functionEl):
     elif functionName == "setup_incompressible_01":
         setup_incompressible_01(data, solver)
     else:
-        logger.info('Prescribed Function "' + functionName + '" not known. Skipping Setup!')
+        logger.info(
+            'Prescribed Function "' + functionName + '" not known. Skipping Setup!'
+        )
 
     logger.info("\nRunning Setup Function... finished!\n")
 
@@ -95,7 +98,7 @@ def material_01(data, solver, solveEnergy: bool = True):
     return
 
 
-def physics_01(data, solver, solveEnergy:bool = True):
+def physics_01(data, solver, solveEnergy: bool = True):
     if solveEnergy:
         solver.setup.models.energy = {"enabled": True, "viscous_dissipation": True}
 
@@ -107,8 +110,8 @@ def physics_01(data, solver, solveEnergy:bool = True):
         solver.setup.general.operating_conditions.gravity.enable = True
         solver.setup.general.operating_conditions.gravity.components = gravityVector
 
-    #Set turbulence model
-    #if not set or in supported list, sst
+    # Set turbulence model
+    # if not set or in supported list, sst
     default_turb_model = "sst"
     turb_model = data["setup"].setdefault("turbulence_model", default_turb_model)
     supported_kw_models = solver.setup.models.viscous.k_omega_model.allowed_values()
@@ -117,7 +120,9 @@ def physics_01(data, solver, solveEnergy:bool = True):
         solver.setup.models.viscous.model = "k-omega"
         solver.setup.models.viscous.k_omega_model = turb_model
     else:
-        logger.warning(f"Specified turbulence-model not supported: '{turb_model}'! Default turbulence model will be used: '{default_turb_model}'!")
+        logger.warning(
+            f"Specified turbulence-model not supported: '{turb_model}'! Default turbulence model will be used: '{default_turb_model}'!"
+        )
         data["setup"]["turbulence_model"] = default_turb_model
         solver.setup.models.viscous.model = "k-omega"
         solver.setup.models.viscous.k_omega_model = default_turb_model
@@ -409,11 +414,11 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     else:
                         outBC.gauge_pressure = "BC_OUT_p"
 
-                    #Set AVG Pressure
+                    # Set AVG Pressure
                     pavg_set = data["setup"].setdefault("BC_OUT_avg_p", True)
                     outBC.avg_press_spec = pavg_set
 
-                    #Set reverse BC
+                    # Set reverse BC
                     reverse = data["setup"].setdefault("BC_OUT_reverse", True)
                     outBC.prevent_reverse_flow = reverse
 
@@ -612,8 +617,8 @@ def report_01(data, solver):
     # solver.tui.preferences.simulation.local_residual_scaling("yes")
     solver.tui.solve.monitors.residual.scale_by_coefficient("yes", "yes", "yes")
 
-    number_eqs = utilities.getNumberOfEquations(solver)
     # Check active number of equations
+    number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
 
     resCrit = data["solution"]["res_crit"]
     resCritList = [resCrit] * number_eqs

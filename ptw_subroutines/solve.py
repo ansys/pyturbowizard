@@ -1,7 +1,8 @@
-#Logger
+# Logger
 from ptw_subroutines.utils import ptw_logger, dict_utils
 
 logger = ptw_logger.getLogger()
+
 
 def init(data, solver, functionEl):
     # Get FunctionName & Update FunctionEl
@@ -32,7 +33,9 @@ def init(data, solver, functionEl):
 
 
 def init_standard_01(data, solver):
-    logger.info(f'Using {data["locations"]["bz_inlet_names"][0]} pressure for initialization')
+    logger.info(
+        f'Using {data["locations"]["bz_inlet_names"][0]} pressure for initialization'
+    )
     solver.solution.initialization.standard_initialize()
 
     availableBCs = dir(solver.tui.solve.initialize.compute_defaults)
