@@ -1,0 +1,122 @@
+import os
+
+# Logger
+from ptw_subroutines.utils import ptw_logger
+
+logger = ptw_logger.getLogger()
+
+
+def write_expression_file(data: dict, script_dir: str, working_dir: str):
+    fileName = data.get("expressionFilename")
+    # if nothing is set for "expressionFilename" a default value ("expressions.tsv") is set and dict will be updated
+    if fileName is None or fileName == "":
+        fileName = "expressions.tsv"
+        data["expressionFilename"] = fileName
+    fileName = os.path.join(working_dir, fileName)
+    with open(fileName, "w") as sf:
+        expressionTemplatePath = os.path.join(
+            script_dir, "ptw_templates", data["expressionTemplate"]
+        )
+        with open(expressionTemplatePath, "r") as templateFile:
+            tempData = templateFile.read()
+            templateFile.close()
+        helperDict = data["locations"]
+        expressionEl = data.get("expressions")
+        helperDict.update(expressionEl)
+        # add rotation axis
+        helperDict["rotation_axis_direction"] = tuple(
+            data.setdefault("rotation_axis_direction", [0.0, 0.0, 1.0])
+        )
+        helperDict["rotation_axis_origin"] = tuple(
+            data.setdefault("rotation_axis_origin", [0.0, 0.0, 0.0])
+        )
+        # add isentropic efficiency definition
+        helperDict["isentropic_efficiency_ratio"] = data.setdefault(
+            "isentropic_efficiency_ratio", "TotalToTotal"
+        )
+        tempData = cleanup_input_expressions(
+            availableKeyEl=helperDict, fileData=tempData
+        )
+        for line in tempData.splitlines():
+            try:
+                sf.write(line.format(**helperDict))
+                sf.write("\n")
+            except KeyError as e:
+                logger.info(f"Expression not found in ConfigFile: {str(e)}")
+
+    return
+
+
+def cleanup_input_expressions(availableKeyEl: dict, fileData: str):
+    cleanfiledata = ""
+
+    for line in fileData.splitlines():
+        # write header line
+        if cleanfiledata == "":
+            cleanfiledata = line
+        # check BCs and prescribed Expressions
+        elif line.startswith('"BC'):
+            columns = line.split("\t")
+            expKey = columns[1].replace('"{', "").replace('}"', "")
+            if availableKeyEl.get(expKey) is not None:
+                cleanfiledata = cleanfiledata + "\n" + line
+            else:
+                continue
+        elif line.startswith('"GEO'):
+            columns = line.split("\t")
+            expKey = columns[1].replace('"{', "").replace('}"', "")
+            if availableKeyEl.get(expKey) is not None:
+                cleanfiledata = cleanfiledata + "\n" + line
+            else:
+                columns[1] = columns[1].replace("{" + expKey + "}", "1")
+                line = "\t".join(columns)
+                cleanfiledata = cleanfiledata + "\n" + line
+
+        elif "Torque" in line:
+            if availableKeyEl.get("bz_walls_torque") is not None:
+                cleanfiledata = cleanfiledata + "\n" + line
+            else:
+                continue
+
+        elif "Euler" in line:
+            if (
+                availableKeyEl.get("bz_ep1_Euler")
+                and availableKeyEl.get("bz_ep2_Euler")
+            ) is not None:
+                cleanfiledata = cleanfiledata + "\n" + line
+            else:
+                continue
+        else:
+            cleanfiledata = cleanfiledata + "\n" + line
+
+    return cleanfiledata
+
+
+def check_input_parameter_expressions(solver):
+    for expName in solver.setup.named_expressions():
+        exp = solver.setup.named_expressions.get(expName)
+        if expName.startswith("BC_"):
+            expValue = exp.get_value()
+            if type(expValue) is not float:
+                logger.info(
+                    f"'{expName}' seems not to be valid: '{expValue}' \n "
+                    f"Removing definition as Input Parameter..."
+                )
+                exp.set_state({"input_parameter": False})
+    return
+
+
+def check_output_parameter_expressions(solutionDict: dict, solver):
+    reportlist = solutionDict.get("reportlist")
+    if reportlist is None:
+        return
+
+    for expName in solver.setup.named_expressions():
+        exp = solver.setup.named_expressions.get(expName)
+        if expName in reportlist:
+            logger.info(
+                f"Expression '{expName}' found in Config-File: 'Case/Solution/reportlist'"
+                f"Setting expression '{expName}' as output-parameter"
+            )
+            exp.set_state({"output_parameter": True})
+    return
