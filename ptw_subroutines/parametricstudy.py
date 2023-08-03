@@ -77,12 +77,12 @@ def study01(data, solver):
             refCaseFilePath = os.path.join(flworking_Dir, refCase)
             if studyIndex == 0:
                 solver.file.read_case_data(
-                    file_type="case-data", file_name=refCaseFilePath
+                    file_name=refCaseFilePath
                 )
             else:
                 tuicommand = 'file/rcd "' + refCaseFilePath + '" yes'
                 solver.execute_tui(tuicommand)
-                # solver.tui.file.read_case_data(refCaseFilePath, "yes")
+                #solver.tui.file.read_case_data(refCaseFilePath)
 
             # Initialize a new parametric study
             solver.parametric_studies.initialize(project_filename=studyName)
@@ -215,7 +215,6 @@ def study01(data, solver):
             # Increasing study index
             studyIndex = studyIndex + 1
 
-        # Skipping after first study has been finished
         logger.info(f"\nRunning Study '{studyName}' finished!\n")
         # break
 
