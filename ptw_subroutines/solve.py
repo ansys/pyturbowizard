@@ -55,13 +55,19 @@ def init_standard_01(data, solver):
     )
 
 def init_standard_02(data, solver):
-    logger.info(f'Using {data["locations"]["bz_inlet_names"][0]} pressure for initialization')
-    solver.solution.initialization.standard_initialize()
-
+    if "BC_IN_Tt" in data["expressions"]:
+        myvalue = float(data["expressions"]["BC_IN_Tt"].split(" ")[0])
+        solver.solution.initialization.defaults = {"temperature": myvalue}
+    solver.solution.initialization.defaults = {"k": 1}
+    solver.solution.initialization.defaults = {"omega": 1}
+    solver.solution.initialization.defaults = {"pressure": 0}
+    solver.solution.initialization.defaults = {"x-velocity": 0}
+    solver.solution.initialization.defaults = {"y-velocity": 0}
+    solver.solution.initialization.defaults = {"z-velocity": 0}
     solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
         "absolute"
     )
-
+    solver.solution.initialization.standard_initialize()
 
 def init_hybrid_01(data, solver):
     init_standard_01(data=data, solver=solver)
