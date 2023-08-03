@@ -28,7 +28,7 @@ def launchFluent(launchEl: dict):
         )
         # Get a free server-filename
         serverfilename = launchEl.get("serverfilename", "server-info.txt")
-        serverfilename = utilities.get_free_filename(
+        serverfilename = misc_utils.get_free_filename(
             dirname=fl_workingDir, base_filename=serverfilename
         )
         launchEl["serverfilename"] = serverfilename

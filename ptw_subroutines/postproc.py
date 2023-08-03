@@ -97,7 +97,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
             key=lambda x: [int(num) for num in x.split("_") if num.isdigit()],
         )
         report_file = os.path.join(fl_workingDir, report_file)
-        report_values, cov_df, mp_df = utilities.calcCov(report_file)
+        report_values, cov_df, mp_df = misc_utils.calcCov(report_file)
 
     else:
         logger.info("No Report File found: data not included in final report")

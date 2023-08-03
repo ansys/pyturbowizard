@@ -15,7 +15,6 @@ from ptw_subroutines import (
 from ptw_subroutines.utils import (
     ptw_logger,
     launcher,
-    misc_utils,
     dict_utils,
     expressions_utils,
     fluent_utils,
