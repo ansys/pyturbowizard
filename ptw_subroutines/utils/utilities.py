@@ -155,3 +155,5 @@ def getStudyReports(pathtostudy):
 
     # Return dataframes of operating map, residuals
     return result_df, cov_df_list, residual_df_list, mp_df_list
+
+
