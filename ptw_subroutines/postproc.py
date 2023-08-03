@@ -194,8 +194,8 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
                 values = line.split()
                 if len(values) == 0:
                     table_started = False
-                elif len(values[1:max_colum]) == len(filtered_headers):
-                    filtered_values = values[1:max_colum]
+                elif len(values[1:number_eqs]) == len(filtered_headers):
+                    filtered_values = values[1:number_eqs]
                     solver_trn_data_valid = True
                 else:
                     try:
