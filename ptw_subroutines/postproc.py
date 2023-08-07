@@ -50,16 +50,17 @@ def post_01(data, solver, launchEl, trn_name):
     solver.results.report.summary(write_to_file=True, file_name=filename)
     if data["locations"].get("tz_turbo_topology_names") is not None:
         try:
-            spanPlots(data=data, solver=solver,fl_workingDir=fl_workingDir)
+            spanPlots(data, solver)
         except Exception as e:
             logger.info(f"No span plots have been created: {e}")
 
-    # Write out time statistics
+    # Write out system time
     solver.report.system.time_statistics()
-    
+
     # Set output for time statistics in transcript
     command = "/report/system/time-stats"
     utilities.addExecuteCommand(command_name="print-time-statistics",command=command,solver=solver)
+
 
     ## write report table
     createReportTable(
@@ -189,7 +190,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
         solver_trn_data_valid = False
         table_started = False
         lines = transcript.split("\n")
-        headers = []
+
         # fix for incompressible
         number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
         for line in lines:
@@ -217,12 +218,12 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
                     except ValueError:
                         table_started = False
 
-            for i in range(len(filtered_headers)):
-                filtered_headers[i] = "res-" + filtered_headers[i]
+        for i in range(len(filtered_headers)):
+            filtered_headers[i] = "res-" + filtered_headers[i]
 
-            if solver_trn_data_valid:
-                filtered_values = [float(val) for val in filtered_values]
-                res_columns = dict(zip(filtered_headers, filtered_values))
+        if solver_trn_data_valid:
+            filtered_values = [float(val) for val in filtered_values]
+            res_columns = dict(zip(filtered_headers, filtered_values))
     else:
         logger.info("No trn-file found!: Skipping data")
         solver_trn_data_valid = False
@@ -369,4 +370,5 @@ def mergeReportTables(turboData, solver):
             df = pd.concat((pd.read_csv(f, header=0) for f in reportFiles))
             mergedFileName = os.path.join(fl_workingDir, "mergedReporttable.csv")
             df.to_csv(mergedFileName)
+
     return

@@ -32,8 +32,8 @@ def plot_figure(x_values, y_values, x_label, y_label, colors, criterion):
     fig, ax = plt.subplots()
 
     if (len(x_values) > 0) and (len(y_values) > 0):
-        #ax.set_xlim([x_values.min() * 0.99, x_values.max() * 1.01])
-        #ax.set_ylim([y_values.min() * 0.99, y_values.max() * 1.01])
+        ax.set_xlim([x_values.min() * 0.99, x_values.max() * 1.01])
+        ax.set_ylim([y_values.min() * 0.99, y_values.max() * 1.01])
         ax.grid()
         ax.set_xlabel(x_label)  # Set x-axis label dynamically
         ax.set_ylabel(y_label)  # Set y-axis label as DataFrame column header
@@ -155,6 +155,8 @@ def getStudyReports(pathtostudy):
 
     # Return dataframes of operating map, residuals
     return result_df, cov_df_list, residual_df_list, mp_df_list
+
+
 
 def addExecuteCommand(solver,command,command_name):
     #add to utils
