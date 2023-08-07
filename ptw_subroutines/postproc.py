@@ -54,8 +54,12 @@ def post_01(data, solver, launchEl, trn_name):
         except Exception as e:
             logger.info(f"No span plots have been created: {e}")
 
-    # Write out system time
+    # Write out time statistics
     solver.report.system.time_statistics()
+    
+    # Set output for time statistics in transcript
+    command = "/report/system/time-stats"
+    utilities.addExecuteCommand(command_name="print-time-statistics",command=command,solver=solver)
 
     ## write report table
     createReportTable(
@@ -331,7 +335,7 @@ def spanPlots(data, solver,fl_workingDir):
                 command_str = contour_display_command + "\n" + contour_save_command + "\n"
                 all_commands_str += command_str
     command_name = "save-contour-plots"
-    utilities.addExecuteCommand(solver,all_commands_str,command_name)
+    #utilities.addExecuteCommand(solver,all_commands_str,command_name)
     return
 
 
