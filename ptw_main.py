@@ -24,7 +24,7 @@ from ptw_subroutines.utils import (
 # Set Logger
 logger = ptw_logger.init_logger(console_output=False)
 
-version = "1.5.1"
+version = "1.5.2"
 logger.info(f"\n*** Starting PyTurboWizard (Version {str(version)}) ***\n\n")
 
 # If solver variable does not exist, Fluent has been started in external mode
