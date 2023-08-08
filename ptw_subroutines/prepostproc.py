@@ -75,7 +75,6 @@ def spanPlots(data, solver):
             field="spanwise-coordinate", zone=zones, iso_value=[spanVal]
         )
 
-
         for contVar in contVars:
             if contVar in availableFieldDataNames:
                 contName = spanName + "-" + contVar
