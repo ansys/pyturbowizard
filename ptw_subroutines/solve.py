@@ -39,6 +39,9 @@ def init_standard_01(data, solver):
     solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
         "absolute")
 
+    solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
+        "absolute")
+
     solver.solution.initialization.standard_initialize()
 
     availableBCs = dir(solver.tui.solve.initialize.compute_defaults)

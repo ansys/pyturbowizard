@@ -27,3 +27,7 @@ def getNumberOfEquations(solver):
             number_eqs += 1
 
     return number_eqs
+
+def addExecuteCommand(solver,command,command_name):
+    # Add a command to execute after solving is finished
+    solver.tui.solve.execute_commands.add_edit(f"{command_name}","yes","yes","yes",f'"{command}"')
