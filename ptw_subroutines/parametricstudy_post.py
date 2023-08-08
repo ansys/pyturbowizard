@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import json
 
 # Logger
-from ptw_subroutines.utils import ptw_logger, misc_utils, dict_utils
+from ptw_subroutines.utils import ptw_logger, utilities, dict_utils, postproc_utils
 
 logger = ptw_logger.getLogger()
 
@@ -67,7 +67,7 @@ def study_post_01(data, solver):
                 cov_df_list,
                 residual_df_list,
                 mp_df_list,
-            ) = misc_utils.getStudyReports(pathtostudy)
+            ) = postproc_utils.getStudyReports(pathtostudy)
 
             # check if study data is available
             if result_df.empty:
@@ -267,7 +267,7 @@ def study_post_01(data, solver):
                     y_values = plot_df[column].values
                     # Create Plot with massflow
                     plt.figure()
-                    figure_plot = misc_utils.plot_figure(
+                    figure_plot = postproc_utils.plot_figure(
                         MP_MassFlow,
                         y_values,
                         "mass flow [kg/s]",
@@ -285,7 +285,7 @@ def study_post_01(data, solver):
                     plt.close()
                     # Create Plot with volume flow
                     plt.figure()
-                    figure_plot = misc_utils.plot_figure(
+                    figure_plot = postproc_utils.plot_figure(
                         MP_VolumeFlow, y_values, "volume flow", colors, cov_criterion
                     )
 
@@ -302,7 +302,7 @@ def study_post_01(data, solver):
                     y_values = plot_df[column].values
                     # Create Plot with massflow
                     plt.figure()
-                    figure_plot = misc_utils.plot_figure(
+                    figure_plot = postproc_utils.plot_figure(
                         MP_MassFlow,
                         y_values,
                         "mass flow",
@@ -323,7 +323,7 @@ def study_post_01(data, solver):
                     y_values = plot_df[column].values
                     # Create Plot with volume flow
                     plt.figure()
-                    figure_plot = misc_utils.plot_figure(
+                    figure_plot = postproc_utils.plot_figure(
                         MP_VolumeFlow,
                         y_values,
                         "volume flow",

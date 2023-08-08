@@ -11,6 +11,7 @@ from ptw_subroutines import (
     setupcfd,
     postproc,
     parametricstudy_post,
+    prepostproc
 )
 from ptw_subroutines.utils import (
     ptw_logger,
@@ -138,6 +139,9 @@ if caseDict is not None:
 
         # Initialization
         solve.init(data=caseEl, solver=solver, functionEl=caseFunctionEl)
+
+        # Setup for Post Processing
+        prepostproc.prepost(data=caseEl, solver=solver, functionEl=caseFunctionEl,launchEl=launchEl)
 
         # Write case and ini-data & settings file
         logger.info("\nWriting initial case & settings file\n")
