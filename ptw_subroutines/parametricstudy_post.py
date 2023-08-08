@@ -50,11 +50,7 @@ def study_post_01(data, solver):
 
         if runPostProc:
             flworking_Dir = data.get("launching")["workingDir"]
-            baseCaseName = studyDict[studyName].get("refCaseFilename")
-            pathtostudy = os.path.join(
-                flworking_Dir, f"{studyName}.cffdb", f"{baseCaseName}-Solve"
-            )
-            baseCaseName = studyDict[studyName].get("refCaseFilename")
+            baseCaseName = studyData.get("refCaseFilename")
             pathtostudy = os.path.join(
                 flworking_Dir, f"{studyName}.cffdb", f"{baseCaseName}-Solve"
             )

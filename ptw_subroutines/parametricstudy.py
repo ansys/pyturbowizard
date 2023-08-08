@@ -83,6 +83,7 @@ def study01(data, solver):
                 tuicommand = 'file/rcd "' + refCaseFilePath + '" yes'
                 solver.execute_tui(tuicommand)
                 #solver.tui.file.read_case_data(refCaseFilePath)
+                #solver.file.read_case_data(file_name=refCaseFilePath)
 
             # Initialize a new parametric study
             solver.parametric_studies.initialize(project_filename=studyName)

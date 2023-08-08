@@ -180,10 +180,11 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     f"Creation of periodic interface is skipped!"
                 )
             else:
+                # As the origin & axis have been set for all cell-zones these are the defaults for all containing boundary zones
+                # Therefore, we do not need to set them -> "no", "no"
                 solver.tui.mesh.modify_zones.create_periodic_interface(
                     "auto", key_if, side1, side2, "yes", "no", "no", "yes", "yes"
                 )
-
                 # check for non-conformal periodics (fluent creates normal interfaces if non-conformal)
                 intf_check_side1 = solver.setup.boundary_conditions.interface.get(side1)
                 intf_check_side2 = solver.setup.boundary_conditions.interface.get(side2)
