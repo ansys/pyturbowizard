@@ -475,7 +475,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
 
         # Interfaces
         elif key == "bz_interfaces_general_names":
-            solver.tui.define.mesh_interfaces.one_to_one_pairing("no")
+            # solver.tui.define.mesh_interfaces.one_to_one_pairing("no")
             keyEl = data["locations"].get(key)
             for key_if in keyEl:
                 logger.info(f"Setting up general interface: {key_if}")
