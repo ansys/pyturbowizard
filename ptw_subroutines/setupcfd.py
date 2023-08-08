@@ -1,5 +1,5 @@
 # Logger
-from ptw_subroutines.utils import ptw_logger, dict_utils, utilities, fluent_utils
+from ptw_subroutines.utils import ptw_logger, dict_utils, misc_utils, fluent_utils
 
 logger = ptw_logger.getLogger()
 
@@ -180,10 +180,11 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     f"Creation of periodic interface is skipped!"
                 )
             else:
+                # As the origin & axis have been set for all cell-zones these are the defaults for all containing boundary zones
+                # Therefore, we do not need to set them -> "no", "no"
                 solver.tui.mesh.modify_zones.create_periodic_interface(
                     "auto", key_if, side1, side2, "yes", "no", "no", "yes", "yes"
                 )
-
                 # check for non-conformal periodics (fluent creates normal interfaces if non-conformal)
                 intf_check_side1 = solver.setup.boundary_conditions.interface.get(side1)
                 intf_check_side2 = solver.setup.boundary_conditions.interface.get(side2)
@@ -207,13 +208,13 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                 useProfileData = (profileName is not None) and (profileName != "")
                 if data["expressions"].get("BC_IN_MassFlow") is not None:
                     logger.info(f"Prescribing a Massflow-Inlet BC @{inletName}")
-                    # not working in 241 (23/7/7)
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[inletName], new_type="mass-flow-inlet"
-                    # )
-                    solver.tui.define.boundary_conditions.zone_type(
-                        inletName, "mass-flow-inlet"
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[inletName], new_type="mass-flow-inlet"
                     )
+                    #old tui command
+                    #solver.tui.define.boundary_conditions.zone_type(
+                    #    inletName, "mass-flow-inlet"
+                    #)
                     inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
                     inBC.flow_spec = "Mass Flow Rate"
                     inBC.mass_flow = "BC_IN_MassFlow"
@@ -227,13 +228,13 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     and data["expressions"].get("BC_IN_VolumeFlowDensity") is not None
                 ):
                     logger.info(f"Prescribing a Volumeflow-Inlet BC @{inletName}")
-                    # not working in 241 (23/7/7)
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[inletName], new_type="mass-flow-inlet"
-                    # )
-                    solver.tui.define.boundary_conditions.zone_type(
-                        inletName, "mass-flow-inlet"
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[inletName], new_type="mass-flow-inlet"
                     )
+                    # old tui command
+                    #solver.tui.define.boundary_conditions.zone_type(
+                    #    inletName, "mass-flow-inlet"
+                    #)
                     inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
                     inBC.flow_spec = "Mass Flow Rate"
                     inBC.mass_flow = "BC_IN_VolumeFlow*BC_IN_VolumeFlowDensity"
@@ -243,13 +244,13 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         inBC.t0 = "BC_IN_Tt"
 
                 elif data["expressions"].get("BC_IN_pt") is not None:
-                    # not working in 241 (23/7/7)
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[inletName], new_type="pressure-inlet"
-                    # )
-                    solver.tui.define.boundary_conditions.zone_type(
-                        inletName, "pressure-inlet"
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[inletName], new_type="pressure-inlet"
                     )
+                    # old tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    inletName, "pressure-inlet"
+                    # )
                     inBC = solver.setup.boundary_conditions.pressure_inlet[inletName]
 
                     if useProfileData:
@@ -335,13 +336,14 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     logger.info(
                         f"Prescribing a Exit-Corrected Massflow-Outlet BC @{outletName}"
                     )
-                    # not working in 241 (23/7/7)
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[outletName], new_type="mass-flow-outlet"
-                    # )
-                    solver.tui.define.boundary_conditions.zone_type(
-                        outletName, "mass-flow-outlet"
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[outletName], new_type="mass-flow-outlet"
                     )
+                    # old tui command
+                    #solver.tui.define.boundary_conditions.zone_type(
+                    #    outletName, "mass-flow-outlet"
+                    #)
+
                     outBC = solver.setup.boundary_conditions.mass_flow_outlet[
                         outletName
                     ]
@@ -375,13 +377,14 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     and data["expressions"].get("BC_OUT_VolumeFlowDensity") is not None
                 ):
                     logger.info(f"Prescribing a VolumeFlow-Outlet BC @{outletName}")
-                    # not working in 241 (23/7/7)
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[outletName], new_type="mass-flow-outlet"
-                    # )
-                    solver.tui.define.boundary_conditions.zone_type(
-                        outletName, "mass-flow-outlet"
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[outletName], new_type="mass-flow-outlet"
                     )
+                    # old tui command
+                    #solver.tui.define.boundary_conditions.zone_type(
+                    #    outletName, "mass-flow-outlet"
+                    #)
+
                     outBC = solver.setup.boundary_conditions.mass_flow_outlet[
                         outletName
                     ]
@@ -390,13 +393,13 @@ def boundary_01(data, solver, solveEnergy: bool = True):
 
                 elif data["expressions"].get("BC_OUT_p") is not None:
                     logger.info(f"Prescribing a Pressure-Outlet BC @{outletName}")
-                    # not working in 241 (23/7/7)
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[outletName], new_type="pressure-outlet"
-                    # )
-                    solver.tui.define.boundary_conditions.zone_type(
-                        outletName, "pressure-outlet"
+                    solver.setup.boundary_conditions.change_type(
+                       zone_list=[outletName], new_type="pressure-outlet"
                     )
+                    # old tui command
+                    #solver.tui.define.boundary_conditions.zone_type(
+                    #    outletName, "pressure-outlet"
+                    #)
                     outBC = solver.setup.boundary_conditions.pressure_outlet[outletName]
                     # Check Profile data exists
                     profileName = data.get("profileName_Out")
@@ -472,7 +475,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
 
         # Interfaces
         elif key == "bz_interfaces_general_names":
-            solver.tui.define.mesh_interfaces.one_to_one_pairing("no")
+            # solver.tui.define.mesh_interfaces.one_to_one_pairing("no")
             keyEl = data["locations"].get(key)
             for key_if in keyEl:
                 logger.info(f"Setting up general interface: {key_if}")
