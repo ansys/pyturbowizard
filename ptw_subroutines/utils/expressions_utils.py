@@ -106,7 +106,10 @@ def check_input_parameter_expressions(solver):
     return
 
 
-def check_output_parameter_expressions(solutionDict: dict, solver):
+def check_output_parameter_expressions(caseEl: dict, solver):
+    solutionDict = caseEl.get("solution")
+    if solutionDict is None:
+        return
     reportlist = solutionDict.get("reportlist")
     if reportlist is None:
         return
