@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import json
 
 # Logger
-from ptw_subroutines.utils import ptw_logger, utilities, dict_utils, postproc_utils
+from ptw_subroutines.utils import ptw_logger, dict_utils, postproc_utils
 
 logger = ptw_logger.getLogger()
 
@@ -50,11 +50,7 @@ def study_post_01(data, solver):
 
         if runPostProc:
             flworking_Dir = data.get("launching")["workingDir"]
-            baseCaseName = studyDict[studyName].get("refCaseFilename")
-            pathtostudy = os.path.join(
-                flworking_Dir, f"{studyName}.cffdb", f"{baseCaseName}-Solve"
-            )
-            baseCaseName = studyDict[studyName].get("refCaseFilename")
+            baseCaseName = studyData.get("refCaseFilename")
             pathtostudy = os.path.join(
                 flworking_Dir, f"{studyName}.cffdb", f"{baseCaseName}-Solve"
             )

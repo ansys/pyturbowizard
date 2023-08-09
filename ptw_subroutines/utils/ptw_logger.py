@@ -5,7 +5,7 @@ logger = logging.getLogger("PyTurboWizard")
 
 
 def init_logger(console_output: bool = True, file_output: bool = True):
-    from ptw_subroutines.utils import utilities
+    from ptw_subroutines.utils import misc_utils
 
     logger.setLevel(logging.INFO)
     if console_output:
@@ -15,7 +15,7 @@ def init_logger(console_output: bool = True, file_output: bool = True):
         handler.setLevel(logging.INFO)
         logger.addHandler(handler)
     if file_output:
-        logger_file_name = utilities.get_free_filename(
+        logger_file_name = misc_utils.get_free_filename(
             dirname=".", base_filename="PyTurboWizard.log"
         )
         handler = logging.FileHandler(filename=logger_file_name, encoding="utf-8")

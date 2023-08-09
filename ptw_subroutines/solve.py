@@ -36,12 +36,11 @@ def init_standard_01(data, solver):
     logger.info(
         f'Using {data["locations"]["bz_inlet_names"][0]} pressure for initialization'
     )
-    solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
-        "absolute")
+    solver.solution.initialization.reference_frame = "absolute"
 
-    solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
-        "absolute")
-
+    # if the boundary condition needs information from flow field
+    # (e.g. density to convert volume-rate to massflow-rate),
+    # we need to initialize first so that we have field data available
     solver.solution.initialization.standard_initialize()
 
     availableBCs = dir(solver.tui.solve.initialize.compute_defaults)
@@ -61,6 +60,7 @@ def init_standard_01(data, solver):
 
 
 def init_standard_02(data, solver):
+    solver.solution.initialization.reference_frame = "absolute"
     if "BC_IN_Tt" in data["expressions"]:
         myvalue = float(data["expressions"]["BC_IN_Tt"].split(" ")[0])
         solver.solution.initialization.defaults = {"temperature": myvalue}
@@ -70,9 +70,7 @@ def init_standard_02(data, solver):
     solver.solution.initialization.defaults = {"x-velocity": 0}
     solver.solution.initialization.defaults = {"y-velocity": 0}
     solver.solution.initialization.defaults = {"z-velocity": 0}
-    solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
-        "absolute"
-    )
+
     solver.solution.initialization.standard_initialize()
 
 def init_hybrid_01(data, solver):
