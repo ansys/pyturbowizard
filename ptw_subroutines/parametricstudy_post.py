@@ -30,6 +30,10 @@ def study_post(data, solver, functionEl):
     logger.info(
         f"\nRunning ParamatricStudy-Postprocessing Function '{functionName}'...  finished!\n"
     )
+    
+    # Set standard image output format to AVZ
+    avz = '"AVZ"'
+    solver.tui.preferences.graphics.hardcopy_settings.hardcopy_driver(f'{avz}')
 
 
 def study_post_01(data, solver):
