@@ -52,10 +52,6 @@ def post_01(data, solver, launchEl, trn_name):
     # Write out system time
     solver.report.system.time_statistics()
 
-    # Set standard image output format to AVZ
-    avz = '"AVZ"'
-    solver.tui.preferences.graphics.hardcopy_settings.hardcopy_driver(f'{avz}')
-    
     ## write report table
     createReportTable(
         data=data, fl_workingDir=fl_workingDir, solver=solver, trn_filename=trn_name

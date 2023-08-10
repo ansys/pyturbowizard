@@ -71,6 +71,10 @@ if external:
     logger.info("Launching Fluent...")
     solver = launcher.launchFluent(launchEl)
 
+# Set standard image output format to AVZ
+avz = '"AVZ"'
+solver.tui.preferences.graphics.hardcopy_settings.hardcopy_driver(f'{avz}')
+
 # Start Setup
 caseDict = turboData.get("cases")
 if caseDict is not None:
