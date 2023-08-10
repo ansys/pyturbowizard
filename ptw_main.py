@@ -119,9 +119,8 @@ if caseDict is not None:
         )
         # Check if all inputParameters are valid
         expressions_utils.check_input_parameter_expressions(solver=solver)
-        
-        # Set all Report definitions as output parameters
-        expressions_utils.check_output_parameter_expressions(solutionDict=caseEl.get("solution"),solver=solver)
+        # Check if all outputParameters are set
+        expressions_utils.check_output_parameter_expressions(caseEl=caseEl, solver=solver)
         ### Expression Definition... done!
 
         # Enable Beta-Features

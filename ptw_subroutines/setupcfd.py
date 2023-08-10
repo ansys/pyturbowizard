@@ -404,7 +404,6 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     # Check Profile data exists
                     profileName = data.get("profileName_Out")
                     useProfileData = (profileName is not None) and (profileName != "")
-                    outBC.prevent_reverse_flow = True
                     if useProfileData:
                         # check profile naming convention:
                         # profile_name: "outlet-bc"
@@ -588,33 +587,43 @@ def boundary_01(data, solver, solveEnergy: bool = True):
 
 
 def report_01(data, solver):
+    #Get Solution-Dict
+    solutionDict = data.get("solution")
+    if solutionDict is None:
+        logger.warning(f"No Solution-Dict specified in Case: 'solution'. Skipping Report-Definition!")
+        return
+
     # Reports
-    for report in data["solution"]["reportlist"]:
-        reportName = report.replace("_", "-")
-        reportName = "rep-" + reportName.lower()
-        solver.solution.report_definitions.single_val_expression[reportName] = {}
-        solver.solution.report_definitions.single_val_expression[reportName] = {
-            "define": report
-        }
-        reportPlotName = reportName + "-plot"
-        solver.solution.monitor.report_plots[reportPlotName] = {}
-        solver.solution.monitor.report_plots[reportPlotName] = {
-            "report_defs": [reportName]
-        }
+    reportList = solutionDict.get("reportlist")
+    if reportList is not None:
+        for report in reportList:
+            reportName = report.replace("_", "-")
+            reportName = "rep-" + reportName.lower()
+            solver.solution.report_definitions.single_val_expression[reportName] = {}
+            solver.solution.report_definitions.single_val_expression[reportName] = {
+                "define": report
+            }
+            reportPlotName = reportName + "-plot"
+            solver.solution.monitor.report_plots[reportPlotName] = {}
+            solver.solution.monitor.report_plots[reportPlotName] = {
+                "report_defs": [reportName]
+            }
 
-    # Report File
-    solver.solution.monitor.report_files["report-file"] = {}
-    reportNameList = []
-    for report in data["solution"]["reportlist"]:
-        reportName = report.replace("_", "-")
-        reportName = "rep-" + reportName.lower()
-        reportNameList.append(reportName)
+        # Report File
+        solver.solution.monitor.report_files["report-file"] = {}
+        reportNameList = []
+        for report in reportList:
+            reportName = report.replace("_", "-")
+            reportName = "rep-" + reportName.lower()
+            reportNameList.append(reportName)
 
-    reportFileName = data["caseFilename"] + "_report.out"
-    solver.solution.monitor.report_files["report-file"] = {
-        "file_name": reportFileName,
-        "report_defs": reportNameList,
-    }
+        reportFileName = data["caseFilename"] + "_report.out"
+        solver.solution.monitor.report_files["report-file"] = {
+            "file_name": reportFileName,
+            "report_defs": reportNameList,
+        }
+    else:
+        logger.warning(f"No report-definitions specified in Case: Keyword 'reportlist'!")
 
     # Set Residuals
     # solver.tui.preferences.simulation.local_residual_scaling("yes")
@@ -623,29 +632,34 @@ def report_01(data, solver):
     # Check active number of equations
     number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
 
-    resCrit = data["solution"]["res_crit"]
+    resCrit = solutionDict.setdefault("res_crit", 1.e-4)
     resCritList = [resCrit] * number_eqs
     if len(resCritList) > 0:
         solver.tui.solve.monitors.residual.convergence_criteria(*resCritList)
 
     # Set CoVs
-    for solve_cov in data["solution"]["cov_list"]:
-        reportName = solve_cov.replace("_", "-")
-        reportName = "rep-" + reportName.lower()
-        covName = reportName + "-cov"
-        solver.solution.monitor.convergence_conditions.convergence_reports[covName] = {}
-        solver.solution.monitor.convergence_conditions = {
-            "convergence_reports": {
-                covName: {
-                    "report_defs": reportName,
-                    "cov": True,
-                    "previous_values_to_consider": 50,
-                    "stop_criterion": data["solution"]["cov_crit"],
-                    "print": True,
-                    "plot": True,
+    cov_list = solutionDict.get("cov_list")
+    if cov_list is not None:
+        stop_criterion = solutionDict.setdefault("cov_crit", 1.e-4)
+        for solve_cov in cov_list:
+            reportName = solve_cov.replace("_", "-")
+            reportName = "rep-" + reportName.lower()
+            covName = reportName + "-cov"
+            solver.solution.monitor.convergence_conditions.convergence_reports[covName] = {}
+            solver.solution.monitor.convergence_conditions = {
+                "convergence_reports": {
+                    covName: {
+                        "report_defs": reportName,
+                        "cov": True,
+                        "previous_values_to_consider": 50,
+                        "stop_criterion": stop_criterion,
+                        "print": True,
+                        "plot": True,
+                    }
                 }
             }
-        }
+    else:
+        logger.warning(f"No CoV definitions specified in Case: Keyword 'cov_list'!")
 
     # Set Convergence Conditions
     solver.solution.monitor.convergence_conditions = {
@@ -654,9 +668,9 @@ def report_01(data, solver):
         "frequency": 5,
     }
     # Set Basic Solver-Solution-Settings
-    tsf = data["solution"].get("time_step_factor", 1)
+    tsf = solutionDict.get("time_step_factor", 1)
     # Check for a pseudo-time-step-size
-    pseudo_timestep = data["solution"].get("pseudo_timestep")
+    pseudo_timestep = solutionDict.get("pseudo_timestep")
     if pseudo_timestep is not None:
         # Use pseudo timestep
         logger.info(
@@ -669,8 +683,8 @@ def report_01(data, solver):
             pseudo_timestep
         )
         # Update dict
-        if data["solution"].get("time_step_factor") is not None:
-            data["solution"].pop("time_step_factor")
+        if solutionDict.get("time_step_factor") is not None:
+            solutionDict.pop("time_step_factor")
     else:
         # Use timescale factor
         logger.info(
@@ -686,7 +700,7 @@ def report_01(data, solver):
             tsf
         )
         # Update dict
-        data["solution"]["time_step_factor"] = tsf
+        solutionDict["time_step_factor"] = tsf
 
-    iter_count = data["solution"].setdefault("iter_count", 500)
+    iter_count = solutionDict.setdefault("iter_count", 500)
     solver.solution.run_calculation.iter_count = int(iter_count)
