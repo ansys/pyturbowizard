@@ -13,7 +13,7 @@ def init(data, solver, functionEl):
         defaultName="init_hybrid_01",
     )
 
-    logger.info('\nRunning Initialization Function "' + functionName + '"...')
+    logger.info('Running Initialization Function "' + functionName + '"...')
     if functionName == "init_standard_01":
         init_standard_01(data, solver)
     elif functionName == "init_standard_02":
@@ -33,7 +33,7 @@ def init(data, solver, functionEl):
             + '" not known. Skipping Initialization!'
         )
 
-    logger.info("\n\n Initialization Function... finished.\n")
+    logger.info("Initialization Function... finished.")
 
 
 def init_standard_01(data, solver):

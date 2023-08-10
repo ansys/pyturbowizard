@@ -22,7 +22,7 @@ def setup(data, solver, functionEl):
             'Prescribed Function "' + functionName + '" not known. Skipping Setup!'
         )
 
-    logger.info("\nRunning Setup Function... finished!\n")
+    logger.info("Running Setup Function... finished!")
 
 
 def setup_compressible_01(data, solver):
@@ -105,7 +105,7 @@ def physics_01(data, solver, solveEnergy: bool = True):
     gravityVector = data.get("gravity_vector")
     if (type(gravityVector) is list) and (len(gravityVector) == 3):
         logger.info(
-            f"\nSpecification of Gravity-Vector found: {gravityVector} \nEnabling and setting Gravity-Vector"
+            f"Specification of Gravity-Vector: {gravityVector}"
         )
         solver.setup.general.operating_conditions.gravity.enable = True
         solver.setup.general.operating_conditions.gravity.components = gravityVector
@@ -191,7 +191,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
 
                 if intf_check_side1 is not None and intf_check_side2 is not None:
                     logger.info(
-                        f"'{key_if}' is a non-conformal periodic interface\n"
+                        f"'{key_if}' is a non-conformal periodic interface! "
                         f"Adjusting turbo-topology accordingly"
                     )
                     # Add the non conformal interface to the list for correct turbo topology definition
@@ -517,7 +517,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
     # setup turbo topology
     keyEl = data["locations"].get("tz_turbo_topology_names")
     if keyEl is not None:
-        logger.info("Setting up turbo topology for post processing.\n")
+        logger.info("Setting up turbo topology for post processing.")
         for key_topo in keyEl:
             turbo_name = f'"{key_topo}"'
             hub_names = keyEl[key_topo].get("tz_hub_names")
@@ -532,7 +532,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                 for periodic_name in periodic_names:
                     if periodic_name in non_conformal_list:
                         logger.info(
-                            f"encountered a non-conformal periodic interface: {periodic_name}\n"
+                            f"encountered a non-conformal periodic interface: {periodic_name}"
                         )
                         logger.info("Adjusting turbo topology")
                         theta_min.append(
@@ -581,7 +581,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         [],
                     )
             except Exception as e:
-                logger.warning(f"An error occurred while defining topology: {e}\n")
+                logger.warning(f"An error occurred while defining topology: {e}")
 
     return
 

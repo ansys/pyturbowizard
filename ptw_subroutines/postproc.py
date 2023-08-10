@@ -16,7 +16,7 @@ def post(data, solver, functionEl, launchEl, trn_name):
         defaultName="post_01",
     )
 
-    logger.info('\nRunning Postprocessing Function "' + functionName + '"...')
+    logger.info('Running Postprocessing Function "' + functionName + '"...')
     if functionName == "post_01":
         post_01(data, solver, launchEl, trn_name)
     else:
@@ -26,7 +26,7 @@ def post(data, solver, functionEl, launchEl, trn_name):
             + '" not known. Skipping Postprocessing!'
         )
 
-    logger.info("\nRunning Postprocessing Function... finished!\n")
+    logger.info("Running Postprocessing Function... finished!")
 
 
 def post_01(data, solver, launchEl, trn_name):
@@ -50,6 +50,7 @@ def post_01(data, solver, launchEl, trn_name):
     solver.results.report.summary(write_to_file=True, file_name=filename)
 
     # Write out system time
+    #solver.tui.report.system.time_stats()
     solver.report.system.time_statistics()
 
     ## write report table

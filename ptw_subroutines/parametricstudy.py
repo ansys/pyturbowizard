@@ -26,7 +26,7 @@ def study(data, solver, functionEl):
             + '" not known. Skipping Parametric Study!'
         )
 
-    logger.info(f"\nRunning ParamatricStudy-Function '{functionName}'...  finished!\n")
+    logger.info(f"Running ParamatricStudy-Function '{functionName}'...  finished!")
 
 
 def study01(data, solver):
@@ -39,11 +39,11 @@ def study01(data, solver):
 
     for studyName in studyDict:
         studyEl = studyDict[studyName]
-        logger.info(f"\nRunning Study '{studyName}'...\n")
+        logger.info(f"Running Study '{studyName}'...")
         # Check if study should be executed
         if studyEl.setdefault("skip_execution", False):
             logger.info(
-                f"Study '{studyName}' is skipped: 'skip_execution' is set to 'True' in Study-Definition\n"
+                f"Study '{studyName}' is skipped: 'skip_execution' is set to 'True' in Study-Definition"
             )
             continue
 
@@ -63,12 +63,12 @@ def study01(data, solver):
                 logger.info(
                     'and "overwriteExisting"-flag is set to False or not existing in Config-File'
                 )
-                logger.info('Skipping Parametric Study "' + studyName + '"\n')
+                logger.info('Skipping Parametric Study "' + studyName)
                 break
         else:
             if runExisting:
                 logger.info("Specified Fluent-Project does not exist " + studyFileName)
-                logger.info('Skipping Parametric Study "' + studyName + '"\n')
+                logger.info('Skipping Parametric Study "' + studyName)
                 break
 
         # Check if a new Project should be created or an existing is executed
@@ -216,7 +216,7 @@ def study01(data, solver):
             # Increasing study index
             studyIndex = studyIndex + 1
 
-        logger.info(f"\nRunning Study '{studyName}' finished!\n")
+        logger.info(f"Running Study '{studyName}' finished!")
         # break
 
         # Extract CoV information and store in temporary file for post processing
@@ -227,7 +227,7 @@ def study01(data, solver):
         )
         # Check if the folder exists
         if not os.path.exists(pathtostudy):
-            logger.info("No Study data has been found!\n")
+            logger.info("No Study data has been found!")
             logger.info("Skipping Post-Processing!")
         else:
             # Define the file path

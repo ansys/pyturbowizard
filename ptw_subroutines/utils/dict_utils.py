@@ -44,7 +44,7 @@ def merge_data_with_refDict(caseDict: dict, allCasesDict: dict):
     refDict = allCasesDict.get(refCaseName)
     if refDict is None:
         logger.info(
-            f"Specified Reference Case {refCaseName} not found in Config-File!\nSkipping CopyFunction..."
+            f"Specified Reference Case {refCaseName} not found in Config-File! --> Skipping CopyFunction..."
         )
         return caseDict
     helpCaseDict = refDict.copy()

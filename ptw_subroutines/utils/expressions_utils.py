@@ -99,8 +99,8 @@ def check_input_parameter_expressions(solver):
             expValue = exp.get_value()
             if type(expValue) is not float:
                 logger.info(
-                    f"'{expName}' seems not to be valid: '{expValue}' \n "
-                    f"Removing definition as Input Parameter..."
+                    f"'{expName}' seems not to be valid: '{expValue}' "
+                    f"--> Removing definition as Input Parameter..."
                 )
                 exp.set_state({"input_parameter": False})
     return

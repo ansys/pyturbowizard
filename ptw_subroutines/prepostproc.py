@@ -13,7 +13,7 @@ def prepost(data, solver, functionEl, launchEl):
         defaultName="prepost_01",
     )
 
-    logger.info('\nRunning Pre-Postprocessing Function "' + functionName + '"...')
+    logger.info('Running Pre-Postprocessing Function "' + functionName + '"...')
     if functionName == "prepost_01":
         prepost_01(data, solver, launchEl)
     else:
@@ -23,7 +23,7 @@ def prepost(data, solver, functionEl, launchEl):
             + '" not known. Skipping Pre-Postprocessing!'
         )
 
-    logger.info("\nRunning Pre-Postprocessing Function... finished!\n")
+    logger.info("Running Pre-Postprocessing Function... finished!")
 
 def prepost_01(data, solver, launchEl):
         
