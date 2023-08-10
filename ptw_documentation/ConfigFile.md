@@ -303,7 +303,7 @@ This completes the setup of the ``` locations ``` section.
 ```
 In the section ```solution``` the convergence criteria and solve settings can be specified. 
 
-In ```reportlist``` the expressions for monitoring (plotting and file save) can be set.
+In ```reportlist``` the expressions for monitoring (plotting and file save) can be set. All expressions in the ```reportlist``` will be defined as output-parameters.
 
 ``` res_crit``` is used to specify the normalized local residual convergence limit. 
 
@@ -314,6 +314,7 @@ In ```reportlist``` the expressions for monitoring (plotting and file save) can 
 The automatic time step factor and iteration count can be set via ```time_step_factor``` (length-scale-method = conservative) or ```pseudo_timestep``` and ``` iter_count ``` respectively. 
 
 ``` runSolver``` can be used to specify whether the simulation should start to run at the end of the setup.
+
 #### Results
 ```
         "results": {
