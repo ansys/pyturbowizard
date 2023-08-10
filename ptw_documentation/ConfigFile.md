@@ -278,7 +278,7 @@ In the ```locations``` section a turbo topolgy for post processing in Fluent can
           ...
 ```
 
-**Note**: Currently the turbo-topology creation is only supported for conformal periodic interfaces
+**Note**:  If a periodic interface specified under ```"tz_theta_periodic_names"``` is non-conformal, it will be automaticaly handeled  by the script.
 
 This completes the setup of the ``` locations ``` section.
 
@@ -401,8 +401,8 @@ The plots include:
 
 Examples of the plots are shown below:
 
-<img src="/ptw_documentation/images/operating_map_example.png" alt="operating point map example" style="height: 400px; width:800px;"/>
-<img src="/ptw_documentation/images/cov_plot_DP10.png" alt="cov plot" style="height: 400px; width:400px;"/>
+<img src="/ptw_documentation/images/operating_map_example.png" alt="operating point map example" style="height: 400px; width:500px;"/>
+<img src="/ptw_documentation/images/cov_plot_DP10.png" alt="cov plot" style="height: 450px; width:700px;"/>
 
 Available options:
 - ```precision ``` can be used to enable/disable double-precision mode, default: ```True```
@@ -423,7 +423,8 @@ In the ```studies``` section different study setups can be created.
 - The reference case file name for the base case has to be specified under ```refCaseFilename``` and has to be in the Fluent working directory.
 
 - ```initMethod``` specifies initialization method for design-points, following options are available:
-  - ```base_ini```: Use initialization method of base case 
+  - ```base_ini```: Use initialization method of base case
+    - **Note:** Does not work with FMG initialization!
   - ```baseDP```: Use solution of base design point **(default)**
   - ```prevDP```: Use solution of previous design point
 
