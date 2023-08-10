@@ -662,10 +662,11 @@ def report_01(data, solver):
         logger.warning(f"No CoV definitions specified in Case: Keyword 'cov_list'!")
 
     # Set Convergence Conditions
+    conv_check_freq = solutionDict.setdefault("conv_check_freq", 5)
     solver.solution.monitor.convergence_conditions = {
         # "condition": "any-condition-is-met",
         "condition": "all-conditions-are-met",
-        "frequency": 5,
+        "frequency": conv_check_freq,
     }
     # Set Basic Solver-Solution-Settings
     tsf = solutionDict.get("time_step_factor", 1)
