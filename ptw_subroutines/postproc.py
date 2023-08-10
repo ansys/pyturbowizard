@@ -50,8 +50,8 @@ def post_01(data, solver, launchEl, trn_name):
     solver.results.report.summary(write_to_file=True, file_name=filename)
 
     # Write out system time
-    #solver.tui.report.system.time_stats()
-    solver.report.system.time_statistics()
+    solver.tui.report.system.time_stats()
+    #solver.report.system.time_statistics()
 
     ## write report table
     createReportTable(
