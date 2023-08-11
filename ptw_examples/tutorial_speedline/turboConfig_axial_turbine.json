@@ -1,0 +1,136 @@
+{
+
+    "launching_cluster":
+    {
+    "fl_version": "23.2.0",
+    "noCore": 28,
+    "precision": "double",
+    "show_gui":  true,
+    "exitatend": false,
+    "queue_slurm": "ottc01",
+    "queue_waiting_time":  3600
+    },    
+  "launching":
+    {
+      "workingDir": "<PathToFluentWorkingDirectory",
+      "fl_version": "23.2.0",
+      "noCore": 8,
+      "precision": "double",
+      "show_gui":  true
+    },
+  "cases": {
+      "axial_turbine_basecase": {
+        "caseFilename": "axial_turbine_basecase",
+        "meshFilename": "axial_turbine.def",
+        "expressionTemplate": "expressionTemplate_compressor_comp.tsv",
+        "expressions": {
+        "GEO_IN_No_Passages": "1",
+        "GEO_IN_No_Passages_360": "60",
+        "GEO_OUT_No_Passages": "2",
+        "GEO_OUT_No_Passages_360": "113",
+        "BC_pref":	"0 [Pa]",
+        "BC_omega":	"5000 [rev / min]",
+        "BC_IN_pt":	"101325 [Pa]",
+        "BC_IN_p_gauge": 	"BC_IN_pt * 0.98",
+        "BC_IN_Tt":	"288.15 [K]",
+        "BC_IN_TuIn":	"0.05",
+        "BC_IN_TuVR":	"10",
+        "BC_OUT_p": "44000 [Pa]"
+        },
+        "locations": {
+          "cz_rotating_names": ["b-rotor-1"],
+          "bz_inlet_names": ["inlet"],
+          "bz_outlet_names": ["outlet"],
+          "bz_walls_counterrotating_names": ["b-rotor-1-shroud"],
+          "bz_walls_rotating_names": [],
+          "bz_walls_freeslip_names": [],
+          "bz_interfaces_periodic_names": {
+            "a-stator-periodic-interface-1": {
+                "side1": "a-stator-1-to-a-stator-1-periodic-1-side-1",
+                "side2": "a-stator-1-to-a-stator-1-periodic-1-side-2"
+              },
+            "b-rotor-periodic-interface-1": {
+                "side1": "b-rotor-1-to-b-rotor-1-periodic-1-side-1",
+                "side2": "b-rotor-1-to-b-rotor-1-periodic-1-side-2"
+              }
+          },
+          "bz_interfaces_mixingplane_names": {
+            "a-rotor-1-b-stator-1-mpm": {
+              "side1": "b-rotor-1-to-a-stator-1-side-1",
+              "side2": "b-rotor-1-to-a-stator-1-side-2"
+            }
+          },
+          "tz_turbo_topology_names":{
+            "a-rotor-1-topology":{
+              "tz_shroud_names": ["a-stator-1-shroud"],
+              "tz_hub_names": ["a-stator-1-hub"],
+              "tz_inlet_names": ["inlet"],
+              "tz_outlet_names": ["b-rotor-1-to-a-stator-1-side-2"],
+              "tz_blade_names": ["a-stator-1-blade"],
+              "tz_theta_periodic_names":["a-stator-periodic-interface-1"]
+            },
+            "b-rotor-1-topology":{
+              "tz_shroud_names": ["b-rotor-1-shroud"],
+              "tz_hub_names": ["b-rotor-1-hub"],
+              "tz_inlet_names": ["b-rotor-1-to-a-stator-1-side-1"],
+              "tz_outlet_names": ["outlet"],
+              "tz_blade_names": ["b-rotor-1-blade"],
+              "tz_theta_periodic_names":["b-rotor-periodic-interface-1"]
+            }
+          }
+        },
+        "fluid_properties": "air-comp-ptw",
+        "setup": {
+            "BC_settings_pout": [0.05, 65],
+            "BC_OUT_reverse": false
+        },
+        "solution": {
+          "reportlist": ["MP_IN_MassFlow_360","MP_OUT_MassFlow_360","MP_Isentropic_Efficiency","MP_PRt","MP_TRt","MP_IN_p"],
+          "res_crit": 1.0e-3,
+          "cov_list": [
+            "MP_Isentropic_Efficiency",
+            "MP_IN_MassFlow_360",
+            "MP_PRt"
+          ],
+          "cov_crit": 1.0e-4,
+          "iter_count": 300,
+          "time_step_factor": 10,
+          "runSolver": false
+        },
+        "results": {
+        }
+      }
+    },
+    "studies": {
+        "axial_turbine_speedline": {
+          "overwriteExisting": true,
+          "runExistingProject": false,
+          "write_data": false,
+          "refCaseFilename": "axial_turbine_basecase_fin",
+          "updateAllDPs": true,
+          "initMethod": "prevDP",
+          "definition": [
+            {
+              "inputparameters": [
+                "BC_OUT_p"
+              ],
+              "useScaleFactor": [false],
+              "valueList": [
+                [
+                48000,
+                50000,
+                54000,
+                58000,
+                62000,
+                68000,
+                66000,
+                70000,
+                74000,
+                78000
+                ]
+              ]
+            }
+          ]
+        }
+      }
+}
