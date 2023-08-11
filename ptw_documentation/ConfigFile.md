@@ -303,7 +303,7 @@ This completes the setup of the ``` locations ``` section.
 ```
 In the section ```solution``` the convergence criteria and solve settings can be specified. 
 
-In ```reportlist``` the expressions for monitoring (plotting and file save) can be set.
+In ```reportlist``` the expressions for monitoring (plotting and file save) can be set. All expressions in the ```reportlist``` will be defined as output-parameters.
 
 ``` res_crit``` is used to specify the normalized local residual convergence limit. 
 
@@ -314,6 +314,7 @@ In ```reportlist``` the expressions for monitoring (plotting and file save) can 
 The automatic time step factor and iteration count can be set via ```time_step_factor``` (length-scale-method = conservative) or ```pseudo_timestep``` and ``` iter_count ``` respectively. 
 
 ``` runSolver``` can be used to specify whether the simulation should start to run at the end of the setup.
+
 #### Results
 ```
         "results": {
@@ -341,9 +342,10 @@ If there are no subelements defined, Fluent defaults will be used.
 Available options:
 
 - ```BC_settings_pout```: pressure-outlet BC-settings: 'Pressure blending factor' & 'Number of bins' (defined as list), e.g. ```[0.05, 65]```
+- ```BC_IN_reverse```: Prevent Reverse Flow for Pressure-Inlet BCs (**default: false**)
+- ```BC_OUT_reverse```: Prevent Reverse Flow for Pressure-Outlet BCs (**default: true**)
+- ```BC_OUT_avg_p```: Use average pressure specification for Pressure-Outlet BCs (**default: true**)
 - ```turbulence_model```: Use a specific turbulence model, currently only k-omega variants are supported: ```wj-bsl-earsm```, ```standard```, ```sst```, ```geko```,```bsl```
-
-
 
 ### Working with multiple cases
 
