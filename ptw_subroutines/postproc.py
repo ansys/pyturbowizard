@@ -87,6 +87,8 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
     mp_df = pd.DataFrame()
 
     if len(filtered_files) > 0:
+        if len(filtered_files) > 1:
+            logger.warning(f"Multiple .out-files found: {filtered_files}")
         # Find the file name with the highest number
         report_file = max(
             filtered_files,
@@ -94,6 +96,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
         )
         report_file = os.path.join(fl_workingDir, report_file)
         report_values, cov_df, mp_df = postproc_utils.calcCov(report_file)
+        logger.info(f"Using: {report_file} for Evaluation.")
 
     else:
         logger.info("No Report File found: data not included in final report")

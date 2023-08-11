@@ -30,6 +30,8 @@ def study_post(data, solver, functionEl):
     logger.info(
         f"Running ParamatricStudy-Postprocessing Function '{functionName}'...  finished!"
     )
+    
+
 
 
 def study_post_01(data, solver):
