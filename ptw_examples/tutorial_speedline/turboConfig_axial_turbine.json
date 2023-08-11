@@ -15,13 +15,14 @@
       "workingDir": "<PathToFluentWorkingDirectory",
       "fl_version": "23.2.0",
       "noCore": 8,
+      "exitatend": false,
       "precision": "double",
       "show_gui":  true
     },
   "cases": {
       "axial_turbine_basecase": {
         "caseFilename": "axial_turbine_basecase",
-        "meshFilename": "axial_turbine.def",
+        "meshFilename": "axial_turbine_mesh.def",
         "expressionTemplate": "expressionTemplate_compressor_comp.tsv",
         "expressions": {
         "GEO_IN_No_Passages": "1",
