@@ -60,7 +60,7 @@ Currently the following functions and corresponding options are available:
 Under the section ``` launching ```, different options for launching options for Fluent can be specified, like the version, number of processes and single or double precision solver.
 
 - ```"workingDir"``` specifies the Fluent working directory, if ```workingDir``` is not set, the script will use the directory of the configuration file as fluent working directory
-- ```"fl_version"``` specifies version of Fluent (supported versions: ```"23.2.0","24.1.ß"```)
+- ```"fl_version"``` specifies version of Fluent (supported versions: ```"23.2.0","24.1.0"```)
 - ```"noCore"``` specifies the number of cores/processes for the Fluent session
 - ```"precision"``` can be ```"double"``` or ```"single"``` precision solver
 - ```"show_gui"```  specifies whether a GUI should be shown or not during simulation
