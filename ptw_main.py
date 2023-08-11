@@ -72,8 +72,8 @@ if external:
     solver = launcher.launchFluent(launchEl)
 
 # Set standard image output format to AVZ
-avz = '"AVZ"'
-solver.tui.preferences.graphics.hardcopy_settings.hardcopy_driver(f'{avz}')
+go_format = '"AVZ"'
+solver.tui.preferences.graphics.hardcopy_settings.hardcopy_driver(f'{go_format}')
 
 # Start Setup
 caseDict = turboData.get("cases")
