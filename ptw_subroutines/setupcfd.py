@@ -277,6 +277,10 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         if solveEnergy:
                             inBC.t0 = "BC_IN_Tt"
 
+                    # Set reverse BC
+                    reverse = data["setup"].setdefault("BC_IN_reverse", False)
+                    inBC.prevent_reverse_flow = reverse
+
                 # Do some general settings
                 if inBC is not None:
                     # Turbulent Settings
