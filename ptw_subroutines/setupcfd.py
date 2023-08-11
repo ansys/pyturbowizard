@@ -278,8 +278,8 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                             inBC.t0 = "BC_IN_Tt"
 
                     # Set reverse BC
-                    reverse = data["setup"].setdefault("BC_IN_reverse", False)
-                    inBC.prevent_reverse_flow = reverse
+                    reverse_option = data["setup"].setdefault("BC_IN_reverse", False)
+                    inBC.prevent_reverse_flow = reverse_option
 
                 # Do some general settings
                 if inBC is not None:
@@ -425,8 +425,8 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     outBC.avg_press_spec = pavg_set
 
                     # Set reverse BC
-                    reverse = data["setup"].setdefault("BC_OUT_reverse", True)
-                    outBC.prevent_reverse_flow = reverse
+                    reverse_option = data["setup"].setdefault("BC_OUT_reverse", True)
+                    outBC.prevent_reverse_flow = reverse_option
 
                     if data["setup"].get("BC_OUT_pressure_pt") is not None:
                         outBC.p_backflow_spec_gen = data["setup"].get(
