@@ -295,7 +295,6 @@ This completes the setup of the ``` locations ``` section.
             "MP_PRt"
           ],
           "cov_crit": 1.0e-4,
-          "tsn": true,
           "iter_count": 10,
           "time_step_factor": 5,
           "runSolver": true
@@ -308,6 +307,8 @@ In ```reportlist``` the expressions for monitoring (plotting and file save) can 
 ``` res_crit``` is used to specify the normalized local residual convergence limit. 
 
 ```cov_list``` and  ``` cov_crit ``` are used to specify the parameters and convergence criteria used for a Coefficient of Variation. 
+
+```conv_check_freq``` is an optional argument and can be used to define the convergence check frequency (**default: 5**)
 
 ```tsn``` is an optional argument, that explicitly turns on turbo machinery specific numerics as beta feature. 
 
