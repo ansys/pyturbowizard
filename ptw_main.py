@@ -24,8 +24,8 @@ from ptw_subroutines.utils import (
 # Set Logger
 logger = ptw_logger.init_logger(console_output=False)
 
-version = "1.5.2"
-logger.info(f"\n*** Starting PyTurboWizard (Version {str(version)}) ***\n\n")
+version = "1.5.3"
+logger.info(f"*** Starting PyTurboWizard (Version {str(version)}) ***")
 
 # If solver variable does not exist, Fluent has been started in external mode
 external = "solver" not in globals()
@@ -72,14 +72,14 @@ if external:
     solver = launcher.launchFluent(launchEl)
 
 # Set standard image output format to AVZ
-avz = '"AVZ"'
-solver.tui.preferences.graphics.hardcopy_settings.hardcopy_driver(f'{avz}')
+go_format = '"AVZ"'
+solver.tui.preferences.graphics.hardcopy_settings.hardcopy_driver(f'{go_format}')
 
 # Start Setup
 caseDict = turboData.get("cases")
 if caseDict is not None:
     for casename in caseDict:
-        logger.info("Running Case: " + casename + "\n")
+        logger.info("Running Case: " + casename)
         caseEl = turboData["cases"][casename]
         # Basic Dict Stuff...
         # First: Copy data from reference if refCase is set
@@ -88,7 +88,7 @@ if caseDict is not None:
         # Check if case should be executed
         if caseEl.setdefault("skip_execution", False):
             logger.info(
-                f"Case '{casename}' is skipped: 'skip_execution' is set to 'True' in Case-Definition\n"
+                f"Case '{casename}' is skipped: 'skip_execution' is set to 'True' in Case-Definition"
             )
             continue
         # Update initial case-function-dict
@@ -150,16 +150,16 @@ if caseDict is not None:
         prepostproc.prepost(data=caseEl, solver=solver, functionEl=caseFunctionEl,launchEl=launchEl)
 
         # Write case and ini-data & settings file
-        logger.info("\nWriting initial case & settings file\n")
+        logger.info("Writing initial case & settings file")
         solver.file.write(file_type="case", file_name=caseFilename)
         settingsFilename = '"' + caseFilename + '.set"'
         solver.tui.file.write_settings(settingsFilename)
         if solver.field_data.is_data_valid():
-            logger.info("\nWriting initial dat file\n")
+            logger.info("Writing initial dat file")
             solver.file.write(file_type="data", file_name=caseFilename)
         else:
             logger.info(
-                "Skipping Writing of Initial Solution Data: No Solution Data available\n"
+                "Skipping Writing of Initial Solution Data: No Solution Data available"
             )
 
         # Read Additional Journals, if specified
@@ -185,7 +185,7 @@ if caseDict is not None:
             filename = caseFilename + "_fin"
             solver.file.write(file_type="case-data", file_name=filename)
         else:
-            logger.info("Skipping Postprocessing: No Solution Data available\n")
+            logger.info("Skipping Postprocessing: No Solution Data available")
 
         # Read Additional Journals, if specified
         fluent_utils.read_journals(
@@ -214,7 +214,7 @@ if studyDict is not None:
 solver.exit()
 
 # Write out Debug info
-if turboData.setdefault("debug_level", 0) > 0:
+if turboData.setdefault("debug_level", 1) > 0:
     import ntpath
 
     debug_filename = "ptw_" + ntpath.basename(config_filename)
@@ -224,4 +224,4 @@ if turboData.setdefault("debug_level", 0) > 0:
         logger.info(f"Writing ptw-json-File: {debug_file_path}")
         jsonFile.write(jsonString)
 
-logger.info("Script successfully finished! \n")
+logger.info("Script successfully finished!")
