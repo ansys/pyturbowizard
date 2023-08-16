@@ -64,6 +64,12 @@ def init_standard_01(data, solver):
 
 
 def init_standard_02(data, solver):
+
+    # if the boundary condition needs information from flow field
+    # (e.g. density to convert volume-rate to massflow-rate),
+    # we need to initialize first so that we have field data available
+    solver.solution.initialization.standard_initialize()
+    
     solver.solution.initialization.reference_frame = "relative"
     if "BC_IN_Tt" in data["expressions"]:
         myTemp = float(data["expressions"]["BC_IN_Tt"].split(" ")[0])
