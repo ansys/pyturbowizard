@@ -182,8 +182,9 @@ if caseDict is not None:
                 launchEl=launchEl,
                 trn_name=trnFileName,
             )
-            filename = caseFilename + "_fin"
-            solver.file.write(file_type="case-data", file_name=filename)
+            # version 1.5.3: no alteration of case/data done in post processing, removed additonal saving
+            #filename = caseFilename + "_fin"
+            #solver.file.write(file_type="case-data", file_name=filename)
         else:
             logger.info("Skipping Postprocessing: No Solution Data available")
 
