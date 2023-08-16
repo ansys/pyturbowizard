@@ -47,12 +47,53 @@ There are two possible scenarios:
 For a more comprehensive description of the different launch options see: [Configuration File Setup](/ptw_documentation/ConfigFile.md#Launch-Options)
 
 ### Base Case Setup
-The Base Case serves as initial input case for your study. It carries all the information about the simulation setup, as well as the initial boundary conditions used. It can be very important, depending on the initialization method that is chosen for the study. 
+The Base Case serves as initial input case for your study. It carries all the information about the simulation setup, as well as the initial boundary conditions used. It can be very important, depending on the initialization method that is chosen for the study. A detailed description of all the available Settings can be found here: [Configuration File Setup](/ptw_documentation/ConfigFile.md)
 
 When using the ```"baseDP"``` initilization method, the base case result is always used for initialization. It is advised to pick a well converged design point as base case to have a stable initialization for the remaining Design Points.
 
 When using the ```"prevDP"``` initialization method, the previous Design Point is used for initialization. When utilizing this approach, it is recommended to initiate the process from one end of the speedline, such as surge or choke, and ensure a consistent and monotonic progression in the adjustment of boundary conditions while traversing the speedlines.
 
-When using the ```"base_ini"``` initilization method, each Design Point is initialized with the initialization method of the base case (**does not work for FMG**). Therefore the study initialization is independed of the base case convergence or boundary conditions.
+When using the ```"base_ini"``` initilization method, each Design Point is initialized with the initialization method of the base case (**does not work for FMG**). Therefore the study initialization is independent of the base case convergence or boundary conditions.
 
-In the axial turbine example, the ``"prevDP"``` initialization is used and the boundary conditions of the setup are picked accordingly to start from the choke limit of the turbine
+In the axial turbine example, the ``"prevDP"``` initialization is used and the boundary conditions of the setup are picked accordingly to start from the choke limit of the turbine.
+
+Also the ```"solution"``` argument "```"runSolver": false``` ensures that only the initialization is carried out in the base case, so that solution data is available in the study.
+### Study Setup
+```
+{
+  "launching": {...},
+  "cases": {
+      "axial_turbine_test": {
+        "expressions": {...},
+        "locations": {...},
+        "fluid_properties": "...",
+        "setup": {...},
+        "solution": {...},
+        "results": {...}
+      }
+    },
+    "studies": {
+        "axial_turbine_test": {
+          "overwriteExisting": true,
+          "runExistingProject": false,
+          "write_data": true,
+          "refCaseFilename": "axial_turbine_test_fin",
+          "updateAllDPs": true,
+          "initMethod": "prevDP",
+          "postProc": true,
+          "definition": [
+            {
+              "inputparameters": ["BC_OUT_p"],
+              "useScaleFactor": [false],
+              "valueList": [[48000, 54000, 62000, 66000, 74000]]
+            }
+          ]
+        }
+      }
+}
+```
+The Study Setup consists of the settings ```"overwriteExisting": true``` and ```"runExistingProject": false```, which ensures that a fresh study is created and any existing study with that name gets overwritten.
+
+```"updateAllDPs": true``` and ```"write_data": true"``` are set to capture all .dat files for the study and to run the whole speedline.
+
+The ```"defintion"``` section is used to define the parameters to be varied. In this case the static outlet pressure is varied with explicit values (no scale factor used).
