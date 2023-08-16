@@ -107,7 +107,7 @@
           "overwriteExisting": true,
           "runExistingProject": false,
           "write_data": false,
-          "refCaseFilename": "axial_turbine_basecase_fin",
+          "refCaseFilename": "axial_turbine_basecase",
           "updateAllDPs": true,
           "initMethod": "prevDP",
           "definition": [
