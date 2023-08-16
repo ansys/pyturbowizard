@@ -64,13 +64,21 @@ def init_standard_01(data, solver):
 
 
 def init_standard_02(data, solver):
-    solver.solution.initialization.reference_frame = "absolute"
+
+    # if the boundary condition needs information from flow field
+    # (e.g. density to convert volume-rate to massflow-rate),
+    # we need to initialize first so that we have field data available
+    solver.solution.initialization.standard_initialize()
+    
+    solver.solution.initialization.reference_frame = "relative"
     if "BC_IN_Tt" in data["expressions"]:
-        myvalue = float(data["expressions"]["BC_IN_Tt"].split(" ")[0])
-        solver.solution.initialization.defaults = {"temperature": myvalue}
-    solver.solution.initialization.defaults = {"k": 1}
-    solver.solution.initialization.defaults = {"omega": 1}
-    solver.solution.initialization.defaults = {"pressure": 0}
+        myTemp = float(data["expressions"]["BC_IN_Tt"].split(" ")[0])
+        solver.solution.initialization.defaults = {"temperature": myTemp}
+    if "BC_IN_p_gauge" in data["expressions"]:
+          myPress = float(data["expressions"]["BC_IN_p_gauge"].split(" ")[0])
+          solver.solution.initialization.defaults = {"pressure": myPress}
+    solver.solution.initialization.defaults = {"k": 0.01}
+    solver.solution.initialization.defaults = {"omega": 0.01}
     solver.solution.initialization.defaults = {"x-velocity": 0}
     solver.solution.initialization.defaults = {"y-velocity": 0}
     solver.solution.initialization.defaults = {"z-velocity": 0}

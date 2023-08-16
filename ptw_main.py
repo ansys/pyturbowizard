@@ -172,7 +172,7 @@ if caseDict is not None:
             solve.solve_01(caseEl, solver)
             filename = caseFilename + "_fin"
             solver.file.write(file_type="case-data", file_name=filename)
-
+    
         # Postprocessing
         if solver.field_data.is_data_valid():
             postproc.post(
@@ -182,10 +182,12 @@ if caseDict is not None:
                 launchEl=launchEl,
                 trn_name=trnFileName,
             )
-            filename = caseFilename + "_fin"
-            solver.file.write(file_type="case-data", file_name=filename)
+            # version 1.5.3: no alteration of case/data done in post processing, removed additonal saving
+            #filename = caseFilename + "_fin"
+            #solver.file.write(file_type="case-data", file_name=filename)
         else:
             logger.info("Skipping Postprocessing: No Solution Data available")
+        
 
         # Read Additional Journals, if specified
         fluent_utils.read_journals(

@@ -59,6 +59,14 @@ Currently the following functions and corresponding options are available:
 ### Launch Options
 Under the section ``` launching ```, different options for launching options for Fluent can be specified, like the version, number of processes and single or double precision solver.
 
+- ```"workingDir"``` specifies the Fluent working directory, if ```workingDir``` is not set, the script will use the directory of the configuration file as fluent working directory
+- ```"fl_version"``` specifies version of Fluent (supported versions: ```"23.2.0","24.1.0"```)
+- ```"noCore"``` specifies the number of cores/processes for the Fluent session
+- ```"precision"``` can be ```"double"``` or ```"single"``` precision solver
+- ```"show_gui"```  specifies whether a GUI should be shown or not during simulation
+- ```"exitatend"``` is used to specify whether the Fluent session should be closed after the script is finished
+
+
 For running Fluent on Linux or a Cluster, there are two options:
    - Submit job to a slurm-queue: ```queue_slurm``` (e.g. ```"ottc01"```) and a maximal waiting time in sec ```queue_waiting_time``` (default: 600sec). Other options identical to usual launching options
    - Hook on to an existing Fluent session ([How to Run on Linux](/README.md#linux--cluster-1)): For this a server file name has to be specified under ``` serverfilename ```. When hooking onto a existing Fluent session the ``` launching ``` options are not used, except for ```workingDir```.
@@ -73,8 +81,6 @@ For running Fluent on Linux or a Cluster, there are two options:
       "show_gui":  true
     },
 ```
-
-**Note:** If ```workingDir``` is not set, the script will use the directory of the configuration file as fluent working directory.
 
 ### Cases
 Under the ``` cases ``` section different case setups can be specified for the script to run (different meshes etc.).
