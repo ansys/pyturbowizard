@@ -167,7 +167,7 @@ if caseDict is not None:
         # Writing additional setup info: settings & extsch file
         settingsFilename = '"' + caseFilename + '.set"'
         solver.tui.file.write_settings(settingsFilename)
-        if debug_level > 1:
+        if caseEl.setdefault("run_extsch", False):
             misc_utils.run_extsch_script(scriptPath=scriptPath, caseDir=fl_workingDir, caseEl=caseEl)
 
         if solver.field_data.is_data_valid():

@@ -47,7 +47,7 @@ def run_extsch_script(scriptPath:str, caseDir:str, caseEl:dict):
     if platform == "linux" or platform == "linux2":
         logger.info(f"Running 'extsch' script...")
         caseFilename = caseEl.get("caseFilename")
-        output_filename = '"' + caseFilename + '.extsch"'
+        output_filename = f"{caseFilename}.extsch"
         commandlist = list()
         exec_path = os.path.join(scriptPath, "ptw_misc", "extsch_script", "extsch")
         commandlist.append(exec_path)
@@ -59,7 +59,7 @@ def run_extsch_script(scriptPath:str, caseDir:str, caseEl:dict):
         )
         logger.info(f"'extsch' output written to: {output_filename}")
     else:
-        logger.info(f"Script 'extsch' only available for Linux platforms (your platform: {platform}): Skipping function!")
+        logger.info(f"Script 'extsch' only available for linux platforms (current platform: {platform}): Skipping function!")
 
 
 
