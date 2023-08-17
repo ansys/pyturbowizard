@@ -1,5 +1,6 @@
 import os.path
 import ntpath
+import subprocess
 
 # Logger
 from ptw_subroutines.utils import ptw_logger
@@ -41,6 +42,24 @@ def get_free_filename_maxIndex(dirname, base_filename):
 
     return filename
 
+def run_extsch_script(scriptPath:str, caseDir:str, caseEl:dict):
+    from sys import platform
+    if platform == "linux" or platform == "linux2":
+        logger.info(f"Running 'extsch' script...")
+        caseFilename = caseEl.get("caseFilename")
+        output_filename = '"' + caseFilename + '.extsch"'
+        commandlist = list()
+        exec_path = os.path.join(scriptPath, "ptw_misc", "extsch_script", "extsch")
+        commandlist.append(exec_path)
+        commandlist.extend(f"{caseFilename}.cas.h5")
+        commandlist.extend("| uniq")
+        commandlist.extend(f"> {output_filename}")
+        process_files = subprocess.Popen(
+            commandlist, cwd=caseDir, stdout=subprocess.DEVNULL
+        )
+        logger.info(f"'extsch' output written to: {output_filename}")
+    else:
+        logger.info(f"Script 'extsch' only available for Linux platforms (your platform: {platform}): Skipping function!")
 
 
 

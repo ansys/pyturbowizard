@@ -1,6 +1,7 @@
 import os
 import json
 import sys
+import copy
 
 # Load Script Modules
 from ptw_subroutines import (
@@ -19,7 +20,11 @@ from ptw_subroutines.utils import (
     dict_utils,
     expressions_utils,
     fluent_utils,
+    misc_utils
 )
+
+# Set default Debug-Level
+debug_level = 1
 
 # Set Logger
 logger = ptw_logger.init_logger(console_output=False)
@@ -51,8 +56,14 @@ if config_filename.endswith("yaml"):
 else:
     turboData = json.load(config_file)
 
+#Copy dict from file
+turboData_from_file = copy.deepcopy(turboData)
+
 # Set Version to turboData
 turboData["ptw_version"] = version
+# Get or Set-Default Debug-Level
+debug_level = turboData.setdefault("debug_level", debug_level)
+
 # Get important Elements from json file
 launchEl = turboData.get("launching")
 glfunctionEl = turboData.get("functions")
@@ -152,8 +163,13 @@ if caseDict is not None:
         # Write case and ini-data & settings file
         logger.info("Writing initial case & settings file")
         solver.file.write(file_type="case", file_name=caseFilename)
+
+        # Writing additional setup info: settings & extsch file
         settingsFilename = '"' + caseFilename + '.set"'
         solver.tui.file.write_settings(settingsFilename)
+        if debug_level > 1:
+            misc_utils.run_extsch_script(scriptPath=scriptPath, caseDir=fl_workingDir, caseEl=caseEl)
+
         if solver.field_data.is_data_valid():
             logger.info("Writing initial dat file")
             solver.file.write(file_type="data", file_name=caseFilename)
@@ -215,9 +231,11 @@ if studyDict is not None:
 solver.exit()
 
 # Write out Debug info
-if turboData.setdefault("debug_level", 1) > 0:
-    import ntpath
+if debug_level > 0:
+    #Compare turboData from file & final --> check if some keywords have not been used
+    dict_utils.detect_unused_keywords(refDict=turboData, compareDict=turboData_from_file)
 
+    import ntpath
     debug_filename = "ptw_" + ntpath.basename(config_filename)
     debug_file_path = os.path.join(fl_workingDir, debug_filename)
     jsonString = json.dumps(turboData, indent=4, sort_keys=True)
