@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import json
 
 # Logger
-from ptw_subroutines.utils import ptw_logger, dict_utils, postproc_utils
+from ptw_subroutines.utils import ptw_logger, dict_utils, postproc_utils,misc_utils
 
 logger = ptw_logger.getLogger()
 
@@ -50,14 +50,15 @@ def study_post_01(data, solver):
         runPostProc = studyData.setdefault("postProc", True)
 
         if runPostProc:
-            flworking_Dir = data.get("launching")["workingDir"]
+            fl_workingDir = data.get("launching")["workingDir"]
             baseCaseName = studyData.get("refCaseFilename")
             pathtostudy = os.path.join(
-                flworking_Dir, f"{studyName}.cffdb", f"{baseCaseName}-Solve"
+                fl_workingDir, f"{studyName}.cffdb", f"{baseCaseName}-Solve"
             )
 
             # Define a Folder to store plots
-            studyPlotFolder = os.path.join(flworking_Dir, f"{studyName}_study_plots")
+            studyOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir, study_name=studyName)
+            studyPlotFolder = os.path.join(studyOutPath, f"study_plots")
             os.makedirs(
                 studyPlotFolder, exist_ok=True
             )  # Create the folder if it doesn't exist
