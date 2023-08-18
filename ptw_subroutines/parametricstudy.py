@@ -162,8 +162,11 @@ def study01(data, solver):
             )
 
             # Save Study
-            # solver.tui.file.parametric_project.save_as(studyName)
-            solver.file.parametric_project.save()
+            if studyIndex == 0:
+                solver.file.parametric_project.save()
+            else:
+                projectFilename = os.path.join(flworking_Dir, studyName)
+                solver.tui.file.parametric_project.save_as(projectFilename)
 
             # Increasing study index
             studyIndex = studyIndex + 1
@@ -205,7 +208,11 @@ def study01(data, solver):
             )
 
             # Save Study
-            solver.file.parametric_project.save()
+            if studyIndex == 0:
+                solver.file.parametric_project.save()
+            else:
+                projectFilename = os.path.join(flworking_Dir, studyName)
+                solver.tui.file.parametric_project.save_as(projectFilename)
 
             # Increasing study index
             studyIndex = studyIndex + 1

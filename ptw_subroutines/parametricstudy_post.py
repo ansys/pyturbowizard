@@ -48,7 +48,6 @@ def study_post_01(data, solver):
     for studyName in studyDict:
         studyData = studyDict[studyName]
         runPostProc = studyData.setdefault("postProc", True)
-        studyData["postProc"] = runPostProc
 
         if runPostProc:
             fl_workingDir = data.get("launching")["workingDir"]

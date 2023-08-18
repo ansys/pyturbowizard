@@ -1,5 +1,6 @@
 import os.path
 import ntpath
+import subprocess
 
 # Logger
 from ptw_subroutines.utils import ptw_logger
@@ -41,6 +42,24 @@ def get_free_filename_maxIndex(dirname, base_filename):
 
     return filename
 
+def run_extsch_script(scriptPath:str, workingDir:str, caseEl:dict):
+    from sys import platform
+    if platform == "linux" or platform == "linux2":
+        logger.info(f"Running 'extsch' script...")
+        caseFilename = caseEl.get("caseFilename")
+        output_filename = f"{caseFilename}.extsch"
+        commandlist = list()
+        exec_path = os.path.join(scriptPath, "ptw_misc", "extsch_script", "extsch")
+        commandlist.append(exec_path)
+        commandlist.append(f"{caseFilename}.cas.h5")
+        commandlist.append("| uniq")
+        commandlist.append(f"> {output_filename}")
+        process_files = subprocess.Popen(
+            commandlist, cwd=workingDir, stdout=subprocess.DEVNULL
+        )
+        logger.info(f"'extsch' output written to: {output_filename}")
+    else:
+        logger.info(f"Script 'extsch' only available for linux platforms (current platform: {platform}): Skipping function!")
 
 def ptw_output(fl_workingDir, study_name=None, case_name=None):
     # Define a PTW output folder in Fluent working directory

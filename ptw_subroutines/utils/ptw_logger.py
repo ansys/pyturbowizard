@@ -15,7 +15,7 @@ def init_logger(console_output: bool = True, file_output: bool = True):
         handler.setLevel(logging.INFO)
         logger.addHandler(handler)
     if file_output:
-        logger_file_name = misc_utils.get_free_filename(
+        logger_file_name = misc_utils.get_free_filename_maxIndex(
             dirname=".", base_filename="PyTurboWizard.log"
         )
         handler = logging.FileHandler(filename=logger_file_name, encoding="utf-8")
