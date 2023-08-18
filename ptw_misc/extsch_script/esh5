@@ -1,0 +1,27 @@
+#!/bin/bash
+
+thefile="$1"
+
+function mydump ()
+{
+  set="$1"   ####                                                                                        -e '/^[^(]/d' -e '/^(0): [1-9]$/d'
+  h5dump -d "$set" $thefile | sed -e '1,10d' -e '11s/^.........//' -e 's#^  *##' -e '$a))' -e 's/))"$//'
+}
+
+declare -a sets
+sets=()
+sets=(`h5dump -A -g settings $thefile | grep 'DATASET' | sed -e 's#^.*"\(.*\)" {$#\1#' -e 's# #_#' `)
+
+  echo DBG: "${sets[@]}"
+
+for set in "${sets[@]//_/ }"
+do
+    echo DBG: '--->'"$set"'<---'
+  mydump "/settings/$set"
+done
+
+#mydump '/settings/Rampant Variables'
+#mydump '/settings/Domain Variables'
+#mydump '/settings/Cortex Variables'
+#mydump '/settings/Thread Variables'
+## mydump '/settings/TGrid Variables'
