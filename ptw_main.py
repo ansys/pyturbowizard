@@ -86,6 +86,10 @@ if external:
 go_format = '"AVZ"'
 solver.tui.preferences.graphics.hardcopy_settings.hardcopy_driver(f'{go_format}')
 
+# Set Batch options
+solver.file.confirm_overwrite = False
+#solver.tui.file.set_batch_options("no yes yes no") -> does not work
+
 # Start Setup
 caseDict = turboData.get("cases")
 if caseDict is not None:
@@ -112,10 +116,6 @@ if caseDict is not None:
 
         # Get base caseFilename and update dict
         caseFilename = caseEl.setdefault("caseFilename", casename)
-
-        # Set Batch options
-        solver.file.confirm_overwrite = False
-        #solver.tui.file.set_batch_options("no yes yes no")
 
         # Start Transcript
         trnFileName = casename + ".trn"
@@ -169,7 +169,7 @@ if caseDict is not None:
         settingsFilename = '"' + caseFilename + '.set"'
         solver.tui.file.write_settings(settingsFilename)
         if caseEl.setdefault("run_extsch", False):
-            misc_utils.run_extsch_script(scriptPath=scriptPath, caseDir=fl_workingDir, caseEl=caseEl)
+            misc_utils.run_extsch_script(scriptPath=scriptPath, workingDir=fl_workingDir, caseEl=caseEl)
 
         if solver.field_data.is_data_valid():
             logger.info("Writing initial dat file")
