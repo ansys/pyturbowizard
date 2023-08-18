@@ -169,9 +169,9 @@ if caseDict is not None:
         settingsFilename = '"' + caseFilename + '.set"'
         # Removing file manually, as batch options seem not to work
         if os.path.exists(settingsFilename):
-            logger.info(f"Removing old existing settings-file {settingsFilename} ")
+            logger.info(f"Removing old existing settings-file: {settingsFilename} ")
             os.remove(settingsFilename)
-        logger.info(f"Writing settings-file {settingsFilename}")
+        logger.info(f"Writing settings-file: {settingsFilename}")
         solver.tui.file.write_settings(settingsFilename)
 
         if caseEl.setdefault("run_extsch", False):
