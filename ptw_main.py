@@ -167,6 +167,7 @@ if caseDict is not None:
 
         # Writing additional setup info: settings & extsch file
         settingsFilename = '"' + caseFilename + '.set"'
+        # Removing file manually, as batch options seem not to work
         if os.path.exists(settingsFilename):
             os.remove(settingsFilename)
         solver.tui.file.write_settings(settingsFilename)
