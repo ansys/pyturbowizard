@@ -70,7 +70,6 @@ def get_material_from_lib(caseDict: dict, scriptPath: str):
     return
 
 def detect_unused_keywords(refDict:dict, compareDict:dict, path="root"):
-    logger.info("Detecting unused keywords of input-config-file")
     for item in compareDict:
         if item not in refDict:
             logger.warning(f"Element found in Config-File that is not known! Check keyword: '{item}' in '{path}'")

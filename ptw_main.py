@@ -115,6 +115,7 @@ if caseDict is not None:
 
         # Set Batch options
         solver.file.confirm_overwrite = False
+        #solver.tui.file.set_batch_options("no yes yes no")
 
         # Start Transcript
         trnFileName = casename + ".trn"
@@ -232,7 +233,8 @@ solver.exit()
 
 # Write out Debug info
 if debug_level > 0:
-    #Compare turboData from file & final --> check if some keywords have not been used
+    #Compare turboData: final data vs file data --> check if some keywords have not been used
+    logger.info("Detecting unused keywords of input-config-file")
     dict_utils.detect_unused_keywords(refDict=turboData, compareDict=turboData_from_file)
 
     import ntpath
