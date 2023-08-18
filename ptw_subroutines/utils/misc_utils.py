@@ -42,8 +42,31 @@ def get_free_filename_maxIndex(dirname, base_filename):
     return filename
 
 
-
-
+def ptw_output(fl_workingDir, study_name=None, case_name=None):
+    # Define a PTW output folder in Fluent working directory
+    ptw_output_path = ""
+    if os.path.exists(fl_workingDir):
+        ptw_output_path = os.path.join(fl_workingDir, "PTW_output")
+        if not os.path.exists(ptw_output_path):
+            os.makedirs(ptw_output_path)
+    
+    # Get the Path to a seprate case folder
+    if study_name is not None:
+        study_name = 'study_'+study_name
+        study_path = os.path.join(ptw_output_path, study_name)
+        if not os.path.exists(study_path):
+            os.makedirs(study_path)
+        return study_path
+    
+    # Get the Path to a seprate study folder
+    if case_name is not None:
+        case_name = 'case_' + case_name
+        case_path = os.path.join(ptw_output_path, case_name)
+        if not os.path.exists(case_path):
+            os.makedirs(case_path)
+        return case_path
+    
+    return ptw_output_path
 
 
 

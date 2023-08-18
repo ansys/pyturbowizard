@@ -1,6 +1,6 @@
 # Logger
 from ptw_subroutines.utils import ptw_logger, dict_utils, misc_utils, fluent_utils
-
+import os
 logger = ptw_logger.getLogger()
 
 
@@ -590,13 +590,17 @@ def boundary_01(data, solver, solveEnergy: bool = True):
     return
 
 
-def report_01(data, solver):
+def report_01(data, solver,launchEl):
     #Get Solution-Dict
     solutionDict = data.get("solution")
+    #Get PTW Output folder path
+    fl_workingDir = launchEl.get("workingDir")
+    caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir, case_name=data["caseFilename"])
+
     if solutionDict is None:
         logger.warning(f"No Solution-Dict specified in Case: 'solution'. Skipping Report-Definition!")
         return
-
+    
     # Reports
     reportList = solutionDict.get("reportlist")
     if reportList is not None:
@@ -621,7 +625,7 @@ def report_01(data, solver):
             reportName = "rep-" + reportName.lower()
             reportNameList.append(reportName)
 
-        reportFileName = data["caseFilename"] + "_report.out"
+        reportFileName = os.path.join(caseOutPath, "report.out")
         solver.solution.monitor.report_files["report-file"] = {
             "file_name": reportFileName,
             "report_defs": reportNameList,

@@ -19,6 +19,7 @@ from ptw_subroutines.utils import (
     dict_utils,
     expressions_utils,
     fluent_utils,
+    misc_utils
 )
 
 # Set Logger
@@ -106,7 +107,9 @@ if caseDict is not None:
         solver.file.confirm_overwrite = False
 
         # Start Transcript
-        trnFileName = casename + ".trn"
+        caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir,case_name=caseFilename)
+        trnName = casename+".trn"
+        trnFileName = os.path.join(caseOutPath,trnName)
         solver.file.start_transcript(file_name=trnFileName)
 
         # Mesh import, expressions, profiles
@@ -118,8 +121,10 @@ if caseDict is not None:
             data=caseEl, script_dir=scriptPath, working_dir=fl_workingDir
         )
         # Reading ExpressionFile into Fluent
+        caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir,case_name=caseFilename)
+        expressionFilename = os.path.join(caseOutPath,caseEl["expressionFilename"])
         solver.tui.define.named_expressions.import_from_tsv(
-            caseEl["expressionFilename"]
+            expressionFilename
         )
         # Check if all inputParameters are valid
         expressions_utils.check_input_parameter_expressions(solver=solver)
@@ -132,7 +137,7 @@ if caseDict is not None:
 
         # Case Setup
         setupcfd.setup(data=caseEl, solver=solver, functionEl=caseFunctionEl)
-        setupcfd.report_01(caseEl, solver)
+        setupcfd.report_01(caseEl, solver,launchEl)
 
         # Solution
         # Set Solver Settings
@@ -152,7 +157,7 @@ if caseDict is not None:
         # Write case and ini-data & settings file
         logger.info("Writing initial case & settings file")
         solver.file.write(file_type="case", file_name=caseFilename)
-        settingsFilename = '"' + caseFilename + '.set"'
+        settingsFilename = os.path.join(caseOutPath, 'settings.set')
         solver.tui.file.write_settings(settingsFilename)
         if solver.field_data.is_data_valid():
             logger.info("Writing initial dat file")
@@ -220,7 +225,8 @@ if turboData.setdefault("debug_level", 1) > 0:
     import ntpath
 
     debug_filename = "ptw_" + ntpath.basename(config_filename)
-    debug_file_path = os.path.join(fl_workingDir, debug_filename)
+    ptwOutPath=misc_utils.ptw_output(fl_workingDir=fl_workingDir)
+    debug_file_path = os.path.join(ptwOutPath, debug_filename)
     jsonString = json.dumps(turboData, indent=4, sort_keys=True)
     with open(debug_file_path, "w") as jsonFile:
         logger.info(f"Writing ptw-json-File: {debug_file_path}")
