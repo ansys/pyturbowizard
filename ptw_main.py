@@ -165,15 +165,15 @@ if caseDict is not None:
         logger.info("Writing initial case & settings file")
         solver.file.write(file_type="case", file_name=caseFilename)
 
-        # Writing additional setup info: settings & extsch file
-        settingsFilename = '"' + caseFilename + '.set"'
+        # Writing additional setup info: settings file
+        settingsFilename = os.path.join(fl_workingDir, caseFilename + '.set')
         # Removing file manually, as batch options seem not to work
         if os.path.exists(settingsFilename):
             logger.info(f"Removing old existing settings-file: {settingsFilename} ")
             os.remove(settingsFilename)
         logger.info(f"Writing settings-file: {settingsFilename}")
         solver.tui.file.write_settings(settingsFilename)
-
+        # Writing additional setup info: extsch file
         if caseEl.setdefault("run_extsch", False):
             misc_utils.run_extsch_script(scriptPath=scriptPath, workingDir=fl_workingDir, caseEl=caseEl)
 
