@@ -167,7 +167,13 @@ if caseDict is not None:
 
         # Writing additional setup info: settings & extsch file
         settingsFilename = '"' + caseFilename + '.set"'
+        # Removing file manually, as batch options seem not to work
+        if os.path.exists(settingsFilename):
+            logger.info(f"Removing old existing settings-file: {settingsFilename} ")
+            os.remove(settingsFilename)
+        logger.info(f"Writing settings-file: {settingsFilename}")
         solver.tui.file.write_settings(settingsFilename)
+
         if caseEl.setdefault("run_extsch", False):
             misc_utils.run_extsch_script(scriptPath=scriptPath, workingDir=fl_workingDir, caseEl=caseEl)
 
