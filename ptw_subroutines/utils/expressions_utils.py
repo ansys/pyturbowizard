@@ -1,7 +1,7 @@
 import os
 
 # Logger
-from ptw_subroutines.utils import ptw_logger
+from ptw_subroutines.utils import ptw_logger, misc_utils
 
 logger = ptw_logger.getLogger()
 
@@ -12,7 +12,10 @@ def write_expression_file(data: dict, script_dir: str, working_dir: str):
     if fileName is None or fileName == "":
         fileName = "expressions.tsv"
         data["expressionFilename"] = fileName
-    fileName = os.path.join(working_dir, fileName)
+        
+    case_output_path = misc_utils.ptw_output(fl_workingDir=working_dir, case_name=data.get("caseFilename"))
+    fileName = os.path.join(case_output_path, fileName)
+
     with open(fileName, "w") as sf:
         expressionTemplatePath = os.path.join(
             script_dir, "ptw_templates", data["expressionTemplate"]

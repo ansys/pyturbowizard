@@ -34,12 +34,12 @@ def prepost_01(data, solver, launchEl):
     # Create Spanwise Plots if specified by user
     if data["locations"].get("tz_turbo_topology_names") is not None:
         try:
-            spanPlots(data, solver)
+            spanPlots(data, solver,launchEl)
         except Exception as e:
             logger.info(f"No span plots have been created: {e}")
 
 
-def spanPlots(data, solver):
+def spanPlots(data, solver,launchEl):
     # Create spanwise surfaces
     spansSurf = data["results"].get("span_plot_height")
     contVars = data["results"].get("span_plot_var")
@@ -93,6 +93,8 @@ def spanPlots(data, solver):
                 solver.results.graphics.contour[contName].coloring(option='banded')
                 solver.results.graphics.contour[contName].display()
 
+
+                fl_workingDir = launchEl.get("workingDir")
                 # Save contour plos as avz files
                 # Python commands (not supported yet):
                 # plot_folder = os.path.join(fl_workingDir, f'plots_{caseFilename}')

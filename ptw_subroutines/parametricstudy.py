@@ -2,7 +2,7 @@ import os
 import json
 
 # Logger
-from ptw_subroutines.utils import ptw_logger, dict_utils
+from ptw_subroutines.utils import ptw_logger, dict_utils, misc_utils
 
 logger = ptw_logger.getLogger()
 
@@ -156,10 +156,7 @@ def study01(data, solver):
                 fluent_study.design_points.update_all()
 
             # Export results to table
-            design_point_table_filepath = (
-                flworking_Dir + "/" + studyName + "_dp_table.csv"
-            )
-            design_point_table_filepath = os.path.normpath(design_point_table_filepath)
+            design_point_table_filepath = os.path.join(studyOutPath,"dp_table.csv")
             solver.parametric_studies.export_design_table(
                 filepath=design_point_table_filepath
             )
@@ -203,12 +200,9 @@ def study01(data, solver):
             # Run all Design Points
             if studyEl.setdefault("updateAllDPs", False):
                 fluent_study.design_points.update_all()
-
+            studyOutPath = misc_utils.ptw_output(fl_workingDir=flworking_Dir,study_name=studyName)
             # Export results to table
-            design_point_table_filepath = (
-                flworking_Dir + "/" + studyName + "_dp_table.csv"
-            )
-            design_point_table_filepath = os.path.normpath(design_point_table_filepath)
+            design_point_table_filepath = os.path.join(studyOutPath,"dp_table.csv")
             solver.parametric_studies.export_design_table(
                 filepath=design_point_table_filepath
             )

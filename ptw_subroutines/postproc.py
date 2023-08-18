@@ -2,7 +2,7 @@ import os
 import matplotlib.pyplot as plt
 
 # Logger
-from ptw_subroutines.utils import ptw_logger, postproc_utils, dict_utils, fluent_utils
+from ptw_subroutines.utils import ptw_logger, postproc_utils, dict_utils, fluent_utils, misc_utils
 
 logger = ptw_logger.getLogger()
 
@@ -32,21 +32,15 @@ def post(data, solver, functionEl, launchEl, trn_name):
 def post_01(data, solver, launchEl, trn_name):
     fl_workingDir = launchEl.get("workingDir")
     caseFilename = data["caseFilename"]
-    filename = (
-        caseFilename
-        + "_"
-        + data["results"].setdefault("filename_outputParameter", "outParameters.out")
-    )
+    caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir,case_name=caseFilename)
+    filename = os.path.join(caseOutPath, data["results"].setdefault("filename_outputParameter", "outParameters.out"))
+    
     # solver.tui.define.parameters.output_parameters.write_all_to_file('filename')
     tuicommand = (
         'define parameters output-parameters write-all-to-file "' + filename + '"'
     )
     solver.execute_tui(tuicommand)
-    filename = (
-        caseFilename
-        + "_"
-        + data["results"].setdefault("filename_summary", "report.sum")
-    )
+    filename = os.path.join(caseOutPath, data["results"].setdefault("filename_summary", "report.sum"))
     solver.results.report.summary(write_to_file=True, file_name=filename)
 
     # Write out system time
@@ -72,11 +66,12 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
     logger.info(f"Creating a report table for {caseFilename}")
     # get report file
     # read in table of report-mp and get last row
-
+    
     # Filter for file names starting with "report"
-    reportFileName = caseFilename + "_report"
-    report_file = os.path.join(fl_workingDir, reportFileName + ".out")
-    file_names = os.listdir(fl_workingDir)
+    caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir,case_name=caseFilename)
+    reportFileName = "report"
+    report_file = os.path.join(caseOutPath, "report.out")
+    file_names = os.listdir(caseOutPath)
     filtered_files = [
         file
         for file in file_names
@@ -94,7 +89,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
             filtered_files,
             key=lambda x: [int(num) for num in x.split("_") if num.isdigit()],
         )
-        report_file = os.path.join(fl_workingDir, report_file)
+        report_file = os.path.join(caseOutPath, report_file)
         report_values, cov_df, mp_df = postproc_utils.calcCov(report_file)
         logger.info(f"Using: {report_file} for Evaluation.")
 
@@ -102,7 +97,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
         logger.info("No Report File found: data not included in final report")
 
     # Write CoV and MP Plot
-    plot_folder = os.path.join(fl_workingDir, f"plots_{caseFilename}")
+    plot_folder = os.path.join(caseOutPath, f"plots")
     os.makedirs(plot_folder, exist_ok=True)  # Create the folder if it doesn't exist
     if not mp_df.empty:
         mp_df.reset_index(inplace=True)
@@ -170,8 +165,8 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
             logger.info("Missing Report File data: CoV Plot not created")
 
     # Read in transcript file
-
-    trnFileName = os.path.join(fl_workingDir, trn_filename)
+    caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir,case_name=caseFilename)
+    trnFileName = os.path.join(caseOutPath, trn_filename)
     wall_clock_tot = 0
     nodes = 0
     filtered_values = []
@@ -256,7 +251,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
         "filename_reporttable", "reporttable.csv"
     )
     reportTableFileName = os.path.join(
-        fl_workingDir, caseFilename + "_" + reportTableName
+        caseOutPath, reportTableName
     )
     logger.info("Writing Report Table to: " + reportTableFileName)
     report_table.to_csv(reportTableFileName, index=None)
@@ -275,6 +270,7 @@ def mergeReportTables(turboData, solver):
 
     fl_workingDir = turboData["launching"].get("workingDir")
     caseDict = turboData.get("cases")
+    ptwOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir)
     if caseDict is not None:
         reportFiles = []
         for casename in caseDict:
@@ -286,13 +282,14 @@ def mergeReportTables(turboData, solver):
                     "filename_reporttable", "reporttable.csv"
                 )
                 reportTableName = caseFilename + "_" + reportTableName
-                reportTableFilePath = os.path.join(fl_workingDir, reportTableName)
+                caseOutPath=misc_utils.ptw_output(fl_workingDir=fl_workingDir,case_name=caseFilename)
+                reportTableFilePath = os.path.join(caseOutPath, reportTableName)
                 if os.path.isfile(reportTableFilePath):
                     reportFiles.append(reportTableFilePath)
 
         if len(reportFiles) > 1:
             df = pd.concat((pd.read_csv(f, header=0) for f in reportFiles))
-            mergedFileName = os.path.join(fl_workingDir, "mergedReporttable.csv")
+            mergedFileName = os.path.join(ptwOutPath, "mergedReporttable.csv")
             df.to_csv(mergedFileName)
 
     return
