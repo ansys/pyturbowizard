@@ -2,7 +2,7 @@ import os
 import json
 
 # Logger
-from ptw_subroutines.utils import ptw_logger, dict_utils, misc_utils
+from ptw_subroutines.utils import ptw_logger, dict_utils, misc_utils,fluent_utils
 
 logger = ptw_logger.getLogger()
 
@@ -156,6 +156,7 @@ def study01(data, solver):
                 fluent_study.design_points.update_all()
 
             # Export results to table
+            studyOutPath = misc_utils.ptw_output(fl_workingDir=flworking_Dir,study_name=studyName)
             design_point_table_filepath = os.path.join(studyOutPath,"dp_table.csv")
             solver.parametric_studies.export_design_table(
                 filepath=design_point_table_filepath
@@ -200,8 +201,9 @@ def study01(data, solver):
             # Run all Design Points
             if studyEl.setdefault("updateAllDPs", False):
                 fluent_study.design_points.update_all()
-            studyOutPath = misc_utils.ptw_output(fl_workingDir=flworking_Dir,study_name=studyName)
+            
             # Export results to table
+            studyOutPath = misc_utils.ptw_output(fl_workingDir=flworking_Dir,study_name=studyName)
             design_point_table_filepath = os.path.join(studyOutPath,"dp_table.csv")
             solver.parametric_studies.export_design_table(
                 filepath=design_point_table_filepath
@@ -221,7 +223,10 @@ def study01(data, solver):
         # break
 
         # Extract CoV information and store in temporary file for post processing
-        covDict = solver.solution.monitor.convergence_conditions.convergence_reports()
+        tempDataDict = solver.solution.monitor.convergence_conditions.convergence_reports()
+        number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
+        tempDataDict["num_eqs"] = number_eqs
+        
         baseCaseName = studyDict[studyName].get("refCaseFilename")
         pathtostudy = os.path.join(
             flworking_Dir, f"{studyName}.cffdb", f"{baseCaseName}-Solve"
@@ -236,6 +241,6 @@ def study01(data, solver):
 
             # Save the dictionary as a JSON file
             with open(temp_data_path, "w") as file:
-                json.dump(covDict, file)
+                json.dump(tempDataDict, file)
 
     logger.info("All Studies finished")

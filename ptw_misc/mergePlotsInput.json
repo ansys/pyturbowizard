@@ -1,0 +1,17 @@
+{
+    "cov_criterion": 1e-4,
+    "x_data": ["rep-mp-in-massflow-360"],
+    "y_data": ["rep-mp-prt","rep-mp-isentropic-efficiency"],
+    "x_label": ["inlet mass flow [kg/s]"],
+    "y_labels": ["Total Pressure Ratio [-]","Isentropic Efficiency [-]"],
+    "cov_data": ["rep-mp-prt-cov","rep-mp-isentropic-efficiency-cov"],
+    "seperate_plots": false,
+    "input_csv_data":{
+        "SST":{
+            "csv_file": "test.csv"
+        },
+        "BSL":{
+            "csv_file": "test.csv"
+        }
+    }
+}

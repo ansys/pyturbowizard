@@ -88,7 +88,13 @@ def ptw_output(fl_workingDir, study_name=None, case_name=None):
     return ptw_output_path
 
 
-
+def can_convert_to_number(value):
+    try:
+        float_value = float(value)
+        int_value = int(float_value)
+        return float_value == int_value
+    except ValueError:
+        return False
 
 
 

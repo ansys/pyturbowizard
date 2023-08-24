@@ -56,6 +56,22 @@ def study_post_01(data, solver):
                 fl_workingDir, f"{studyName}.cffdb", f"{baseCaseName}-Solve"
             )
 
+            # Extract CoV information for traffic light notation
+            tempData = None
+            temp_data_path = os.path.join(pathtostudy, "temp_data.json")
+            if os.path.exists(temp_data_path):
+                cov_data_exists = True
+                with open(temp_data_path, "r") as file:
+                    tempData = json.load(file)
+                filtCovDict = {
+                    key: value
+                    for key, value in tempData.items()
+                    if not isinstance(value,int) and value.get("active", False) and value.get("cov", False)
+                }
+            else:
+                logger.info("No base case information for CoVs has been found!")
+                cov_data_exists = False
+
             # Define a Folder to store plots
             studyOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir, study_name=studyName)
             studyPlotFolder = os.path.join(studyOutPath, f"study_plots")
@@ -69,27 +85,38 @@ def study_post_01(data, solver):
                 cov_df_list,
                 residual_df_list,
                 mp_df_list,
-            ) = postproc_utils.getStudyReports(pathtostudy)
+                trn_df
+            ) = postproc_utils.getStudyReports(pathtostudy,tempData)
 
             # check if study data is available
             if result_df.empty:
                 continue
 
-            # Extract CoV information for traffic light notation
-            cov_data_exists = False
-            temp_data_path = os.path.join(pathtostudy, "temp_data.json")
-            if os.path.exists(temp_data_path):
-                cov_data_exists = True
-                with open(temp_data_path, "r") as file:
-                    covDict = json.load(file)
-                filtCovDict = {
-                    key: value
-                    for key, value in covDict.items()
-                    if value.get("active", False) and value.get("cov", False)
-                }
-            else:
-                logger.info("No base case information for CoVs has been found!")
-                cov_data_exists = False
+            # check if study data is available
+            if result_df.empty:
+                continue
+            # Get the list of columns ending with '-cov'
+            cov_columns = [col for col in result_df.columns if col.endswith("-cov")]
+
+            # Initialize a list to store convergence results
+            cov_convergence_results = []
+            res_convergence_results = [] 
+
+            # Check if Convergence is reached
+            for _, row in result_df.iterrows():
+                convergence = "good"
+                for col in cov_columns:
+                    cov_column = filtCovDict.get(col)  # Get the corresponding dictionary if it exists
+                    if cov_column is not None:  # Check if the column is CoV set
+                        cov_criterion = cov_column.get("stop_criterion")
+                        if cov_criterion is not None:
+                            if row[col] > 5 * cov_criterion:
+                                convergence = "poor"
+                                break
+                            elif row[col] > 1.01*cov_criterion:
+                                convergence = "ok"
+
+                cov_convergence_results.append(convergence)
 
             # Loop through each DataFrame in the list
             for idx, (cov_df, residual_df, mp_df) in enumerate(
@@ -162,8 +189,15 @@ def study_post_01(data, solver):
                         plt.savefig(plot_filename)
                         plt.close()  # Close the figure to release memory
 
+
                 if not residual_df.empty:
                     residual_df.reset_index(inplace=True)
+                    # Check for res convergence and assign results to the 'res_convergence' column
+                    res_criterium = cov_criterion
+                    last_row_values = residual_df.iloc[-1, 2:]  # Select the last row, excluding the first column
+                    res_convergence = 'converged' if (last_row_values < res_criterium).all() else 'not converged'
+                    res_convergence_results.append(res_convergence)
+
                     # Get the list of columns excluding 'Iteration'
                     y_columns = residual_df.columns[2:]
                     plt.figure(figsize=(10, 6))
@@ -187,32 +221,21 @@ def study_post_01(data, solver):
                     plt.savefig(plot_filename)
                     plt.close()  # Close the figure to release memory
 
-            # check if study data is available
-            if result_df.empty:
-                continue
+            # Assign the wall clock time results to the 'wallclock_time' column
+            total_wall_clock_times = [df["Total Wall Clock Time"].tolist()[0] for df in trn_df]
+            result_df["wallclock_time"] = total_wall_clock_times
 
-            # Get the list of columns ending with '-cov'
-            cov_columns = [col for col in result_df.columns if col.endswith("-cov")]
+            # Assign the cov convergence results to the 'convergence' column
+            result_df["cov_convergence"] = cov_convergence_results
 
-            # Initialize a list to store convergence results
-            convergence_results = []
 
-            # Check if Convergence is reached
-            for _, row in result_df.iterrows():
-                convergence = "good"
-                for col in cov_columns:
-                    cov_criterion = filtCovDict.get(col, {}).get("stop_criterion", 1e-4)
-                    if cov_criterion is not None:
-                        if row[col] > 5 * cov_criterion:
-                            convergence = "poor"
-                            break
-                        elif row[col] > cov_criterion:
-                            convergence = "ok"
 
-                convergence_results.append(convergence)
+            # Assign the res convergence results to the 'res_convergence' column in result_df
+            result_df['res_convergence'] = res_convergence_results
 
-            # Assign the convergence results to the 'convergence' column
-            result_df["convergence"] = convergence_results
+            # Check for full convergence and assign results to the 'convergence' column
+            result_df['convergence'] = result_df.apply(lambda row: 'converged' if row['cov_convergence'] == 'good' and row['res_convergence'] == 'converged' else 'not converged', axis=1)
+
 
             # Priority order to consider volume/massflow for plotting
             mf_fallback_columns = [
@@ -252,7 +275,7 @@ def study_post_01(data, solver):
                     break
 
             # Filter out the dataframe to plot monitor points
-            plot_df = sorted_df.iloc[:, 1:-1].drop(
+            plot_df = sorted_df.iloc[:, 1:-4].drop(
                 columns=[
                     col
                     for col in sorted_df.columns
@@ -261,7 +284,7 @@ def study_post_01(data, solver):
             )
             # Generate traffic light notation for convergence
             color_map = {"good": "green", "ok": "yellow", "poor": "red"}
-            colors = sorted_df["convergence"].map(color_map)
+            colors = sorted_df["cov_convergence"].map(color_map)
 
             # Create Plots for monitor points with mass flow, volume flow or both
             if MP_MassFlow is not None and MP_VolumeFlow is not None:
