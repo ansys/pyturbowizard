@@ -86,9 +86,14 @@ def study01(data, solver):
                 #solver.file.read_case_data(file_name=refCaseFilePath)
 
             # Initialize a new parametric study
-            solver.parametric_studies.initialize(project_filename=studyName)
+            projectFilename = os.path.join(flworking_Dir,studyName)
+            solver.parametric_studies.initialize(project_filename=projectFilename)
             psname = refCase + "-Solve"
             fluent_study = solver.parametric_studies[psname]
+
+            # Set standard image output format to AVZ
+            go_format = '"AVZ"'
+            solver.tui.preferences.graphics.hardcopy_settings.hardcopy_driver(f'{go_format}')
 
             designPointCounter = 1
             definitionList = studyEl.get("definition")
@@ -163,11 +168,8 @@ def study01(data, solver):
             )
 
             # Save Study
-            if studyIndex == 0:
-                solver.file.parametric_project.save()
-            else:
-                projectFilename = os.path.join(flworking_Dir, studyName)
-                solver.tui.file.parametric_project.save_as(projectFilename)
+            solver.file.parametric_project.save()
+
 
             # Increasing study index
             studyIndex = studyIndex + 1
@@ -210,11 +212,7 @@ def study01(data, solver):
             )
 
             # Save Study
-            if studyIndex == 0:
-                solver.file.parametric_project.save()
-            else:
-                projectFilename = os.path.join(flworking_Dir, studyName)
-                solver.tui.file.parametric_project.save_as(projectFilename)
+            solver.file.parametric_project.save()
 
             # Increasing study index
             studyIndex = studyIndex + 1

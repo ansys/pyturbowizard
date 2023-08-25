@@ -2,10 +2,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import json
 import sys
-def plot_csv_data(csv_file_labels, x_column,x_label, y_column, y_label, max_iterations=None, filename=None):
+def plot_csv_data(csv_legend_pairs, x_column,x_label, y_column, y_label, max_iterations=None, filename=None):
     # Read CSV files and store data in a dictionary
     data_dict = {}
-    for csv_file, label in csv_file_labels:
+    for csv_file, label in csv_legend_pairs:
         data = pd.read_csv(csv_file, delimiter=',')
         data_dict[label] = data
     
@@ -33,17 +33,15 @@ def plot_csv_data(csv_file_labels, x_column,x_label, y_column, y_label, max_iter
 # Example usage
 input_data = {
     "csv_legend_pairs": {
-        "GG-NB": {
-            "./Catana/plot_table_Catana_SST.csv"
-            },
-        "LSQ-CB": {"./Catana/plot_table_Catana_LSQ.csv"
-                   }
+        "prev DP": "./hannover/plot_table_Hannover_1p5stage_SST.csv",
+        "base DP": "./hannover/plot_table_Hannover_1p5stage_basedp.csv",
+        "init Hybrid": "./hannover/plot_table_Hannover_1p5stage_hybrid.csv"
     },
     "x_column": "rep-mp-in-massflow-360",
     "y_column": "wallclock_time",
     "x_label": "inlet mass flow [kg/s]",
     "y_label": "Simulation Wall Clock Time [s]",
-    "filename": "./Catana/performance_numerics.svg",
+    "filename": "./hannover/performance_init.svg",
     "horizontal_line": None
 }
 """
