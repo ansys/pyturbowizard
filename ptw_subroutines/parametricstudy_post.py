@@ -113,7 +113,7 @@ def study_post_01(data, solver):
                             if row[col] > 5 * cov_criterion:
                                 convergence = "poor"
                                 break
-                            elif row[col] > 1.01*cov_criterion:
+                            elif row[col] > 1.05*cov_criterion:
                                 convergence = "ok"
 
                 cov_convergence_results.append(convergence)
