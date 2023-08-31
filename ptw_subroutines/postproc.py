@@ -166,9 +166,11 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
 
     # Read in transcript file
     caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir,case_name=caseFilename)
+
     trnFilePath = os.path.join(caseOutPath, trn_filename)
 
     report_table = postproc_utils.evaluateTranscript(trnFilePath=trnFilePath,caseFilename=caseFilename,solver=solver)
+
 
     # Select columns from report_table
     columns_before_report_values = report_table.iloc[:, :2]
@@ -182,7 +184,9 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
         "filename_reporttable", "reporttable.csv"
     )
     reportTableFileName = os.path.join(
+
         caseOutPath, resultTableName
+
     )
     logger.info("Writing Report Table to: " + reportTableFileName)
     result_table.to_csv(reportTableFileName, index=None)
