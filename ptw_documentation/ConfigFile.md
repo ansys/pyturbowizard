@@ -38,11 +38,11 @@ Currently the following functions and corresponding options are available:
   - Specify initialization settings
   - Available functions:
     - "init_standard_01": standard initialization, using inlet data as reference    
-    - "init_standard_02": standard initialization, using 0 velocity,  1 TKE , 1 Omega, inlet temperature 
-    - **"init_hybrid_01" (default):** Hybrid initialization, using standard "init_standard_01" for pre-initialization
-    - "init_hybrid_02": Hybrid initialization, using standard "init_standard_02" for pre-initialization
+    - "init_standard_02": standard initialization, using 0 velocity,  0.01 TKE , 0.01 Omega, inlet temperature, initial gauge pressure 
+    - **"init_hybrid_01" (default):** Hybrid initialization using intial gauge pressure
     - "init_fmg_01": FMG initialization, using standard "init_standard_01" for pre-initialization
     - "init_fmg_02": FMG initialization, using standard "init_standard_02" for pre-initialization
+    - "init_fmg_03": FMG initialization, using standard "init_hybrid_01" for pre-initialization
     
 - "postproc":
   - Specify postproc function
