@@ -637,6 +637,11 @@ def report_01(data, solver,launchEl):
     # solver.tui.preferences.simulation.local_residual_scaling("yes")
     solver.tui.solve.monitors.residual.scale_by_coefficient("yes", "yes", "yes")
 
+    # Raise the limit of residual points to save and to plot to avoid data resampling/loss
+    solver.tui.solve.monitors.residual.n_display(500000)
+    solver.tui.solve.monitors.residual.n_save(500000)
+
+
     # Check active number of equations
     number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
 
