@@ -34,7 +34,7 @@ name	definition	description	input-parameter	output-parameter
 "MP_OUT_areaAve_p"	"AreaAve(StaticPressure,{bz_outlet_names}) + BC_pref"	""	#f	#f
 "MP_OUT_massFlowAve_pt"	"Average(TotalPressure,{bz_outlet_names},Weight = 'MassFlowRate') + BC_pref"	""	#f	#f
 "MP_PR"	"MP_OUT_areaAve_p / MP_IN_areaAve_p"	""	#f	#f
-"MP_PRt"	"MP_OUT_massFlowAve_pt/ MP_IN_massFlowAve_pt"	""	#f	#t
+"MP_PRt"	"MP_IN_massFlowAve_pt/MP_OUT_massFlowAve_pt"	""	#f	#t
 "MP_TRt"	"MassFlowAve(TotalTemperature,{bz_outlet_names}) / MassFlowAve(TotalTemperature,{bz_inlet_names})"	""	#f	#f
 "MP_Isentropic_Efficiency"	"EfficiencyIsentropic(Inlets={bz_inlet_names},Outlets={bz_outlet_names},Ratio='{isentropic_efficiency_ratio}')"	""	#f	#t
 "MP_Polytropic_Efficiency"	"EfficiencyPolytropic(Inlets={bz_inlet_names},Outlets={bz_outlet_names},Ratio='{isentropic_efficiency_ratio}')"	""	#f	#t
