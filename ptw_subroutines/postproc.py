@@ -166,95 +166,30 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
 
     # Read in transcript file
     caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir,case_name=caseFilename)
-    trnFileName = os.path.join(caseOutPath, trn_filename)
-    wall_clock_tot = 0
-    nodes = 0
-    filtered_values = []
-    filtered_headers = []
 
-    if os.path.isfile(trnFileName):
-        with open(trnFileName, "r") as file:
-            transcript = file.read()
+    trnFilePath = os.path.join(caseOutPath, trn_filename)
 
-        solver_trn_data_valid = False
-        table_started = False
-        lines = transcript.split("\n")
+    report_table = postproc_utils.evaluateTranscript(trnFilePath=trnFilePath,caseFilename=caseFilename,solver=solver)
 
-        # fix for incompressible
-        number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
-        for line in lines:
-            if "Total wall-clock time" in line:
-                wall_clock_tot = line.split(":")[1].strip()
-                wall_clock_tot = wall_clock_tot.split(" ")[0].strip()
-                logger.info("Detected Total Wall Clock Time:", wall_clock_tot)
-            elif "compute nodes" in line:
-                nodes = line.split(" ")[6].strip()
-                logger.info("Detected Number of Nodes:", nodes)
-            elif "iter  continuity  x-velocity" in line:
-                headers = line.split()
-                filtered_headers = headers[1:number_eqs]
-                table_started = True
-            elif table_started:
-                values = line.split()
-                if len(values) == 0:
-                    table_started = False
-                elif len(values[1:number_eqs]) == len(filtered_headers):
-                    filtered_values = values[1:number_eqs]
-                    solver_trn_data_valid = True
-                else:
-                    try:
-                        values = int(values[0])
-                    except ValueError:
-                        table_started = False
 
-        for i in range(len(filtered_headers)):
-            filtered_headers[i] = "res-" + filtered_headers[i]
+    # Select columns from report_table
+    columns_before_report_values = report_table.iloc[:, :2]
+    columns_after_report_values = report_table.iloc[:, 2:]
 
-        if solver_trn_data_valid:
-            filtered_values = [float(val) for val in filtered_values]
-            res_columns = dict(zip(filtered_headers, filtered_values))
-    else:
-        logger.info("No trn-file found!: Skipping data")
-        solver_trn_data_valid = False
-
-    # get pseudo time step value
-    time_step = solver.scheme_eval.string_eval("(rpgetvar 'pseudo-auto-time-step)")
-
-    # write out flux reports
-    massBalance = solver.report.fluxes.mass_flow()
-    solveEnergy = solver.setup.models.energy.enabled()
-    if solveEnergy:
-        heatBalance = solver.report.fluxes.heat_transfer()
-
-    ## write report table
-    report_table = pd.DataFrame()
-    report_table = pd.concat([report_table, report_values], axis=1)
-
-    if solver_trn_data_valid:
-        report_table = report_table.assign(**res_columns)
-    else:
-        logger.info(
-            f"Reading Solver-Data from transcript file failed. Data not included in report table"
-        )
-
-    report_table.loc[0, "Mass Balance [kg/s]"] = massBalance
-    if solveEnergy:
-        report_table["Heat Balance [W]"] = heatBalance
-
-    report_table.loc[0, "Total Wall Clock Time"] = wall_clock_tot
-    report_table.loc[0, "Compute Nodes"] = nodes
-    report_table.insert(0, "Case Name", caseFilename)
-    report_table.insert(1, "Pseud Time Step [s]", time_step)
+    # Concatenate DataFrames
+    result_table = pd.concat([columns_before_report_values, report_values, columns_after_report_values], axis=1)
 
     # Report Table File-Name
-    reportTableName = data["results"].setdefault(
+    resultTableName = data["results"].setdefault(
         "filename_reporttable", "reporttable.csv"
     )
     reportTableFileName = os.path.join(
-        caseOutPath, reportTableName
+
+        caseOutPath, resultTableName
+
     )
     logger.info("Writing Report Table to: " + reportTableFileName)
-    report_table.to_csv(reportTableFileName, index=None)
+    result_table.to_csv(reportTableFileName, index=None)
 
     return
 

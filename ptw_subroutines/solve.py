@@ -20,12 +20,12 @@ def init(data, solver, functionEl):
         init_standard_02(data, solver)
     elif functionName == "init_hybrid_01":
         init_hybrid_01(data, solver)
-    elif functionName == "init_hybrid_02":
-        init_hybrid_02(data, solver)
     elif functionName == "init_fmg_01":
         init_fmg_01(data, solver)
     elif functionName == "init_fmg_02":
         init_fmg_02(data, solver)
+    elif functionName == "init_fmg_03":
+        init_fmg_03(data, solver)
     else:
         logger.info(
             'Prescribed Function "'
@@ -86,11 +86,6 @@ def init_standard_02(data, solver):
     solver.solution.initialization.standard_initialize()
 
 def init_hybrid_01(data, solver):
-    init_standard_01(data=data, solver=solver)
-    init_hybrid_basic(data=data, solver=solver)
-
-def init_hybrid_02(data, solver):
-    init_standard_02(data=data, solver=solver)
     init_hybrid_basic(data=data, solver=solver)
 
 def init_fmg_01(data, solver):
@@ -101,7 +96,12 @@ def init_fmg_02(data, solver):
     init_standard_02(data=data, solver=solver)
     init_fmg_basic(data=data, solver=solver)
 
+def init_fmg_03(data, solver):
+    init_hybrid_01(data=data, solver=solver)
+    init_fmg_basic(data=data, solver=solver)
+
 def init_hybrid_basic(data, solver):
+    solver.solution.initialization.standard_initialize()
     solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
         "absolute"
     )
