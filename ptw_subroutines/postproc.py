@@ -151,7 +151,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
             plt.xlabel("Iteration")
             plt.ylabel("")
             plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
-            plt.title(f"Coefficient of Variation (CoV)")
+            plt.title(f"Coefficient of Variation (CoV 50)")
             plt.grid(True)
             plt.yscale("log")
 

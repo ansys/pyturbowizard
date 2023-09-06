@@ -151,7 +151,7 @@ def study_post_01(data, solver):
                     plt.xlabel("Iteration")
                     plt.ylabel("")
                     plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
-                    plt.title(f"Coefficient of Variation (CoV) - {dp_name}")
+                    plt.title(f"Coefficient of Variation (CoV 50) - {dp_name}")
                     plt.grid(True)
                     plt.yscale("log")
 

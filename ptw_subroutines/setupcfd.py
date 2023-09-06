@@ -54,14 +54,18 @@ def material_01(data, solver, solveEnergy: bool = True):
     fl_name = data["fluid_properties"].get("fl_name")
     if fl_name is None:
         if solveEnergy:
-            fl_name = "air-cfx"
+            fl_name = "custom-comp-fluid"
         else:
-            fl_name = "water"
+            fl_name = "custom-incomp-fluid"
         data["fluid_properties"]["fl_name"] = fl_name
 
-    solver.setup.materials.fluid.rename(fl_name, "air")
+    fluid_list = list(solver.setup.materials.fluid.keys())
+
+    solver.setup.materials.fluid.rename(fl_name, fluid_list[0])
+
     if solveEnergy:
         solver.setup.materials.fluid[fl_name] = {
+
             "density": {"option": data["fluid_properties"]["fl_density"]},
             "specific_heat": {
                 "option": "constant",
