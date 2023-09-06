@@ -1,5 +1,7 @@
 # Logger
-from ptw_subroutines.utils import ptw_logger, postproc_utils, dict_utils, fluent_utils
+from ptw_subroutines.utils import ptw_logger, postproc_utils, dict_utils, fluent_utils, misc_utils
+
+import os
 
 logger = ptw_logger.getLogger()
 
@@ -26,10 +28,27 @@ def prepost(data, solver, functionEl, launchEl):
     logger.info("Running Pre-Postprocessing Function... finished!")
 
 def prepost_01(data, solver, launchEl):
-        
+    fl_WorkingDir = launchEl.get("workingDir")
     # Set output for time statistics in transcript
     command = "/report/system/time-stats"
     fluent_utils.addExecuteCommand(command_name="print-time-statistics",command=command,solver=solver)
+
+    # Save 3D file of the mesh and domain
+
+    # Get walls of domain
+    surfaces = solver.field_info.get_surfaces_info()
+    wall_surfaces = [key for key, value in surfaces.items() if value.get('zone_type') == 'wall']
+
+    
+    solver.results.graphics.mesh["Mesh"] = {}
+    solver.results.graphics.mesh["Mesh"].surfaces_list = wall_surfaces
+    solver.results.graphics.mesh["Mesh"].options.edges = True
+
+    solver.tui.results.graphics.mesh.display('"Mesh"')
+    caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_WorkingDir, case_name=data["caseFilename"])
+    MeshPicFilename = os.path.join(caseOutPath, "Mesh.avz")
+    solver.tui.display.save_picture(f'{MeshPicFilename}')
+
 
     # Create Spanwise Plots if specified by user
     if data["locations"].get("tz_turbo_topology_names") is not None:
