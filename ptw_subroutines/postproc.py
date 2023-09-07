@@ -47,6 +47,16 @@ def post_01(data, solver, launchEl, trn_name):
     solver.tui.report.system.time_stats()
     #solver.report.system.time_statistics()
 
+    # Save Residual Plot
+    residualFileName = os.path.join(caseOutPath, "residuals.png")
+    solver.tui.plot.residuals()
+    solver.execute_tui("/display/set/picture/driver png")
+    solver.tui.display.set_window_by_name("residuals")
+    solver.tui.display.set.picture.x_resolution(1200)
+    solver.tui.display.set.picture.y_resolution(800)
+    solver.tui.display.save_picture(residualFileName)
+    solver.execute_tui("/display/set/picture/driver avz")
+
     ## write report table
     createReportTable(
         data=data, fl_workingDir=fl_workingDir, solver=solver, trn_filename=trn_name

@@ -83,8 +83,7 @@ if external:
     solver = launcher.launchFluent(launchEl)
 
 # Set standard image output format to AVZ
-go_format = '"AVZ"'
-solver.tui.preferences.graphics.hardcopy_settings.hardcopy_driver(f'{go_format}')
+solver.execute_tui("/display/set/picture/driver avz")
 
 # Set Batch options
 solver.file.confirm_overwrite = False

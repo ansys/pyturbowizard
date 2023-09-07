@@ -13,6 +13,10 @@ def init(data, solver, functionEl):
         defaultName="init_hybrid_01",
     )
 
+    # Has Influence on convergence, leads to freeze on some cases 
+    #logger.info('Executing Reorder Domain to reduce bandwidth according to the setup')
+    #solver.mesh.reorder.reorder_domain()
+
     logger.info('Running Initialization Function "' + functionName + '"...')
     if functionName == "init_standard_01":
         init_standard_01(data, solver)
