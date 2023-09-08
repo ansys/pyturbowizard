@@ -39,8 +39,8 @@ Currently the following functions and corresponding options are available:
   - Available functions:
     - "init_standard_01": standard initialization, using inlet data as reference    
     - "init_standard_02": standard initialization, using 0 velocity,  0.01 TKE , 0.01 Omega, inlet temperature, initial gauge pressure 
-    - **"init_hybrid_01" (default):** Hybrid initialization using intial gauge pressure
-    - "init_fmg_01": FMG initialization, using standard "init_standard_01" for pre-initialization
+    - "init_hybrid_01": Hybrid initialization using intial gauge pressure
+    - **"init_fmg_01"(default):** FMG initialization, using standard "init_standard_01" for pre-initialization
     - "init_fmg_02": FMG initialization, using standard "init_standard_02" for pre-initialization
     - "init_fmg_03": FMG initialization, using standard "init_hybrid_01" for pre-initialization
     
@@ -113,8 +113,9 @@ Optional objects are:
   - Definition of Rotation Axis
     - ```rotation_axis_direction```: Vector defining axis direction, default: ```[0.0, 0.0, 1.0]```
     - ```rotation_axis_origin```: Vector defining axis origin, default: ```[0.0, 0.0, 0.0]```
-  - ```isentropic_efficiency_ratio```: Calculation of Isentropic Efficiency (arguments: "TotalToTotal", "TotalToStatic", "StaticToStatic")
-  - ```skip_execution```: Skips the execution of the case, default: ```False```
+  - ```isentropic_efficiency_ratio```: Calculation of Isentropic Efficiency (supported arguments: "TotalToTotal", "TotalToStatic", "StaticToStatic")
+  - ```skip_execution```: Skips the execution of the case, default: ```false```
+  - ```run_extsch```: Run extsch-script: extracts all rp-variables of the case-file as ascii-file (linux-platforms only!) , default: ```false```
 
 #### Profiles
 You can choose to specify a profile for your inlet or outlet boundaries by providing the ``` profileName ``` in your Fluent working directory.

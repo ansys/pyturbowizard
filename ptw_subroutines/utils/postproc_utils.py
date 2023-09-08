@@ -177,27 +177,28 @@ def evaluateTranscript(trnFilePath,caseFilename,solver=None,tempData=None):
         # fix for incompressible
         if solver is not None:
             number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
-        else: number_eqs = tempData.get("num_eqs",6)
+        else:
+            number_eqs = tempData.get("num_eqs", 6)
 
         for line in lines:
             if "Total wall-clock time" in line:
                 wall_clock_tot = line.split(":")[1].strip()
                 wall_clock_tot = wall_clock_tot.split(" ")[0].strip()
-                logger.info("Detected Total Wall Clock Time:", wall_clock_tot)
+                logger.info(f"Detected Total Wall Clock Time: {wall_clock_tot}")
             elif "compute nodes" in line:
                 nodes = line.split(" ")[6].strip()
-                logger.info("Detected Number of Nodes:", nodes)
+                logger.info(f"Detected Number of Nodes: {nodes}")
             elif "iter  continuity  x-velocity" in line:
                 headers = line.split()
-                filtered_headers = headers[1:number_eqs]
+                filtered_headers = headers[1:(number_eqs+1)]
                 table_started = True
             elif table_started:
                 values = line.split()
-                all_convertible = all(misc_utils.can_convert_to_number(value) for value in values[1:number_eqs])
+                all_convertible = all(misc_utils.can_convert_to_number(value) for value in values[1:(number_eqs+1)])
                 if len(values) == 0:
                     table_started = False
-                elif len(values[1:number_eqs]) == len(filtered_headers) and all_convertible:
-                    filtered_values = values[1:number_eqs]
+                elif len(values[1:(number_eqs+1)]) == len(filtered_headers) and all_convertible:
+                    filtered_values = values[1:(number_eqs+1)]
                     solver_trn_data_valid = True
                 else:
                     try:
@@ -227,7 +228,6 @@ def evaluateTranscript(trnFilePath,caseFilename,solver=None,tempData=None):
 
     ## write report table
     report_table = pd.DataFrame()
-
 
     if solver_trn_data_valid:
         for col_name, col_value in res_columns.items():
