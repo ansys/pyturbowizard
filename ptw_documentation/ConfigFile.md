@@ -105,7 +105,8 @@ Under the ``` cases ``` section different case setups can be specified for the s
 ```
 
 First, different general case parameters, like the final ``` caseFilename ``` and the initial ``` meshFilename ``` have to be specified. 
-Supported file types for meshes are .def, .cgns, .msh and .cas. Make sure that the mesh consists of a single file and is located in the Fluent working directory.
+Supported file types for meshes are .def, .cgns, .msh and .cas. Make sure that the mesh consists is located in the Fluent working directory. 
+msh- and cas-files can be prescribed as list (e.g. ```"meshFilename": ["mesh1.msh","mesh2.msh"]```), in this case the files are imported in the prescribed order.
 
 Optional objects are:
   - ```gravity_vector```:  Vector defining gravity, e.g. ```[0.0, 0.0, -9.81]```, default: not set, gravity off
