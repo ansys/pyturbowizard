@@ -249,8 +249,9 @@ solver.exit()
 # Write out Debug info
 if debug_level > 0:
     #Compare turboData: final data vs file data --> check if some keywords have not been used
-    logger.info("Detecting unused keywords of input-config-file")
+    logger.info("Searching for unused keywords in input-config-file...")
     dict_utils.detect_unused_keywords(refDict=turboData, compareDict=turboData_from_file)
+    logger.info("Searching for unused keywords in input-config-file...finished!")
 
     import ntpath
     debug_filename = "ptw_" + ntpath.basename(config_filename)
