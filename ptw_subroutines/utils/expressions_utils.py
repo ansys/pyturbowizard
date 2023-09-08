@@ -33,9 +33,9 @@ def write_expression_file(data: dict, script_dir: str, working_dir: str):
         helperDict["rotation_axis_origin"] = tuple(
             data.setdefault("rotation_axis_origin", [0.0, 0.0, 0.0])
         )
-        # add isentropic efficiency definition
-        helperDict["isentropic_efficiency_ratio"] = data.setdefault(
-            "isentropic_efficiency_ratio", "TotalToTotal"
+        # add efficiency definition
+        helperDict["efficiency_ratio"] = data.setdefault(
+            "efficiency_ratio", "TotalToTotal"
         )
         tempData = cleanup_input_expressions(
             availableKeyEl=helperDict, fileData=tempData

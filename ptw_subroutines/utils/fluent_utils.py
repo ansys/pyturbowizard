@@ -1,3 +1,5 @@
+from packaging import version
+
 # Logger
 from ptw_subroutines.utils import ptw_logger
 
@@ -28,6 +30,9 @@ def getNumberOfEquations(solver):
 
     return number_eqs
 
-def addExecuteCommand(solver,command,command_name):
+def addExecuteCommand(solver, command_name, command, pythonCommand:bool=False):
     # Add a command to execute after solving is finished
-    solver.tui.solve.execute_commands.add_edit(f"{command_name}","yes","yes","yes",f'"{command}"')
+    if pythonCommand:
+        solver.tui.solve.execute_commands.add_edit(f"{command_name}","yes","yes","yes",f'"{command}"')
+    else:
+        solver.tui.solve.execute_commands.add_edit(f"{command_name}", "yes", "yes", "no", f'"{command}"')

@@ -36,7 +36,7 @@ name	definition	description	input-parameter	output-parameter
 "MP_PR"	"MP_OUT_areaAve_p / MP_IN_areaAve_p"	""	#f	#f
 "MP_PRt"	"MP_OUT_massFlowAve_pt/ MP_IN_massFlowAve_pt"	""	#f	#t
 "MP_TRt"	"MassFlowAve(TotalTemperature,{bz_outlet_names}) / MassFlowAve(TotalTemperature,{bz_inlet_names})"	""	#f	#f
-"MP_Isentropic_Efficiency"	"EfficiencyIsentropic(Inlets={bz_inlet_names},Outlets={bz_outlet_names},Ratio='{efficiency_ratio}')"	""	#f	#t
-"MP_Polytropic_Efficiency"	"EfficiencyPolytropic(Inlets={bz_inlet_names},Outlets={bz_outlet_names},Ratio='{efficiency_ratio}')"	""	#f	#t
+"MP_Isentropic_Efficiency"	"EfficiencyIsentropic(Inlets={bz_inlet_names},Outlets={bz_outlet_names},Ratio='{efficiency_ratio}',Process='Compression')"	""	#f	#t
+"MP_Polytropic_Efficiency"	"EfficiencyPolytropic(Inlets={bz_inlet_names},Outlets={bz_outlet_names},Ratio='{efficiency_ratio}',Process='Compression')"	""	#f	#t
 "MP_Torque_360"	"dot(vector{rotation_axis_direction} , Moment(vector{rotation_axis_origin},{bz_walls_torque})) * (GEO_OUT_No_Passages_360 / GEO_OUT_No_Passages)"	""	#f	#t
 "MP_Power_Torque_360"	"MP_Torque_360 * (BC_omega * PI/180 [deg])"	""	#f	#t
