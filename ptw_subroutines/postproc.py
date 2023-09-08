@@ -48,14 +48,18 @@ def post_01(data, solver, launchEl, trn_name):
     #solver.report.system.time_statistics()
 
     # Save Residual Plot
-    residualFileName = os.path.join(caseOutPath, "residuals.png")
-    solver.tui.plot.residuals()
-    solver.execute_tui("/display/set/picture/driver png")
-    solver.tui.display.set_window_by_name("residuals")
-    solver.tui.display.set.picture.x_resolution(1200)
-    solver.tui.display.set.picture.y_resolution(800)
-    solver.tui.display.save_picture(residualFileName)
-    solver.execute_tui("/display/set/picture/driver avz")
+    plot_folder = os.path.join(caseOutPath, f"plots")
+    os.makedirs(plot_folder, exist_ok=True)  # Create the folder if it doesn't exist
+    residualFileName = os.path.join(plot_folder, "residuals.png")
+
+    # Scaling does not work (set resolution)
+    #solver.tui.plot.residuals()
+    #solver.execute_tui("/display/set/picture/driver png")
+    #solver.tui.display.set_window_by_name("residuals")
+    #solver.tui.display.set.picture.x_resolution(1200)
+    #solver.tui.display.set.picture.y_resolution(800)
+    #solver.tui.display.save_picture(residualFileName,"ok")
+    #solver.execute_tui("/display/set/picture/driver avz")
 
     ## write report table
     createReportTable(
