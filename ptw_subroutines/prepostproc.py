@@ -1,3 +1,5 @@
+from packaging import version as pv
+
 # Logger
 from ptw_subroutines.utils import ptw_logger, postproc_utils, dict_utils, fluent_utils
 
@@ -26,10 +28,15 @@ def prepost(data, solver, functionEl, launchEl):
     logger.info("Running Pre-Postprocessing Function... finished!")
 
 def prepost_01(data, solver, launchEl):
-        
+    #Check version -> for version 24.1 use python command
+    use_python_command = pv.parse(launchEl["fl_version"]) >= pv.parse("24.1.0")
+
     # Set output for time statistics in transcript
-    command = "/report/system/time-stats"
-    fluent_utils.addExecuteCommand(command_name="print-time-statistics",command=command,solver=solver)
+    command_name = "print-time-statistics"
+    command = "solver.tui.parallel.timer.usage"
+    if not use_python_command:
+        command = "/report/system/time-stats"
+    fluent_utils.addExecuteCommand(command_name=command_name,command=command,solver=solver,pythonCommand=use_python_command)
 
     # Create Spanwise Plots if specified by user
     if data["locations"].get("tz_turbo_topology_names") is not None:
@@ -39,7 +46,10 @@ def prepost_01(data, solver, launchEl):
             logger.info(f"No span plots have been created: {e}")
 
 
-def spanPlots(data, solver,launchEl):
+def spanPlots(data, solver, launchEl):
+    # Check version -> for version 24.1 use python command
+    use_python_command = pv.parse(launchEl["fl_version"]) >= pv.parse("24.1.0")
+
     # Create spanwise surfaces
     spansSurf = data["results"].get("span_plot_height")
     contVars = data["results"].get("span_plot_var")
@@ -102,14 +112,21 @@ def spanPlots(data, solver,launchEl):
                 # plot_filename = os.path.join(plot_folder, f'{contName}_plot')
                 # solver.tui.display.save_picture(plot_filename)
 
-                # TUI commands:
-                plot_filename = "./"+f"{contName}_plot"
-                contour_display_command = f"/results/graphics/contour/display {contName}"
-                contour_save_command = f"/display/save-picture {plot_filename} ok"
+                plot_filename = "./" + f"{contName}_plot"
+                if use_python_command:
+                    # Python commands
+                    contour_display_command = f"solver.results.graphics.contour.display(object_name={contName})"
+                    contour_save_command = f"solver.results.graphics.picture.save_picture(file_name={plot_filename})"
+                else:
+                    # TUI commands
+                    contour_display_command = f"/results/graphics/contour/display {contName}"
+                    contour_save_command = f"/display/save-picture {plot_filename} ok"
+
                 command_str = contour_display_command + "\n" + contour_save_command + "\n"
                 all_commands_str += command_str
 
     command_name = "save-contour-plots"
     logger.info(f"Adding execute command: {command_name}")
-    fluent_utils.addExecuteCommand(solver,all_commands_str,command_name)
+    fluent_utils.addExecuteCommand(solver=solver, command_name=command_name, command=all_commands_str, pythonCommand=use_python_command)
+
     return

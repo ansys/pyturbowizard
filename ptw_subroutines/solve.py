@@ -10,7 +10,7 @@ def init(data, solver, functionEl):
         parentDict=data,
         functionDict=functionEl,
         funcDictName="initialization",
-        defaultName="init_hybrid_01",
+        defaultName="init_fmg_01",
     )
 
     logger.info('Running Initialization Function "' + functionName + '"...')
