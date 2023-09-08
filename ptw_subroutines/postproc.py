@@ -224,7 +224,7 @@ def mergeReportTables(turboData, solver):
 
         if len(reportFiles) > 1:
             df = pd.concat((pd.read_csv(f, header=0) for f in reportFiles))
-            mergedFileName = os.path.join(ptwOutPath, "mergedReporttable.csv")
+            mergedFileName = os.path.join(ptwOutPath, "merged_reporttable.csv")
             df.to_csv(mergedFileName)
 
     return
