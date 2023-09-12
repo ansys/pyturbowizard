@@ -28,7 +28,7 @@ from ptw_subroutines.utils import (
 debug_level = 1
 
 # Set Logger
-logger = ptw_logger.init_logger(console_output=False)
+logger = ptw_logger.init_logger()
 
 ptw_version = "1.5.6"
 logger.info(f"*** Starting PyTurboWizard (Version {str(ptw_version)}) ***")
@@ -87,11 +87,14 @@ if external:
 # Set standard image output format to AVZ
 solver.execute_tui("/display/set/picture/driver avz")
 
-# Set Batch options
+# Version Check
 if pv.parse(launchEl["fl_version"]) < pv.parse("24.1.0"):
-    # Old settings API
+    # For version before 24.1.0, remove the streamhandler from the logger
+    ptw_logger.remove_handlers(streamhandlers=True, filehandlers=False)
+    # Set Batch options: Old API
     solver.file.confirm_overwrite = False
 else:
+    # Set Batch options
     solver.file.batch_options.confirm_overwrite = False
     solver.file.batch_options.exit_on_error = True
     solver.file.batch_options.hide_answer = True
