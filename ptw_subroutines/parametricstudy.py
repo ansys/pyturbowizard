@@ -17,7 +17,7 @@ def study(data, solver, functionEl):
         defaultName="study_01",
     )
 
-    logger.info(f"Running ParamatricStudy-Function '{functionName}' ...")
+    logger.info(f"Running ParametricStudy-Function '{functionName}' ...")
     if functionName == "study_01":
         study01(data, solver)
     else:
@@ -27,7 +27,7 @@ def study(data, solver, functionEl):
             + '" not known. Skipping Parametric Study!'
         )
 
-    logger.info(f"Running ParamatricStudy-Function '{functionName}'...  finished!")
+    logger.info(f"Running ParametricStudy-Function '{functionName}'...  finished!")
 
 
 def study01(data, solver):
