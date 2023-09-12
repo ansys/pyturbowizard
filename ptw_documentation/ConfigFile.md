@@ -324,6 +324,8 @@ The automatic time step factor and iteration count can be set via ```time_step_f
 
 ``` runSolver``` can be used to specify whether the simulation should start to run at the end of the setup.
 
+```reorder_domain``` is an optional argument, that turns on/off domain reordering before initialization (**default: true**)
+
 #### Results
 ```
         "results": {

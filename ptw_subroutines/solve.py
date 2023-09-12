@@ -13,9 +13,12 @@ def init(data, solver, functionEl):
         defaultName="init_fmg_01",
     )
 
-    # Has Influence on convergence, leads to freeze on some cases
-    logger.info("Executing Reorder Domain to reduce bandwidth according to the setup")
-    solver.mesh.reorder.reorder_domain()
+    # Reordering Domain
+    # Can have influence on convergence, but can lead to freeze on some cases
+    reorder = data["solution"].setdefault("reorder_domain", True)
+    if reorder:
+        logger.info("Reordering domain to reduce bandwidth according to the setup")
+        solver.mesh.reorder.reorder_domain()
 
     logger.info('Running Initialization Function "' + functionName + '"...')
     if functionName == "init_standard_01":
@@ -64,10 +67,10 @@ def init_standard_01(data, solver):
             data["locations"]["bz_inlet_names"][0]
         )
     else:
-        logger.info(f"No inlet BC specified. Initialing from 'all-zones'")
+        logger.info(f"No inlet BC specified. Initializing from 'all-zones'")
         solver.tui.solve.initialize.compute_defaults.all_zones()
 
-    logger.info("Performing a standard initilization from inlet")
+    logger.info("Performing a standard initialization from inlet")
     solver.solution.initialization.standard_initialize()
 
 
@@ -92,7 +95,7 @@ def init_standard_02(data, solver):
     solver.solution.initialization.defaults = {"x-velocity": 0}
     solver.solution.initialization.defaults = {"y-velocity": 0}
     solver.solution.initialization.defaults = {"z-velocity": 0}
-    logger.info("Performing a standard initilization from 0 values")
+    logger.info("Performing a standard initialization from 0 values")
     solver.solution.initialization.standard_initialize()
 
 
@@ -130,12 +133,12 @@ def init_hybrid_basic(data, solver):
     solver.solution.initialization.hybrid_init_options.general_settings.initial_pressure = (
         True
     )
-    logger.info("Performing a hybrid initilization")
+    logger.info("Performing a hybrid initialization")
     solver.solution.initialization.hybrid_initialize()
 
 
 def init_fmg_basic(data, solver):
-    logger.info("Performing a FMG initilization")
+    logger.info("Performing a FMG initialization")
     # setting rp variable which is needed for version v232 when using gtis, may be obsolete in future versions
     solver.execute_tui(r"""(rpsetvar 'fmg-init/enable-with-gti? #t)""")
     solver.solution.initialization.fmg_initialize()

@@ -87,14 +87,14 @@ if external:
 # Set standard image output format to AVZ
 solver.execute_tui("/display/set/picture/driver avz")
 
-# Version Check
+# Fluent Version Check
 if pv.parse(launchEl["fl_version"]) < pv.parse("24.1.0"):
     # For version before 24.1.0, remove the streamhandler from the logger
     ptw_logger.remove_handlers(streamhandlers=True, filehandlers=False)
     # Set Batch options: Old API
     solver.file.confirm_overwrite = False
 else:
-    # Set Batch options
+    # Set Batch options: API changes with v24.1
     solver.file.batch_options.confirm_overwrite = False
     solver.file.batch_options.exit_on_error = True
     solver.file.batch_options.hide_answer = True
