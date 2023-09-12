@@ -97,7 +97,7 @@ def getStudyReports(pathtostudy,tempData=None):
         else:
             continue
         
-        trn_data = evaluateTranscript(trnFilePath=trn_file_path,caseFilename=dpname,tempData=tempData)
+        trn_data, _ = evaluateTranscript(trnFilePath=trn_file_path,caseFilename=dpname,tempData=tempData)
 
         # Check if the file 'Auto-generated-residuals-data-static.csv' exists in the folder
         csv_file_path = os.path.join(
@@ -173,6 +173,7 @@ def evaluateTranscript(trnFilePath,caseFilename,solver=None,tempData=None):
         solver_trn_data_valid = False
         table_started = False
         lines = transcript.split("\n")
+        filtered_values_list = []
 
         # fix for incompressible
         if solver is not None:
@@ -190,15 +191,18 @@ def evaluateTranscript(trnFilePath,caseFilename,solver=None,tempData=None):
                 logger.info(f"Detected Number of Nodes: {nodes}")
             elif "iter  continuity  x-velocity" in line:
                 headers = line.split()
-                filtered_headers = headers[1:(number_eqs+1)]
+                filtered_headers = headers[:number_eqs+1]
                 table_started = True
             elif table_started:
                 values = line.split()
-                all_convertible = all(misc_utils.can_convert_to_number(value) for value in values[1:(number_eqs+1)])
+                all_convertible = all(misc_utils.can_convert_to_number(value) for value in values[:number_eqs+1])
                 if len(values) == 0:
                     table_started = False
-                elif len(values[1:(number_eqs+1)]) == len(filtered_headers) and all_convertible:
-                    filtered_values = values[1:(number_eqs+1)]
+                elif len(values[:number_eqs+1]) == len(filtered_headers) and all_convertible:
+                    filtered_values = values[:number_eqs+1]
+                    filtered_values = [float(value) for value in filtered_values]
+                    # Append filtered_values to the list
+                    filtered_values_list.append(filtered_values)
                     solver_trn_data_valid = True
                 else:
                     try:
@@ -206,12 +210,8 @@ def evaluateTranscript(trnFilePath,caseFilename,solver=None,tempData=None):
                     except ValueError:
                         table_started = False
 
-        for i in range(len(filtered_headers)):
-            filtered_headers[i] = "res-" + filtered_headers[i]
+        res_df = pd.DataFrame(filtered_values_list, columns=filtered_headers)
 
-        if solver_trn_data_valid:
-            filtered_values = [float(val) for val in filtered_values]
-            res_columns = dict(zip(filtered_headers, filtered_values))
     else:
         logger.info("No trn-file found!: Skipping data")
         solver_trn_data_valid = False
@@ -229,14 +229,6 @@ def evaluateTranscript(trnFilePath,caseFilename,solver=None,tempData=None):
     ## write report table
     report_table = pd.DataFrame()
 
-    if solver_trn_data_valid:
-        for col_name, col_value in res_columns.items():
-            report_table[col_name] = [col_value]
-    else:
-        logger.info(
-            f"Reading Solver-Data from transcript file failed. Data not included in report table"
-        )
-
     if solver is not None:
         report_table.loc[0, "Mass Balance [kg/s]"] = massBalance
         if solveEnergy:
@@ -249,4 +241,4 @@ def evaluateTranscript(trnFilePath,caseFilename,solver=None,tempData=None):
     if solver is not None:
         report_table.insert(1, "Pseudo Time Step [s]", time_step)
 
-    return report_table
+    return report_table, res_df

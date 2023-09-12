@@ -26,6 +26,8 @@ name	definition	description	input-parameter	output-parameter
 "MP_IN_MassFlow_360"	"MassFlow({bz_inlet_names}) * GEO_IN_No_Passages_360 / GEO_IN_No_Passages"	""	#f	#t
 "MP_OUT_MassFlow"	"-MassFlow({bz_outlet_names})"	""	#f	#f
 "MP_OUT_MassFlow_360"	"-MassFlow({bz_outlet_names}) * GEO_OUT_No_Passages_360 / GEO_OUT_No_Passages"	""	#f	#f
+"MP_OUT_ECMassFlow"	"-MassFlow({bz_outlet_names}) * sqrt(MP_OUT_massFlowAve_Tt / MP_IN_massFlowAve_Tt) / (MP_OUT_massFlowAve_pt / MP_IN_massFlowAve_pt)"	""	#f	#f
+"MP_OUT_ECMassFlow_360"	"-MassFlow({bz_outlet_names}) * sqrt(MP_OUT_massFlowAve_Tt / MP_IN_massFlowAve_Tt) / (MP_OUT_massFlowAve_pt / MP_IN_massFlowAve_pt) * (GEO_OUT_No_Passages_360 / GEO_OUT_No_Passages) "	""	#f	#f
 "MP_OUT_p"	"AreaAve(StaticPressure,{bz_outlet_names})"	""	#f	#f
 "MP_IN_massFlowAve_Tt"	"Average(TotalTemperature,{bz_inlet_names},Weight = 'MassFlowRate')"	""	#f	#f
 "MP_OUT_massFlowAve_Tt"	"Average(TotalTemperature,{bz_outlet_names},Weight = 'MassFlowRate')"	""	#f	#f
@@ -33,9 +35,9 @@ name	definition	description	input-parameter	output-parameter
 "MP_IN_massFlowAve_pt"	"Average(TotalPressure,{bz_inlet_names},Weight = 'MassFlowRate') + BC_pref"	""	#f	#f
 "MP_OUT_areaAve_p"	"AreaAve(StaticPressure,{bz_outlet_names}) + BC_pref"	""	#f	#f
 "MP_OUT_massFlowAve_pt"	"Average(TotalPressure,{bz_outlet_names},Weight = 'MassFlowRate') + BC_pref"	""	#f	#f
-"MP_PR"	"MP_OUT_areaAve_p / MP_IN_areaAve_p"	""	#f	#f
-"MP_PRt"	"MP_OUT_massFlowAve_pt/ MP_IN_massFlowAve_pt"	""	#f	#t
-"MP_TRt"	"MassFlowAve(TotalTemperature,{bz_outlet_names}) / MassFlowAve(TotalTemperature,{bz_inlet_names})"	""	#f	#f
+"MP_PR"	"MP_IN_areaAve_p/MP_OUT_areaAve_p "	""	#f	#f
+"MP_PRt"	"MP_IN_massFlowAve_pt/MP_OUT_massFlowAve_pt"	""	#f	#t
+"MP_TRt"	"MP_IN_massFlowAve_Tt / MP_OUT_massFlowAve_Tt"	""	#f	#f
 "MP_Isentropic_Efficiency"	"EfficiencyIsentropic(Inlets={bz_inlet_names},Outlets={bz_outlet_names},Ratio='{efficiency_ratio}')"	""	#f	#t
 "MP_Polytropic_Efficiency"	"EfficiencyPolytropic(Inlets={bz_inlet_names},Outlets={bz_outlet_names},Ratio='{efficiency_ratio}')"	""	#f	#t
 "MP_Torque_360"	"dot(vector{rotation_axis_direction} , Moment(vector{rotation_axis_origin},{bz_walls_torque})) * (GEO_OUT_No_Passages_360 / GEO_OUT_No_Passages)"	""	#f	#t

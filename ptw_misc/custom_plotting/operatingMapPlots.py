@@ -141,6 +141,11 @@ input_data = {
 }
 """
 
+# Check if a JSON file path is provided as a command-line argument
+if len(sys.argv) < 2:
+    print("Usage: operatingMapPlot.py <path_to_json_file.json>")
+    sys.exit(1)
+
 # Convert input data into pairs
 csv_legend_pairs = [(data['csv_file'], legend_label) for legend_label, data in input_data['input_csv_data'].items()]
 

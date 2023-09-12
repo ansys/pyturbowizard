@@ -42,6 +42,7 @@ scriptPath = os.path.dirname(sys.argv[0])
 # Load Json File
 # Suggest Config File in python working Dir
 config_filename = "turboSetupConfig.json"
+
 # If arguments are passed take first argument as fullpath to the json file
 if len(sys.argv) > 1:
     config_filename = sys.argv[1]
@@ -84,8 +85,7 @@ if external:
     solver = launcher.launchFluent(launchEl)
 
 # Set standard image output format to AVZ
-go_format = '"AVZ"'
-solver.tui.preferences.graphics.hardcopy_settings.hardcopy_driver(f'{go_format}')
+solver.execute_tui("/display/set/picture/driver avz")
 
 # Set Batch options
 if pv.parse(launchEl["fl_version"]) < pv.parse("24.1.0"):
