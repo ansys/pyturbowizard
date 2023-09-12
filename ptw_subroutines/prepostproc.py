@@ -1,6 +1,5 @@
-from packaging import version as pv
+import os
 
-# Logger
 from ptw_subroutines.utils import (
     ptw_logger,
     postproc_utils,
@@ -9,8 +8,7 @@ from ptw_subroutines.utils import (
     misc_utils,
 )
 
-import os
-
+# Logger
 logger = ptw_logger.getLogger()
 
 
@@ -39,7 +37,7 @@ def prepost(data, solver, functionEl, launchEl):
 def prepost_01(data, solver, launchEl):
     fl_WorkingDir = launchEl.get("workingDir")
     # Check version -> for version 24.1 use python command
-    use_python_command = pv.parse(launchEl["fl_version"]) >= pv.parse("24.1.0")
+    use_python_command = launchEl["fl_version"] >= "24.1.0"
 
     # Set output for time statistics in transcript
     command_name = "print-time-statistics"
@@ -82,7 +80,7 @@ def prepost_01(data, solver, launchEl):
 
 def spanPlots(data, solver, launchEl):
     # Check version -> for version 24.1 use python command
-    use_python_command = pv.parse(launchEl["fl_version"]) >= pv.parse("24.1.0")
+    use_python_command = launchEl["fl_version"] >= "24.1.0"
 
     # Create spanwise surfaces
     spansSurf = data["results"].get("span_plot_height")
