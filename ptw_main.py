@@ -41,6 +41,7 @@ scriptPath = os.path.dirname(sys.argv[0])
 # Load Json File
 # Suggest Config File in python working Dir
 config_filename = "turboSetupConfig.json"
+
 # If arguments are passed take first argument as fullpath to the json file
 if len(sys.argv) > 1:
     config_filename = sys.argv[1]

@@ -48,9 +48,9 @@ def post_01(data, solver, launchEl, trn_name):
     #solver.report.system.time_statistics()
 
     # Save Residual Plot
-    plot_folder = os.path.join(caseOutPath, f"plots")
-    os.makedirs(plot_folder, exist_ok=True)  # Create the folder if it doesn't exist
-    residualFileName = os.path.join(plot_folder, "residuals.png")
+   # plot_folder = os.path.join(caseOutPath, f"plots")
+   # os.makedirs(plot_folder, exist_ok=True)  # Create the folder if it doesn't exist
+   # residualFileName = os.path.join(plot_folder, "residuals.png")
 
     # Scaling does not work (set resolution)
     #solver.tui.plot.residuals()
@@ -165,7 +165,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
             plt.xlabel("Iteration")
             plt.ylabel("")
             plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
-            plt.title(f"Coefficient of Variation (CoV 50)")
+            plt.title(f"Coefficient of Variation (CoV 50) - {caseFilename}")
             plt.grid(True)
             plt.yscale("log")
 
@@ -183,7 +183,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
 
     trnFilePath = os.path.join(caseOutPath, trn_filename)
 
-    report_table = postproc_utils.evaluateTranscript(trnFilePath=trnFilePath,caseFilename=caseFilename,solver=solver)
+    report_table, res_df = postproc_utils.evaluateTranscript(trnFilePath=trnFilePath,caseFilename=caseFilename,solver=solver)
 
 
     # Select columns from report_table
@@ -193,7 +193,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
     # Concatenate DataFrames
     result_table = pd.concat([columns_before_report_values, report_values, columns_after_report_values], axis=1)
 
-    # Report Table File-Name
+    # Report Table File-Name to csv
     resultTableName = data["results"].setdefault(
         "filename_reporttable", "reporttable.csv"
     )
@@ -205,6 +205,39 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
     logger.info("Writing Report Table to: " + reportTableFileName)
     result_table.to_csv(reportTableFileName, index=None)
 
+    # Residual Dataframe to csv
+    resiudalFileName = "residuals.csv"
+    resiudalFileName = os.path.join(
+
+        caseOutPath, resiudalFileName
+
+    )
+    res_df.to_csv(resiudalFileName)
+
+
+    #Plot Resiuduals
+    # Get the list of columns excluding 'Iteration'
+    y_columns = res_df.columns[2:]
+    plt.figure(figsize=(10, 6))
+    # Plot each column separately on the same plot
+    for col in y_columns:
+        plt.plot(res_df["iter"], res_df[col], label=col)
+
+    plt.xlabel("Iteration")
+    plt.ylabel("")
+    plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
+    plt.title(f"Residuals - {caseFilename}")
+    plt.grid(True)
+    plt.yscale("log")
+
+    # Save the plot in the folder
+    plot_filename = os.path.join(
+        caseOutPath, "plots/residual_plot.png"
+    )
+    plt.tight_layout()
+    logger.info(f"Writing Residual Plot to Directory: {plot_filename}")
+    plt.savefig(plot_filename)
+    plt.close()  # Close the figure to release memory
     return
 
 
