@@ -74,7 +74,7 @@ def detect_unused_keywords(refDict: dict, compareDict: dict, path="root"):
     for item in compareDict:
         if item not in refDict:
             logger.warning(
-                f"Element found in Config-File that is not known! Check keyword: '{item}' in '{path}'"
+                f"Element found in Config-File that is not known or used! Check keyword: '{item}' in '{path}'"
             )
         else:
             refEl = refDict.get(item)
