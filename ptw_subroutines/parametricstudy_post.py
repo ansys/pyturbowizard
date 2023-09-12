@@ -192,14 +192,14 @@ def study_post_01(data, solver):
 
                 if not residual_df.empty:
                     residual_df.reset_index(inplace=True)
-
+                    
                     #shorten Residual ddata to only include run
                     if len(residual_df)>len(mp_df):
                         length_residual_df = len(mp_df)
                         residual_df  = residual_df.iloc[-length_residual_df:]
 
-                    residual_df["Iteration"] = residual_df["Iteration"] - residual_df["Iteration"].iloc[0]
-                    
+                    residual_df["Iteration"] = residual_df["Iteration"] - residual_df["Iteration"].iloc[0]                    
+
                     # Check for res convergence and assign results to the 'res_convergence' column
                     res_criterium = cov_criterion
                     last_row_values = residual_df.iloc[-1, 2:]  # Select the last row, excluding the first column

@@ -10,7 +10,7 @@ def init(data, solver, functionEl):
         parentDict=data,
         functionDict=functionEl,
         funcDictName="initialization",
-        defaultName="init_hybrid_01",
+        defaultName="init_fmg_01",
     )
 
     # Has Influence on convergence, leads to freeze on some cases 
@@ -108,13 +108,11 @@ def init_fmg_03(data, solver):
     init_fmg_basic(data=data, solver=solver)
 
 def init_hybrid_basic(data, solver):
-
     # if the boundary condition needs information from flow field
     # (e.g. density to convert volume-rate to massflow-rate),
     # we need to initialize first so that we have field data available
     logger.info('Initializing flow field to get field data for flow field depended boundary conditions')
     solver.solution.initialization.standard_initialize()
-
 
     solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
         "absolute"

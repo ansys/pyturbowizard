@@ -2,6 +2,7 @@ import os
 import json
 import sys
 import copy
+from packaging import version as pv
 
 # Load Script Modules
 from ptw_subroutines import (
@@ -29,8 +30,8 @@ debug_level = 1
 # Set Logger
 logger = ptw_logger.init_logger(console_output=False)
 
-version = "1.5.4"
-logger.info(f"*** Starting PyTurboWizard (Version {str(version)}) ***")
+ptw_version = "1.5.5"
+logger.info(f"*** Starting PyTurboWizard (Version {str(ptw_version)}) ***")
 
 # If solver variable does not exist, Fluent has been started in external mode
 external = "solver" not in globals()
@@ -61,7 +62,7 @@ else:
 turboData_from_file = copy.deepcopy(turboData)
 
 # Set Version to turboData
-turboData["ptw_version"] = version
+turboData["ptw_version"] = ptw_version
 # Get or Set-Default Debug-Level
 debug_level = turboData.setdefault("debug_level", debug_level)
 
@@ -87,8 +88,14 @@ if external:
 solver.execute_tui("/display/set/picture/driver avz")
 
 # Set Batch options
-solver.file.confirm_overwrite = False
-#solver.tui.file.set_batch_options("no yes yes no") -> does not work
+if pv.parse(launchEl["fl_version"]) < pv.parse("24.1.0"):
+    # Old settings API
+    solver.file.confirm_overwrite = False
+else:
+    solver.file.batch_options.confirm_overwrite = False
+    solver.file.batch_options.exit_on_error = True
+    solver.file.batch_options.hide_answer = True
+    solver.file.batch_options.redisplay_question = False
 
 # Start Setup
 caseDict = turboData.get("cases")
@@ -242,8 +249,9 @@ solver.exit()
 # Write out Debug info
 if debug_level > 0:
     #Compare turboData: final data vs file data --> check if some keywords have not been used
-    logger.info("Detecting unused keywords of input-config-file")
+    logger.info("Searching for unused keywords in input-config-file...")
     dict_utils.detect_unused_keywords(refDict=turboData, compareDict=turboData_from_file)
+    logger.info("Searching for unused keywords in input-config-file... finished!")
 
     import ntpath
     debug_filename = "ptw_" + ntpath.basename(config_filename)
