@@ -13,8 +13,8 @@ def init(data, solver, functionEl):
         defaultName="init_fmg_01",
     )
 
-    # Has Influence on convergence, leads to freeze on some cases 
-    logger.info('Executing Reorder Domain to reduce bandwidth according to the setup')
+    # Has Influence on convergence, leads to freeze on some cases
+    logger.info("Executing Reorder Domain to reduce bandwidth according to the setup")
     solver.mesh.reorder.reorder_domain()
 
     logger.info('Running Initialization Function "' + functionName + '"...')
@@ -49,7 +49,9 @@ def init_standard_01(data, solver):
     # if the boundary condition needs information from flow field
     # (e.g. density to convert volume-rate to massflow-rate),
     # we need to initialize first so that we have field data available
-    logger.info('Initializing flow field to get field data for flow field depended boundary conditions')
+    logger.info(
+        "Initializing flow field to get field data for flow field depended boundary conditions"
+    )
     solver.solution.initialization.standard_initialize()
 
     availableBCs = dir(solver.tui.solve.initialize.compute_defaults)
@@ -65,53 +67,61 @@ def init_standard_01(data, solver):
         logger.info(f"No inlet BC specified. Initialing from 'all-zones'")
         solver.tui.solve.initialize.compute_defaults.all_zones()
 
-    logger.info('Performing a standard initilization from inlet')
+    logger.info("Performing a standard initilization from inlet")
     solver.solution.initialization.standard_initialize()
 
 
 def init_standard_02(data, solver):
-
     # if the boundary condition needs information from flow field
     # (e.g. density to convert volume-rate to massflow-rate),
     # we need to initialize first so that we have field data available
-    logger.info('Initializing flow field to get field data for flow field depended boundary conditions')
+    logger.info(
+        "Initializing flow field to get field data for flow field depended boundary conditions"
+    )
     solver.solution.initialization.standard_initialize()
-    
+
     solver.solution.initialization.reference_frame = "relative"
     if "BC_IN_Tt" in data["expressions"]:
         myTemp = float(data["expressions"]["BC_IN_Tt"].split(" ")[0])
         solver.solution.initialization.defaults = {"temperature": myTemp}
     if "BC_IN_p_gauge" in data["expressions"]:
-          myPress = float(data["expressions"]["BC_IN_p_gauge"].split(" ")[0])
-          solver.solution.initialization.defaults = {"pressure": myPress}
+        myPress = float(data["expressions"]["BC_IN_p_gauge"].split(" ")[0])
+        solver.solution.initialization.defaults = {"pressure": myPress}
     solver.solution.initialization.defaults = {"k": 0.01}
     solver.solution.initialization.defaults = {"omega": 0.01}
     solver.solution.initialization.defaults = {"x-velocity": 0}
     solver.solution.initialization.defaults = {"y-velocity": 0}
     solver.solution.initialization.defaults = {"z-velocity": 0}
-    logger.info('Performing a standard initilization from 0 values')
+    logger.info("Performing a standard initilization from 0 values")
     solver.solution.initialization.standard_initialize()
+
 
 def init_hybrid_01(data, solver):
     init_hybrid_basic(data=data, solver=solver)
+
 
 def init_fmg_01(data, solver):
     init_standard_01(data=data, solver=solver)
     init_fmg_basic(data=data, solver=solver)
 
+
 def init_fmg_02(data, solver):
     init_standard_02(data=data, solver=solver)
     init_fmg_basic(data=data, solver=solver)
+
 
 def init_fmg_03(data, solver):
     init_hybrid_01(data=data, solver=solver)
     init_fmg_basic(data=data, solver=solver)
 
+
 def init_hybrid_basic(data, solver):
     # if the boundary condition needs information from flow field
     # (e.g. density to convert volume-rate to massflow-rate),
     # we need to initialize first so that we have field data available
-    logger.info('Initializing flow field to get field data for flow field depended boundary conditions')
+    logger.info(
+        "Initializing flow field to get field data for flow field depended boundary conditions"
+    )
     solver.solution.initialization.standard_initialize()
 
     solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
@@ -120,14 +130,16 @@ def init_hybrid_basic(data, solver):
     solver.solution.initialization.hybrid_init_options.general_settings.initial_pressure = (
         True
     )
-    logger.info('Performing a hybrid initilization')
+    logger.info("Performing a hybrid initilization")
     solver.solution.initialization.hybrid_initialize()
 
+
 def init_fmg_basic(data, solver):
-    logger.info('Performing a FMG initilization')
+    logger.info("Performing a FMG initilization")
     # setting rp variable which is needed for version v232 when using gtis, may be obsolete in future versions
     solver.execute_tui(r"""(rpsetvar 'fmg-init/enable-with-gti? #t)""")
     solver.solution.initialization.fmg_initialize()
+
 
 def solve_01(data, solver):
     iter_count = data["solution"].setdefault("iter_count", 500)

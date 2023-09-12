@@ -19,6 +19,7 @@ def get_free_filename(dirname, base_filename):
         counter += 1
     return filename
 
+
 def get_free_filename_maxIndex(dirname, base_filename):
     base_name, ext_name = os.path.splitext(base_filename)
     filename = base_filename
@@ -42,8 +43,10 @@ def get_free_filename_maxIndex(dirname, base_filename):
 
     return filename
 
-def run_extsch_script(scriptPath:str, workingDir:str, caseEl:dict):
+
+def run_extsch_script(scriptPath: str, workingDir: str, caseEl: dict):
     from sys import platform
+
     if platform == "linux" or platform == "linux2":
         logger.info(f"Running 'extsch' script...")
         caseFilename = caseEl.get("caseFilename")
@@ -59,7 +62,10 @@ def run_extsch_script(scriptPath:str, workingDir:str, caseEl:dict):
         )
         logger.info(f"'extsch' output written to: {output_filename}")
     else:
-        logger.info(f"Script 'extsch' only available for linux platforms (current platform: {platform}): Skipping function!")
+        logger.info(
+            f"Script 'extsch' only available for linux platforms (current platform: {platform}): Skipping function!"
+        )
+
 
 def ptw_output(fl_workingDir, study_name=None, case_name=None):
     # Define a PTW output folder in Fluent working directory
@@ -68,25 +74,24 @@ def ptw_output(fl_workingDir, study_name=None, case_name=None):
         ptw_output_path = os.path.join(fl_workingDir, "PTW_output")
         if not os.path.exists(ptw_output_path):
             os.makedirs(ptw_output_path)
-    
+
     # Get the Path to a seprate case folder
     if study_name is not None:
-        study_name = 'study_'+study_name
+        study_name = "study_" + study_name
         study_path = os.path.join(ptw_output_path, study_name)
         if not os.path.exists(study_path):
             os.makedirs(study_path)
         return study_path
-    
+
     # Get the Path to a seprate study folder
     if case_name is not None:
-        case_name = 'case_' + case_name
+        case_name = "case_" + case_name
         case_path = os.path.join(ptw_output_path, case_name)
         if not os.path.exists(case_path):
             os.makedirs(case_path)
         return case_path
-    
-    return ptw_output_path
 
+    return ptw_output_path
 
 
 def can_convert_to_number(value):
@@ -95,9 +100,3 @@ def can_convert_to_number(value):
         return True
     except ValueError:
         return False
-
-
-
-
-
-
