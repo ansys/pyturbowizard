@@ -2,7 +2,6 @@ import os
 import json
 import sys
 import copy
-from packaging import version as pv
 
 # Load Script Modules
 from ptw_subroutines import (
@@ -13,7 +12,7 @@ from ptw_subroutines import (
     setupcfd,
     postproc,
     parametricstudy_post,
-    prepostproc
+    prepostproc,
 )
 from ptw_subroutines.utils import (
     ptw_logger,
@@ -21,16 +20,16 @@ from ptw_subroutines.utils import (
     dict_utils,
     expressions_utils,
     fluent_utils,
-    misc_utils
+    misc_utils,
 )
 
 # Set default Debug-Level
 debug_level = 1
 
 # Set Logger
-logger = ptw_logger.init_logger(console_output=False)
+logger = ptw_logger.init_logger()
 
-ptw_version = "1.5.5"
+ptw_version = "1.5.6"
 logger.info(f"*** Starting PyTurboWizard (Version {str(ptw_version)}) ***")
 
 # If solver variable does not exist, Fluent has been started in external mode
@@ -58,7 +57,7 @@ if config_filename.endswith("yaml"):
 else:
     turboData = json.load(config_file)
 
-#Copy dict from file
+# Copy dict from file
 turboData_from_file = copy.deepcopy(turboData)
 
 # Set Version to turboData
@@ -87,11 +86,14 @@ if external:
 # Set standard image output format to AVZ
 solver.execute_tui("/display/set/picture/driver avz")
 
-# Set Batch options
-if pv.parse(launchEl["fl_version"]) < pv.parse("24.1.0"):
-    # Old settings API
+# Fluent Version Check
+if launchEl["fl_version"] < "24.1.0":
+    # For version before 24.1.0, remove the streamhandler from the logger
+    ptw_logger.remove_handlers(streamhandlers=True, filehandlers=False)
+    # Set Batch options: Old API
     solver.file.confirm_overwrite = False
 else:
+    # Set Batch options: API changes with v24.1
     solver.file.batch_options.confirm_overwrite = False
     solver.file.batch_options.exit_on_error = True
     solver.file.batch_options.hide_answer = True
@@ -125,9 +127,11 @@ if caseDict is not None:
         caseFilename = caseEl.setdefault("caseFilename", casename)
 
         # Start Transcript
-        caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir,case_name=caseFilename)
-        trnName = casename+".trn"
-        trnFileName = os.path.join(caseOutPath,trnName)
+        caseOutPath = misc_utils.ptw_output(
+            fl_workingDir=fl_workingDir, case_name=caseFilename
+        )
+        trnName = casename + ".trn"
+        trnFileName = os.path.join(caseOutPath, trnName)
         solver.file.start_transcript(file_name=trnFileName)
 
         # Mesh import, expressions, profiles
@@ -139,15 +143,17 @@ if caseDict is not None:
             data=caseEl, script_dir=scriptPath, working_dir=fl_workingDir
         )
         # Reading ExpressionFile into Fluent
-        caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir,case_name=caseFilename)
-        expressionFilename = os.path.join(caseOutPath,caseEl["expressionFilename"])
-        solver.tui.define.named_expressions.import_from_tsv(
-            expressionFilename
+        caseOutPath = misc_utils.ptw_output(
+            fl_workingDir=fl_workingDir, case_name=caseFilename
         )
+        expressionFilename = os.path.join(caseOutPath, caseEl["expressionFilename"])
+        solver.tui.define.named_expressions.import_from_tsv(expressionFilename)
         # Check if all inputParameters are valid
         expressions_utils.check_input_parameter_expressions(solver=solver)
         # Check if all outputParameters are set
-        expressions_utils.check_output_parameter_expressions(caseEl=caseEl, solver=solver)
+        expressions_utils.check_output_parameter_expressions(
+            caseEl=caseEl, solver=solver
+        )
         ### Expression Definition... done!
 
         # Enable Beta-Features
@@ -155,7 +161,7 @@ if caseDict is not None:
 
         # Case Setup
         setupcfd.setup(data=caseEl, solver=solver, functionEl=caseFunctionEl)
-        setupcfd.report_01(caseEl, solver,launchEl)
+        setupcfd.report_01(caseEl, solver, launchEl)
 
         # Solution
         # Set Solver Settings
@@ -170,12 +176,14 @@ if caseDict is not None:
         solve.init(data=caseEl, solver=solver, functionEl=caseFunctionEl)
 
         # Setup for Post Processing
-        prepostproc.prepost(data=caseEl, solver=solver, functionEl=caseFunctionEl,launchEl=launchEl)
+        prepostproc.prepost(
+            data=caseEl, solver=solver, functionEl=caseFunctionEl, launchEl=launchEl
+        )
 
         # Write case and ini-data & settings file
         logger.info("Writing initial case & settings file")
         solver.file.write(file_type="case", file_name=caseFilename)
-        settingsFilename = os.path.join(caseOutPath, 'settings.set')
+        settingsFilename = os.path.join(caseOutPath, "settings.set")
         # Removing file manually, as batch options seem not to work
         if os.path.exists(settingsFilename):
             logger.info(f"Removing old existing settings-file: {settingsFilename} ")
@@ -184,7 +192,9 @@ if caseDict is not None:
         solver.tui.file.write_settings(settingsFilename)
         # Writing additional setup info: extsch file
         if caseEl.setdefault("run_extsch", False):
-            misc_utils.run_extsch_script(scriptPath=scriptPath, workingDir=fl_workingDir, caseEl=caseEl)
+            misc_utils.run_extsch_script(
+                scriptPath=scriptPath, workingDir=fl_workingDir, caseEl=caseEl
+            )
 
         if solver.field_data.is_data_valid():
             logger.info("Writing initial dat file")
@@ -215,8 +225,8 @@ if caseDict is not None:
                 trn_name=trnFileName,
             )
             # version 1.5.3: no alteration of case/data done in post processing, removed additonal saving
-            #filename = caseFilename + "_fin"
-            #solver.file.write(file_type="case-data", file_name=filename)
+            # filename = caseFilename + "_fin"
+            # solver.file.write(file_type="case-data", file_name=filename)
         else:
             logger.info("Skipping Postprocessing: No Solution Data available")
 
@@ -248,14 +258,17 @@ solver.exit()
 
 # Write out Debug info
 if debug_level > 0:
-    #Compare turboData: final data vs file data --> check if some keywords have not been used
+    # Compare turboData: final data vs file data --> check if some keywords have not been used
     logger.info("Searching for unused keywords in input-config-file...")
-    dict_utils.detect_unused_keywords(refDict=turboData, compareDict=turboData_from_file)
+    dict_utils.detect_unused_keywords(
+        refDict=turboData, compareDict=turboData_from_file
+    )
     logger.info("Searching for unused keywords in input-config-file... finished!")
 
     import ntpath
+
     debug_filename = "ptw_" + ntpath.basename(config_filename)
-    ptwOutPath=misc_utils.ptw_output(fl_workingDir=fl_workingDir)
+    ptwOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir)
     debug_file_path = os.path.join(ptwOutPath, debug_filename)
     jsonString = json.dumps(turboData, indent=4, sort_keys=True)
     with open(debug_file_path, "w") as jsonFile:

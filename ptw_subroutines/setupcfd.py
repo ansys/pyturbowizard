@@ -1,6 +1,7 @@
 # Logger
 from ptw_subroutines.utils import ptw_logger, dict_utils, misc_utils, fluent_utils
 import os
+
 logger = ptw_logger.getLogger()
 
 
@@ -65,7 +66,6 @@ def material_01(data, solver, solveEnergy: bool = True):
 
     if solveEnergy:
         solver.setup.materials.fluid[fl_name] = {
-
             "density": {"option": data["fluid_properties"]["fl_density"]},
             "specific_heat": {
                 "option": "constant",
@@ -108,9 +108,7 @@ def physics_01(data, solver, solveEnergy: bool = True):
 
     gravityVector = data.get("gravity_vector")
     if (type(gravityVector) is list) and (len(gravityVector) == 3):
-        logger.info(
-            f"Specification of Gravity-Vector: {gravityVector}"
-        )
+        logger.info(f"Specification of Gravity-Vector: {gravityVector}")
         solver.setup.general.operating_conditions.gravity.enable = True
         solver.setup.general.operating_conditions.gravity.components = gravityVector
 
@@ -215,10 +213,10 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     solver.setup.boundary_conditions.change_type(
                         zone_list=[inletName], new_type="mass-flow-inlet"
                     )
-                    #old tui command
-                    #solver.tui.define.boundary_conditions.zone_type(
+                    # old tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
                     #    inletName, "mass-flow-inlet"
-                    #)
+                    # )
                     inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
                     inBC.flow_spec = "Mass Flow Rate"
                     inBC.mass_flow = "BC_IN_MassFlow"
@@ -236,9 +234,9 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         zone_list=[inletName], new_type="mass-flow-inlet"
                     )
                     # old tui command
-                    #solver.tui.define.boundary_conditions.zone_type(
+                    # solver.tui.define.boundary_conditions.zone_type(
                     #    inletName, "mass-flow-inlet"
-                    #)
+                    # )
                     inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
                     inBC.flow_spec = "Mass Flow Rate"
                     inBC.mass_flow = "BC_IN_VolumeFlow*BC_IN_VolumeFlowDensity"
@@ -348,9 +346,9 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         zone_list=[outletName], new_type="mass-flow-outlet"
                     )
                     # old tui command
-                    #solver.tui.define.boundary_conditions.zone_type(
+                    # solver.tui.define.boundary_conditions.zone_type(
                     #    outletName, "mass-flow-outlet"
-                    #)
+                    # )
 
                     outBC = solver.setup.boundary_conditions.mass_flow_outlet[
                         outletName
@@ -389,9 +387,9 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         zone_list=[outletName], new_type="mass-flow-outlet"
                     )
                     # old tui command
-                    #solver.tui.define.boundary_conditions.zone_type(
+                    # solver.tui.define.boundary_conditions.zone_type(
                     #    outletName, "mass-flow-outlet"
-                    #)
+                    # )
 
                     outBC = solver.setup.boundary_conditions.mass_flow_outlet[
                         outletName
@@ -402,12 +400,12 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                 elif data["expressions"].get("BC_OUT_p") is not None:
                     logger.info(f"Prescribing a Pressure-Outlet BC @{outletName}")
                     solver.setup.boundary_conditions.change_type(
-                       zone_list=[outletName], new_type="pressure-outlet"
+                        zone_list=[outletName], new_type="pressure-outlet"
                     )
                     # old tui command
-                    #solver.tui.define.boundary_conditions.zone_type(
+                    # solver.tui.define.boundary_conditions.zone_type(
                     #    outletName, "pressure-outlet"
-                    #)
+                    # )
                     outBC = solver.setup.boundary_conditions.pressure_outlet[outletName]
                     # Check Profile data exists
                     profileName = data.get("profileName_Out")
@@ -594,17 +592,21 @@ def boundary_01(data, solver, solveEnergy: bool = True):
     return
 
 
-def report_01(data, solver,launchEl):
-    #Get Solution-Dict
+def report_01(data, solver, launchEl):
+    # Get Solution-Dict
     solutionDict = data.get("solution")
-    #Get PTW Output folder path
+    # Get PTW Output folder path
     fl_workingDir = launchEl.get("workingDir")
-    caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir, case_name=data["caseFilename"])
+    caseOutPath = misc_utils.ptw_output(
+        fl_workingDir=fl_workingDir, case_name=data["caseFilename"]
+    )
 
     if solutionDict is None:
-        logger.warning(f"No Solution-Dict specified in Case: 'solution'. Skipping Report-Definition!")
+        logger.warning(
+            f"No Solution-Dict specified in Case: 'solution'. Skipping Report-Definition!"
+        )
         return
-    
+
     # Reports
     reportList = solutionDict.get("reportlist")
     if reportList is not None:
@@ -635,7 +637,9 @@ def report_01(data, solver,launchEl):
             "report_defs": reportNameList,
         }
     else:
-        logger.warning(f"No report-definitions specified in Case: Keyword 'reportlist'!")
+        logger.warning(
+            f"No report-definitions specified in Case: Keyword 'reportlist'!"
+        )
 
     # Set Residuals
     # solver.tui.preferences.simulation.local_residual_scaling("yes")
@@ -645,11 +649,10 @@ def report_01(data, solver,launchEl):
     solver.tui.solve.monitors.residual.n_display(500000)
     solver.tui.solve.monitors.residual.n_save(500000)
 
-
     # Check active number of equations
     number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
 
-    resCrit = solutionDict.setdefault("res_crit", 1.e-4)
+    resCrit = solutionDict.setdefault("res_crit", 1.0e-4)
     resCritList = [resCrit] * number_eqs
     if len(resCritList) > 0:
         solver.tui.solve.monitors.residual.convergence_criteria(*resCritList)
@@ -657,12 +660,14 @@ def report_01(data, solver,launchEl):
     # Set CoVs
     cov_list = solutionDict.get("cov_list")
     if cov_list is not None:
-        stop_criterion = solutionDict.setdefault("cov_crit", 1.e-4)
+        stop_criterion = solutionDict.setdefault("cov_crit", 1.0e-4)
         for solve_cov in cov_list:
             reportName = solve_cov.replace("_", "-")
             reportName = "rep-" + reportName.lower()
             covName = reportName + "-cov"
-            solver.solution.monitor.convergence_conditions.convergence_reports[covName] = {}
+            solver.solution.monitor.convergence_conditions.convergence_reports[
+                covName
+            ] = {}
             solver.solution.monitor.convergence_conditions = {
                 "convergence_reports": {
                     covName: {

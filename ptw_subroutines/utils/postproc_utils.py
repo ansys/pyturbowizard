@@ -3,10 +3,12 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.lines import Line2D
 import matplotlib.colors as mcolors
+
 # Logger
-from ptw_subroutines.utils import ptw_logger,fluent_utils,misc_utils
+from ptw_subroutines.utils import ptw_logger, fluent_utils, misc_utils
 
 logger = ptw_logger.getLogger()
+
 
 def calcCov(reportOut, window_size=50):
     try:
@@ -25,7 +27,7 @@ def calcCov(reportOut, window_size=50):
     # Initialize lists to store mean and COV values
     mean_values = []
     cov_values = []
-    
+
     # calculate the Coefficient of Variation over the window size
     cov_df = mp_df.copy()
     cov_df.iloc[:, 1:] = (
@@ -53,7 +55,7 @@ def calcCov(reportOut, window_size=50):
     return formatted_report_df, cov_df, mp_df
 
 
-def getStudyReports(pathtostudy,tempData=None):
+def getStudyReports(pathtostudy, tempData=None):
     try:
         import pandas as pd
     except ImportError as e:
@@ -89,15 +91,17 @@ def getStudyReports(pathtostudy,tempData=None):
         else:
             continue
 
-        # Check if the folder_path contains a .trn file       
+        # Check if the folder_path contains a .trn file
         trn_files = [file for file in os.listdir(folder_path) if file.endswith(".trn")]
         if trn_files:
             # Take the first .trn file as the csv_file_path
             trn_file_path = os.path.join(folder_path, trn_files[0])
         else:
             continue
-        
-        trn_data, _ = evaluateTranscript(trnFilePath=trn_file_path,caseFilename=dpname,tempData=tempData)
+
+        trn_data, _ = evaluateTranscript(
+            trnFilePath=trn_file_path, caseFilename=dpname, tempData=tempData
+        )
 
         # Check if the file 'Auto-generated-residuals-data-static.csv' exists in the folder
         csv_file_path = os.path.join(
@@ -122,12 +126,10 @@ def getStudyReports(pathtostudy,tempData=None):
         result_df = pd.concat(repot_df, ignore_index=True)
 
     # Return dataframes of operating map, residuals
-    return result_df, cov_df_list, residual_df_list, mp_df_list,trn_df
-
+    return result_df, cov_df_list, residual_df_list, mp_df_list, trn_df
 
 
 def plot_figure(x_values, y_values, x_label, y_label, colors, criterion):
-
     # Create the figure and axis
     fig, ax = plt.subplots()
 
@@ -153,18 +155,20 @@ def plot_figure(x_values, y_values, x_label, y_label, colors, criterion):
         ax.legend(handles=legend_colors, loc="best")
     return fig
 
-def evaluateTranscript(trnFilePath,caseFilename,solver=None,tempData=None):
+
+def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
     try:
         import pandas as pd
     except ImportError as e:
         logger.info(f"ImportError! Could not import lib: {str(e)}")
         logger.info(f"Skipping Function 'evaluateTranscript'!")
-        return    
-    
+        return
+
     wall_clock_tot = 0
     nodes = 0
     filtered_values = []
     filtered_headers = []
+    res_df = None
 
     if os.path.isfile(trnFilePath):
         with open(trnFilePath, "r") as file:
@@ -191,15 +195,21 @@ def evaluateTranscript(trnFilePath,caseFilename,solver=None,tempData=None):
                 logger.info(f"Detected Number of Nodes: {nodes}")
             elif "iter  continuity  x-velocity" in line:
                 headers = line.split()
-                filtered_headers = headers[:number_eqs+1]
+                filtered_headers = headers[: number_eqs + 1]
                 table_started = True
             elif table_started:
                 values = line.split()
-                all_convertible = all(misc_utils.can_convert_to_number(value) for value in values[:number_eqs+1])
+                all_convertible = all(
+                    misc_utils.can_convert_to_number(value)
+                    for value in values[: number_eqs + 1]
+                )
                 if len(values) == 0:
                     table_started = False
-                elif len(values[:number_eqs+1]) == len(filtered_headers) and all_convertible:
-                    filtered_values = values[:number_eqs+1]
+                elif (
+                    len(values[: number_eqs + 1]) == len(filtered_headers)
+                    and all_convertible
+                ):
+                    filtered_values = values[: number_eqs + 1]
                     filtered_values = [float(value) for value in filtered_values]
                     # Append filtered_values to the list
                     filtered_values_list.append(filtered_values)

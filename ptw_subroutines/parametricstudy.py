@@ -17,7 +17,7 @@ def study(data, solver, functionEl):
         defaultName="study_01",
     )
 
-    logger.info(f"Running ParamatricStudy-Function '{functionName}' ...")
+    logger.info(f"Running ParametricStudy-Function '{functionName}' ...")
     if functionName == "study_01":
         study01(data, solver)
     else:
@@ -27,7 +27,7 @@ def study(data, solver, functionEl):
             + '" not known. Skipping Parametric Study!'
         )
 
-    logger.info(f"Running ParamatricStudy-Function '{functionName}'...  finished!")
+    logger.info(f"Running ParametricStudy-Function '{functionName}'...  finished!")
 
 
 def study01(data, solver):
@@ -77,17 +77,15 @@ def study01(data, solver):
             # Read Ref Case
             refCaseFilePath = os.path.join(flworking_Dir, refCase)
             if studyIndex == 0:
-                solver.file.read_case_data(
-                    file_name=refCaseFilePath
-                )
+                solver.file.read_case_data(file_name=refCaseFilePath)
             else:
                 tuicommand = 'file/rcd "' + refCaseFilePath + '" yes'
                 solver.execute_tui(tuicommand)
-                #solver.tui.file.read_case_data(refCaseFilePath)
-                #solver.file.read_case_data(file_name=refCaseFilePath)
+                # solver.tui.file.read_case_data(refCaseFilePath)
+                # solver.file.read_case_data(file_name=refCaseFilePath)
 
             # Initialize a new parametric study
-            projectFilename = os.path.join(flworking_Dir,studyName)
+            projectFilename = os.path.join(flworking_Dir, studyName)
             solver.parametric_studies.initialize(project_filename=projectFilename)
             psname = refCase + "-Solve"
             fluent_study = solver.parametric_studies[psname]
@@ -162,9 +160,11 @@ def study01(data, solver):
 
             # Export results to table
 
-            studyOutPath = misc_utils.ptw_output(fl_workingDir=flworking_Dir,study_name=studyName)
+            studyOutPath = misc_utils.ptw_output(
+                fl_workingDir=flworking_Dir, study_name=studyName
+            )
 
-            design_point_table_filepath = os.path.join(studyOutPath,"dp_table.csv")
+            design_point_table_filepath = os.path.join(studyOutPath, "dp_table.csv")
             solver.parametric_studies.export_design_table(
                 filepath=design_point_table_filepath
             )
@@ -175,7 +175,6 @@ def study01(data, solver):
             else:
                 projectFilename = os.path.join(flworking_Dir, studyName)
                 solver.tui.file.parametric_project.save_as(projectFilename)
-
 
             # Increasing study index
             studyIndex = studyIndex + 1
@@ -210,12 +209,12 @@ def study01(data, solver):
             if studyEl.setdefault("updateAllDPs", False):
                 fluent_study.design_points.update_all()
 
-            
             # Export results to table
-            studyOutPath = misc_utils.ptw_output(fl_workingDir=flworking_Dir,study_name=studyName)
+            studyOutPath = misc_utils.ptw_output(
+                fl_workingDir=flworking_Dir, study_name=studyName
+            )
 
-
-            design_point_table_filepath = os.path.join(studyOutPath,"dp_table.csv")
+            design_point_table_filepath = os.path.join(studyOutPath, "dp_table.csv")
             solver.parametric_studies.export_design_table(
                 filepath=design_point_table_filepath
             )
@@ -234,10 +233,12 @@ def study01(data, solver):
         # break
 
         # Extract CoV information and store in temporary file for post processing
-        tempDataDict = solver.solution.monitor.convergence_conditions.convergence_reports()
+        tempDataDict = (
+            solver.solution.monitor.convergence_conditions.convergence_reports()
+        )
         number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
         tempDataDict["num_eqs"] = number_eqs
-        
+
         baseCaseName = studyDict[studyName].get("refCaseFilename")
         pathtostudy = os.path.join(
             flworking_Dir, f"{studyName}.cffdb", f"{baseCaseName}-Solve"

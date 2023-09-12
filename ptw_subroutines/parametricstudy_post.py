@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import json
 
 # Logger
-from ptw_subroutines.utils import ptw_logger, dict_utils, postproc_utils,misc_utils
+from ptw_subroutines.utils import ptw_logger, dict_utils, postproc_utils, misc_utils
 
 logger = ptw_logger.getLogger()
 
@@ -17,21 +17,19 @@ def study_post(data, solver, functionEl):
         defaultName="study_post_01",
     )
 
-    logger.info(f"Running ParamatricStudy-Postprocessing Function '{functionName}' ...")
+    logger.info(f"Running ParametricStudy-Postprocessing Function '{functionName}' ...")
     if functionName == "study_post_01":
         study_post_01(data=data, solver=solver)
     else:
         logger.info(
             'Prescribed Function "'
             + functionName
-            + '" not known. Skipping Paramatric-Study-Postprocessing Function!'
+            + '" not known. Skipping ParametricStudy-Postprocessing Function!'
         )
 
     logger.info(
-        f"Running ParamatricStudy-Postprocessing Function '{functionName}'...  finished!"
+        f"Running ParametricStudy-Postprocessing Function '{functionName}'...  finished!"
     )
-    
-
 
 
 def study_post_01(data, solver):
@@ -66,14 +64,18 @@ def study_post_01(data, solver):
                 filtCovDict = {
                     key: value
                     for key, value in tempData.items()
-                    if not isinstance(value,int) and value.get("active", False) and value.get("cov", False)
+                    if not isinstance(value, int)
+                    and value.get("active", False)
+                    and value.get("cov", False)
                 }
             else:
                 logger.info("No base case information for CoVs has been found!")
                 cov_data_exists = False
 
             # Define a Folder to store plots
-            studyOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir, study_name=studyName)
+            studyOutPath = misc_utils.ptw_output(
+                fl_workingDir=fl_workingDir, study_name=studyName
+            )
             studyPlotFolder = os.path.join(studyOutPath, f"study_plots")
             os.makedirs(
                 studyPlotFolder, exist_ok=True
@@ -85,8 +87,8 @@ def study_post_01(data, solver):
                 cov_df_list,
                 residual_df_list,
                 mp_df_list,
-                trn_df
-            ) = postproc_utils.getStudyReports(pathtostudy,tempData)
+                trn_df,
+            ) = postproc_utils.getStudyReports(pathtostudy, tempData)
 
             # check if study data is available
             if result_df.empty:
@@ -100,20 +102,22 @@ def study_post_01(data, solver):
 
             # Initialize a list to store convergence results
             cov_convergence_results = []
-            res_convergence_results = [] 
+            res_convergence_results = []
 
             # Check if Convergence is reached
             for _, row in result_df.iterrows():
                 convergence = "good"
                 for col in cov_columns:
-                    cov_column = filtCovDict.get(col)  # Get the corresponding dictionary if it exists
+                    cov_column = filtCovDict.get(
+                        col
+                    )  # Get the corresponding dictionary if it exists
                     if cov_column is not None:  # Check if the column is CoV set
                         cov_criterion = cov_column.get("stop_criterion")
                         if cov_criterion is not None:
                             if row[col] > 5 * cov_criterion:
                                 convergence = "poor"
                                 break
-                            elif row[col] > 1.05*cov_criterion:
+                            elif row[col] > 1.05 * cov_criterion:
                                 convergence = "ok"
 
                 cov_convergence_results.append(convergence)
@@ -189,21 +193,28 @@ def study_post_01(data, solver):
                         plt.savefig(plot_filename)
                         plt.close()  # Close the figure to release memory
 
-
                 if not residual_df.empty:
                     residual_df.reset_index(inplace=True)
-                    
-                    #shorten Residual ddata to only include run
-                    if len(residual_df)>len(mp_df):
-                        length_residual_df = len(mp_df)
-                        residual_df  = residual_df.iloc[-length_residual_df:]
 
-                    residual_df["Iteration"] = residual_df["Iteration"] - residual_df["Iteration"].iloc[0]                    
+                    # shorten Residual ddata to only include run
+                    if len(residual_df) > len(mp_df):
+                        length_residual_df = len(mp_df)
+                        residual_df = residual_df.iloc[-length_residual_df:]
+
+                    residual_df["Iterations"] = (
+                        residual_df["Iterations"] - residual_df["Iterations"].iloc[0]
+                    )
 
                     # Check for res convergence and assign results to the 'res_convergence' column
                     res_criterium = cov_criterion
-                    last_row_values = residual_df.iloc[-1, 2:]  # Select the last row, excluding the first column
-                    res_convergence = 'converged' if (last_row_values < res_criterium).all() else 'not converged'
+                    last_row_values = residual_df.iloc[
+                        -1, 2:
+                    ]  # Select the last row, excluding the first column
+                    res_convergence = (
+                        "converged"
+                        if (last_row_values < res_criterium).all()
+                        else "not converged"
+                    )
                     res_convergence_results.append(res_convergence)
 
                     # Get the list of columns excluding 'Iteration'
@@ -230,20 +241,25 @@ def study_post_01(data, solver):
                     plt.close()  # Close the figure to release memory
 
             # Assign the wall clock time results to the 'wallclock_time' column
-            total_wall_clock_times = [df["Total Wall Clock Time"].tolist()[0] for df in trn_df]
+            total_wall_clock_times = [
+                df["Total Wall Clock Time"].tolist()[0] for df in trn_df
+            ]
             result_df["wallclock_time"] = total_wall_clock_times
 
             # Assign the cov convergence results to the 'convergence' column
             result_df["cov_convergence"] = cov_convergence_results
 
-
-
             # Assign the res convergence results to the 'res_convergence' column in result_df
-            result_df['res_convergence'] = res_convergence_results
+            result_df["res_convergence"] = res_convergence_results
 
             # Check for full convergence and assign results to the 'convergence' column
-            result_df['convergence'] = result_df.apply(lambda row: 'converged' if row['cov_convergence'] == 'good' and row['res_convergence'] == 'converged' else 'not converged', axis=1)
-
+            result_df["convergence"] = result_df.apply(
+                lambda row: "converged"
+                if row["cov_convergence"] == "good"
+                and row["res_convergence"] == "converged"
+                else "not converged",
+                axis=1,
+            )
 
             # Priority order to consider volume/massflow for plotting
             mf_fallback_columns = [
