@@ -17,18 +17,18 @@ def study_post(data, solver, functionEl):
         defaultName="study_post_01",
     )
 
-    logger.info(f"Running ParamatricStudy-Postprocessing Function '{functionName}' ...")
+    logger.info(f"Running ParametricStudy-Postprocessing Function '{functionName}' ...")
     if functionName == "study_post_01":
         study_post_01(data=data, solver=solver)
     else:
         logger.info(
             'Prescribed Function "'
             + functionName
-            + '" not known. Skipping Paramatric-Study-Postprocessing Function!'
+            + '" not known. Skipping ParametricStudy-Postprocessing Function!'
         )
 
     logger.info(
-        f"Running ParamatricStudy-Postprocessing Function '{functionName}'...  finished!"
+        f"Running ParametricStudy-Postprocessing Function '{functionName}'...  finished!"
     )
 
 
