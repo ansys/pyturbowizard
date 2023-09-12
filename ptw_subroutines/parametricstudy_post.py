@@ -201,8 +201,8 @@ def study_post_01(data, solver):
                         length_residual_df = len(mp_df)
                         residual_df = residual_df.iloc[-length_residual_df:]
 
-                    residual_df["Iteration"] = (
-                        residual_df["Iteration"] - residual_df["Iteration"].iloc[0]
+                    residual_df["Iterations"] = (
+                        residual_df["Iterations"] - residual_df["Iterations"].iloc[0]
                     )
 
                     # Check for res convergence and assign results to the 'res_convergence' column
