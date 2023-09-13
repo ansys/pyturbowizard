@@ -178,13 +178,14 @@ def evaluateTranscript(trnFilePath,caseFilename,solver=None,tempData=None):
         # fix for incompressible
         if solver is not None:
             number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
-        else: number_eqs = tempData.get("num_eqs",6)
+        else:
+            number_eqs = tempData.get("num_eqs", 6)
 
         for line in lines:
             if "Total wall-clock time" in line:
                 wall_clock_tot = line.split(":")[1].strip()
                 wall_clock_tot = wall_clock_tot.split(" ")[0].strip()
-                logger.info("Detected Total Wall Clock Time:", wall_clock_tot)
+                logger.info(f"Detected Total Wall Clock Time: {wall_clock_tot}")
             elif "compute nodes" in line:
                 nodes = line.split(" ")[6].strip()
                 logger.info(f"Detected Number of Nodes: {nodes}")
@@ -210,7 +211,6 @@ def evaluateTranscript(trnFilePath,caseFilename,solver=None,tempData=None):
                         table_started = False
 
         res_df = pd.DataFrame(filtered_values_list, columns=filtered_headers)
-
 
     else:
         logger.info("No trn-file found!: Skipping data")

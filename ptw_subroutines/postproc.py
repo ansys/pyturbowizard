@@ -180,11 +180,8 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
 
     # Read in transcript file
     caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir,case_name=caseFilename)
-
     trnFilePath = os.path.join(caseOutPath, trn_filename)
-
     report_table, res_df = postproc_utils.evaluateTranscript(trnFilePath=trnFilePath,caseFilename=caseFilename,solver=solver)
-
 
     # Select columns from report_table
     columns_before_report_values = report_table.iloc[:, :2]
@@ -208,12 +205,9 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
     # Residual Dataframe to csv
     resiudalFileName = "residuals.csv"
     resiudalFileName = os.path.join(
-
         caseOutPath, resiudalFileName
-
     )
     res_df.to_csv(resiudalFileName)
-
 
     #Plot Resiuduals
     # Get the list of columns excluding 'Iteration'
@@ -271,7 +265,7 @@ def mergeReportTables(turboData, solver):
 
         if len(reportFiles) > 1:
             df = pd.concat((pd.read_csv(f, header=0) for f in reportFiles))
-            mergedFileName = os.path.join(ptwOutPath, "mergedReporttable.csv")
+            mergedFileName = os.path.join(ptwOutPath, "merged_reporttable.csv")
             df.to_csv(mergedFileName)
 
     return
