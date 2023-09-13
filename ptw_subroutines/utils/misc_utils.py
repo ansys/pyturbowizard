@@ -103,11 +103,18 @@ def can_convert_to_number(value):
 
 def move_files(source_dir:str,target_dir:str,filename_wildcard:str):
     import glob, shutil
-    source_file = os.path.join(source_dir, filename_wildcard)
-    plotFiles = glob.glob(source_file)
-    for plotFile in plotFiles:
-        source_file = plotFile
+    filenames = glob.glob(os.path.join(source_dir, filename_wildcard))
+    for file_name in filenames:
         logger.debug(
-            f"Moving span-plot '{source_file}' to case-output folder '{target_dir}'"
+            f"Moving file '{file_name}' to folder '{target_dir}'"
         )
-        shutil.move(source_file, target_dir)
+        shutil.move(file_name, target_dir)
+
+def remove_files(working_dir:str,filename_wildcard:str):
+    import glob
+    filenames = glob.glob(os.path.join(working_dir, filename_wildcard))
+    for file_name in filenames:
+        logger.debug(
+            f"Removing file '{file_name}'"
+        )
+        os.remove(file_name)

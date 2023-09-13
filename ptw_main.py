@@ -256,6 +256,11 @@ if studyDict is not None:
 # Exit Solver
 solver.exit()
 
+# Do clean-up
+if launchEl.setdefault("exit_cleanup", False):
+    misc_utils.remove_files(working_dir=fl_workingDir, filename_wildcard="fluent*.trn")
+    misc_utils.remove_files(working_dir=fl_workingDir, filename_wildcard="*slurm*")
+
 # Write out Debug info
 if debug_level > 0:
     # Compare turboData: final data vs file data --> check if some keywords have not been used
