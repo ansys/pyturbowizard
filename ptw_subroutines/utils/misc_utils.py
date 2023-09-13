@@ -110,11 +110,15 @@ def move_files(source_dir:str,target_dir:str,filename_wildcard:str):
         )
         shutil.move(file_name, target_dir)
 
-def remove_files(working_dir:str,filename_wildcard:str):
+def remove_files(working_dir:str,filename_wildcard):
     import glob
-    filenames = glob.glob(os.path.join(working_dir, filename_wildcard))
-    for file_name in filenames:
-        logger.debug(
-            f"Removing file '{file_name}'"
-        )
-        os.remove(file_name)
+    if type(filename_wildcard) is list:
+        for wc in filename_wildcard:
+            remove_files(working_dir=working_dir,filename_wildcard=wc)
+    if type(filename_wildcard) is str:
+        filenames = glob.glob(os.path.join(working_dir, filename_wildcard))
+        for file_name in filenames:
+            logger.debug(
+                f"Removing file '{file_name}'"
+            )
+            os.remove(file_name)

@@ -257,9 +257,12 @@ if studyDict is not None:
 solver.exit()
 
 # Do clean-up
-if launchEl.setdefault("exit_cleanup", False):
+wildcards = launchEl.setdefault("exit_cleanup", False)
+if wildcards:
     misc_utils.remove_files(working_dir=fl_workingDir, filename_wildcard="fluent*.trn")
     misc_utils.remove_files(working_dir=fl_workingDir, filename_wildcard="*slurm*")
+elif type(wildcards) is list:
+    misc_utils.remove_files(working_dir=fl_workingDir, filename_wildcard=wildcards)
 
 # Write out Debug info
 if debug_level > 0:
