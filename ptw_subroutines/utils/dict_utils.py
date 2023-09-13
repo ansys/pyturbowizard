@@ -69,13 +69,18 @@ def get_material_from_lib(caseDict: dict, scriptPath: str):
             )
     return
 
-def detect_unused_keywords(refDict:dict, compareDict:dict, path="root"):
+
+def detect_unused_keywords(refDict: dict, compareDict: dict, path="root"):
     for item in compareDict:
         if item not in refDict:
-            logger.warning(f"Element found in Config-File that is not known! Check keyword: '{item}' in '{path}'")
+            logger.warning(
+                f"Element found in Config-File that is not known or used! Check keyword: '{item}' in '{path}'"
+            )
         else:
             refEl = refDict.get(item)
             compareEl = compareDict.get(item)
             if type(refEl) is dict and type(compareEl) is dict:
                 newpath = f"{path} / {item}"
-                detect_unused_keywords(refDict=refEl, compareDict=compareEl, path=newpath)
+                detect_unused_keywords(
+                    refDict=refEl, compareDict=compareEl, path=newpath
+                )

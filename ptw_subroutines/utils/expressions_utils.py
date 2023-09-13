@@ -12,8 +12,10 @@ def write_expression_file(data: dict, script_dir: str, working_dir: str):
     if fileName is None or fileName == "":
         fileName = "expressions.tsv"
         data["expressionFilename"] = fileName
-        
-    case_output_path = misc_utils.ptw_output(fl_workingDir=working_dir, case_name=data.get("caseFilename"))
+
+    case_output_path = misc_utils.ptw_output(
+        fl_workingDir=working_dir, case_name=data.get("caseFilename")
+    )
     fileName = os.path.join(case_output_path, fileName)
 
     with open(fileName, "w") as sf:

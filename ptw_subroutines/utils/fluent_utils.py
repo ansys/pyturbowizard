@@ -30,9 +30,14 @@ def getNumberOfEquations(solver):
 
     return number_eqs
 
-def addExecuteCommand(solver, command_name, command, pythonCommand:bool=False):
+
+def addExecuteCommand(solver, command_name, command, pythonCommand: bool = False):
     # Add a command to execute after solving is finished
     if pythonCommand:
-        solver.tui.solve.execute_commands.add_edit(f"{command_name}","yes","yes","yes",f'"{command}"')
+        solver.tui.solve.execute_commands.add_edit(
+            f"{command_name}", "yes", "yes", "yes", f'"{command}"'
+        )
     else:
-        solver.tui.solve.execute_commands.add_edit(f"{command_name}", "yes", "yes", "no", f'"{command}"')
+        solver.tui.solve.execute_commands.add_edit(
+            f"{command_name}", "yes", "yes", "no", f'"{command}"'
+        )
