@@ -143,10 +143,10 @@ def fluent_cleanup(working_dir:str, cleanup_data):
         logger.info("Doing standard clean-up...")
         remove_files(working_dir=working_dir, filename_wildcard="fluent*.trn")
         remove_files(working_dir=working_dir, filename_wildcard="*slurm*")
-        logger.info("Doing standard clean-up... finished")
+        logger.info("Doing standard clean-up... finished!")
     elif type(cleanup_data) is list:
         # Wait some time, till the fluent session is closed to avoid any file-locks
         time.sleep(5)
         logger.info("Doing user-adjusted clean-up...")
         remove_files(working_dir=working_dir, filename_wildcard=cleanup_data)
-        logger.info("Doing user-adjusted clean-up...  finished")
+        logger.info("Doing user-adjusted clean-up...  finished!")
