@@ -100,3 +100,14 @@ def can_convert_to_number(value):
         return True
     except ValueError:
         return False
+
+def move_files(source_dir:str,target_dir:str,filename_wildcard:str):
+    import glob, shutil
+    source_file = os.path.join(source_dir, filename_wildcard)
+    plotFiles = glob.glob(source_file)
+    for plotFile in plotFiles:
+        source_file = plotFile
+        logger.debug(
+            f"Moving span-plot '{source_file}' to case-output folder '{target_dir}'"
+        )
+        shutil.move(source_file, target_dir)
