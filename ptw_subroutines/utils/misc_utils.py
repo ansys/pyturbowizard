@@ -1,6 +1,9 @@
 import os.path
+import glob
+import shutil
 import ntpath
 import subprocess
+import time
 
 # Logger
 from ptw_subroutines.utils import ptw_logger
@@ -101,14 +104,21 @@ def can_convert_to_number(value):
     except ValueError:
         return False
 
-def move_files(source_dir:str,target_dir:str,filename_wildcard:str):
-    import glob, shutil
+def move_files(source_dir:str, target_dir:str, filename_wildcard:str, overwrite:bool=True):
     filenames = glob.glob(os.path.join(source_dir, filename_wildcard))
-    for file_name in filenames:
-        logger.debug(
-            f"Moving file '{file_name}' to folder '{target_dir}'"
+    for source_file in filenames:
+        target_file = ntpath.basename(source_file)
+        logger.info(
+            f"Moving file '{target_file}' from '{source_dir}' to '{target_dir}'"
         )
-        shutil.move(file_name, target_dir)
+        target_file = os.path.join(target_dir, target_file)
+        if overwrite:
+            shutil.move(source_file, target_file)
+        else:
+            try:
+                shutil.move(source_file, target_dir)
+            except shutil.Error as e:
+                logger.exception(f"Moving file '{source_file}' failed: {str(e)}")
 
 def remove_files(working_dir:str,filename_wildcard):
     import glob
@@ -118,7 +128,25 @@ def remove_files(working_dir:str,filename_wildcard):
     if type(filename_wildcard) is str:
         filenames = glob.glob(os.path.join(working_dir, filename_wildcard))
         for file_name in filenames:
-            logger.debug(
+            logger.info(
                 f"Removing file '{file_name}'"
             )
-            os.remove(file_name)
+            try:
+                os.remove(file_name)
+            except PermissionError as e:
+                logger.exception(f"Remove file '{file_name}' failed: {str(e)}")
+
+def fluent_cleanup(working_dir:str, cleanup_data):
+    if cleanup_data:
+        # Wait some time, till the fluent session is closed to avoid any file-locks
+        time.sleep(5)
+        logger.info("Doing standard clean-up...")
+        remove_files(working_dir=working_dir, filename_wildcard="fluent*.trn")
+        remove_files(working_dir=working_dir, filename_wildcard="*slurm*")
+        logger.info("Doing standard clean-up... finished")
+    elif type(cleanup_data) is list:
+        # Wait some time, till the fluent session is closed to avoid any file-locks
+        time.sleep(5)
+        logger.info("Doing user-adjusted clean-up...")
+        remove_files(working_dir=working_dir, filename_wildcard=cleanup_data)
+        logger.info("Doing user-adjusted clean-up...  finished")

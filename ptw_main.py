@@ -254,15 +254,12 @@ if studyDict is not None:
     )
 
 # Exit Solver
+logger.info("Closing Fluent Session")
 solver.exit()
 
 # Do clean-up
-wildcards = launchEl.setdefault("exit_cleanup", False)
-if wildcards:
-    misc_utils.remove_files(working_dir=fl_workingDir, filename_wildcard="fluent*.trn")
-    misc_utils.remove_files(working_dir=fl_workingDir, filename_wildcard="*slurm*")
-elif type(wildcards) is list:
-    misc_utils.remove_files(working_dir=fl_workingDir, filename_wildcard=wildcards)
+cleanup_data = launchEl.setdefault("exit_cleanup", False)
+misc_utils.fluent_cleanup(working_dir=fl_workingDir, cleanup_data=cleanup_data)
 
 # Write out Debug info
 if debug_level > 0:
