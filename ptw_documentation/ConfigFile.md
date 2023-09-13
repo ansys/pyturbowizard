@@ -69,7 +69,7 @@ Under the section ``` launching ```, different options for launching options for
   - If enabled (```"exit_cleanup": true```) following files are removed from the ```"workingDir"``` after exiting the fluent session: 
     - 'fluent\*.trn'
     - '\*slurm\*'
-  - If you define ```"exit_cleanup"``` as a list of strings, the defined files will be removed, e.g. ```"exit_cleanup": ["myFile.txt","\*.log"]```
+  - If you define ```"exit_cleanup"``` as a list of strings, the defined files will be removed, e.g. ```"exit_cleanup": ["myFile.txt","*.log"]```
 
 For running Fluent on Linux or a Cluster, there are two options:
    - Submit job to a slurm-queue: ```queue_slurm``` (e.g. ```"ottc01"```) and a maximal waiting time in sec ```queue_waiting_time``` (default: 600sec). Other options identical to usual launching options
