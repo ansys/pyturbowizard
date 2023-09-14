@@ -307,7 +307,7 @@ def study_post_01(data, solver):
                 ]
             )
             # Generate traffic light notation for convergence
-            color_map = {"good": "green", "ok": "yellow", "poor": "red"}
+            color_map = {"good": "green", "ok": "orange", "poor": "red"}
             colors = sorted_df["cov_convergence"].map(color_map)
 
             # Create Plots for monitor points with mass flow, volume flow or both

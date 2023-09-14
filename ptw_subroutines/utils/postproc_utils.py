@@ -141,14 +141,14 @@ def plot_figure(x_values, y_values, x_label, y_label, colors, criterion):
         ax.set_ylabel(y_label)  # Set y-axis label as DataFrame column header
 
         # plot values
-        ax.scatter(x_values, y_values, marker="o", c=colors, edgecolor="black")
         ax.plot(x_values, y_values)
+        ax.scatter(x_values, y_values, marker="o", c=colors, edgecolor="black")
 
         # Create legend handles for color coding
         legend_colors = [
             mpatches.Patch(color="green", label=f'CoV < {"{:.0e}".format(criterion)}'),
             mpatches.Patch(
-                color="yellow", label=f'CoV < {"{:.0e}".format(5*criterion)}'
+                color="orange", label=f'CoV < {"{:.0e}".format(5*criterion)}'
             ),
             mpatches.Patch(color="red", label=f'CoV > {"{:.0e}".format(5*criterion)}'),
         ]
