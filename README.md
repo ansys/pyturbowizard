@@ -22,7 +22,6 @@ Required libraries:
 - PyFluent
 - Matplotlib
 - NumPy
-- os
 - Pandas
 #### Linux / Cluster
 - Follow instructions on [PyFluent (sharepoint.com)](https://ansys.sharepoint.com/sites/HPC/SitePages/PyFluent.aspx?source=https%3A%2F%2Fansys.sharepoint.com%2Fsites%2FHPC%2FSitePages%2FForms%2FByAuthor.aspx&CT=1684318712517&OR=OWA-NT&CID=5df1de12-cff9-ba33-d913-507d444faf10)
