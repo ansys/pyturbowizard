@@ -124,13 +124,17 @@ def physics_01(data, solver, solveEnergy: bool = True):
 
         # Set geko Model Parameters
         if turb_model == "geko":
-            c_sep = data["setup"].setdefault("geko_csep", 1.75)
-            c_nw = data["setup"].setdefault("geko_cnw", 0.5)
-            c_jet = data["setup"].setdefault("geko_cjet", 0.9)
+            c_sep = data["setup"].get("geko_csep")
+            if c_sep is not None:
+                solver.tui.define.models.viscous.geko_options.csep("yes", c_sep)
 
-            solver.tui.define.models.viscous.geko_options.csep("yes", c_sep)
-            solver.tui.define.models.viscous.geko_options.csep("yes", c_nw)
-            solver.tui.define.models.viscous.geko_options.cnw("yes", c_jet)
+            c_nw = data["setup"].get("geko_cnw")
+            if c_nw is not None:
+                solver.tui.define.models.viscous.geko_options.cnw("yes", c_nw)
+
+            c_jet = data["setup"].get("geko_cjet")
+            if c_jet is not None:
+                solver.tui.define.models.viscous.geko_options.cjet("yes", c_jet)
 
     else:
         logger.warning(
