@@ -258,7 +258,7 @@ logger.info("Closing Fluent Session")
 solver.exit()
 
 # Do clean-up
-cleanup_data = launchEl.setdefault("exit_cleanup", False)
+cleanup_data = launchEl.setdefault("ptw_cleanup", False)
 misc_utils.fluent_cleanup(working_dir=fl_workingDir, cleanup_data=cleanup_data)
 
 # Write out Debug info
