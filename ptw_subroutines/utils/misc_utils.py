@@ -104,7 +104,10 @@ def can_convert_to_number(value):
     except ValueError:
         return False
 
-def move_files(source_dir:str, target_dir:str, filename_wildcard:str, overwrite:bool=True):
+
+def move_files(
+    source_dir: str, target_dir: str, filename_wildcard: str, overwrite: bool = True
+):
     filenames = glob.glob(os.path.join(source_dir, filename_wildcard))
     for source_file in filenames:
         target_file = ntpath.basename(source_file)
@@ -120,23 +123,24 @@ def move_files(source_dir:str, target_dir:str, filename_wildcard:str, overwrite:
             except shutil.Error as e:
                 logger.exception(f"Moving file '{source_file}' failed: {str(e)}")
 
-def remove_files(working_dir:str,filename_wildcard):
+
+def remove_files(working_dir: str, filename_wildcard):
     import glob
+
     if type(filename_wildcard) is list:
         for wc in filename_wildcard:
-            remove_files(working_dir=working_dir,filename_wildcard=wc)
+            remove_files(working_dir=working_dir, filename_wildcard=wc)
     if type(filename_wildcard) is str:
         filenames = glob.glob(os.path.join(working_dir, filename_wildcard))
         for file_name in filenames:
-            logger.info(
-                f"Removing file '{file_name}'"
-            )
+            logger.info(f"Removing file '{file_name}'")
             try:
                 os.remove(file_name)
             except PermissionError as e:
                 logger.exception(f"Remove file '{file_name}' failed: {str(e)}")
 
-def fluent_cleanup(working_dir:str, cleanup_data):
+
+def fluent_cleanup(working_dir: str, cleanup_data):
     if cleanup_data:
         # Wait some time, till the fluent session is closed to avoid any file-locks
         time.sleep(5)
