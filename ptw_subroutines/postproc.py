@@ -79,6 +79,12 @@ def post_01(data, solver, launchEl, trn_name):
         data=data, fl_workingDir=fl_workingDir, solver=solver, trn_filename=trn_name
     )
 
+    ## move case span-plots to case output folder
+    spansSurf = data["results"].get("span_plot_height")
+    contVars = data["results"].get("span_plot_var")
+    if (spansSurf is not None) and (contVars is not None):
+      misc_utils.move_files(source_dir=fl_workingDir, target_dir=caseOutPath, filename_wildcard="span*plot.avz")
+
     return
 
 
