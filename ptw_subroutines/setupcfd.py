@@ -66,7 +66,6 @@ def material_01(data, solver, solveEnergy: bool = True):
 
     if solveEnergy:
         solver.setup.materials.fluid[fl_name] = {
-
             "density": {"option": data["fluid_properties"]["fl_density"]},
             "specific_heat": {
                 "option": "constant",
@@ -119,20 +118,20 @@ def physics_01(data, solver, solveEnergy: bool = True):
     turb_model = data["setup"].setdefault("turbulence_model", default_turb_model)
     supported_kw_models = solver.setup.models.viscous.k_omega_model.allowed_values()
     if turb_model in supported_kw_models:
-        # Set Geko Model Parameters
-        c_sep = data["setup"].setdefault("geko_csep",1.75)
-        c_nw = data["setup"].setdefault("geko_cnw",0.5)
-        c_jet = data["setup"].setdefault("geko_cjet",0.9)
-
         logger.info(f"Setting kw-turbulence-model: '{turb_model}'")
         solver.setup.models.viscous.model = "k-omega"
         solver.setup.models.viscous.k_omega_model = turb_model
 
+        # Set geko Model Parameters
         if turb_model == "geko":
-            solver.tui.define.models.viscous.geko_options.csep("yes",c_sep)
-            solver.tui.define.models.viscous.geko_options.csep("yes",c_nw)
-            solver.tui.define.models.viscous.geko_options.cnw("yes",c_jet)
-            
+            c_sep = data["setup"].setdefault("geko_csep", 1.75)
+            c_nw = data["setup"].setdefault("geko_cnw", 0.5)
+            c_jet = data["setup"].setdefault("geko_cjet", 0.9)
+
+            solver.tui.define.models.viscous.geko_options.csep("yes", c_sep)
+            solver.tui.define.models.viscous.geko_options.csep("yes", c_nw)
+            solver.tui.define.models.viscous.geko_options.cnw("yes", c_jet)
+
     else:
         logger.warning(
             f"Specified turbulence-model not supported: '{turb_model}'! Default turbulence model will be used: '{default_turb_model}'!"
