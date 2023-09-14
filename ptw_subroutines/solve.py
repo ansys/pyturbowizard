@@ -146,6 +146,6 @@ def init_fmg_basic(data, solver):
 
 def solve_01(data, solver):
     iter_count = data["solution"].setdefault("iter_count", 500)
-    logger.info("Solving " + str(iter_count) + " iterations")
+    logger.info("Solving max. " + str(iter_count) + " iterations")
     solver.solution.run_calculation.iterate(iter_count=iter_count)
     return
