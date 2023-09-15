@@ -1,7 +1,7 @@
 import os
 
 # Logger
-from ptw_subroutines.utils import ptw_logger
+from ptw_subroutines.utils import ptw_logger, misc_utils
 
 logger = ptw_logger.getLogger()
 
@@ -12,7 +12,12 @@ def write_expression_file(data: dict, script_dir: str, working_dir: str):
     if fileName is None or fileName == "":
         fileName = "expressions.tsv"
         data["expressionFilename"] = fileName
-    fileName = os.path.join(working_dir, fileName)
+
+    case_output_path = misc_utils.ptw_output(
+        fl_workingDir=working_dir, case_name=data.get("caseFilename")
+    )
+    fileName = os.path.join(case_output_path, fileName)
+
     with open(fileName, "w") as sf:
         expressionTemplatePath = os.path.join(
             script_dir, "ptw_templates", data["expressionTemplate"]
@@ -30,9 +35,9 @@ def write_expression_file(data: dict, script_dir: str, working_dir: str):
         helperDict["rotation_axis_origin"] = tuple(
             data.setdefault("rotation_axis_origin", [0.0, 0.0, 0.0])
         )
-        # add isentropic efficiency definition
-        helperDict["isentropic_efficiency_ratio"] = data.setdefault(
-            "isentropic_efficiency_ratio", "TotalToTotal"
+        # add efficiency definition
+        helperDict["efficiency_ratio"] = data.setdefault(
+            "efficiency_ratio", "TotalToTotal"
         )
         tempData = cleanup_input_expressions(
             availableKeyEl=helperDict, fileData=tempData
@@ -99,14 +104,17 @@ def check_input_parameter_expressions(solver):
             expValue = exp.get_value()
             if type(expValue) is not float:
                 logger.info(
-                    f"'{expName}' seems not to be valid: '{expValue}' \n "
-                    f"Removing definition as Input Parameter..."
+                    f"'{expName}' seems not to be valid: '{expValue}' "
+                    f"--> Removing definition as Input Parameter..."
                 )
                 exp.set_state({"input_parameter": False})
     return
 
 
-def check_output_parameter_expressions(solutionDict: dict, solver):
+def check_output_parameter_expressions(caseEl: dict, solver):
+    solutionDict = caseEl.get("solution")
+    if solutionDict is None:
+        return
     reportlist = solutionDict.get("reportlist")
     if reportlist is None:
         return

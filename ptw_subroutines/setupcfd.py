@@ -1,5 +1,6 @@
 # Logger
-from ptw_subroutines.utils import ptw_logger, dict_utils, utilities, fluent_utils
+from ptw_subroutines.utils import ptw_logger, dict_utils, misc_utils, fluent_utils
+import os
 
 logger = ptw_logger.getLogger()
 
@@ -22,7 +23,7 @@ def setup(data, solver, functionEl):
             'Prescribed Function "' + functionName + '" not known. Skipping Setup!'
         )
 
-    logger.info("\nRunning Setup Function... finished!\n")
+    logger.info("Running Setup Function... finished!")
 
 
 def setup_compressible_01(data, solver):
@@ -54,12 +55,15 @@ def material_01(data, solver, solveEnergy: bool = True):
     fl_name = data["fluid_properties"].get("fl_name")
     if fl_name is None:
         if solveEnergy:
-            fl_name = "air-cfx"
+            fl_name = "custom-comp-fluid"
         else:
-            fl_name = "water"
+            fl_name = "custom-incomp-fluid"
         data["fluid_properties"]["fl_name"] = fl_name
 
-    solver.setup.materials.fluid.rename(fl_name, "air")
+    fluid_list = list(solver.setup.materials.fluid.keys())
+
+    solver.setup.materials.fluid.rename(fl_name, fluid_list[0])
+
     if solveEnergy:
         solver.setup.materials.fluid[fl_name] = {
             "density": {"option": data["fluid_properties"]["fl_density"]},
@@ -104,9 +108,7 @@ def physics_01(data, solver, solveEnergy: bool = True):
 
     gravityVector = data.get("gravity_vector")
     if (type(gravityVector) is list) and (len(gravityVector) == 3):
-        logger.info(
-            f"\nSpecification of Gravity-Vector found: {gravityVector} \nEnabling and setting Gravity-Vector"
-        )
+        logger.info(f"Specification of Gravity-Vector: {gravityVector}")
         solver.setup.general.operating_conditions.gravity.enable = True
         solver.setup.general.operating_conditions.gravity.components = gravityVector
 
@@ -119,6 +121,21 @@ def physics_01(data, solver, solveEnergy: bool = True):
         logger.info(f"Setting kw-turbulence-model: '{turb_model}'")
         solver.setup.models.viscous.model = "k-omega"
         solver.setup.models.viscous.k_omega_model = turb_model
+
+        # Set geko Model Parameters
+        if turb_model == "geko":
+            c_sep = data["setup"].get("geko_csep")
+            if c_sep is not None:
+                solver.tui.define.models.viscous.geko_options.csep("yes", c_sep)
+
+            c_nw = data["setup"].get("geko_cnw")
+            if c_nw is not None:
+                solver.tui.define.models.viscous.geko_options.cnw("yes", c_nw)
+
+            c_jet = data["setup"].get("geko_cjet")
+            if c_jet is not None:
+                solver.tui.define.models.viscous.geko_options.cjet("yes", c_jet)
+
     else:
         logger.warning(
             f"Specified turbulence-model not supported: '{turb_model}'! Default turbulence model will be used: '{default_turb_model}'!"
@@ -180,17 +197,18 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     f"Creation of periodic interface is skipped!"
                 )
             else:
+                # As the origin & axis have been set for all cell-zones these are the defaults for all containing boundary zones
+                # Therefore, we do not need to set them -> "no", "no"
                 solver.tui.mesh.modify_zones.create_periodic_interface(
                     "auto", key_if, side1, side2, "yes", "no", "no", "yes", "yes"
                 )
-
                 # check for non-conformal periodics (fluent creates normal interfaces if non-conformal)
                 intf_check_side1 = solver.setup.boundary_conditions.interface.get(side1)
                 intf_check_side2 = solver.setup.boundary_conditions.interface.get(side2)
 
                 if intf_check_side1 is not None and intf_check_side2 is not None:
                     logger.info(
-                        f"'{key_if}' is a non-conformal periodic interface\n"
+                        f"'{key_if}' is a non-conformal periodic interface! "
                         f"Adjusting turbo-topology accordingly"
                     )
                     # Add the non conformal interface to the list for correct turbo topology definition
@@ -207,13 +225,13 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                 useProfileData = (profileName is not None) and (profileName != "")
                 if data["expressions"].get("BC_IN_MassFlow") is not None:
                     logger.info(f"Prescribing a Massflow-Inlet BC @{inletName}")
-                    # not working in 241 (23/7/7)
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[inletName], new_type="mass-flow-inlet"
-                    # )
-                    solver.tui.define.boundary_conditions.zone_type(
-                        inletName, "mass-flow-inlet"
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[inletName], new_type="mass-flow-inlet"
                     )
+                    # old tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    inletName, "mass-flow-inlet"
+                    # )
                     inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
                     inBC.flow_spec = "Mass Flow Rate"
                     inBC.mass_flow = "BC_IN_MassFlow"
@@ -227,13 +245,13 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     and data["expressions"].get("BC_IN_VolumeFlowDensity") is not None
                 ):
                     logger.info(f"Prescribing a Volumeflow-Inlet BC @{inletName}")
-                    # not working in 241 (23/7/7)
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[inletName], new_type="mass-flow-inlet"
-                    # )
-                    solver.tui.define.boundary_conditions.zone_type(
-                        inletName, "mass-flow-inlet"
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[inletName], new_type="mass-flow-inlet"
                     )
+                    # old tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    inletName, "mass-flow-inlet"
+                    # )
                     inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
                     inBC.flow_spec = "Mass Flow Rate"
                     inBC.mass_flow = "BC_IN_VolumeFlow*BC_IN_VolumeFlowDensity"
@@ -243,13 +261,13 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         inBC.t0 = "BC_IN_Tt"
 
                 elif data["expressions"].get("BC_IN_pt") is not None:
-                    # not working in 241 (23/7/7)
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[inletName], new_type="pressure-inlet"
-                    # )
-                    solver.tui.define.boundary_conditions.zone_type(
-                        inletName, "pressure-inlet"
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[inletName], new_type="pressure-inlet"
                     )
+                    # old tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    inletName, "pressure-inlet"
+                    # )
                     inBC = solver.setup.boundary_conditions.pressure_inlet[inletName]
 
                     if useProfileData:
@@ -275,6 +293,10 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         inBC.direction_spec = "Normal to Boundary"
                         if solveEnergy:
                             inBC.t0 = "BC_IN_Tt"
+
+                    # Set reverse BC
+                    reverse_option = data["setup"].setdefault("BC_IN_reverse", False)
+                    inBC.prevent_reverse_flow = reverse_option
 
                 # Do some general settings
                 if inBC is not None:
@@ -335,13 +357,14 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     logger.info(
                         f"Prescribing a Exit-Corrected Massflow-Outlet BC @{outletName}"
                     )
-                    # not working in 241 (23/7/7)
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[outletName], new_type="mass-flow-outlet"
-                    # )
-                    solver.tui.define.boundary_conditions.zone_type(
-                        outletName, "mass-flow-outlet"
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[outletName], new_type="mass-flow-outlet"
                     )
+                    # old tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    outletName, "mass-flow-outlet"
+                    # )
+
                     outBC = solver.setup.boundary_conditions.mass_flow_outlet[
                         outletName
                     ]
@@ -375,13 +398,14 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     and data["expressions"].get("BC_OUT_VolumeFlowDensity") is not None
                 ):
                     logger.info(f"Prescribing a VolumeFlow-Outlet BC @{outletName}")
-                    # not working in 241 (23/7/7)
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[outletName], new_type="mass-flow-outlet"
-                    # )
-                    solver.tui.define.boundary_conditions.zone_type(
-                        outletName, "mass-flow-outlet"
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[outletName], new_type="mass-flow-outlet"
                     )
+                    # old tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    outletName, "mass-flow-outlet"
+                    # )
+
                     outBC = solver.setup.boundary_conditions.mass_flow_outlet[
                         outletName
                     ]
@@ -390,18 +414,17 @@ def boundary_01(data, solver, solveEnergy: bool = True):
 
                 elif data["expressions"].get("BC_OUT_p") is not None:
                     logger.info(f"Prescribing a Pressure-Outlet BC @{outletName}")
-                    # not working in 241 (23/7/7)
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[outletName], new_type="pressure-outlet"
-                    # )
-                    solver.tui.define.boundary_conditions.zone_type(
-                        outletName, "pressure-outlet"
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[outletName], new_type="pressure-outlet"
                     )
+                    # old tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    outletName, "pressure-outlet"
+                    # )
                     outBC = solver.setup.boundary_conditions.pressure_outlet[outletName]
                     # Check Profile data exists
                     profileName = data.get("profileName_Out")
                     useProfileData = (profileName is not None) and (profileName != "")
-                    outBC.prevent_reverse_flow = True
                     if useProfileData:
                         # check profile naming convention:
                         # profile_name: "outlet-bc"
@@ -419,8 +442,8 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     outBC.avg_press_spec = pavg_set
 
                     # Set reverse BC
-                    reverse = data["setup"].setdefault("BC_OUT_reverse", True)
-                    outBC.prevent_reverse_flow = reverse
+                    reverse_option = data["setup"].setdefault("BC_OUT_reverse", True)
+                    outBC.prevent_reverse_flow = reverse_option
 
                     if data["setup"].get("BC_OUT_pressure_pt") is not None:
                         outBC.p_backflow_spec_gen = data["setup"].get(
@@ -472,7 +495,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
 
         # Interfaces
         elif key == "bz_interfaces_general_names":
-            solver.tui.define.mesh_interfaces.one_to_one_pairing("no")
+            # solver.tui.define.mesh_interfaces.one_to_one_pairing("no")
             keyEl = data["locations"].get(key)
             for key_if in keyEl:
                 logger.info(f"Setting up general interface: {key_if}")
@@ -515,7 +538,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
     # setup turbo topology
     keyEl = data["locations"].get("tz_turbo_topology_names")
     if keyEl is not None:
-        logger.info("Setting up turbo topology for post processing.\n")
+        logger.info("Setting up turbo topology for post processing.")
         for key_topo in keyEl:
             turbo_name = f'"{key_topo}"'
             hub_names = keyEl[key_topo].get("tz_hub_names")
@@ -530,7 +553,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                 for periodic_name in periodic_names:
                     if periodic_name in non_conformal_list:
                         logger.info(
-                            f"encountered a non-conformal periodic interface: {periodic_name}\n"
+                            f"encountered a non-conformal periodic interface: {periodic_name}"
                         )
                         logger.info("Adjusting turbo topology")
                         theta_min.append(
@@ -579,81 +602,113 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         [],
                     )
             except Exception as e:
-                logger.warning(f"An error occurred while defining topology: {e}\n")
+                logger.warning(f"An error occurred while defining topology: {e}")
 
     return
 
 
-def report_01(data, solver):
+def report_01(data, solver, launchEl):
+    # Get Solution-Dict
+    solutionDict = data.get("solution")
+    # Get PTW Output folder path
+    fl_workingDir = launchEl.get("workingDir")
+    caseOutPath = misc_utils.ptw_output(
+        fl_workingDir=fl_workingDir, case_name=data["caseFilename"]
+    )
+
+    if solutionDict is None:
+        logger.warning(
+            f"No Solution-Dict specified in Case: 'solution'. Skipping Report-Definition!"
+        )
+        return
+
     # Reports
-    for report in data["solution"]["reportlist"]:
-        reportName = report.replace("_", "-")
-        reportName = "rep-" + reportName.lower()
-        solver.solution.report_definitions.single_val_expression[reportName] = {}
-        solver.solution.report_definitions.single_val_expression[reportName] = {
-            "define": report
-        }
-        reportPlotName = reportName + "-plot"
-        solver.solution.monitor.report_plots[reportPlotName] = {}
-        solver.solution.monitor.report_plots[reportPlotName] = {
-            "report_defs": [reportName]
-        }
+    reportList = solutionDict.get("reportlist")
+    if reportList is not None:
+        for report in reportList:
+            reportName = report.replace("_", "-")
+            reportName = "rep-" + reportName.lower()
+            solver.solution.report_definitions.single_val_expression[reportName] = {}
+            solver.solution.report_definitions.single_val_expression[reportName] = {
+                "define": report
+            }
+            reportPlotName = reportName + "-plot"
+            solver.solution.monitor.report_plots[reportPlotName] = {}
+            solver.solution.monitor.report_plots[reportPlotName] = {
+                "report_defs": [reportName]
+            }
 
-    # Report File
-    solver.solution.monitor.report_files["report-file"] = {}
-    reportNameList = []
-    for report in data["solution"]["reportlist"]:
-        reportName = report.replace("_", "-")
-        reportName = "rep-" + reportName.lower()
-        reportNameList.append(reportName)
+        # Report File
+        solver.solution.monitor.report_files["report-file"] = {}
+        reportNameList = []
+        for report in reportList:
+            reportName = report.replace("_", "-")
+            reportName = "rep-" + reportName.lower()
+            reportNameList.append(reportName)
 
-    reportFileName = data["caseFilename"] + "_report.out"
-    solver.solution.monitor.report_files["report-file"] = {
-        "file_name": reportFileName,
-        "report_defs": reportNameList,
-    }
+        reportFileName = os.path.join(caseOutPath, "report.out")
+        solver.solution.monitor.report_files["report-file"] = {
+            "file_name": reportFileName,
+            "report_defs": reportNameList,
+        }
+    else:
+        logger.warning(
+            f"No report-definitions specified in Case: Keyword 'reportlist'!"
+        )
 
     # Set Residuals
     # solver.tui.preferences.simulation.local_residual_scaling("yes")
     solver.tui.solve.monitors.residual.scale_by_coefficient("yes", "yes", "yes")
 
+    # Raise the limit of residual points to save and to plot to avoid data resampling/loss
+    solver.tui.solve.monitors.residual.n_display(500000)
+    solver.tui.solve.monitors.residual.n_save(500000)
+
     # Check active number of equations
     number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
 
-    resCrit = data["solution"]["res_crit"]
+    resCrit = solutionDict.setdefault("res_crit", 1.0e-4)
     resCritList = [resCrit] * number_eqs
     if len(resCritList) > 0:
         solver.tui.solve.monitors.residual.convergence_criteria(*resCritList)
 
     # Set CoVs
-    for solve_cov in data["solution"]["cov_list"]:
-        reportName = solve_cov.replace("_", "-")
-        reportName = "rep-" + reportName.lower()
-        covName = reportName + "-cov"
-        solver.solution.monitor.convergence_conditions.convergence_reports[covName] = {}
-        solver.solution.monitor.convergence_conditions = {
-            "convergence_reports": {
-                covName: {
-                    "report_defs": reportName,
-                    "cov": True,
-                    "previous_values_to_consider": 50,
-                    "stop_criterion": data["solution"]["cov_crit"],
-                    "print": True,
-                    "plot": True,
+    cov_list = solutionDict.get("cov_list")
+    if cov_list is not None:
+        stop_criterion = solutionDict.setdefault("cov_crit", 1.0e-4)
+        for solve_cov in cov_list:
+            reportName = solve_cov.replace("_", "-")
+            reportName = "rep-" + reportName.lower()
+            covName = reportName + "-cov"
+            solver.solution.monitor.convergence_conditions.convergence_reports[
+                covName
+            ] = {}
+            solver.solution.monitor.convergence_conditions = {
+                "convergence_reports": {
+                    covName: {
+                        "report_defs": reportName,
+                        "cov": True,
+                        "previous_values_to_consider": 50,
+                        "stop_criterion": stop_criterion,
+                        "print": True,
+                        "plot": True,
+                    }
                 }
             }
-        }
+    else:
+        logger.warning(f"No CoV definitions specified in Case: Keyword 'cov_list'!")
 
     # Set Convergence Conditions
+    conv_check_freq = solutionDict.setdefault("conv_check_freq", 5)
     solver.solution.monitor.convergence_conditions = {
         # "condition": "any-condition-is-met",
         "condition": "all-conditions-are-met",
-        "frequency": 5,
+        "frequency": conv_check_freq,
     }
     # Set Basic Solver-Solution-Settings
-    tsf = data["solution"].get("time_step_factor", 1)
+    tsf = solutionDict.get("time_step_factor", 1)
     # Check for a pseudo-time-step-size
-    pseudo_timestep = data["solution"].get("pseudo_timestep")
+    pseudo_timestep = solutionDict.get("pseudo_timestep")
     if pseudo_timestep is not None:
         # Use pseudo timestep
         logger.info(
@@ -666,8 +721,8 @@ def report_01(data, solver):
             pseudo_timestep
         )
         # Update dict
-        if data["solution"].get("time_step_factor") is not None:
-            data["solution"].pop("time_step_factor")
+        if solutionDict.get("time_step_factor") is not None:
+            solutionDict.pop("time_step_factor")
     else:
         # Use timescale factor
         logger.info(
@@ -683,7 +738,7 @@ def report_01(data, solver):
             tsf
         )
         # Update dict
-        data["solution"]["time_step_factor"] = tsf
+        solutionDict["time_step_factor"] = tsf
 
-    iter_count = data["solution"].setdefault("iter_count", 500)
+    iter_count = solutionDict.setdefault("iter_count", 500)
     solver.solution.run_calculation.iter_count = int(iter_count)

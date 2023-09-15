@@ -2,7 +2,8 @@ import os
 import json
 
 # Logger
-from ptw_subroutines.utils import ptw_logger, dict_utils
+
+from ptw_subroutines.utils import ptw_logger, dict_utils, misc_utils, fluent_utils
 
 logger = ptw_logger.getLogger()
 
@@ -16,7 +17,7 @@ def study(data, solver, functionEl):
         defaultName="study_01",
     )
 
-    logger.info(f"Running ParamatricStudy-Function '{functionName}' ...")
+    logger.info(f"Running ParametricStudy-Function '{functionName}' ...")
     if functionName == "study_01":
         study01(data, solver)
     else:
@@ -26,7 +27,7 @@ def study(data, solver, functionEl):
             + '" not known. Skipping Parametric Study!'
         )
 
-    logger.info(f"\nRunning ParamatricStudy-Function '{functionName}'...  finished!\n")
+    logger.info(f"Running ParametricStudy-Function '{functionName}'...  finished!")
 
 
 def study01(data, solver):
@@ -39,11 +40,11 @@ def study01(data, solver):
 
     for studyName in studyDict:
         studyEl = studyDict[studyName]
-        logger.info(f"\nRunning Study '{studyName}'...\n")
+        logger.info(f"Running Study '{studyName}'...")
         # Check if study should be executed
         if studyEl.setdefault("skip_execution", False):
             logger.info(
-                f"Study '{studyName}' is skipped: 'skip_execution' is set to 'True' in Study-Definition\n"
+                f"Study '{studyName}' is skipped: 'skip_execution' is set to 'True' in Study-Definition"
             )
             continue
 
@@ -63,12 +64,12 @@ def study01(data, solver):
                 logger.info(
                     'and "overwriteExisting"-flag is set to False or not existing in Config-File'
                 )
-                logger.info('Skipping Parametric Study "' + studyName + '"\n')
+                logger.info('Skipping Parametric Study "' + studyName)
                 break
         else:
             if runExisting:
                 logger.info("Specified Fluent-Project does not exist " + studyFileName)
-                logger.info('Skipping Parametric Study "' + studyName + '"\n')
+                logger.info('Skipping Parametric Study "' + studyName)
                 break
 
         # Check if a new Project should be created or an existing is executed
@@ -76,18 +77,21 @@ def study01(data, solver):
             # Read Ref Case
             refCaseFilePath = os.path.join(flworking_Dir, refCase)
             if studyIndex == 0:
-                solver.file.read_case_data(
-                    file_type="case-data", file_name=refCaseFilePath
-                )
+                solver.file.read_case_data(file_name=refCaseFilePath)
             else:
                 tuicommand = 'file/rcd "' + refCaseFilePath + '" yes'
                 solver.execute_tui(tuicommand)
-                # solver.tui.file.read_case_data(refCaseFilePath, "yes")
+                # solver.tui.file.read_case_data(refCaseFilePath)
+                # solver.file.read_case_data(file_name=refCaseFilePath)
 
             # Initialize a new parametric study
-            solver.parametric_studies.initialize(project_filename=studyName)
+            projectFilename = os.path.join(flworking_Dir, studyName)
+            solver.parametric_studies.initialize(project_filename=projectFilename)
             psname = refCase + "-Solve"
             fluent_study = solver.parametric_studies[psname]
+
+            # Set standard image output format to AVZ
+            solver.execute_tui("/display/set/picture/driver avz")
 
             designPointCounter = 1
             definitionList = studyEl.get("definition")
@@ -155,17 +159,22 @@ def study01(data, solver):
                 fluent_study.design_points.update_all()
 
             # Export results to table
-            design_point_table_filepath = (
-                flworking_Dir + "/" + studyName + "_dp_table.csv"
+
+            studyOutPath = misc_utils.ptw_output(
+                fl_workingDir=flworking_Dir, study_name=studyName
             )
-            design_point_table_filepath = os.path.normpath(design_point_table_filepath)
+
+            design_point_table_filepath = os.path.join(studyOutPath, "dp_table.csv")
             solver.parametric_studies.export_design_table(
                 filepath=design_point_table_filepath
             )
 
             # Save Study
-            # solver.tui.file.parametric_project.save_as(studyName)
-            solver.file.parametric_project.save()
+            if studyIndex == 0:
+                solver.file.parametric_project.save()
+            else:
+                projectFilename = os.path.join(flworking_Dir, studyName)
+                solver.tui.file.parametric_project.save_as(projectFilename)
 
             # Increasing study index
             studyIndex = studyIndex + 1
@@ -201,33 +210,42 @@ def study01(data, solver):
                 fluent_study.design_points.update_all()
 
             # Export results to table
-            design_point_table_filepath = (
-                flworking_Dir + "/" + studyName + "_dp_table.csv"
+            studyOutPath = misc_utils.ptw_output(
+                fl_workingDir=flworking_Dir, study_name=studyName
             )
-            design_point_table_filepath = os.path.normpath(design_point_table_filepath)
+
+            design_point_table_filepath = os.path.join(studyOutPath, "dp_table.csv")
             solver.parametric_studies.export_design_table(
                 filepath=design_point_table_filepath
             )
 
             # Save Study
-            solver.file.parametric_project.save()
+            if studyIndex == 0:
+                solver.file.parametric_project.save()
+            else:
+                projectFilename = os.path.join(flworking_Dir, studyName)
+                solver.tui.file.parametric_project.save_as(projectFilename)
 
             # Increasing study index
             studyIndex = studyIndex + 1
 
-        # Skipping after first study has been finished
-        logger.info(f"\nRunning Study '{studyName}' finished!\n")
+        logger.info(f"Running Study '{studyName}' finished!")
         # break
 
         # Extract CoV information and store in temporary file for post processing
-        covDict = solver.solution.monitor.convergence_conditions.convergence_reports()
+        tempDataDict = (
+            solver.solution.monitor.convergence_conditions.convergence_reports()
+        )
+        number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
+        tempDataDict["num_eqs"] = number_eqs
+
         baseCaseName = studyDict[studyName].get("refCaseFilename")
         pathtostudy = os.path.join(
             flworking_Dir, f"{studyName}.cffdb", f"{baseCaseName}-Solve"
         )
         # Check if the folder exists
         if not os.path.exists(pathtostudy):
-            logger.info("No Study data has been found!\n")
+            logger.info("No Study data has been found!")
             logger.info("Skipping Post-Processing!")
         else:
             # Define the file path
@@ -235,6 +253,6 @@ def study01(data, solver):
 
             # Save the dictionary as a JSON file
             with open(temp_data_path, "w") as file:
-                json.dump(covDict, file)
+                json.dump(tempDataDict, file)
 
     logger.info("All Studies finished")

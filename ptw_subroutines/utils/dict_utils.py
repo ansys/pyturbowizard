@@ -1,5 +1,6 @@
 import os
 import json
+import copy
 
 # Logger
 from ptw_subroutines.utils import ptw_logger
@@ -44,10 +45,10 @@ def merge_data_with_refDict(caseDict: dict, allCasesDict: dict):
     refDict = allCasesDict.get(refCaseName)
     if refDict is None:
         logger.info(
-            f"Specified Reference Case {refCaseName} not found in Config-File!\nSkipping CopyFunction..."
+            f"Specified Reference Case {refCaseName} not found in Config-File! --> Skipping CopyFunction..."
         )
         return caseDict
-    helpCaseDict = refDict.copy()
+    helpCaseDict = copy.deepcopy(refDict)
     helpCaseDict.update(caseDict)
     caseDict.update(helpCaseDict)
     return
@@ -67,3 +68,19 @@ def get_material_from_lib(caseDict: dict, scriptPath: str):
                 f"Specified material '{materialStr}' in config-file not found in material-lib: {materialFileName}"
             )
     return
+
+
+def detect_unused_keywords(refDict: dict, compareDict: dict, path="root"):
+    for item in compareDict:
+        if item not in refDict:
+            logger.warning(
+                f"Element found in Config-File that is not known or used! Check keyword: '{item}' in '{path}'"
+            )
+        else:
+            refEl = refDict.get(item)
+            compareEl = compareDict.get(item)
+            if type(refEl) is dict and type(compareEl) is dict:
+                newpath = f"{path} / {item}"
+                detect_unused_keywords(
+                    refDict=refEl, compareDict=compareEl, path=newpath
+                )

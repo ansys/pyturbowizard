@@ -1,60 +1,26 @@
 # Setup of the Configuration File
-This guide aims to give an overview on how to adjust the Configuration File for single case setups and parametric studies.
-## Single Case Setup
-The Configuration file for single case setups can be found in the [main branch](https://github.com/ansys-internal/pyturbowizard/tree/main) as ``` TurboSetupConfig.json ```.
+This guide aims to give an overview on how to adjust the Configuration File for single case study and parametric studies.
+The Configuration File can contain the following sections/dicts:
+- ```launching```: Defines the launching options of the Fluent session ([Launching Options](#launching-options))
+- ```functions```: Defines the subroutines for the numerical setup, post-processing, the parametric studies, etc. ([Functions](#functions))
+- ```cases```: Contains the definition of a single case study ([Single Case Study](#single-case-study))
+- ```studies```: Contains the definition of parametric studies ([Parametric Study](#parametric-study))
 
-When running the script from outside Fluent, you can also use the yaml-file format for the configuration file.
+## Launching Options
 
-It serves as input file for the launch options, boundary conditions, as well as the numeric and simulation setups needed to run the main script. In the following the different sections of the Configuration File are explained in detail.
-
-### Setup Subroutines
-Under the section ``` functions ```, different subroutines for the numerical setup, post processing or the parametric studies can be specified:
-
-```
-"functions":
-    {
-      "setup": "setup_compressible_01",
-      "numerics": "numerics_bp_tn_2305",
-      "initialization": "init_hybrid_01",      
-      "postproc": "post_01",
-      "parametricstudy": "study_01"
-    },
-```
-Currently the following functions and corresponding options are available:
-- "setup":
-  - Specify setup function
-  - Available functions:
-    - **"setup_compressible_01" (default):** standard setup for compressible fluids
-    - "setup_incompressible_01": standard setup for incompressible fluids (beta)
-- "numerics": 
-  - Specify numeric settings
-  - Available functions:
-    - "numerics_defaults": Use Fluent default settings    
-    - **"numerics_bp_tn_2305" (default):**  Use turbo best practice settings from May 2023 in combination with Fluent default discretization-schemes and Green-Gauss Node-based gradient discretization-scheme
-    - "numerics_bp_tn_2305_lsq" : Use turbo best practice settings from May 2023, but usage of LSQ gradient discretization-scheme
-    - "numerics_bp_all_2305": Use turbo best practice settings from May 2023, additionally set explicitly all discretization-schemes to second order    
-     
-- "initialization":
-  - Specify initialization settings
-  - Available functions:
-    - "init_standard_01": standard initialization, using inlet data as reference    
-    - "init_standard_02": standard initialization, using 0 velocity,  1 TKE , 1 Omega, inlet temperature 
-    - **"init_hybrid_01" (default):** Hybrid initialization, using standard "init_standard_01" for pre-initialization
-    - "init_fmg_01": FMG initialization, using standard "init_standard_01" for pre-initialization
-- "postproc":
-  - Specify postproc function
-  - Available functions:
-    - **"post_01" (default):** standard postprocessing
-- "parametricstudy":
-  - Specify parametricstudy function
-  - Available functions:
-    - **"study_01" (default):** standard parametricstudy
-
-**Note: If the section 'functions' is not defined the default functions are used. Therefore, the definition of this section is not required, unless the user wants to prescribe non-default functions**
-
-
-### Launch Options
 Under the section ``` launching ```, different options for launching options for Fluent can be specified, like the version, number of processes and single or double precision solver.
+
+- ```"workingDir"``` specifies the Fluent working directory, if ```workingDir``` is not set, the script will use the directory of the configuration file as fluent working directory
+- ```"fl_version"``` specifies version of Fluent (supported versions: ```"23.2.0","24.1.0"```)
+- ```"noCore"``` specifies the number of cores/processes for the Fluent session
+- ```"precision"``` can be ```"double"``` or ```"single"``` precision solver
+- ```"show_gui"```  specifies whether a GUI should be shown or not during simulation
+- ```"exitatend"``` is used to specify whether the Fluent session should be closed after the script is finished
+- ```"ptw_cleanup"``` (**default: false**): 
+  - If enabled (```"ptw_cleanup": true```) following files are removed from the ```"workingDir"``` after exiting the fluent session: 
+    - 'fluent\*.trn'
+    - '\*slurm\*'
+  - If you define ```"ptw_cleanup"``` as a list of strings, the defined files will be removed, e.g. ```"ptw_cleanup": ["myFile.txt","*.log"]```
 
 For running Fluent on Linux or a Cluster, there are two options:
    - Submit job to a slurm-queue: ```queue_slurm``` (e.g. ```"ottc01"```) and a maximal waiting time in sec ```queue_waiting_time``` (default: 600sec). Other options identical to usual launching options
@@ -71,10 +37,86 @@ For running Fluent on Linux or a Cluster, there are two options:
     },
 ```
 
-**Note:** If ```workingDir``` is not set, the script will use the directory of the configuration file as fluent working directory.
+Examples for the ``` launching ``` configurations can be found [here](/ptw_examples/ConfigFileTemplates/launcherConfig_examples.json).
+
+## Functions
+Under the section ``` functions ```, different subroutines for the numerical setup, post processing or the parametric studies can be specified:
+
+```
+"functions":
+    {
+      "setup": "setup_compressible_01",
+      "numerics": "numerics_bp_tn_2305",
+      "initialization": "init_hybrid_01",      
+      "postproc": "post_01",
+      "parametricstudy": "study_01"
+    },
+```
+
+The following functions and corresponding options are available:
+- ```setup```:
+  - Specify setup function
+  - Available functions:
+    - **"setup_compressible_01" (default):** standard setup for compressible fluids
+    - "setup_incompressible_01": standard setup for incompressible fluids (beta)
+- ```numerics```: 
+  - Specify numeric settings
+  - Available functions:
+    - "numerics_defaults": Use Fluent default settings    
+    - **"numerics_bp_tn_2305" (default):**  Use turbo best practice settings from May 2023 in combination with Fluent default discretization-schemes and Green-Gauss Node-based gradient discretization-scheme
+    - "numerics_bp_tn_2305_lsq" : Use turbo best practice settings from May 2023, but usage of LSQ gradient discretization-scheme
+    - "numerics_bp_all_2305": Use turbo best practice settings from May 2023, additionally set explicitly all discretization-schemes to second order    
+     
+- ```initialization```:
+  - Specify initialization settings
+  - Available functions:
+    - "init_standard_01": standard initialization, using inlet data as reference    
+    - "init_standard_02": standard initialization, using 0 velocity,  0.01 TKE , 0.01 Omega, inlet temperature, initial gauge pressure 
+    - "init_hybrid_01": Hybrid initialization using intial gauge pressure
+    - **"init_fmg_01"(default):** FMG initialization, using standard "init_standard_01" for pre-initialization
+    - "init_fmg_02": FMG initialization, using standard "init_standard_02" for pre-initialization
+    - "init_fmg_03": FMG initialization, using standard "init_hybrid_01" for pre-initialization
+    
+- ```postproc```:
+  - Specify postproc function
+  - Available functions:
+    - **"post_01" (default):** standard postprocessing
+    - 
+- ```parametricstudy```:
+  - Specify parametricstudy function
+  - Available functions:
+    - **"study_01" (default):** standard parametricstudy
+
+- ```parametricstudy_post```:
+  - Specifies the function which is used to evaluate the parametric study results.
+  - Available functions:
+    - **"study_post_01" (default):**
+      - Operating Point Maps for each Monitor Point (Value over mass/volume flow)
+      - For each design point:
+        - Properties are plotted against iteration number (each Design Point is treated as beginning from iteration 0)
+        - CoV-Plot: Calculated for monitored properties of each Design Point (beginning from iteration 50)
+        - Residual-Plot: Residual values for each Design Point
+        - Monitor Points: Monitor Point values for each Design Point
+
+        - Examples of the plots are shown below:
+          - <img src="/ptw_documentation/images/operating_map_example.png" alt="operating point map example" style="height: 400px; width:500px;"/>
+          - <img src="/ptw_documentation/images/cov_plot_DP10.png" alt="cov plot" style="height: 450px; width:700px;"/>
+
+**Notes:**
+  - If the section 'functions' is not defined the default functions are used. Therefore, the definition of this section is not required, unless the user wants to prescribe non-default functions
+  - You can also specify a function section in the definition of each [case](#cases)
+
+## Single Case Study
+The Configuration file for single case study can be found in the [ptw_examples section](/ptw_examples), e.g. [Darmstadt-Compressor Setup](/ptw_examples/TestCases/1_Darmstadt/turboSetupConfig.json).
+
+When running the script from outside Fluent, you can also use the yaml-file format for the configuration file.
+
+It serves as input file for the boundary conditions, as well as the numeric and simulation setups needed to run the main script. In the following the different sections of the Configuration File are explained in detail.
+
+To run a Single Case Study the Configuration-File needs to contain a ``` launching ``` object to start a Fluent session, see [Launching Options](#launching-options)
 
 ### Cases
-Under the ``` cases ``` section different case setups can be specified for the script to run (different meshes etc.).
+Under the ``` cases ``` section different case setups can be specified for the script to run (different meshes, numerical settings etc.).
 
 ```
  "cases": {
@@ -96,16 +138,22 @@ Under the ``` cases ``` section different case setups can be specified for the s
 ```
 
 First, different general case parameters, like the final ``` caseFilename ``` and the initial ``` meshFilename ``` have to be specified. 
-Supported file types for meshes are .def, .cgns, .msh and .cas. Make sure that the mesh consists of a single file and is located in the Fluent working directory.
+Supported file types for meshes are .def, .cgns, .msh and .cas. Make sure that the mesh consists is located in the Fluent working directory. 
+msh- and cas-files can be prescribed as list (e.g. ```"meshFilename": ["mesh1.msh","mesh2.msh"]```), in this case the files are imported in the prescribed order.
 
 Optional objects are:
+  - ```functions```: 
+    - Define special functions for the specific case
+    - If not defined, the default or global functions are used (if defined in the root path of your configuration file)
+    - More details: [Functions](#functions)
   - ```gravity_vector```:  Vector defining gravity, e.g. ```[0.0, 0.0, -9.81]```, default: not set, gravity off
   - Definition of Rotation Axis
     - ```rotation_axis_direction```: Vector defining axis direction, default: ```[0.0, 0.0, 1.0]```
     - ```rotation_axis_origin```: Vector defining axis origin, default: ```[0.0, 0.0, 0.0]```
-  - ```isentropic_efficiency_ratio```: Calculation of Isentropic Efficiency (arguments: "TotalToTotal", "TotalToStatic", "StaticToStatic")
-  - ```skip_execution```: Skips the execution of the case, default: ```False```
-
+  - ```isentropic_efficiency_ratio```: Calculation of Isentropic Efficiency (supported arguments: "TotalToTotal", "TotalToStatic", "StaticToStatic")
+  - ```skip_execution```: Skips the execution of the case, default: ```false```
+  - ```run_extsch```: Run extsch-script: extracts all rp-variables of the case-file as ascii-file (linux-platforms only!) , default: ```false```
+  
 #### Profiles
 You can choose to specify a profile for your inlet or outlet boundaries by providing the ``` profileName ``` in your Fluent working directory.
 Restrictions when using profiles:
@@ -275,7 +323,7 @@ In the ```locations``` section a turbo topolgy for post processing in Fluent can
           ...
 ```
 
-**Note**: Currently the turbo-topology creation is only supported for conformal periodic interfaces
+**Note**:  If a periodic interface specified under ```"tz_theta_periodic_names"``` is non-conformal, it will be automaticaly handeled  by the script.
 
 This completes the setup of the ``` locations ``` section.
 
@@ -292,7 +340,6 @@ This completes the setup of the ``` locations ``` section.
             "MP_PRt"
           ],
           "cov_crit": 1.0e-4,
-          "tsn": true,
           "iter_count": 10,
           "time_step_factor": 5,
           "runSolver": true
@@ -300,17 +347,22 @@ This completes the setup of the ``` locations ``` section.
 ```
 In the section ```solution``` the convergence criteria and solve settings can be specified. 
 
-In ```reportlist``` the expressions for monitoring (plotting and file save) can be set.
+In ```reportlist``` the expressions for monitoring (plotting and file save) can be set. All expressions in the ```reportlist``` will be defined as output-parameters.
 
 ``` res_crit``` is used to specify the normalized local residual convergence limit. 
 
 ```cov_list``` and  ``` cov_crit ``` are used to specify the parameters and convergence criteria used for a Coefficient of Variation. 
+
+```conv_check_freq``` is an optional argument and can be used to define the convergence check frequency (**default: 5**)
 
 ```tsn``` is an optional argument, that explicitly turns on turbo machinery specific numerics as beta feature. 
 
 The automatic time step factor and iteration count can be set via ```time_step_factor``` (length-scale-method = conservative) or ```pseudo_timestep``` and ``` iter_count ``` respectively. 
 
 ``` runSolver``` can be used to specify whether the simulation should start to run at the end of the setup.
+
+```reorder_domain``` is an optional argument, that turns on/off domain reordering before initialization (**default: true**)
+
 #### Results
 ```
         "results": {
@@ -338,9 +390,10 @@ If there are no subelements defined, Fluent defaults will be used.
 Available options:
 
 - ```BC_settings_pout```: pressure-outlet BC-settings: 'Pressure blending factor' & 'Number of bins' (defined as list), e.g. ```[0.05, 65]```
+- ```BC_IN_reverse```: Prevent Reverse Flow for Pressure-Inlet BCs (**default: false**)
+- ```BC_OUT_reverse```: Prevent Reverse Flow for Pressure-Outlet BCs (**default: true**)
+- ```BC_OUT_avg_p```: Use average pressure specification for Pressure-Outlet BCs (**default: true**)
 - ```turbulence_model```: Use a specific turbulence model, currently only k-omega variants are supported: ```wj-bsl-earsm```, ```standard```, ```sst```, ```geko```,```bsl```
-
-
 
 ### Working with multiple cases
 
@@ -371,40 +424,10 @@ In the example "Case_CoarseMesh" includes all setup definitions, case "Case_Fine
 This means all objects are copied from case "Case_CoarseMesh" except the elements prescribed in the case itself, in this case the objects ```caseFilename``` and ```meshFilename```. 
 **Note:** If you specify a new element with sub-elements (i.e. a new dict), all sub-elements need to be specified in the new element!
 
-## Parametric Study Setup
-The Configuration file for a parametric study can be found in the [main branch](https://github.com/ansys-internal/pyturbowizard/tree/main) as ``` TurboStudyConfig.json ```.
-### Launch Options
-Under the section ``` launching ```, different options for launching options for Fluent can be specified, like the version, number of processes and single or double precision solver.
+## Parametric Study
+The Configuration file for a parametric study can be found in the [ptw_examples section](/ptw_examples), e.g. [Darmstadt-Compressor Study](/ptw_examples/TestCases/1_Darmstadt/turboStudyConfig.json).
 
-```
-"launching":
-    {
-      "workingDir": "<pathToFluentWorkingDir>",
-      "fl_version": "23.2.0",
-      "noCore": 2,
-      "precision": "double",     
-      "serverfilename": "",
-      "plotResults": true
-    },
-```
-
-For running Fluent on Linux or a Cluster, the script needs to hook on to a existing Fluent session ([How to Run on Linux](/README.md)). For this a server file name has to be specified under ``` serverfilename ```
-
-```plotResults``` specifies, whether Result Plots should be created and saved from the results of the parametric study.
-
-The plots include:
-- Operating Point Maps for each Monitor Point (Value over mass/volume flow)
-- For each design point: Residual, CoV and Monitor Point plots over iteration number
-
-Examples of the plots are shown below:
-
-<img src="/ptw_documentation/images/operating_map_example.png" alt="operating point map example" style="height: 400px; width:800px;"/>
-<img src="/ptw_documentation/images/cov_plot_DP10.png" alt="cov plot" style="height: 400px; width:400px;"/>
-
-Available options:
-- ```precision ``` can be used to enable/disable double-precision mode, default: ```True```
-- ```show_gui ``` can be used to enable/disable GUI, default: ```True```
-- ```exitatend ``` can be used to specify whether you want to close Fluent after the script is finished, default: ```False```
+To run a Parametric Study the Configuration-File needs to contain a ``` launching ``` object to start a Fluent session, see [Launching Options](#launching-options)
 
 ### Study Configuration
 In the ```studies``` section different study setups can be created. 
@@ -420,7 +443,8 @@ In the ```studies``` section different study setups can be created.
 - The reference case file name for the base case has to be specified under ```refCaseFilename``` and has to be in the Fluent working directory.
 
 - ```initMethod``` specifies initialization method for design-points, following options are available:
-  - ```base_ini```: Use initialization method of base case 
+  - ```base_ini```: Use initialization method of base case
+    - **Note:** Does not work with FMG initialization!
   - ```baseDP```: Use solution of base design point **(default)**
   - ```prevDP```: Use solution of previous design point
 

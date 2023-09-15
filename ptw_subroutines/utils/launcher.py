@@ -3,7 +3,7 @@ import subprocess
 import time
 
 # Logger
-from ptw_subroutines.utils import ptw_logger, utilities
+from ptw_subroutines.utils import ptw_logger, misc_utils
 
 logger = ptw_logger.getLogger()
 
@@ -28,7 +28,7 @@ def launchFluent(launchEl: dict):
         )
         # Get a free server-filename
         serverfilename = launchEl.get("serverfilename", "server-info.txt")
-        serverfilename = utilities.get_free_filename(
+        serverfilename = misc_utils.get_free_filename(
             dirname=fl_workingDir, base_filename=serverfilename
         )
         launchEl["serverfilename"] = serverfilename
@@ -51,7 +51,7 @@ def launchFluent(launchEl: dict):
             "-sifile=%s" % (serverfilename),
         ]
         if not launchEl["show_gui"]:
-            batch_arguments.extend(["-gu", "-driver opengl"])
+            batch_arguments.extend(["-gu", "-driver dx11"])
         commandlist.extend(batch_arguments)
         process_files = subprocess.Popen(
             commandlist, cwd=fl_workingDir, stdout=subprocess.DEVNULL
