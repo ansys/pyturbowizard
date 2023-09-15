@@ -97,10 +97,11 @@ The following functions and corresponding options are available:
         - CoV-Plot: Calculated for monitored properties of each Design Point (beginning from iteration 50)
         - Residual-Plot: Residual values for each Design Point
         - Monitor Points: Monitor Point values for each Design Point
-
         - Examples of the plots are shown below:
-          - <img src="/ptw_documentation/images/operating_map_example.png" alt="operating point map example" style="height: 400px; width:500px;"/>
-          - <img src="/ptw_documentation/images/cov_plot_DP10.png" alt="cov plot" style="height: 450px; width:700px;"/>
+          
+          <img src="/ptw_documentation/images/operating_map_example.png" alt="operating point map example" style="height: 400px; width:500px;"/>
+
+          <img src="/ptw_documentation/images/cov_plot_DP10.png" alt="cov plot" style="height: 450px; width:700px;"/>
 
 **Notes:**
   - If the section 'functions' is not defined the default functions are used. Therefore, the definition of this section is not required, unless the user wants to prescribe non-default functions
@@ -422,6 +423,7 @@ Here´s an example for a mesh study:
 
 In the example "Case_CoarseMesh" includes all setup definitions, case "Case_FineMesh" just refers with ```refCase``` to "Case_CoarseMesh". 
 This means all objects are copied from case "Case_CoarseMesh" except the elements prescribed in the case itself, in this case the objects ```caseFilename``` and ```meshFilename```. 
+
 **Note:** If you specify a new element with sub-elements (i.e. a new dict), all sub-elements need to be specified in the new element!
 
 ## Parametric Study
