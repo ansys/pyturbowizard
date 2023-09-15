@@ -29,7 +29,7 @@ debug_level = 1
 # Set Logger
 logger = ptw_logger.init_logger()
 
-ptw_version = "1.6.0"
+ptw_version = "1.6.1"
 logger.info(f"*** Starting PyTurboWizard (Version {str(ptw_version)}) ***")
 
 # If solver variable does not exist, Fluent has been started in external mode
