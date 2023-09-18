@@ -13,14 +13,14 @@ def setup(data, solver, functionEl):
         funcDictName="setup",
         defaultName="setup_compressible_01",
     )
-    logger.info('Running Setup Function "' + functionName + '"...')
+    logger.info(f"Running Setup Function '{functionName}' ...")
     if functionName == "setup_compressible_01":
         setup_compressible_01(data, solver)
     elif functionName == "setup_incompressible_01":
         setup_incompressible_01(data, solver)
     else:
         logger.info(
-            'Prescribed Function "' + functionName + '" not known. Skipping Setup!'
+            f"Prescribed Function '{functionName}' not known. Skipping Setup!"
         )
 
     logger.info("Running Setup Function... finished!")

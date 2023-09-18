@@ -20,7 +20,7 @@ def init(data, solver, functionEl):
         logger.info("Reordering domain to reduce bandwidth according to the setup")
         solver.mesh.reorder.reorder_domain()
 
-    logger.info('Running Initialization Function "' + functionName + '"...')
+    logger.info(f"Running Initialization Function '{functionName}'")
     if functionName == "init_standard_01":
         init_standard_01(data, solver)
     elif functionName == "init_standard_02":
@@ -35,9 +35,7 @@ def init(data, solver, functionEl):
         init_fmg_03(data, solver)
     else:
         logger.info(
-            'Prescribed Function "'
-            + functionName
-            + '" not known. Skipping Initialization!'
+            f"'Prescribed Function '{functionName}' not known. Skipping Initialization!"
         )
 
     logger.info("Initialization Function... finished.")
@@ -146,6 +144,6 @@ def init_fmg_basic(data, solver):
 
 def solve_01(data, solver):
     iter_count = data["solution"].setdefault("iter_count", 500)
-    logger.info("Solving max. " + str(iter_count) + " iterations")
+    logger.info(f"Solving max. {iter_count} iterations")
     solver.solution.run_calculation.iterate(iter_count=iter_count)
     return

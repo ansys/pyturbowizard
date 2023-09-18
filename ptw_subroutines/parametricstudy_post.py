@@ -22,9 +22,7 @@ def study_post(data, solver, functionEl):
         study_post_01(data=data, solver=solver)
     else:
         logger.info(
-            'Prescribed Function "'
-            + functionName
-            + '" not known. Skipping ParametricStudy-Postprocessing Function!'
+            f"Prescribed Function '{functionName}' not known. Skipping ParametricStudy-Postprocessing Function!"
         )
 
     logger.info(

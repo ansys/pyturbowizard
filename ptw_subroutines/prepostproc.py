@@ -21,14 +21,12 @@ def prepost(data, solver, functionEl, launchEl):
         defaultName="prepost_01",
     )
 
-    logger.info('Running Pre-Postprocessing Function "' + functionName + '"...')
+    logger.info(f"Running Pre-Postprocessing Function '{functionName}' ...")
     if functionName == "prepost_01":
         prepost_01(data, solver, launchEl)
     else:
         logger.info(
-            'Prescribed Function "'
-            + functionName
-            + '" not known. Skipping Pre-Postprocessing!'
+            f"Prescribed Function '{functionName}' not known. Skipping Pre-Postprocessing!"
         )
 
     logger.info("Running Pre-Postprocessing Function... finished!")
@@ -107,7 +105,7 @@ def spanPlots(data, solver, launchEl):
     # Create Contour Plots for every surface
     for spanVal in spansSurf:
         spanName = f"span-{int(spanVal*100)}"
-        logger.info("Creating spanwise ISO-surface: " + spanName)
+        logger.info(f"Creating spanwise ISO-surface: {spanName}")
         solver.results.surfaces.iso_surface[spanName] = {}
         zones = solver.results.surfaces.iso_surface[spanName].zone.get_attr(
             "allowed-values"
@@ -119,7 +117,7 @@ def spanPlots(data, solver, launchEl):
         for contVar in contVars:
             if contVar in availableFieldDataNames:
                 contName = spanName + "-" + contVar
-                logger.info("Creating spanwise contour-plot: " + contName)
+                logger.info(f"Creating spanwise contour-plot: {contName}")
                 solver.results.graphics.contour[contName] = {}
                 solver.results.graphics.contour[contName](
                     field=contVar,

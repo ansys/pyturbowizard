@@ -29,7 +29,7 @@ debug_level = 1
 # Set Logger
 logger = ptw_logger.init_logger()
 
-ptw_version = "1.6.0"
+ptw_version = "1.6.1"
 logger.info(f"*** Starting PyTurboWizard (Version {str(ptw_version)}) ***")
 
 # If solver variable does not exist, Fluent has been started in external mode
@@ -46,7 +46,7 @@ config_filename = "turboSetupConfig.json"
 if len(sys.argv) > 1:
     config_filename = sys.argv[1]
 config_filename = os.path.normpath(config_filename)
-logger.info("Opening ConfigFile: " + os.path.abspath(config_filename))
+logger.info(f"Opening ConfigFile: {os.path.abspath(config_filename)}")
 config_file = open(config_filename, "r")
 turboData = dict()
 # Load a yaml file if specified, otherwise json
@@ -76,7 +76,7 @@ fl_workingDir = launchEl.get(
 fl_workingDir = os.path.normpath(fl_workingDir)
 # Reset working dir in dict
 launchEl["workingDir"] = fl_workingDir
-logger.info("Used Fluent Working-Directory: " + fl_workingDir)
+logger.info(f"Used Fluent Working-Directory: {fl_workingDir}")
 
 if external:
     # Fluent starts externally
@@ -103,7 +103,7 @@ else:
 caseDict = turboData.get("cases")
 if caseDict is not None:
     for casename in caseDict:
-        logger.info("Running Case: " + casename)
+        logger.info(f"Running Case: {casename}")
         caseEl = turboData["cases"][casename]
         # Basic Dict Stuff...
         # First: Copy data from reference if refCase is set
@@ -130,7 +130,7 @@ if caseDict is not None:
         caseOutPath = misc_utils.ptw_output(
             fl_workingDir=fl_workingDir, case_name=caseFilename
         )
-        trnName = casename + ".trn"
+        trnName = f"{casename}.trn"
         trnFileName = os.path.join(caseOutPath, trnName)
         solver.file.start_transcript(file_name=trnFileName)
 
@@ -212,7 +212,7 @@ if caseDict is not None:
         # Solve
         if caseEl["solution"].setdefault("runSolver", False):
             solve.solve_01(caseEl, solver)
-            filename = caseFilename + "_fin"
+            filename = f"{caseFilename}_fin"
             solver.file.write(file_type="case-data", file_name=filename)
 
         # Postprocessing
@@ -272,7 +272,7 @@ if debug_level > 0:
 
     import ntpath
 
-    debug_filename = "ptw_" + ntpath.basename(config_filename)
+    debug_filename = f"ptw_{ntpath.basename(config_filename)}"
     ptwOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir)
     debug_file_path = os.path.join(ptwOutPath, debug_filename)
     jsonString = json.dumps(turboData, indent=4, sort_keys=True)
