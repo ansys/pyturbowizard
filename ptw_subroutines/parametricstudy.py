@@ -22,9 +22,7 @@ def study(data, solver, functionEl):
         study01(data, solver)
     else:
         logger.info(
-            'Prescribed Function "'
-            + functionName
-            + '" not known. Skipping Parametric Study!'
+            f"Prescribed Function '{functionName}' not known. Skipping Parametric Study!"
         )
 
     logger.info(f"Running ParametricStudy-Function '{functionName}'...  finished!")
@@ -60,16 +58,15 @@ def study01(data, solver):
         studyFolderPath = os.path.join(flworking_Dir, studyFolderPath)
         if os.path.isfile(studyFileName) or os.path.isdir(studyFolderPath):
             if not studyEl.setdefault("overwriteExisting", False):
-                logger.info("Fluent-Project already exists " + studyFileName)
                 logger.info(
-                    'and "overwriteExisting"-flag is set to False or not existing in Config-File'
+                    f"Fluent-Project '{studyFileName}' already exists and 'overwriteExisting'-flag is set to 'False' or not existing in Config-File \nSkipping Parametric Study '{studyFileName}'"
                 )
-                logger.info('Skipping Parametric Study "' + studyName)
                 break
         else:
             if runExisting:
-                logger.info("Specified Fluent-Project does not exist " + studyFileName)
-                logger.info('Skipping Parametric Study "' + studyName)
+                logger.info(
+                    f"Specified Fluent-Project '{studyFileName}' does not exist \nSkipping Parametric Study '{studyName}"
+                )
                 break
 
         # Check if a new Project should be created or an existing is executed
