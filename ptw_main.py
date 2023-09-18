@@ -29,7 +29,7 @@ debug_level = 1
 # Set Logger
 logger = ptw_logger.init_logger()
 
-ptw_version = "1.5.6"
+ptw_version = "1.6.0"
 logger.info(f"*** Starting PyTurboWizard (Version {str(ptw_version)}) ***")
 
 # If solver variable does not exist, Fluent has been started in external mode
@@ -258,7 +258,7 @@ logger.info("Closing Fluent Session")
 solver.exit()
 
 # Do clean-up
-cleanup_data = launchEl.setdefault("exit_cleanup", False)
+cleanup_data = launchEl.setdefault("ptw_cleanup", False)
 misc_utils.fluent_cleanup(working_dir=fl_workingDir, cleanup_data=cleanup_data)
 
 # Write out Debug info
