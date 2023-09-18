@@ -59,7 +59,7 @@ def study01(data, solver):
         if os.path.isfile(studyFileName) or os.path.isdir(studyFolderPath):
             if not studyEl.setdefault("overwriteExisting", False):
                 logger.info(
-                    f"Fluent-Project '{studyFileName}' already exists and 'overwriteExisting'-flag is set to 'False' or not existing in Config-File \nSkipping Parametric Study '{studyFileName}'"
+                    f"Fluent-Project '{studyFileName}' already exists and 'overwriteExisting'-flag is set to 'False' or not existing in Config-File \nSkipping Parametric Study '{studyName}'"
                 )
                 break
         else:
