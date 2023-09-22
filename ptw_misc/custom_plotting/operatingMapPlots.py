@@ -6,14 +6,11 @@ import matplotlib.colors as mcolors
 import json
 import sys
 
-
-def create_operating_map_plots(
-    csv_legend_pairs, svg_filename=None, full_convergence=False
-):
+def create_operating_map_plots(csv_legend_pairs, svg_filename=None,full_convergence=False):
     if full_convergence:
-        color_map = {"converged": "green", "not converged": "red"}
+        color_map = {'converged': 'green','not converged': 'red'}
     else:
-        color_map = {"good": "green", "ok": "orange", "poor": "red"}
+        color_map = {'good': 'green', 'ok': 'orange', 'poor': 'red'}
 
     modified_colormap = plt.cm.tab10
     colors = list(modified_colormap.colors)
@@ -21,40 +18,34 @@ def create_operating_map_plots(
     modified_colors = [color for i, color in enumerate(colors) if i not in [1, 3]]
     colormap = mcolors.ListedColormap(modified_colors)
 
-    for y_col, y_label in zip(input_data["y_data"], input_data["y_labels"]):
+    for y_col, y_label in zip(input_data['y_data'], input_data['y_labels']):
         fig, axs = plt.subplots(1, 1, figsize=(10, 6))
-        cov_criterion = input_data["cov_criterion"]
+        cov_criterion = input_data['cov_criterion']
         legend_handles = []
         if full_convergence:
             legend_colors = [
-                mpatches.Patch(color="green", label=f"converged"),
-                mpatches.Patch(color="red", label=f"not converged"),
+                mpatches.Patch(color='green', label=f'converged'),
+                mpatches.Patch(color='red', label=f'not converged')
             ]
         else:
             legend_colors = [
-                mpatches.Patch(
-                    color="green", label=f'CoV < {"{:.0e}".format(cov_criterion)}'
-                ),
-                mpatches.Patch(
-                    color="orange", label=f'CoV < {"{:.0e}".format(5*cov_criterion)}'
-                ),
-                mpatches.Patch(
-                    color="red", label=f'CoV > {"{:.0e}".format(5*cov_criterion)}'
-                ),
+                mpatches.Patch(color='green', label=f'CoV < {"{:.0e}".format(cov_criterion)}'),
+                mpatches.Patch(color='orange', label=f'CoV < {"{:.0e}".format(5*cov_criterion)}'),
+                mpatches.Patch(color='red', label=f'CoV > {"{:.0e}".format(5*cov_criterion)}')
             ]
         legend_handles.extend(legend_colors)
 
-        x_min, x_max = float("inf"), float("-inf")
-        y_min, y_max = float("inf"), float("-inf")
-
+        x_min, x_max = float('inf'), float('-inf')
+        y_min, y_max = float('inf'), float('-inf')
+        
         for csv_file, legend_label in csv_legend_pairs:
             data = pd.read_csv(csv_file)
-            x_col = input_data["x_data"][0]
+            x_col = input_data['x_data'][0]
 
             if y_col in data.columns:
                 x_data = data[x_col]
                 y_data = data[y_col]
-                cov_col = input_data["cov_data"][input_data["y_data"].index(y_col)]
+                cov_col = input_data['cov_data'][input_data['y_data'].index(y_col)]
 
                 # Check if the column represents "rep-mp-isentropic-efficiency"
                 if y_col == "rep-mp-isentropic-efficiency":
@@ -66,10 +57,8 @@ def create_operating_map_plots(
                     if cov_col in data.columns:
                         cov_data = data[cov_col]
                         colors = [
-                            color_map[convergence]
-                            if convergence in color_map
-                            else color_map["not converged"]
-                            for convergence in data["convergence"]
+                            color_map[convergence] if convergence in color_map else color_map['not converged']
+                            for convergence in data['convergence']
                         ]
                         scatter_color = colors
                     else:
@@ -79,11 +68,9 @@ def create_operating_map_plots(
                     if cov_col in data.columns:
                         cov_data = data[cov_col]
                         colors = [
-                            color_map["good"]
-                            if cov < 1.01 * cov_criterion
-                            else color_map["ok"]
-                            if cov < 5 * cov_criterion
-                            else color_map["poor"]
+                            color_map['good'] if cov < 1.01*cov_criterion else
+                            color_map['ok'] if cov < 5 * cov_criterion else
+                            color_map['poor']
                             for cov in cov_data
                         ]
                         scatter_color = colors
@@ -93,39 +80,27 @@ def create_operating_map_plots(
                 color = colormap(csv_legend_pairs.index((csv_file, legend_label)))
 
                 axs.plot(x_data, y_data, linestyle="-", color=color, label=legend_label)
-                axs.scatter(
-                    x_data,
-                    y_data,
-                    c=scatter_color if cov_data is not None else color,
-                    zorder=2,
-                    marker="x" if cov_data is None else None,
-                )
+                axs.scatter(x_data, y_data, c=scatter_color if cov_data is not None else color, zorder=2, marker='x' if cov_data is None else None)
 
                 x_min = min(x_min, min(x_data))
                 x_max = max(x_max, max(x_data))
                 y_min = min(y_min, min(y_data))
                 y_max = max(y_max, max(y_data))
+                
+                legend_handles.append(Line2D([0], [0], linestyle='-', color=color, label=legend_label))
 
-                legend_handles.append(
-                    Line2D([0], [0], linestyle="-", color=color, label=legend_label)
-                )
-
-        axs.legend(handles=legend_handles, loc="upper left", bbox_to_anchor=(1, 1))
+        axs.legend(handles=legend_handles, loc='upper left', bbox_to_anchor=(1, 1))
         plt.tight_layout()
 
-        # axs.set_xlim(0.99 * x_min, 1.01 * x_max)
-        # axs.set_ylim(0.99 * y_min, 1.01 * y_max)
+        #axs.set_xlim(0.99 * x_min, 1.01 * x_max)
+        #axs.set_ylim(0.99 * y_min, 1.01 * y_max)
         axs.grid()
-        axs.set_xlabel(input_data["x_label"][0] if "x_label" in input_data else x_col)
-        axs.set_ylabel(
-            y_label if y_label else y_col
-        )  # Use specified y_label or default to y_col name
+        axs.set_xlabel(input_data['x_label'][0] if 'x_label' in input_data else x_col)
+        axs.set_ylabel(y_label if y_label else y_col)  # Use specified y_label or default to y_col name
 
         if svg_filename:
-            plot_svg_filename = svg_filename.replace(
-                ".svg", f'_{y_col.replace(" ", "_")}.svg'
-            )
-            plt.savefig(plot_svg_filename, format="svg", bbox_inches="tight")
+            plot_svg_filename = svg_filename.replace('.svg', f'_{y_col.replace(" ", "_")}.svg')
+            plt.savefig(plot_svg_filename, format='svg', bbox_inches='tight')
             print(f"Plot saved as {plot_svg_filename}")
         else:
             plt.show()
