@@ -127,6 +127,8 @@ def study01(data, solver):
                         new_dp.input_parameters = {ipName: modValue}
                         write_data_flag = studyEl.setdefault("write_data", False)
                         new_dp.write_data = write_data_flag
+                        simulation_report_flag = studyEl.setdefault("simulation_report", False)
+                        new_dp.capture_simulation_report_data = simulation_report_flag
                         studyEl["write_data"] = write_data_flag
 
                     # fluent_study.design_points[designPointName].input_parameters = new_dp
@@ -148,7 +150,7 @@ def study01(data, solver):
                 logger.info("Using base DP data for Initialization")
                 solver.tui.parametric_study.study.use_base_data("yes")
             elif initMethod == "prevDP":
-                logger.info("Using previous DP data for Initialization")
+                logger.info("Using previous updated data for Initialization")
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
             # Run all Design Points
@@ -199,7 +201,7 @@ def study01(data, solver):
                 logger.info("Using base DP data for Initialization")
                 solver.tui.parametric_study.study.use_base_data("yes")
             elif initMethod == "prevDP":
-                logger.info("Using previous DP data for Initialization")
+                logger.info("Using previous updated data for Initialization")
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
             # Run all Design Points
