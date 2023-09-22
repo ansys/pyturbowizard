@@ -148,7 +148,7 @@ def study01(data, solver):
                 logger.info("Using base DP data for Initialization")
                 solver.tui.parametric_study.study.use_base_data("yes")
             elif initMethod == "prevDP":
-                logger.info("Using previous DP data for Initialization")
+                logger.info("Using previous updated data for Initialization")
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
             # Run all Design Points
@@ -199,7 +199,7 @@ def study01(data, solver):
                 logger.info("Using base DP data for Initialization")
                 solver.tui.parametric_study.study.use_base_data("yes")
             elif initMethod == "prevDP":
-                logger.info("Using previous DP data for Initialization")
+                logger.info("Using previous updated data for Initialization")
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
             # Run all Design Points
