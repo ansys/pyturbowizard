@@ -87,7 +87,7 @@ if external:
 solver.execute_tui("/display/set/picture/driver avz")
 
 # Fluent Version Check
-if launchEl["fl_version"] < "24.1.0":
+if solver.version < "24.1.0":
     # For version before 24.1.0, remove the streamhandler from the logger
     ptw_logger.remove_handlers(streamhandlers=True, filehandlers=False)
     # Set Batch options: Old API

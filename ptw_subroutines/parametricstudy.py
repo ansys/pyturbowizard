@@ -153,6 +153,12 @@ def study01(data, solver):
                 logger.info("Using previous updated data for Initialization")
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
+            if solver.version >= "24.1.0":
+                if not studyEl.setdefault("reread_case", False):
+                    solver.tui.parametric_study.study.read_case_before_each_dp_update("no")
+                else:
+                    solver.tui.parametric_study.study.read_case_before_each_dp_update("yes")
+
             # Run all Design Points
             if studyEl.setdefault("updateAllDPs", False):
                 fluent_study.design_points.update_all()
@@ -203,6 +209,12 @@ def study01(data, solver):
             elif initMethod == "prevDP":
                 logger.info("Using previous updated data for Initialization")
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
+
+            if solver.version >= "24.1.0":
+                if not studyEl.setdefault("reread_case", False):
+                    solver.tui.parametric_study.study.read_case_before_each_dp_update("no")
+                else:
+                    solver.tui.parametric_study.study.read_case_before_each_dp_update("yes")
 
             # Run all Design Points
             if studyEl.setdefault("updateAllDPs", False):
