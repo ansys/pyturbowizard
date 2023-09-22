@@ -118,11 +118,8 @@ def physics_01(data, solver, solveEnergy: bool = True):
     default_turb_model = "sst"
     turb_model = data["setup"].setdefault("turbulence_model", default_turb_model)
     supported_kw_models = solver.setup.models.viscous.k_omega_model.allowed_values()
+    supported_transition_models = ['transition-gamma','transition-sst'] # filtering specificly for transition models  not available
     if turb_model in supported_kw_models:
-        # Set Geko Model Parameters
-        c_sep = data["setup"].setdefault("geko_csep",1.75)
-        c_nw = data["setup"].setdefault("geko_cnw",0.5)
-        c_jet = data["setup"].setdefault("geko_cjet",0.9)
 
         logger.info(f"Setting kw-turbulence-model: '{turb_model}'")
         solver.setup.models.viscous.model = "k-omega"
@@ -132,15 +129,23 @@ def physics_01(data, solver, solveEnergy: bool = True):
         if turb_model == "geko":
             c_sep = data["setup"].get("geko_csep")
             if c_sep is not None:
-                solver.tui.define.models.viscous.geko_options.csep("yes", c_sep)
+                solver.tui.define.models.viscous.geko_options.csep("yes", f"{c_sep}")
 
             c_nw = data["setup"].get("geko_cnw")
             if c_nw is not None:
-                solver.tui.define.models.viscous.geko_options.cnw("yes", c_nw)
+                solver.tui.define.models.viscous.geko_options.cnw("yes", f"{c_nw}")
 
             c_jet = data["setup"].get("geko_cjet")
             if c_jet is not None:
-                solver.tui.define.models.viscous.geko_options.cjet("yes", c_jet)
+                solver.tui.define.models.viscous.geko_options.cjet("yes", f"{c_jet}")
+
+    elif turb_model in supported_transition_models:
+        if turb_model == "transition-sst":
+            solver.setup.models.viscous.model = turb_model
+        if turb_model == "transition-gamma":
+            solver.setup.models.viscous.model = 'k-omega'
+            solver.setup.models.viscous.k_omega_model = 'sst'
+            solver.setup.models.viscous.transition_module = 'gamma-transport-eqn'
 
     else:
         logger.warning(
