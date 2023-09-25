@@ -21,14 +21,12 @@ def prepost(data, solver, functionEl, launchEl):
         defaultName="prepost_01",
     )
 
-    logger.info('Running Pre-Postprocessing Function "' + functionName + '"...')
+    logger.info(f"Running Pre-Postprocessing Function '{functionName}' ...")
     if functionName == "prepost_01":
         prepost_01(data, solver, launchEl)
     else:
         logger.info(
-            'Prescribed Function "'
-            + functionName
-            + '" not known. Skipping Pre-Postprocessing!'
+            f"Prescribed Function '{functionName}' not known. Skipping Pre-Postprocessing!"
         )
 
     logger.info("Running Pre-Postprocessing Function... finished!")
@@ -37,7 +35,7 @@ def prepost(data, solver, functionEl, launchEl):
 def prepost_01(data, solver, launchEl):
     fl_WorkingDir = launchEl.get("workingDir")
     # Check version -> for version 24.1 use python command
-    use_python_command = launchEl["fl_version"] >= "24.1.0"
+    use_python_command = solver.version >= "24.1.0"
 
     # Set output for time statistics in transcript
     command_name = "print-time-statistics"
@@ -80,7 +78,7 @@ def prepost_01(data, solver, launchEl):
 
 def spanPlots(data, solver, launchEl):
     # Check version -> for version 24.1 use python command
-    use_python_command = launchEl["fl_version"] >= "24.1.0"
+    use_python_command = solver.version >= "24.1.0"
 
     # Create spanwise surfaces
     spansSurf = data["results"].get("span_plot_height")
@@ -107,7 +105,7 @@ def spanPlots(data, solver, launchEl):
     # Create Contour Plots for every surface
     for spanVal in spansSurf:
         spanName = f"span-{int(spanVal*100)}"
-        logger.info("Creating spanwise ISO-surface: " + spanName)
+        logger.info(f"Creating spanwise ISO-surface: {spanName}")
         solver.results.surfaces.iso_surface[spanName] = {}
         zones = solver.results.surfaces.iso_surface[spanName].zone.get_attr(
             "allowed-values"
@@ -119,7 +117,7 @@ def spanPlots(data, solver, launchEl):
         for contVar in contVars:
             if contVar in availableFieldDataNames:
                 contName = spanName + "-" + contVar
-                logger.info("Creating spanwise contour-plot: " + contName)
+                logger.info(f"Creating spanwise contour-plot: {contName}")
                 solver.results.graphics.contour[contName] = {}
                 solver.results.graphics.contour[contName](
                     field=contVar,

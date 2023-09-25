@@ -13,7 +13,7 @@ def numerics(data, solver, functionEl):
         defaultName="numerics_bp_tn_2305",
     )
 
-    logger.info('Specifying Numerics: "' + functionName + '"...')
+    logger.info(f"Specifying Numerics '{functionName}' ...")
     if functionName == "numerics_defaults":
         numerics_defaults(data, solver)
     elif functionName == "numerics_bp_tn_2305":
@@ -24,9 +24,7 @@ def numerics(data, solver, functionEl):
         numerics_bp_all_2305(data, solver)
     else:
         logger.info(
-            'Prescribed Function "'
-            + functionName
-            + '" not known. Skipping Specifying Numerics!'
+            "Prescribed Function '{functionName}' not known. Skipping Specifying Numerics!"
         )
 
     logger.info("Specifying Numerics... finished!")

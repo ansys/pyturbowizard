@@ -22,9 +22,7 @@ def study(data, solver, functionEl):
         study01(data, solver)
     else:
         logger.info(
-            'Prescribed Function "'
-            + functionName
-            + '" not known. Skipping Parametric Study!'
+            f"Prescribed Function '{functionName}' not known. Skipping Parametric Study!"
         )
 
     logger.info(f"Running ParametricStudy-Function '{functionName}'...  finished!")
@@ -60,16 +58,15 @@ def study01(data, solver):
         studyFolderPath = os.path.join(flworking_Dir, studyFolderPath)
         if os.path.isfile(studyFileName) or os.path.isdir(studyFolderPath):
             if not studyEl.setdefault("overwriteExisting", False):
-                logger.info("Fluent-Project already exists " + studyFileName)
                 logger.info(
-                    'and "overwriteExisting"-flag is set to False or not existing in Config-File'
+                    f"Fluent-Project '{studyFileName}' already exists and 'overwriteExisting'-flag is set to 'False' or not existing in Config-File \nSkipping Parametric Study '{studyName}'"
                 )
-                logger.info('Skipping Parametric Study "' + studyName)
                 break
         else:
             if runExisting:
-                logger.info("Specified Fluent-Project does not exist " + studyFileName)
-                logger.info('Skipping Parametric Study "' + studyName)
+                logger.info(
+                    f"Specified Fluent-Project '{studyFileName}' does not exist \nSkipping Parametric Study '{studyName}"
+                )
                 break
 
         # Check if a new Project should be created or an existing is executed
@@ -130,6 +127,8 @@ def study01(data, solver):
                         new_dp.input_parameters = {ipName: modValue}
                         write_data_flag = studyEl.setdefault("write_data", False)
                         new_dp.write_data = write_data_flag
+                        simulation_report_flag = studyEl.setdefault("simulation_report", False)
+                        new_dp.capture_simulation_report_data = simulation_report_flag
                         studyEl["write_data"] = write_data_flag
 
                     # fluent_study.design_points[designPointName].input_parameters = new_dp
@@ -151,8 +150,14 @@ def study01(data, solver):
                 logger.info("Using base DP data for Initialization")
                 solver.tui.parametric_study.study.use_base_data("yes")
             elif initMethod == "prevDP":
-                logger.info("Using previous DP data for Initialization")
+                logger.info("Using previous updated data for Initialization")
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
+
+            if solver.version >= "24.1.0":
+                if not studyEl.setdefault("reread_case", False):
+                    solver.tui.parametric_study.study.read_case_before_each_dp_update("no")
+                else:
+                    solver.tui.parametric_study.study.read_case_before_each_dp_update("yes")
 
             # Run all Design Points
             if studyEl.setdefault("updateAllDPs", False):
@@ -202,8 +207,14 @@ def study01(data, solver):
                 logger.info("Using base DP data for Initialization")
                 solver.tui.parametric_study.study.use_base_data("yes")
             elif initMethod == "prevDP":
-                logger.info("Using previous DP data for Initialization")
+                logger.info("Using previous updated data for Initialization")
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
+
+            if solver.version >= "24.1.0":
+                if not studyEl.setdefault("reread_case", False):
+                    solver.tui.parametric_study.study.read_case_before_each_dp_update("no")
+                else:
+                    solver.tui.parametric_study.study.read_case_before_each_dp_update("yes")
 
             # Run all Design Points
             if studyEl.setdefault("updateAllDPs", False):

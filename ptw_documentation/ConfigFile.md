@@ -440,7 +440,9 @@ In the ```studies``` section different study setups can be created.
 
 - ```runExistingProject``` specifies if an existing study setup with the same name should be used. 
 
-- ```write_data``` gives the option to save the simulation data for all design points. 
+- ```write_data``` gives the option to save the simulation data for all design points (**default: false**). **Note: If the initialization method is set to ```initMethod: "prevDP"```, data will be written anyway!**
+
+-  ```simulation_report``` turns on/off if the simulation report data should be captured for the design-points (**default: false**)
 
 - The reference case file name for the base case has to be specified under ```refCaseFilename``` and has to be in the Fluent working directory.
 
