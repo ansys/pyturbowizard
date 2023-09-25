@@ -142,10 +142,14 @@ def physics_01(data, solver, solveEnergy: bool = True):
     elif turb_model in supported_transition_models:
         if turb_model == "transition-sst":
             solver.setup.models.viscous.model = turb_model
-        if turb_model == "transition-gamma":
+        elif turb_model == "transition-gamma":
             solver.setup.models.viscous.model = 'k-omega'
             solver.setup.models.viscous.k_omega_model = 'sst'
             solver.setup.models.viscous.transition_module = 'gamma-transport-eqn'
+        elif turb_model == "transition-algebraic":
+            solver.setup.models.viscous.model = 'k-omega'
+            solver.setup.models.viscous.k_omega_model = 'sst'
+            solver.setup.models.viscous.transition_module = 'gamma-algebraic'
 
     else:
         logger.warning(
