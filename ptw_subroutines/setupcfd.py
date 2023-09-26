@@ -151,7 +151,6 @@ def physics_01(data, solver, solveEnergy: bool = True):
             solver.setup.models.viscous.model = "k-omega"
             solver.setup.models.viscous.k_omega_model = "sst"
             solver.setup.models.viscous.transition_module = "gamma-algebraic"
-
     else:
         logger.warning(
             f"Specified turbulence-model not supported: '{turb_model}'! Default turbulence model will be used: '{default_turb_model}'!"
@@ -159,6 +158,17 @@ def physics_01(data, solver, solveEnergy: bool = True):
         data["setup"]["turbulence_model"] = default_turb_model
         solver.setup.models.viscous.model = "k-omega"
         solver.setup.models.viscous.k_omega_model = default_turb_model
+
+    # rp-variable to avoid turb-visc overshoots at mixing planes
+    # default: 0 -> recommended by development: 4
+    mpm_copy_method = data["setup"].get("mpm_copy_method")
+    if type(mpm_copy_method) is int:
+        logger.info(
+            f"Key 'mpm_copy_method' found in config-file! Mixing-Plane copy method will be changed to: '{mpm_copy_method}'!"
+        )
+        solver.execute_tui(
+            rf"""(rpsetvar 'mpm/rg-and-g-copy-method {mpm_copy_method})"""
+        )
 
     return
 
