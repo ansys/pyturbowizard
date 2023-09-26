@@ -117,8 +117,8 @@ def physics_01(data, solver, solveEnergy: bool = True):
     supported_kw_models = solver.setup.models.viscous.k_omega_model.allowed_values()
     # filtering specificly for transition models  not available
     supported_transition_models = [
-        "transition-gamma",
         "transition-sst",
+        "transition-gamma",
         "transition-algebraic",
     ]
     if turb_model in supported_kw_models:
