@@ -394,7 +394,12 @@ Available options:
 - ```BC_IN_reverse```: Prevent Reverse Flow for Pressure-Inlet BCs (**default: false**)
 - ```BC_OUT_reverse```: Prevent Reverse Flow for Pressure-Outlet BCs (**default: true**)
 - ```BC_OUT_avg_p```: Use average pressure specification for Pressure-Outlet BCs (**default: true**)
-- ```turbulence_model```: Use a specific turbulence model, currently only k-omega variants are supported: ```wj-bsl-earsm```, ```standard```, ```sst```, ```geko```,```bsl```
+- ```turbulence_model```: Use a specific turbulence model
+  - currently only k-omega variants are supported: ```wj-bsl-earsm```, ```standard```, ```sst```, ```geko```,```bsl```
+  - additionally the following transition models (SST-based) are supported:  
+    - ```transition-sst```: Transition SST model (&gamma;-Re<sub>&theta;</sub>-model): two additional transport-equations  
+    - ```transition-gamma```: Intermittency Transition Model (&gamma;-model): one additional transport-equation          
+    - ```transition-algebraic```:  Algebraic Transition Model: zero additional transport-equation  
 
 ### Working with multiple cases
 
