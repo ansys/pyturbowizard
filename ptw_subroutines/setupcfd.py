@@ -19,9 +19,7 @@ def setup(data, solver, functionEl):
     elif functionName == "setup_incompressible_01":
         setup_incompressible_01(data, solver)
     else:
-        logger.info(
-            f"Prescribed Function '{functionName}' not known. Skipping Setup!"
-        )
+        logger.info(f"Prescribed Function '{functionName}' not known. Skipping Setup!")
 
     logger.info("Running Setup Function... finished!")
 
@@ -66,7 +64,6 @@ def material_01(data, solver, solveEnergy: bool = True):
 
     if solveEnergy:
         solver.setup.materials.fluid[fl_name] = {
-
             "density": {"option": data["fluid_properties"]["fl_density"]},
             "specific_heat": {
                 "option": "constant",
@@ -118,9 +115,13 @@ def physics_01(data, solver, solveEnergy: bool = True):
     default_turb_model = "sst"
     turb_model = data["setup"].setdefault("turbulence_model", default_turb_model)
     supported_kw_models = solver.setup.models.viscous.k_omega_model.allowed_values()
-    supported_transition_models = ['transition-gamma','transition-sst'] # filtering specificly for transition models  not available
+    # filtering specificly for transition models  not available
+    supported_transition_models = [
+        "transition-gamma",
+        "transition-sst",
+        "transition-algebraic",
+    ]
     if turb_model in supported_kw_models:
-
         logger.info(f"Setting kw-turbulence-model: '{turb_model}'")
         solver.setup.models.viscous.model = "k-omega"
         solver.setup.models.viscous.k_omega_model = turb_model
@@ -143,13 +144,13 @@ def physics_01(data, solver, solveEnergy: bool = True):
         if turb_model == "transition-sst":
             solver.setup.models.viscous.model = turb_model
         elif turb_model == "transition-gamma":
-            solver.setup.models.viscous.model = 'k-omega'
-            solver.setup.models.viscous.k_omega_model = 'sst'
-            solver.setup.models.viscous.transition_module = 'gamma-transport-eqn'
+            solver.setup.models.viscous.model = "k-omega"
+            solver.setup.models.viscous.k_omega_model = "sst"
+            solver.setup.models.viscous.transition_module = "gamma-transport-eqn"
         elif turb_model == "transition-algebraic":
-            solver.setup.models.viscous.model = 'k-omega'
-            solver.setup.models.viscous.k_omega_model = 'sst'
-            solver.setup.models.viscous.transition_module = 'gamma-algebraic'
+            solver.setup.models.viscous.model = "k-omega"
+            solver.setup.models.viscous.k_omega_model = "sst"
+            solver.setup.models.viscous.transition_module = "gamma-algebraic"
 
     else:
         logger.warning(
