@@ -61,7 +61,7 @@ def prepost_01(data, solver, launchEl):
     solver.results.graphics.mesh["Mesh"].surfaces_list = wall_surfaces
     solver.results.graphics.mesh["Mesh"].options.edges = True
 
-    solver.tui.results.graphics.mesh.display('"Mesh"')
+    solver.results.graphics.mesh.display(object_name="Mesh")
     caseOutPath = misc_utils.ptw_output(
         fl_workingDir=fl_WorkingDir, case_name=data["caseFilename"]
     )
