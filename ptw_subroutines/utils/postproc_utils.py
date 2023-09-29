@@ -231,10 +231,15 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
         time_step = solver.scheme_eval.string_eval("(rpgetvar 'pseudo-auto-time-step)")
 
         # write out flux reports
-        massBalance = solver.report.fluxes.mass_flow()
+        if solver.version < "24.1.0":
+            fluxes = solver.report.fluxes
+        else:
+            fluxes = solver.results.report.fluxes
+
+        massBalance = fluxes.mass_flow()
         solveEnergy = solver.setup.models.energy.enabled()
         if solveEnergy:
-            heatBalance = solver.report.fluxes.heat_transfer()
+            heatBalance = fluxes.heat_transfer()
 
     ## write report table
     report_table = pd.DataFrame()
