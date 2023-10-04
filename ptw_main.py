@@ -355,9 +355,7 @@ class PTW_Run:
 def ptw_main():
     logger.info(f"*** Starting PyTurboWizard (Version {ptw_version}) ***")
 
-    """Run PTW"""
-    ptw_run = PTW_Run()
-
+    # Get data from arguments
     # Get script_path (needed to get template-dir)
     script_path = os.path.dirname(sys.argv[0])
     # If arguments are passed take first argument as fullpath to the json file
@@ -365,8 +363,10 @@ def ptw_main():
     if len(sys.argv) > 1:
         config_filename = sys.argv[1]
     config_filename = os.path.normpath(config_filename)
-    ptw_run.load_config_file(script_path=script_path, config_filename=config_filename)
 
+    # Start ptw_run
+    ptw_run = PTW_Run()
+    ptw_run.load_config_file(script_path=script_path, config_filename=config_filename)
     # Launch fluent
     if "solver" not in globals():
         solver = ptw_run.launch_fluent()
@@ -377,6 +377,7 @@ def ptw_main():
     ptw_run.finalize_session()
 
     logger.info("PTW-Script successfully finished!")
+    return
 
 
 if __name__ == "__main__":
