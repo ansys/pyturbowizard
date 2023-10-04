@@ -125,11 +125,9 @@ def study01(data, solver):
 
                         # new_dp[ipName] = modValue
                         new_dp.input_parameters = {ipName: modValue}
-                        write_data_flag = studyEl.setdefault("write_data", False)
-                        new_dp.write_data = write_data_flag
+                        new_dp.write_data = studyEl.setdefault("write_data", False)
                         simulation_report_flag = studyEl.setdefault("simulation_report", False)
                         new_dp.capture_simulation_report_data = simulation_report_flag
-                        studyEl["write_data"] = write_data_flag
 
                     # fluent_study.design_points[designPointName].input_parameters = new_dp
                     designPointCounter = designPointCounter + 1
