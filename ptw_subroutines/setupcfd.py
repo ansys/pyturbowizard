@@ -948,9 +948,11 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
                     outBC.momentum.prevent_reverse_flow = reverse_option
 
                     if data["setup"].get("BC_OUT_pressure_pt") is not None:
-                        outBC.momentum.backflow_pressure_specification = data["setup"].get(
-                            "BC_OUT_pressure_pt"
-                        )
+                        logger.warning(f" Keyword 'BC_OUT_pressure_pt' found, but not supported so far...")
+                        # outBC.momentum.backflow_pressure_specification = data["setup"].get(
+                        #    "BC_OUT_pressure_pt"
+                        #)
+
                     # Set additional pressure-outlet-bc settings if available in config file
                     pout_settings = data["setup"].get("BC_settings_pout")
                     if (type(pout_settings) is list) and (len(pout_settings) > 1):
