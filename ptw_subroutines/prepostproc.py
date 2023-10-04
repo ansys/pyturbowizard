@@ -40,7 +40,7 @@ def prepost_01(data, solver, launchEl):
 
     # Set output for time statistics in transcript
     command_name = "print-time-statistics"
-    command = "solver.tui.parallel.timer.usage"
+    command = "solver.tui.parallel.timer.usage()"
     if not use_python_command:
         command = "/report/system/time-stats"
     fluent_utils.addExecuteCommand(
