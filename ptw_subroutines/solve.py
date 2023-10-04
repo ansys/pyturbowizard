@@ -125,6 +125,9 @@ def init_hybrid_basic(data, solver):
     )
     solver.solution.initialization.standard_initialize()
 
+    if solver.version >= "24.1.0":
+        solver.solution.initialization.initialization_type = "hybrid"
+
     solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
         "absolute"
     )
@@ -137,9 +140,12 @@ def init_hybrid_basic(data, solver):
 
 def init_fmg_basic(data, solver):
     logger.info("Performing a FMG initialization")
-    # setting rp variable which is needed for version v232 when using gtis, may be obsolete in future versions
-    solver.execute_tui(r"""(rpsetvar 'fmg-init/enable-with-gti? #t)""")
-    solver.solution.initialization.fmg_initialize()
+    if solver.version < "24.1.0":
+        # setting rp variable which is needed for version v232 when using gtis, may be obsolete in future versions
+        solver.execute_tui(r"""(rpsetvar 'fmg-init/enable-with-gti? #t)""")
+        solver.solution.initialization.fmg_initialize()
+    else:
+        solver.solution.initialization.fmg.fmg_initialize()
 
 
 def solve_01(data, solver):

@@ -49,6 +49,7 @@ def launchFluent(launchEl: dict):
             "-scheduler=slurm",
             "-scheduler_queue=%s" % (launchEl["queue_slurm"]),
             "-sifile=%s" % (serverfilename),
+            "-py" if launchEl["py"] else "",
         ]
         if not launchEl["show_gui"]:
             batch_arguments.extend(["-gu", "-driver dx11"])
@@ -90,6 +91,7 @@ def launchFluent(launchEl: dict):
             product_version=launchEl["fl_version"],
             cwd=fl_workingDir,
             cleanup_on_exit=launchEl["exitatend"],
+            py=launchEl["py"],
         )
     # Hook to existing Session
     else:
@@ -108,3 +110,4 @@ def get_launcher_defaults(launchEl: dict):
     launchEl.setdefault("exitatend", True)
     launchEl.setdefault("show_gui", True)
     launchEl.setdefault("precision", True)
+    launchEl.setdefault("py", False)

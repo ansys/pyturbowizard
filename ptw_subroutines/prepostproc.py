@@ -35,11 +35,12 @@ def prepost(data, solver, functionEl, launchEl):
 def prepost_01(data, solver, launchEl):
     fl_WorkingDir = launchEl.get("workingDir")
     # Check version -> for version 24.1 use python command
-    use_python_command = solver.version >= "24.1.0"
+    use_python_command = False
+    #use_python_command = solver.version >= "24.1.0"
 
     # Set output for time statistics in transcript
     command_name = "print-time-statistics"
-    command = "solver.tui.parallel.timer.usage"
+    command = "solver.tui.parallel.timer.usage()"
     if not use_python_command:
         command = "/report/system/time-stats"
     fluent_utils.addExecuteCommand(
@@ -61,7 +62,7 @@ def prepost_01(data, solver, launchEl):
     solver.results.graphics.mesh["Mesh"].surfaces_list = wall_surfaces
     solver.results.graphics.mesh["Mesh"].options.edges = True
 
-    solver.tui.results.graphics.mesh.display('"Mesh"')
+    solver.results.graphics.mesh.display(object_name="Mesh")
     caseOutPath = misc_utils.ptw_output(
         fl_workingDir=fl_WorkingDir, case_name=data["caseFilename"]
     )
