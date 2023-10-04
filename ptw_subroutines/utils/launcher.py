@@ -110,4 +110,4 @@ def get_launcher_defaults(launchEl: dict):
     launchEl.setdefault("exitatend", True)
     launchEl.setdefault("show_gui", True)
     launchEl.setdefault("precision", True)
-    launchEl.setdefault("py", True)
+    launchEl.setdefault("py", False)
