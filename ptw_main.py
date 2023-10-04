@@ -90,6 +90,8 @@ class PTW_Run:
         self.cases_data = self.turbo_data.get("cases")
         self.parametric_studies_data = self.turbo_data.get("studies")
 
+        logger.info(f"Opening ConfigFile: {os.path.abspath(config_filename)}... done!")
+
     def launch_fluent(self, solver=None):
         if solver is None:
             logger.info("Launching Fluent...")
@@ -103,6 +105,8 @@ class PTW_Run:
         solver = self.solver
         if solver is None:
             return
+
+        logger.info(f"Initializing Fluent settings")
 
         # Set standard image output format to AVZ
         solver.execute_tui("/display/set/picture/driver avz")
@@ -120,11 +124,15 @@ class PTW_Run:
             solver.file.batch_options.hide_answer = True
             solver.file.batch_options.redisplay_question = False
 
+        logger.info(f"Initializing Fluent settings... done!")
+
     def do_case_study(self):
         # Get Data from Class
         solver = self.solver
         if solver is None:
             return
+
+        logger.info(f"Running Case Study")
         # get data from class
         launchEl = self.launch_data
         fl_workingDir = self.fl_workingDir
@@ -293,11 +301,15 @@ class PTW_Run:
             if len(caseDict) > 1:
                 postproc.mergeReportTables(turboData=turbo_data, solver=solver)
 
+        logger.info(f"Running Case Study... done!")
+
     def do_parametric_study(self):
         # Get Data from Class
         solver = self.solver
         if solver is None:
             return
+
+        logger.info(f"Running Parametric Study")
         turbo_data = self.turbo_data
         gl_function_data = self.gl_function_data
 
@@ -312,18 +324,22 @@ class PTW_Run:
                 data=turbo_data, solver=solver, functionEl=gl_function_data
             )
 
+        logger.info(f"Running Parametric Study... done!")
+
     def finalize_session(self):
         # Get Data from Class
         solver = self.solver
         if solver is None:
             return
+
+        logger.info(f"Finalizing Fluent-Session")
+
         launchEl = self.launch_data
         fl_workingDir = self.fl_workingDir
         config_filename = self.config_file_name
         turbo_data = self.turbo_data
 
         # Exit Solver
-        logger.info("Closing Fluent Session")
         solver.exit()
 
         # Do clean-up
@@ -351,6 +367,7 @@ class PTW_Run:
                 logger.info(f"Writing ptw-json-File: {debug_file_path}")
                 jsonFile.write(jsonString)
 
+        logger.info(f"Finalizing Fluent-Session... done!")
 
 def ptw_main():
     logger.info(f"*** Starting PyTurboWizard (Version {ptw_version}) ***")
