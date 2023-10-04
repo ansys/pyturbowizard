@@ -107,10 +107,8 @@ def study01(data, solver):
                 valueListArray = studyDef.get("valueList")
                 numDPs = len(valueListArray[0])
                 for dpIndex in range(numDPs):
-                    # new_dp = fluent_study.add_design_point()
                     fluent_study.design_points.duplicate(design_point="Base DP")
-                    designPointName = "DP" + str(designPointCounter)
-                    # new_dp = {"BC_P_Out": 0.}
+                    designPointName = list(fluent_study.design_points)[-1]
                     new_dp = fluent_study.design_points[designPointName]
                     for ipIndex in range(numIPs):
                         ipName = ipList[ipIndex]
@@ -123,13 +121,11 @@ def study01(data, solver):
                             refValue = ref_dp[ipName]
                             modValue = refValue * modValue
 
-                        # new_dp[ipName] = modValue
                         new_dp.input_parameters = {ipName: modValue}
                         new_dp.write_data = studyEl.setdefault("write_data", False)
                         simulation_report_flag = studyEl.setdefault("simulation_report", False)
                         new_dp.capture_simulation_report_data = simulation_report_flag
 
-                    # fluent_study.design_points[designPointName].input_parameters = new_dp
                     designPointCounter = designPointCounter + 1
 
             # Set Initialization Method
