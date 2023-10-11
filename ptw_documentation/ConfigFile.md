@@ -255,6 +255,7 @@ Under the ```locations``` section the different regions of your mesh have to be 
                   "bz_walls_counterrotating_names": ["a-rotor-1-shroud"],
                   "bz_walls_rotating_names": [],
                   "bz_walls_freeslip_names": ["a-rotor-1-default"],
+                  "bz_walls": ["w1","w2"],
                   "bz_interfaces_periodic_names": {
                     "a-rotor-periodic-interface-1": {
                         "side1": "a-rotor-1-to-a-rotor-1-periodic-1-side-1",
@@ -294,6 +295,7 @@ Under the ```locations``` section the different regions of your mesh have to be 
 ```
 
 **Notes**:
+  - ```bz_walls```: Define change bc to type walls
   - ```bz_walls_torque```: Define all walls which should be accounted to calculate a reference torque
   - ```bz_ep1_Euler``` / ```bz_ep2_Euler```: Inlet (1) and outlet (2) evaluation planes to calculate the efficiency based on the Euler turbine equation
   - periodic interfaces have to be conformal for the turbo-toplogy setup to function properly
