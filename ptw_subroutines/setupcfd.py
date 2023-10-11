@@ -1125,9 +1125,15 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
             logger.info(f"Setting up no pitch-scale interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
-            solver.setup.boundary_conditions.change_type(
-                zone_list=[side1, side2], new_type="interface"
-            )
+            # Change BC-type
+            # settings api command
+            # solver.setup.boundary_conditions.change_type(
+            #    zone_list=[side1, side2], new_type="interface"
+            # )
+            # tui command
+            solver.tui.define.boundary_conditions.zone_type(side1, "interface")
+            solver.tui.define.boundary_conditions.zone_type(side2, "interface")
+            # Create Interface
             solver.tui.define.turbo_model.turbo_create(
                 key_if, side1, "()", side2, "()", "1"
             )
