@@ -388,7 +388,7 @@ def ptw_main():
     # Launch fluent
     if "solver" not in globals():
         solver = ptw_run.launch_fluent()
-    ptw_run.launch_fluent(solver=solver)
+    ptw_run.solver = solver
     ptw_run.ini_fluent_settings()
     ptw_run.do_case_study()
     ptw_run.do_parametric_study()
