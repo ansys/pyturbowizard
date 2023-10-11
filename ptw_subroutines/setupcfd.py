@@ -259,9 +259,9 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         zone_list=[inletName], new_type="mass-flow-inlet"
                     )
                     # tui command
-                    #solver.tui.define.boundary_conditions.zone_type(
+                    # solver.tui.define.boundary_conditions.zone_type(
                     #    inletName, "mass-flow-inlet"
-                    #)
+                    # )
                     inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
                     inBC.flow_spec = "Mass Flow Rate"
                     inBC.mass_flow = "BC_IN_MassFlow"
@@ -280,9 +280,9 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         zone_list=[inletName], new_type="mass-flow-inlet"
                     )
                     # tui command
-                    #solver.tui.define.boundary_conditions.zone_type(
+                    # solver.tui.define.boundary_conditions.zone_type(
                     #    inletName, "mass-flow-inlet"
-                    #)
+                    # )
                     inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
                     inBC.flow_spec = "Mass Flow Rate"
                     inBC.mass_flow = "BC_IN_VolumeFlow*BC_IN_VolumeFlowDensity"
@@ -297,9 +297,9 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         zone_list=[inletName], new_type="pressure-inlet"
                     )
                     # tui command
-                    #solver.tui.define.boundary_conditions.zone_type(
+                    # solver.tui.define.boundary_conditions.zone_type(
                     #    inletName, "pressure-inlet"
-                    #)
+                    # )
                     inBC = solver.setup.boundary_conditions.pressure_inlet[inletName]
                     if useProfileData:
                         # check profile naming convention:
@@ -393,9 +393,9 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         zone_list=[outletName], new_type="mass-flow-outlet"
                     )
                     # tui command
-                    #solver.tui.define.boundary_conditions.zone_type(
+                    # solver.tui.define.boundary_conditions.zone_type(
                     #    outletName, "mass-flow-outlet"
-                    #)
+                    # )
 
                     outBC = solver.setup.boundary_conditions.mass_flow_outlet[
                         outletName
@@ -418,9 +418,9 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         zone_list=[outletName], new_type="mass-flow-outlet"
                     )
                     # tui command
-                    #solver.tui.define.boundary_conditions.zone_type(
+                    # solver.tui.define.boundary_conditions.zone_type(
                     #    outletName, "mass-flow-outlet"
-                    #)
+                    # )
                     outBC = solver.setup.boundary_conditions.mass_flow_outlet[
                         outletName
                     ]
@@ -437,9 +437,9 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         zone_list=[outletName], new_type="mass-flow-outlet"
                     )
                     # tui command
-                    #solver.tui.define.boundary_conditions.zone_type(
+                    # solver.tui.define.boundary_conditions.zone_type(
                     #    outletName, "mass-flow-outlet"
-                    #)
+                    # )
 
                     outBC = solver.setup.boundary_conditions.mass_flow_outlet[
                         outletName
@@ -454,9 +454,9 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         zone_list=[outletName], new_type="pressure-outlet"
                     )
                     # tui command
-                    #solver.tui.define.boundary_conditions.zone_type(
+                    # solver.tui.define.boundary_conditions.zone_type(
                     #    outletName, "pressure-outlet"
-                    #)
+                    # )
                     outBC = solver.setup.boundary_conditions.pressure_outlet[outletName]
                     # Check Profile data exists
                     profileName = data.get("profileName_Out")
