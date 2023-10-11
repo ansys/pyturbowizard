@@ -95,9 +95,9 @@ class PTW_Run:
     def launch_fluent(self, solver=None):
         if solver is None:
             logger.info("Launching Fluent...")
-            self.solver = launcher.launchFluent(self.launch_data)
-        else:
-            self.solver = solver
+            solver = launcher.launchFluent(self.launch_data)
+
+        self.solver = solver
 
         return solver
 
