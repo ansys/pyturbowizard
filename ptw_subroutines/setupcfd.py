@@ -1016,9 +1016,13 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
             keyEl = data["locations"].get(key)
             for key_cr in keyEl:
                 logger.info(f"Prescribing a counter-rotating wall: {key_cr}")
-                solver.setup.boundary_conditions.change_type(
-                    zone_list=[key_cr], new_type="wall"
-                )
+                # Change BC-type
+                # settings api command
+                # solver.setup.boundary_conditions.change_type(
+                #    zone_list=[key_cr], new_type="wall"
+                # )
+                # tui command
+                solver.tui.define.boundary_conditions.zone_type(key_cr, "wall")
                 solver.setup.boundary_conditions.wall[key_cr].momentum = {
                     "motion_bc": "Moving Wall",
                     "relative": False,
@@ -1031,9 +1035,13 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
             keyEl = data["locations"].get(key)
             for key_r in keyEl:
                 logger.info(f"Prescribing a rotating wall: {key_r}")
-                solver.setup.boundary_conditions.change_type(
-                    zone_list=[key_r], new_type="wall"
-                )
+                # Change BC-type
+                # settings api command
+                # solver.setup.boundary_conditions.change_type(
+                #    zone_list=[key_r], new_type="wall"
+                # )
+                # tui command
+                solver.tui.define.boundary_conditions.zone_type(key_r, "wall")
                 solver.setup.boundary_conditions.wall[key_r].momentum = {
                     "motion_bc": "Moving Wall",
                     "relative": False,
@@ -1047,9 +1055,13 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
             keyEl = data["locations"].get(key)
             for key_free in keyEl:
                 logger.info(f"Prescribing a free slip wall: {key_free}")
-                solver.setup.boundary_conditions.change_type(
-                    zone_list=[key_free], new_type="wall"
-                )
+                # Change BC-type
+                # settings api command
+                # solver.setup.boundary_conditions.change_type(
+                #    zone_list=[key_free], new_type="wall"
+                # )
+                # tui command
+                solver.tui.define.boundary_conditions.zone_type(key_free, "wall")
                 solver.setup.boundary_conditions.wall[key_free].momentum = {
                     "shear_bc": "Specified Shear"
                 }
@@ -1058,9 +1070,13 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
             keyEl = data["locations"].get(key)
             for key_wall in keyEl:
                 logger.info(f"Prescribing a wall: {key_wall}")
-                solver.setup.boundary_conditions.change_type(
-                    zone_list=[key_wall], new_type="wall"
-                )
+                # Change BC-type
+                # settings api command
+                # solver.setup.boundary_conditions.change_type(
+                #    zone_list=[key_wall], new_type="wall"
+                # )
+                # tui command
+                solver.tui.define.boundary_conditions.zone_type(key_wall, "wall")
 
         # Interfaces
         elif key == "bz_interfaces_general_names":
@@ -1070,9 +1086,15 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
                 logger.info(f"Setting up general interface: {key_if}")
                 side1 = keyEl[key_if].get("side1")
                 side2 = keyEl[key_if].get("side2")
-                solver.setup.boundary_conditions.change_type(
-                    zone_list=[side1, side2], new_type="interface"
-                )
+                # Change BC-type
+                # settings api command
+                # solver.setup.boundary_conditions.change_type(
+                #    zone_list=[side1, side2], new_type="interface"
+                # )
+                # tui command
+                solver.tui.define.boundary_conditions.zone_type(side1, "interface")
+                solver.tui.define.boundary_conditions.zone_type(side2, "interface")
+                # Create Interface
                 # solver.tui.define.mesh_interfaces.create(key_if, side1, '()', side2,'()', 'no', 'no', 'no', 'yes', 'no')
                 solver.tui.define.turbo_model.turbo_create(
                     key_if, side1, "()", side2, "()", "3"
@@ -1085,9 +1107,15 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
             logger.info(f"Setting up mixing plane interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
-            solver.setup.boundary_conditions.change_type(
-                zone_list=[side1, side2], new_type="interface"
-            )
+            # Change BC-type
+            # settings api command
+            # solver.setup.boundary_conditions.change_type(
+            #    zone_list=[side1, side2], new_type="interface"
+            # )
+            # tui command
+            solver.tui.define.boundary_conditions.zone_type(side1, "interface")
+            solver.tui.define.boundary_conditions.zone_type(side2, "interface")
+            # Create Interface
             solver.tui.define.turbo_model.turbo_create(
                 key_if, side1, "()", side2, "()", "2"
             )
@@ -1109,9 +1137,15 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
             logger.info(f"Setting up pitch-scale interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
-            solver.setup.boundary_conditions.change_type(
-                zone_list=[side1, side2], new_type="interface"
-            )
+            # Change BC-type
+            # settings api command
+            # solver.setup.boundary_conditions.change_type(
+            #    zone_list=[side1, side2], new_type="interface"
+            # )
+            # tui command
+            solver.tui.define.boundary_conditions.zone_type(side1, "interface")
+            solver.tui.define.boundary_conditions.zone_type(side2, "interface")
+            # Create Interface
             solver.tui.define.turbo_model.turbo_create(
                 key_if, side1, "()", side2, "()", "0"
             )
