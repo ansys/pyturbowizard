@@ -736,7 +736,7 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
                         f"'{key_if}' is a non-conformal periodic interface! "
                         f"Adjusting turbo-topology accordingly"
                     )
-                    # Add the non conformal interface to the list for correct turbo topology definition
+                    # Add the non-conformal interface to the list for correct turbo topology definition
                     non_conformal_list.append(key_if)
 
     # after important steps loop over all keys -> no order important
