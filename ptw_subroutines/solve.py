@@ -56,7 +56,9 @@ def init_standard_01(data, solver):
     solver.solution.initialization.standard_initialize()
 
     availableBCs = dir(solver.tui.solve.initialize.compute_defaults)
+
     if "mass_flow_inlet" in availableBCs:
+        solver.solution.initialization.standard_initialize()
         solver.tui.solve.initialize.compute_defaults.mass_flow_inlet(
             data["locations"]["bz_inlet_names"][0]
         )

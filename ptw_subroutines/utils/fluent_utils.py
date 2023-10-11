@@ -41,3 +41,4 @@ def addExecuteCommand(solver, command_name, command, pythonCommand: bool = False
         solver.tui.solve.execute_commands.add_edit(
             f"{command_name}", "yes", "yes", "no", f'"{command}"'
         )
+

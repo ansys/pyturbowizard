@@ -512,6 +512,8 @@ def boundary_01(data, solver, solveEnergy: bool = True):
             keyEl = data["locations"].get(key)
             for key_r in keyEl:
                 logger.info(f"Prescribing a rotating wall: {key_r}")
+                solver.setup.boundary_conditions.change_type(
+                    zone_list=[key_r], new_type="wall")
                 solver.setup.boundary_conditions.wall[key_r] = {
                     "motion_bc": "Moving Wall",
                     "relative": False,
@@ -521,13 +523,25 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                     "rotation_axis_direction": rot_ax_dir,
                 }
 
+
+
         elif key == "bz_walls_freeslip_names":
             keyEl = data["locations"].get(key)
             for key_free in keyEl:
+                solver.setup.boundary_conditions.change_type(
+                    zone_list=[key_free], new_type="wall")
                 logger.info(f"Prescribing a free slip wall: {key_free}")
                 solver.setup.boundary_conditions.wall[key_free] = {
                     "shear_bc": "Specified Shear"
                 }
+
+        elif key == "bz_walls":
+            keyEl = data["locations"].get(key)
+            for key_wall in keyEl:
+                solver.setup.boundary_conditions.change_type(
+                    zone_list=[key_wall], new_type="wall")
+                logger.info(f"Prescribing a  wall: {key_wall}")
+
 
         # Interfaces
         elif key == "bz_interfaces_general_names":
@@ -537,6 +551,8 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                 logger.info(f"Setting up general interface: {key_if}")
                 side1 = keyEl[key_if].get("side1")
                 side2 = keyEl[key_if].get("side2")
+                solver.setup.boundary_conditions.change_type(
+                    zone_list=[side1,side2], new_type="interface")
                 # solver.tui.define.mesh_interfaces.create(key_if, side1, '()', side2,'()', 'no', 'no', 'no', 'yes', 'no')
                 solver.tui.define.turbo_model.turbo_create(
                     key_if, side1, "()", side2, "()", "3"
@@ -549,6 +565,8 @@ def boundary_01(data, solver, solveEnergy: bool = True):
             logger.info(f"Setting up mixing plane interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
+            solver.setup.boundary_conditions.change_type(
+                zone_list=[side1, side2], new_type="interface")
             solver.tui.define.turbo_model.turbo_create(
                 key_if, side1, "()", side2, "()", "2"
             )
@@ -558,15 +576,20 @@ def boundary_01(data, solver, solveEnergy: bool = True):
             logger.info(f"Setting up no pitch-scale interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
+            solver.setup.boundary_conditions.change_type(
+                zone_list=[side1, side2], new_type="interface")
             solver.tui.define.turbo_model.turbo_create(
                 key_if, side1, "()", side2, "()", "1"
             )
     keyEl = data["locations"].get("bz_interfaces_pitchscale_names")
     if keyEl is not None:
         for key_if in keyEl:
+
             logger.info(f"Setting up pitch-scale interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
+            solver.setup.boundary_conditions.change_type(
+                zone_list=[side1, side2], new_type="interface")
             solver.tui.define.turbo_model.turbo_create(
                 key_if, side1, "()", side2, "()", "0"
             )
