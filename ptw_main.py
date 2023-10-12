@@ -24,7 +24,7 @@ from ptw_subroutines.utils import (
     misc_utils,
 )
 
-ptw_version = "1.6.6"
+ptw_version = "1.6.7"
 
 # Set Logger
 logger = ptw_logger.init_logger()
@@ -44,7 +44,7 @@ class PTW_Run:
     fl_workingDir: str = ""
 
     # dicts
-    turbo_data: dict
+    turbo_data: dict = None
     turbo_data_from_file: dict
     launch_data: dict
     gl_function_data: dict
@@ -104,6 +104,9 @@ class PTW_Run:
     def ini_fluent_settings(self):
         solver = self.solver
         if solver is None:
+            logger.warning(
+                f"No Fluent solver specified... Skipping PTW_Run-function 'ini_fluent_settings'!"
+            )
             return
 
         logger.info(f"Initializing Fluent settings")
@@ -130,6 +133,14 @@ class PTW_Run:
         # Get Data from Class
         solver = self.solver
         if solver is None:
+            logger.warning(
+                f"No Fluent solver specified... Skipping PTW_Run-function 'do_case_study'!"
+            )
+            return
+        if self.turbo_data is None:
+            logger.warning(
+                f"No Turbo-Dict loaded... Skipping PTW_Run-function 'do_case_study'!"
+            )
             return
 
         logger.info(f"Running Case Study")
@@ -307,6 +318,14 @@ class PTW_Run:
         # Get Data from Class
         solver = self.solver
         if solver is None:
+            logger.warning(
+                f"No Fluent solver specified... Skipping PTW_Run-function 'do_parametric_study'!"
+            )
+            return
+        if self.turbo_data is None:
+            logger.warning(
+                f"No Turbo-Dict loaded... Skipping PTW_Run-function 'do_parametric_study'!"
+            )
             return
 
         logger.info(f"Running Parametric Study")
@@ -330,6 +349,14 @@ class PTW_Run:
         # Get Data from Class
         solver = self.solver
         if solver is None:
+            logger.warning(
+                f"No Fluent solver specified... Skipping PTW_Run-function 'finalize_session'!"
+            )
+            return
+        if self.turbo_data is None:
+            logger.warning(
+                f"No Turbo-Dict loaded... Skipping PTW_Run-function 'finalize_session'!"
+            )
             return
 
         logger.info(f"Finalizing Fluent-Session")
