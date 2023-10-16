@@ -396,10 +396,20 @@ class PTW_Run:
 
         logger.info(f"Finalizing Fluent-Session... done!")
 
+    def do_full_run(self, script_path, config_filename, solver):
+        logger.info(f"*** Starting PyTurboWizard (Version {ptw_version}) ***")
+        # Start ptw_run
+        self.load_config_file(script_path=script_path, config_filename=config_filename)
+        self.launch_fluent(solver=solver)
+        self.ini_fluent_settings()
+        self.do_case_study()
+        self.do_parametric_study()
+        self.finalize_session()
+        logger.info("PTW-Script successfully finished!")
+        return
+
 
 def ptw_main():
-    logger.info(f"*** Starting PyTurboWizard (Version {ptw_version}) ***")
-
     # Get data from arguments
     # Get script_path (needed to get template-dir)
     script_path = os.path.dirname(sys.argv[0])
@@ -408,21 +418,14 @@ def ptw_main():
     if len(sys.argv) > 1:
         config_filename = sys.argv[1]
     config_filename = os.path.normpath(config_filename)
-
-    # Start ptw_run
     ptw_run = PTW_Run()
-    ptw_run.load_config_file(script_path=script_path, config_filename=config_filename)
     # Launch fluent
-    if "solver" not in globals():
-        solver = ptw_run.launch_fluent()
-    ptw_run.solver = solver
-    ptw_run.ini_fluent_settings()
-    ptw_run.do_case_study()
-    ptw_run.do_parametric_study()
-    ptw_run.finalize_session()
-
-    logger.info("PTW-Script successfully finished!")
-    return
+    solver_session = None
+    if "solver" in globals():
+        solver_session = globals()["solver"]
+    ptw_run.do_full_run(
+        script_path=script_path, config_filename=config_filename, solver=solver_session
+    )
 
 
 if __name__ == "__main__":
