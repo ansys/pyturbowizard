@@ -228,9 +228,18 @@ def boundary_01(data, solver, solveEnergy: bool = True):
             else:
                 # As the origin & axis have been set for all cell-zones these are the defaults for all containing boundary zones
                 # Therefore, we do not need to set them -> "no", "no"
-                solver.tui.mesh.modify_zones.create_periodic_interface(
-                    "auto", key_if, side1, side2, "yes", "no", "no", "yes", "yes"
-                )
+                try:
+                    solver.tui.mesh.modify_zones.create_periodic_interface(
+                        "auto", key_if, side1, side2, "yes", "no", "no", "yes", "yes"
+                    )
+                except Exception as e:
+                    # if auto detection of periodic angle does not work, it gets calculated from input value for number of rot passages              
+                    if str(e.args) == "('+ (add): invalid argument [1]: wrong type [not a number]\\nError Object: #f',)":
+                        per_angle = 360 / int(data["expressions"].get("GEO_ROT_No_Passages_360"))
+                        solver.tui.mesh.modify_zones.create_periodic_interface(
+                        "auto", key_if, side1, side2, "yes", "no", "no", "yes", per_angle, "yes"
+                        )
+
                 # check for non-conformal periodics (fluent creates normal interfaces if non-conformal)
                 intf_check_side1 = solver.setup.boundary_conditions.interface.get(side1)
                 intf_check_side2 = solver.setup.boundary_conditions.interface.get(side2)
