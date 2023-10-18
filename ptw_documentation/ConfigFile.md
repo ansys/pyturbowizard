@@ -13,9 +13,12 @@ Under the section ``` launching ```, different options for launching options for
 - ```"workingDir"``` specifies the Fluent working directory, if ```workingDir``` is not set, the script will use the directory of the configuration file as fluent working directory
 - ```"fl_version"``` specifies version of Fluent (supported versions: ```"23.2.0","24.1.0"```)
 - ```"noCore"``` specifies the number of cores/processes for the Fluent session
-- ```"precision"``` can be ```"double"``` or ```"single"``` precision solver
-- ```"show_gui"```  specifies whether a GUI should be shown or not during simulation
-- ```"exitatend"``` is used to specify whether the Fluent session should be closed after the script is finished
+- ```"precision"``` specifies solver-precision (**default: true**): 
+  - ```true```: double-precision 
+  - ```false```: single-precision 
+- ```"show_gui"```  specifies whether a GUI should be shown or not during simulation (**default: true**)
+- ```"py"```  enables python-console (**default: false**)
+- ```"exitatend"``` is used to specify whether the Fluent session should be closed after the script is finished (**default: true**)
 - ```"ptw_cleanup"``` (**default: false**): 
   - If enabled (```"ptw_cleanup": true```) following files are removed from the ```"workingDir"``` after exiting the fluent session: 
     - 'fluent\*.trn'
