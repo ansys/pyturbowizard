@@ -24,7 +24,6 @@ from ptw_subroutines.utils import (
     misc_utils,
 )
 
-
 ptw_version = "1.6.7"
 
 # Set Logger
