@@ -76,9 +76,9 @@ def launchFluent(launchEl: dict):
                 + "sec). Aborting script..."
             )
         # Start Session via hook
-        solver = pyfluent.launch_fluent(
-            start_instance=False,
-            server_info_filepath=fullpath_to_sf,
+        solver = hook_to_existing_session(
+            fl_workingDir=fl_workingDir,
+            serverfilename=serverfilename,
             cleanup_on_exit=launchEl["exitatend"],
         )
     # If no serverFilename is specified, a new session will be started
@@ -95,13 +95,35 @@ def launchFluent(launchEl: dict):
         )
     # Hook to existing Session
     else:
-        fullpath_to_sf = os.path.join(fl_workingDir, serverfilename)
-        logger.info("Connecting to Fluent Session...")
+        solver = hook_to_existing_session(
+            fl_workingDir=fl_workingDir,
+            serverfilename=serverfilename,
+            cleanup_on_exit=launchEl["exitatend"],
+        )
+    return solver
+
+
+def hook_to_existing_session(
+    fl_workingDir: str, serverfilename: str, cleanup_on_exit: bool
+):
+    import ansys.fluent.core as pyfluent
+    from packaging import version
+
+    fullpath_to_sf = os.path.join(fl_workingDir, serverfilename)
+    logger.info("Connecting to Fluent Session...")
+    # Start Session via hook
+    if version.parse(pyfluent.__version__) <= version.parse("0.17"):
         solver = pyfluent.launch_fluent(
             start_instance=False,
             server_info_filepath=fullpath_to_sf,
-            cleanup_on_exit=launchEl["exitatend"],
+            cleanup_on_exit=cleanup_on_exit,
         )
+    else:
+        solver = pyfluent.connect_to_fluent(
+            server_info_filepath=fullpath_to_sf,
+            cleanup_on_exit=cleanup_on_exit,
+        )
+
     return solver
 
 

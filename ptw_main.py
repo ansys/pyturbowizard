@@ -24,7 +24,7 @@ from ptw_subroutines.utils import (
     misc_utils,
 )
 
-ptw_version = "1.6.7"
+ptw_version = "1.6.8"
 
 # Set Logger
 logger = ptw_logger.init_logger()
@@ -45,9 +45,9 @@ class PTW_Run:
 
     # dicts
     turbo_data: dict = None
-    turbo_data_from_file: dict
-    launch_data: dict
-    gl_function_data: dict
+    turbo_data_from_file: dict = None
+    launch_data: dict = None
+    gl_function_data: dict = None
 
     solver: pyfluent.session_solver.Solver = None
 
