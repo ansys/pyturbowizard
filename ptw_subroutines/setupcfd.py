@@ -264,13 +264,13 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                 if data["expressions"].get("BC_IN_MassFlow") is not None:
                     logger.info(f"Prescribing a Massflow-Inlet BC @{inletName}")
                     # settings api command
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[inletName], new_type="mass-flow-inlet"
-                    # )
-                    # tui command
-                    solver.tui.define.boundary_conditions.zone_type(
-                        inletName, "mass-flow-inlet"
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[inletName], new_type="mass-flow-inlet"
                     )
+                    # tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    inletName, "mass-flow-inlet"
+                    # )
                     inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
                     inBC.flow_spec = "Mass Flow Rate"
                     inBC.mass_flow = "BC_IN_MassFlow"
@@ -285,13 +285,13 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                 ):
                     logger.info(f"Prescribing a Volumeflow-Inlet BC @{inletName}")
                     # settings api command
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[inletName], new_type="mass-flow-inlet"
-                    # )
-                    # tui command
-                    solver.tui.define.boundary_conditions.zone_type(
-                        inletName, "mass-flow-inlet"
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[inletName], new_type="mass-flow-inlet"
                     )
+                    # tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    inletName, "mass-flow-inlet"
+                    # )
                     inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
                     inBC.flow_spec = "Mass Flow Rate"
                     inBC.mass_flow = "BC_IN_VolumeFlow*BC_IN_VolumeFlowDensity"
@@ -302,13 +302,13 @@ def boundary_01(data, solver, solveEnergy: bool = True):
 
                 elif data["expressions"].get("BC_IN_pt") is not None:
                     # settings api command
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[inletName], new_type="pressure-inlet"
-                    # )
-                    # tui command
-                    solver.tui.define.boundary_conditions.zone_type(
-                        inletName, "pressure-inlet"
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[inletName], new_type="pressure-inlet"
                     )
+                    # tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    inletName, "pressure-inlet"
+                    # )
                     inBC = solver.setup.boundary_conditions.pressure_inlet[inletName]
                     if useProfileData:
                         # check profile naming convention:
@@ -398,13 +398,13 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                         f"Prescribing a Exit-Corrected Massflow-Outlet BC @{outletName}"
                     )
                     # settings api command
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[outletName], new_type="mass-flow-outlet"
-                    # )
-                    # tui command
-                    solver.tui.define.boundary_conditions.zone_type(
-                        outletName, "mass-flow-outlet"
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[outletName], new_type="mass-flow-outlet"
                     )
+                    # tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    outletName, "mass-flow-outlet"
+                    # )
 
                     outBC = solver.setup.boundary_conditions.mass_flow_outlet[
                         outletName
@@ -423,13 +423,13 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                 elif data["expressions"].get("BC_OUT_MassFlow") is not None:
                     logger.info(f"Prescribing a Massflow-Outlet BC @{outletName}")
                     # settings api command
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[outletName], new_type="mass-flow-outlet"
-                    # )
-                    # tui command
-                    solver.tui.define.boundary_conditions.zone_type(
-                        outletName, "mass-flow-outlet"
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[outletName], new_type="mass-flow-outlet"
                     )
+                    # tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    outletName, "mass-flow-outlet"
+                    # )
                     outBC = solver.setup.boundary_conditions.mass_flow_outlet[
                         outletName
                     ]
@@ -442,13 +442,13 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                 ):
                     logger.info(f"Prescribing a VolumeFlow-Outlet BC @{outletName}")
                     # settings api command
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[outletName], new_type="mass-flow-outlet"
-                    # )
-                    # tui command
-                    solver.tui.define.boundary_conditions.zone_type(
-                        outletName, "mass-flow-outlet"
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[outletName], new_type="mass-flow-outlet"
                     )
+                    # tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    outletName, "mass-flow-outlet"
+                    # )
 
                     outBC = solver.setup.boundary_conditions.mass_flow_outlet[
                         outletName
@@ -459,13 +459,13 @@ def boundary_01(data, solver, solveEnergy: bool = True):
                 elif data["expressions"].get("BC_OUT_p") is not None:
                     logger.info(f"Prescribing a Pressure-Outlet BC @{outletName}")
                     # settings api command
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[outletName], new_type="pressure-outlet"
-                    # )
-                    # tui command
-                    solver.tui.define.boundary_conditions.zone_type(
-                        outletName, "pressure-outlet"
+                    solver.setup.boundary_conditions.change_type(
+                        zone_list=[outletName], new_type="pressure-outlet"
                     )
+                    # tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    outletName, "pressure-outlet"
+                    # )
                     outBC = solver.setup.boundary_conditions.pressure_outlet[outletName]
                     # Check Profile data exists
                     profileName = data.get("profileName_Out")
@@ -755,7 +755,7 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
                         f"'{key_if}' is a non-conformal periodic interface! "
                         f"Adjusting turbo-topology accordingly"
                     )
-                    # Add the non conformal interface to the list for correct turbo topology definition
+                    # Add the non-conformal interface to the list for correct turbo topology definition
                     non_conformal_list.append(key_if)
 
     # after important steps loop over all keys -> no order important
@@ -770,13 +770,13 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
                 if data["expressions"].get("BC_IN_MassFlow") is not None:
                     logger.info(f"Prescribing a Massflow-Inlet BC @{inletName}")
                     # settings api command
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[inletName], new_type="mass-flow-inlet"
-                    # )
-                    # tui command
-                    solver.tui.define.boundary_conditions.zone_type(
-                        inletName, "mass-flow-inlet"
+                    solver.setup.boundary_conditions.set_zone_type(
+                        zone_list=[inletName], new_type="mass-flow-inlet"
                     )
+                    # tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    inletName, "mass-flow-inlet"
+                    # )
                     inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
                     inBC.momentum.flow_spec = "Mass Flow Rate"
                     inBC.momentum.mass_flow = "BC_IN_MassFlow"
@@ -791,13 +791,13 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
                 ):
                     logger.info(f"Prescribing a Volumeflow-Inlet BC @{inletName}")
                     # settings api command
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[inletName], new_type="mass-flow-inlet"
-                    # )
-                    # tui command
-                    solver.tui.define.boundary_conditions.zone_type(
-                        inletName, "mass-flow-inlet"
+                    solver.setup.boundary_conditions.set_zone_type(
+                        zone_list=[inletName], new_type="mass-flow-inlet"
                     )
+                    # tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    inletName, "mass-flow-inlet"
+                    # )
                     inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
                     inBC.momentum.flow_spec = "Mass Flow Rate"
                     inBC.momentum.mass_flow = "BC_IN_VolumeFlow*BC_IN_VolumeFlowDensity"
@@ -808,13 +808,13 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
 
                 elif data["expressions"].get("BC_IN_pt") is not None:
                     # settings api command
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[inletName], new_type="pressure-inlet"
-                    # )
-                    # tui command
-                    solver.tui.define.boundary_conditions.zone_type(
-                        inletName, "pressure-inlet"
+                    solver.setup.boundary_conditions.set_zone_type(
+                        zone_list=[inletName], new_type="pressure-inlet"
                     )
+                    # tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    inletName, "pressure-inlet"
+                    # )
                     inBC = solver.setup.boundary_conditions.pressure_inlet[inletName]
                     if useProfileData:
                         # check profile naming convention:
@@ -914,13 +914,13 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
                         f"Prescribing a Exit-Corrected Massflow-Outlet BC @{outletName}"
                     )
                     # settings api command
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[outletName], new_type="mass-flow-outlet"
-                    # )
-                    # tui command
-                    solver.tui.define.boundary_conditions.zone_type(
-                        outletName, "mass-flow-outlet"
+                    solver.setup.boundary_conditions.set_zone_type(
+                        zone_list=[outletName], new_type="mass-flow-outlet"
                     )
+                    # tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    outletName, "mass-flow-outlet"
+                    # )
 
                     outBC = solver.setup.boundary_conditions.mass_flow_outlet[
                         outletName
@@ -943,13 +943,13 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
                 elif data["expressions"].get("BC_OUT_MassFlow") is not None:
                     logger.info(f"Prescribing a Massflow-Outlet BC @{outletName}")
                     # settings api command
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[outletName], new_type="mass-flow-outlet"
-                    # )
-                    # tui command
-                    solver.tui.define.boundary_conditions.zone_type(
-                        outletName, "mass-flow-outlet"
+                    solver.setup.boundary_conditions.set_zone_type(
+                        zone_list=[outletName], new_type="mass-flow-outlet"
                     )
+                    # tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    outletName, "mass-flow-outlet"
+                    # )
                     outBC = solver.setup.boundary_conditions.mass_flow_outlet[
                         outletName
                     ]
@@ -962,13 +962,13 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
                 ):
                     logger.info(f"Prescribing a VolumeFlow-Outlet BC @{outletName}")
                     # settings api command
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[outletName], new_type="mass-flow-outlet"
-                    # )
-                    # tui command
-                    solver.tui.define.boundary_conditions.zone_type(
-                        outletName, "mass-flow-outlet"
+                    solver.setup.boundary_conditions.set_zone_type(
+                        zone_list=[outletName], new_type="mass-flow-outlet"
                     )
+                    # tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    outletName, "mass-flow-outlet"
+                    # )
 
                     outBC = solver.setup.boundary_conditions.mass_flow_outlet[
                         outletName
@@ -981,13 +981,13 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
                 elif data["expressions"].get("BC_OUT_p") is not None:
                     logger.info(f"Prescribing a Pressure-Outlet BC @{outletName}")
                     # settings api command
-                    # solver.setup.boundary_conditions.change_type(
-                    #    zone_list=[outletName], new_type="pressure-outlet"
-                    # )
-                    # tui command
-                    solver.tui.define.boundary_conditions.zone_type(
-                        outletName, "pressure-outlet"
+                    solver.setup.boundary_conditions.set_zone_type(
+                        zone_list=[outletName], new_type="pressure-outlet"
                     )
+                    # tui command
+                    # solver.tui.define.boundary_conditions.zone_type(
+                    #    outletName, "pressure-outlet"
+                    # )
                     outBC = solver.setup.boundary_conditions.pressure_outlet[outletName]
                     # Check Profile data exists
                     profileName = data.get("profileName_Out")
@@ -1035,9 +1035,13 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
             keyEl = data["locations"].get(key)
             for key_cr in keyEl:
                 logger.info(f"Prescribing a counter-rotating wall: {key_cr}")
-                solver.setup.boundary_conditions.change_type(
+                # Change BC-type
+                # settings api command
+                solver.setup.boundary_conditions.set_zone_type(
                     zone_list=[key_cr], new_type="wall"
                 )
+                # tui command
+                # solver.tui.define.boundary_conditions.zone_type(key_cr, "wall")
                 solver.setup.boundary_conditions.wall[key_cr].momentum = {
                     "motion_bc": "Moving Wall",
                     "relative": False,
@@ -1050,9 +1054,13 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
             keyEl = data["locations"].get(key)
             for key_r in keyEl:
                 logger.info(f"Prescribing a rotating wall: {key_r}")
-                solver.setup.boundary_conditions.change_type(
+                # Change BC-type
+                # settings api command
+                solver.setup.boundary_conditions.set_zone_type(
                     zone_list=[key_r], new_type="wall"
                 )
+                # tui command
+                # solver.tui.define.boundary_conditions.zone_type(key_r, "wall")
                 solver.setup.boundary_conditions.wall[key_r].momentum = {
                     "motion_bc": "Moving Wall",
                     "relative": False,
@@ -1066,9 +1074,13 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
             keyEl = data["locations"].get(key)
             for key_free in keyEl:
                 logger.info(f"Prescribing a free slip wall: {key_free}")
-                solver.setup.boundary_conditions.change_type(
+                # Change BC-type
+                # settings api command
+                solver.setup.boundary_conditions.set_zone_type(
                     zone_list=[key_free], new_type="wall"
                 )
+                # tui command
+                # solver.tui.define.boundary_conditions.zone_type(key_free, "wall")
                 solver.setup.boundary_conditions.wall[key_free].momentum = {
                     "shear_bc": "Specified Shear"
                 }
@@ -1077,9 +1089,13 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
             keyEl = data["locations"].get(key)
             for key_wall in keyEl:
                 logger.info(f"Prescribing a wall: {key_wall}")
-                solver.setup.boundary_conditions.change_type(
+                # Change BC-type
+                # settings api command
+                solver.setup.boundary_conditions.set_zone_type(
                     zone_list=[key_wall], new_type="wall"
                 )
+                # tui command
+                # solver.tui.define.boundary_conditions.zone_type(key_wall, "wall")
 
         # Interfaces
         elif key == "bz_interfaces_general_names":
@@ -1089,9 +1105,15 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
                 logger.info(f"Setting up general interface: {key_if}")
                 side1 = keyEl[key_if].get("side1")
                 side2 = keyEl[key_if].get("side2")
-                solver.setup.boundary_conditions.change_type(
+                # Change BC-type
+                # settings api command
+                solver.setup.boundary_conditions.set_zone_type(
                     zone_list=[side1, side2], new_type="interface"
                 )
+                # tui command
+                # solver.tui.define.boundary_conditions.zone_type(side1, "interface")
+                # solver.tui.define.boundary_conditions.zone_type(side2, "interface")
+                # Create Interface
                 # solver.tui.define.mesh_interfaces.create(key_if, side1, '()', side2,'()', 'no', 'no', 'no', 'yes', 'no')
                 solver.tui.define.turbo_model.turbo_create(
                     key_if, side1, "()", side2, "()", "3"
@@ -1104,9 +1126,15 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
             logger.info(f"Setting up mixing plane interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
-            solver.setup.boundary_conditions.change_type(
+            # Change BC-type
+            # settings api command
+            solver.setup.boundary_conditions.set_zone_type(
                 zone_list=[side1, side2], new_type="interface"
             )
+            # tui command
+            # solver.tui.define.boundary_conditions.zone_type(side1, "interface")
+            # solver.tui.define.boundary_conditions.zone_type(side2, "interface")
+            # Create Interface
             solver.tui.define.turbo_model.turbo_create(
                 key_if, side1, "()", side2, "()", "2"
             )
@@ -1116,9 +1144,15 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
             logger.info(f"Setting up no pitch-scale interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
-            solver.setup.boundary_conditions.change_type(
+            # Change BC-type
+            # settings api command
+            solver.setup.boundary_conditions.set_zone_type(
                 zone_list=[side1, side2], new_type="interface"
             )
+            # tui command
+            # solver.tui.define.boundary_conditions.zone_type(side1, "interface")
+            # solver.tui.define.boundary_conditions.zone_type(side2, "interface")
+            # Create Interface
             solver.tui.define.turbo_model.turbo_create(
                 key_if, side1, "()", side2, "()", "1"
             )
@@ -1128,9 +1162,15 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
             logger.info(f"Setting up pitch-scale interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
-            solver.setup.boundary_conditions.change_type(
+            # Change BC-type
+            # settings api command
+            solver.setup.boundary_conditions.set_zone_type(
                 zone_list=[side1, side2], new_type="interface"
             )
+            # tui command
+            # solver.tui.define.boundary_conditions.zone_type(side1, "interface")
+            # solver.tui.define.boundary_conditions.zone_type(side2, "interface")
+            # Create Interface
             solver.tui.define.turbo_model.turbo_create(
                 key_if, side1, "()", side2, "()", "0"
             )

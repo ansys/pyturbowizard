@@ -24,7 +24,7 @@ from ptw_subroutines.utils import (
     misc_utils,
 )
 
-ptw_version = "1.6.5"
+ptw_version = "1.6.8"
 
 # Set Logger
 logger = ptw_logger.init_logger()
@@ -44,10 +44,10 @@ class PTW_Run:
     fl_workingDir: str = ""
 
     # dicts
-    turbo_data: dict
-    turbo_data_from_file: dict
-    launch_data: dict
-    gl_function_data: dict
+    turbo_data: dict = None
+    turbo_data_from_file: dict = None
+    launch_data: dict = None
+    gl_function_data: dict = None
 
     solver: pyfluent.session_solver.Solver = None
 
@@ -104,6 +104,9 @@ class PTW_Run:
     def ini_fluent_settings(self):
         solver = self.solver
         if solver is None:
+            logger.warning(
+                f"No Fluent solver specified... Skipping PTW_Run-function 'ini_fluent_settings'!"
+            )
             return
 
         logger.info(f"Initializing Fluent settings")
@@ -130,6 +133,14 @@ class PTW_Run:
         # Get Data from Class
         solver = self.solver
         if solver is None:
+            logger.warning(
+                f"No Fluent solver specified... Skipping PTW_Run-function 'do_case_study'!"
+            )
+            return
+        if self.turbo_data is None:
+            logger.warning(
+                f"No Turbo-Dict loaded... Skipping PTW_Run-function 'do_case_study'!"
+            )
             return
 
         logger.info(f"Running Case Study")
@@ -307,6 +318,14 @@ class PTW_Run:
         # Get Data from Class
         solver = self.solver
         if solver is None:
+            logger.warning(
+                f"No Fluent solver specified... Skipping PTW_Run-function 'do_parametric_study'!"
+            )
+            return
+        if self.turbo_data is None:
+            logger.warning(
+                f"No Turbo-Dict loaded... Skipping PTW_Run-function 'do_parametric_study'!"
+            )
             return
 
         logger.info(f"Running Parametric Study")
@@ -330,6 +349,14 @@ class PTW_Run:
         # Get Data from Class
         solver = self.solver
         if solver is None:
+            logger.warning(
+                f"No Fluent solver specified... Skipping PTW_Run-function 'finalize_session'!"
+            )
+            return
+        if self.turbo_data is None:
+            logger.warning(
+                f"No Turbo-Dict loaded... Skipping PTW_Run-function 'finalize_session'!"
+            )
             return
 
         logger.info(f"Finalizing Fluent-Session")
@@ -369,10 +396,20 @@ class PTW_Run:
 
         logger.info(f"Finalizing Fluent-Session... done!")
 
+    def do_full_run(self, script_path, config_filename, solver):
+        logger.info(f"*** Starting PyTurboWizard (Version {ptw_version}) ***")
+        # Start ptw_run
+        self.load_config_file(script_path=script_path, config_filename=config_filename)
+        self.launch_fluent(solver=solver)
+        self.ini_fluent_settings()
+        self.do_case_study()
+        self.do_parametric_study()
+        self.finalize_session()
+        logger.info("PTW-Script successfully finished!")
+        return
+
 
 def ptw_main():
-    logger.info(f"*** Starting PyTurboWizard (Version {ptw_version}) ***")
-
     # Get data from arguments
     # Get script_path (needed to get template-dir)
     script_path = os.path.dirname(sys.argv[0])
@@ -381,21 +418,14 @@ def ptw_main():
     if len(sys.argv) > 1:
         config_filename = sys.argv[1]
     config_filename = os.path.normpath(config_filename)
-
-    # Start ptw_run
     ptw_run = PTW_Run()
-    ptw_run.load_config_file(script_path=script_path, config_filename=config_filename)
     # Launch fluent
-    if "solver" not in globals():
-        solver = ptw_run.launch_fluent()
-    ptw_run.solver = solver
-    ptw_run.ini_fluent_settings()
-    ptw_run.do_case_study()
-    ptw_run.do_parametric_study()
-    ptw_run.finalize_session()
-
-    logger.info("PTW-Script successfully finished!")
-    return
+    solver_session = None
+    if "solver" in globals():
+        solver_session = globals()["solver"]
+    ptw_run.do_full_run(
+        script_path=script_path, config_filename=config_filename, solver=solver_session
+    )
 
 
 if __name__ == "__main__":
