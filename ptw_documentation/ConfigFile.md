@@ -462,8 +462,11 @@ If there are no subelements defined, Fluent defaults will be used.
 
 Available options:
 
-- ```BC_settings_pout```: pressure-outlet BC-settings: 'Pressure blending factor' & 'Number of bins' (defined as list),
-  e.g. ```[0.05, 65]```
+- Special settings for pressure-outlet-BCs:  
+  - ```BC_settings_pout_blendf```: Prescribe the 'Pressure blending factor',e.g. ```0.05```
+  - ```BC_settings_pout_bins```: Prescribe the 'Number of bins',e.g. ```65 ```
+  - **Note For older Fluent versions (R23.1 & R23.2):** Use ```BC_settings_pout``` as keyword to prescribe 'Pressure blending factor' & 'Number of bins' as list,
+    e.g. ```[0.05, 65]```
 - ```BC_IN_reverse```: Prevent Reverse Flow for Pressure-Inlet BCs (**default: false**)
 - ```BC_OUT_reverse```: Prevent Reverse Flow for Pressure-Outlet BCs (**default: true**)
 - ```BC_OUT_avg_p```: Use average pressure specification for Pressure-Outlet BCs (**default: true**)
