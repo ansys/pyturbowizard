@@ -35,8 +35,7 @@ def prepost(data, solver, functionEl, launchEl):
 def prepost_01(data, solver, launchEl):
     fl_WorkingDir = launchEl.get("workingDir")
     # Check version -> for version 24.1 use python command
-    use_python_command = False
-    #use_python_command = solver.version >= "24.1.0"
+    use_python_command = solver.version >= "24.1.0"
 
     # Set output for time statistics in transcript
     command_name = "print-time-statistics"
