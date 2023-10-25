@@ -24,6 +24,7 @@ version, number of processes and single or double precision solver.
     - ```false```: single-precision
 - ```"show_gui"```  specifies whether a GUI should be shown or not during simulation (**default: true**)
 - ```"py"```  enables python-console (**default: false**)
+- ```"gpu"```  enables gpu-solver -> check current model limitations (**default: false**)
 - ```"exitatend"``` is used to specify whether the Fluent session should be closed after the script is finished (*
   *default: true**)
 - ```"ptw_cleanup"``` (**default: false**):
