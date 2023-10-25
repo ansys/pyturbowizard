@@ -1002,11 +1002,26 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
                         # )
 
                     # Set additional pressure-outlet-bc settings if available in config file
+                    blending_factor = data["setup"].get("BC_settings_pout_blendf")
+                    if blending_factor:
+                        solver.tui.define.boundary_conditions.bc_settings.pressure_outlet(
+                            blending_factor=blending_factor
+                        )
+                    bin_count = data["setup"].get("BC_settings_pout_bins")
+                    if bin_count:
+                        solver.tui.define.boundary_conditions.bc_settings.pressure_outlet(
+                            bin_count=bin_count
+                        )
+                    # using old keyword "BC_settings_pout" -> list
                     pout_settings = data["setup"].get("BC_settings_pout")
                     if (type(pout_settings) is list) and (len(pout_settings) > 1):
                         solver.tui.define.boundary_conditions.bc_settings.pressure_outlet(
-                            pout_settings[0], pout_settings[1]
+                            blending_factor=pout_settings[0], bin_count=pout_settings[1]
                         )
+                        data["setup"]["BC_settings_pout_blendf"] = pout_settings[0]
+                        data["setup"]["BC_settings_pout_bins"] = pout_settings[1]
+                        # remove from dataset as we use new keywords
+                        data["setup"].pop("BC_settings_pout")
 
             # Walls
         # elif key == "bz_walls_shroud_names":
