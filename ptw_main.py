@@ -217,7 +217,7 @@ class PTW_Run:
 
                 # Case Setup
                 setupcfd.setup(data=caseEl, solver=solver, functionEl=caseFunctionEl)
-                setupcfd.report_01(caseEl, solver, launchEl)
+                setupcfd.set_reports(caseEl, solver, launchEl)
 
                 # Solution
                 # Set Solver Settings
