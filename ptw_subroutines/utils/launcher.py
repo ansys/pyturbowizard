@@ -50,6 +50,7 @@ def launchFluent(launchEl: dict):
             "-scheduler_queue=%s" % (launchEl["queue_slurm"]),
             "-sifile=%s" % (serverfilename),
             "-py" if launchEl["py"] else "",
+            "-gpu" if launchEl["gpu"] else "",
         ]
         if not launchEl["show_gui"]:
             batch_arguments.extend(["-gu", "-driver dx11"])
@@ -92,6 +93,7 @@ def launchFluent(launchEl: dict):
             cwd=fl_workingDir,
             cleanup_on_exit=launchEl["exitatend"],
             py=launchEl["py"],
+            gpu=launchEl["gpu"],
         )
     # Hook to existing Session
     else:
@@ -133,3 +135,4 @@ def get_launcher_defaults(launchEl: dict):
     launchEl.setdefault("show_gui", True)
     launchEl.setdefault("precision", True)
     launchEl.setdefault("py", False)
+    launchEl.setdefault("gpu", False)
