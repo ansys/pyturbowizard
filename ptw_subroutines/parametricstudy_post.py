@@ -333,7 +333,7 @@ def study_post_01(data, solver):
                     # Create Plot with volume flow
                     plt.figure()
                     figure_plot = postproc_utils.plot_figure(
-                        MP_VolumeFlow, y_values, "volume flow", colors, cov_criterion
+                        MP_VolumeFlow, y_values, "volume flow", column, colors, cov_criterion
                     )
 
                     plot_filename = os.path.join(
