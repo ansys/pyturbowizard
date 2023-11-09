@@ -92,47 +92,6 @@ def cleanup_input_expressions(availableKeyEl: dict, fileData: str):
                 cleanfiledata = cleanfiledata + "\n" + line
             else:
                 continue
-
-        elif line.startswith('"fl_density'):
-            if availableKeyEl.get("fl_density") is not None:
-                insert_index = line.find('}') + 1
-                line_str = line[:insert_index] + ' [kg/m^3]' + line[insert_index:]
-                cleanfiledata = cleanfiledata + "\n" + line_str
-            else:
-                continue
-
-        elif line.startswith('"fl_specific_heat'):
-            if availableKeyEl.get("fl_specific_heat") is not None:
-                insert_index = line.find('}') + 1
-                line_str = line[:insert_index] + ' [J/(kg K)]' + line[insert_index:]
-                cleanfiledata = cleanfiledata + "\n" + line_str
-            else:
-                continue
-
-        elif line.startswith('"fl_thermal_conductivity'):
-            if availableKeyEl.get("fl_thermal_conductivity") is not None:
-                insert_index = line.find('}') + 1
-                line_str = line[:insert_index] + ' [W/(m K)]' + line[insert_index:]
-                cleanfiledata = cleanfiledata + "\n" + line_str
-            else:
-                continue
-
-        elif line.startswith('"fl_viscosity'):
-            if availableKeyEl.get("fl_viscosity") is not None:
-                insert_index = line.find('}') + 1
-                line_str = line[:insert_index] + ' [kg/(m s)]' + line[insert_index:]
-                cleanfiledata = cleanfiledata + "\n" + line_str
-            else:
-                continue
-
-        elif line.startswith('"fl_mol_wight'):
-            if availableKeyEl.get("fl_mol_wight") is not None:
-                insert_index = line.find('}') + 1
-                line_str = line[:insert_index] + ' [kg/kmol]' + line[insert_index:]
-                cleanfiledata = cleanfiledata + "\n" + line_str
-            else:
-                continue
-
         else:
             cleanfiledata = cleanfiledata + "\n" + line
 
