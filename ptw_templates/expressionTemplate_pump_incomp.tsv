@@ -47,4 +47,4 @@ name	definition	description	input-parameter	output-parameter
 "MP_Power_Output"	"(MP_OUT_massFlowAve_pt - MP_IN_massFlowAve_pt) * MP_IN_VolumeFlow_360"	""	#f	#t
 "MP_Pump_Efficiency"	"MP_Power_Output / abs(MP_Power_Torque_360)"	""	#f	#t
 "MP_Head"	"(MP_OUT_massFlowAve_pt - MP_IN_massFlowAve_pt)/abs(FL_Density*BC_Gravity)"	""	#f	#t
-"MP_NPSHi"	"BC_NPSHa - ((Minimum(StaticPressure, {cz_rotating_names}) + BC_pref) - FL_p_vap) / abs(FL_Density * BC_Gravity)"	""	#f	#t
+"MP_NPSHi"	"BC_NPSHa - ((Minimum(StaticPressure, {cz_rotating_names})) - FL_p_vap) / abs(FL_Density * BC_Gravity)"	""	#f	#t
