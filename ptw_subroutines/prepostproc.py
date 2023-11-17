@@ -2,7 +2,6 @@ import os
 
 from ptw_subroutines.utils import (
     ptw_logger,
-    postproc_utils,
     dict_utils,
     fluent_utils,
     misc_utils,
@@ -107,9 +106,14 @@ def spanPlots(data, solver, launchEl):
         spanName = f"span-{int(spanVal*100)}"
         logger.info(f"Creating spanwise ISO-surface: {spanName}")
         solver.results.surfaces.iso_surface[spanName] = {}
-        zones = solver.results.surfaces.iso_surface[spanName].zone.get_attr(
-            "allowed-values"
-        )
+        if solver.version < "24.1.0":
+            zones = solver.results.surfaces.iso_surface[spanName].zone.get_attr(
+                "allowed-values"
+            )
+        else:
+            zones = solver.results.surfaces.iso_surface[spanName].zones.get_attr(
+                "allowed-values"
+            )
         solver.results.surfaces.iso_surface[spanName](
             field="spanwise-coordinate", zone=zones, iso_value=[spanVal]
         )
