@@ -207,6 +207,8 @@ class PTW_Run:
                 expressions_utils.check_output_parameter_expressions(
                     caseEl=caseEl, solver=solver
                 )
+                # Check if all expressions are valid for specific solver version
+                expressions_utils.check_expression_versions(solver=solver)
                 ### Expression Definition... done!
 
                 # Enable Beta-Features
@@ -363,7 +365,9 @@ class PTW_Run:
 
         # Do clean-up
         cleanup_data = self.launch_data.setdefault("ptw_cleanup", False)
-        misc_utils.fluent_cleanup(working_dir=self.fl_workingDir, cleanup_data=cleanup_data)
+        misc_utils.fluent_cleanup(
+            working_dir=self.fl_workingDir, cleanup_data=cleanup_data
+        )
 
         # Write out Debug info
         if self.debug_level > 0:
