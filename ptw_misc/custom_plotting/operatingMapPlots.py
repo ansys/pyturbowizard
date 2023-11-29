@@ -52,6 +52,10 @@ def create_operating_map_plots(csv_legend_pairs, svg_filename=None,full_converge
                     # Apply the inverse operation to values greater than 1 (Used because of FLuent Efficiency bug)
                     y_data = y_data.apply(lambda x: 1 / x if x > 1 else x)
 
+                # Check if efficiency shall be plotted --> multiply values by 100 to plot efficiency in %
+                if "efficiency" in y_col:
+                    y_data = y_data * 100
+
                 # Check if full convergence should be plotted (converged/not converged)
                 if full_convergence:
                     if cov_col in data.columns:
@@ -79,8 +83,8 @@ def create_operating_map_plots(csv_legend_pairs, svg_filename=None,full_converge
 
                 color = colormap(csv_legend_pairs.index((csv_file, legend_label)))
 
-                axs.plot(x_data, y_data, linestyle="-", color=color, label=legend_label)
-                axs.scatter(x_data, y_data, c=scatter_color if cov_data is not None else color, zorder=2, marker='x' if cov_data is None else None)
+                axs.plot(x_data, y_data, linestyle="-", color=color, label=legend_label, linewidth=2)
+                axs.scatter(x_data, y_data, c=scatter_color if cov_data is not None else color, zorder=2, marker='x' if cov_data is None else None, linewidth=2)
 
                 x_min = min(x_min, min(x_data))
                 x_max = max(x_max, max(x_data))
@@ -89,14 +93,18 @@ def create_operating_map_plots(csv_legend_pairs, svg_filename=None,full_converge
                 
                 legend_handles.append(Line2D([0], [0], linestyle='-', color=color, label=legend_label))
 
-        axs.legend(handles=legend_handles, loc='upper left', bbox_to_anchor=(1, 1))
+        leg = axs.legend(handles=legend_handles, loc='upper left', bbox_to_anchor=(1, 1), fontsize=13)
+        for line in leg.get_lines():
+            line.set_linewidth(2)
         plt.tight_layout()
 
         #axs.set_xlim(0.99 * x_min, 1.01 * x_max)
         #axs.set_ylim(0.99 * y_min, 1.01 * y_max)
         axs.grid()
-        axs.set_xlabel(input_data['x_label'][0] if 'x_label' in input_data else x_col)
-        axs.set_ylabel(y_label if y_label else y_col)  # Use specified y_label or default to y_col name
+        axs.set_xlabel(input_data['x_label'][0] if 'x_label' in input_data else x_col, fontsize=15)
+        axs.set_ylabel(y_label if y_label else y_col, fontsize=15)  # Use specified y_label or default to y_col name
+        axs.tick_params(axis="x", labelsize=13)
+        axs.tick_params(axis="y", labelsize=13)
 
         if svg_filename:
             plot_svg_filename = svg_filename.replace('.svg', f'_{y_col.replace(" ", "_")}.svg')
