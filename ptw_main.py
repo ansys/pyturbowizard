@@ -87,9 +87,6 @@ class PTW_Run:
         self.fl_workingDir = fl_workingDir
         logger.info(f"Used Fluent Working-Directory: {self.fl_workingDir}")
 
-        self.cases_data = self.turbo_data.get("cases")
-        self.parametric_studies_data = self.turbo_data.get("studies")
-
         logger.info(f"Opening ConfigFile: {os.path.abspath(config_filename)}... done!")
 
     def launch_fluent(self, solver=None):
@@ -361,24 +358,19 @@ class PTW_Run:
 
         logger.info(f"Finalizing Fluent-Session")
 
-        launchEl = self.launch_data
-        fl_workingDir = self.fl_workingDir
-        config_filename = self.config_file_name
-        turbo_data = self.turbo_data
-
         # Exit Solver
         solver.exit()
 
         # Do clean-up
-        cleanup_data = launchEl.setdefault("ptw_cleanup", False)
-        misc_utils.fluent_cleanup(working_dir=fl_workingDir, cleanup_data=cleanup_data)
+        cleanup_data = self.launch_data.setdefault("ptw_cleanup", False)
+        misc_utils.fluent_cleanup(working_dir=self.fl_workingDir, cleanup_data=cleanup_data)
 
         # Write out Debug info
         if self.debug_level > 0:
             # Compare turboData: final data vs file data --> check if some keywords have not been used
             logger.info("Searching for unused keywords in input-config-file...")
             dict_utils.detect_unused_keywords(
-                refDict=turbo_data, compareDict=self.turbo_data_from_file
+                refDict=self.turbo_data, compareDict=self.turbo_data_from_file
             )
             logger.info(
                 "Searching for unused keywords in input-config-file... finished!"
@@ -386,10 +378,10 @@ class PTW_Run:
 
             import ntpath
 
-            debug_filename = f"ptw_{ntpath.basename(config_filename)}"
-            ptwOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir)
+            debug_filename = f"ptw_{ntpath.basename(self.config_file_name)}"
+            ptwOutPath = misc_utils.ptw_output(fl_workingDir=self.fl_workingDir)
             debug_file_path = os.path.join(ptwOutPath, debug_filename)
-            jsonString = json.dumps(turbo_data, indent=4, sort_keys=True)
+            jsonString = json.dumps(self.turbo_data, indent=4, sort_keys=True)
             with open(debug_file_path, "w") as jsonFile:
                 logger.info(f"Writing ptw-json-File: {debug_file_path}")
                 jsonFile.write(jsonString)
