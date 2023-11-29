@@ -129,3 +129,19 @@ def check_output_parameter_expressions(caseEl: dict, solver):
             )
             exp.set_state({"output_parameter": True})
     return
+
+
+def check_expression_versions(solver):
+    import re
+    if solver.version < "24.1.0":
+        for expName in solver.setup.named_expressions():
+            if expName == "MP_Isentropic_Efficiency" or expName == "MP_Polytropic_Efficiency":
+                exp = solver.setup.named_expressions.get(expName)
+                logger.info(
+                    f"Checking & updating expression '{expName}' to latest version"
+                )
+                definition = exp.get_state()["definition"]
+                definition_new = re.sub(r",Process='\w+'", "", definition)
+                exp.set_state({"definition": definition_new})
+
+    return
