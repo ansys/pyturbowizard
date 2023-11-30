@@ -32,7 +32,7 @@ def calcCov(reportOut, window_size=50):
     cov_df = mp_df.copy()
     cov_df.iloc[:, 1:] = (
         mp_df.iloc[:, 1:].rolling(window=window_size).std()
-        / mp_df.iloc[:, 1:].rolling(window=window_size).mean()
+        / abs(mp_df.iloc[:, 1:].rolling(window=window_size).mean())
     )
 
     mean_values = mp_df.iloc[:, 1:].rolling(window=window_size).mean().iloc[-1]
