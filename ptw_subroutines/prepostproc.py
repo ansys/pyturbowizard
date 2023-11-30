@@ -164,7 +164,6 @@ def spanPlots(data, solver, launchEl):
                 plot_filename = "./" + f"{contName}_plot"
                 if use_python_command:
                     # Python commands
-
                     contour_display_command = f"solver.results.graphics.contour['{contName}'].display()"
                     contour_save_command = f"solver.results.graphics.picture.save_picture(file_name='{plot_filename}')"
                 else:
