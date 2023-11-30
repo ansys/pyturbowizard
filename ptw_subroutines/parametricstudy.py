@@ -73,13 +73,14 @@ def study01(data, solver):
         if not runExisting:
             # Read Ref Case
             refCaseFilePath = os.path.join(flworking_Dir, refCase)
-            if studyIndex == 0:
+            if solver.version >= "24.1.0":
                 solver.file.read_case_data(file_name=refCaseFilePath)
             else:
-                tuicommand = 'file/rcd "' + refCaseFilePath + '" yes'
-                solver.execute_tui(tuicommand)
-                # solver.tui.file.read_case_data(refCaseFilePath)
-                # solver.file.read_case_data(file_name=refCaseFilePath)
+                if studyIndex == 0:
+                    solver.file.read_case_data(file_name=refCaseFilePath)
+                else:
+                    tuicommand = 'file/rcd "' + refCaseFilePath + '" yes'
+                    solver.execute_tui(tuicommand)
 
             # Initialize a new parametric study
             projectFilename = os.path.join(flworking_Dir, studyName)
@@ -123,7 +124,9 @@ def study01(data, solver):
 
                         new_dp.input_parameters = {ipName: modValue}
                         new_dp.write_data = studyEl.setdefault("write_data", False)
-                        simulation_report_flag = studyEl.setdefault("simulation_report", False)
+                        simulation_report_flag = studyEl.setdefault(
+                            "simulation_report", False
+                        )
                         new_dp.capture_simulation_report_data = simulation_report_flag
 
                     designPointCounter = designPointCounter + 1
@@ -149,9 +152,13 @@ def study01(data, solver):
 
             if solver.version >= "24.1.0":
                 if not studyEl.setdefault("reread_case", False):
-                    solver.tui.parametric_study.study.read_case_before_each_dp_update("no")
+                    solver.tui.parametric_study.study.read_case_before_each_dp_update(
+                        "no"
+                    )
                 else:
-                    solver.tui.parametric_study.study.read_case_before_each_dp_update("yes")
+                    solver.tui.parametric_study.study.read_case_before_each_dp_update(
+                        "yes"
+                    )
 
             # Run all Design Points
             if studyEl.setdefault("updateAllDPs", False):
@@ -206,9 +213,13 @@ def study01(data, solver):
 
             if solver.version >= "24.1.0":
                 if not studyEl.setdefault("reread_case", False):
-                    solver.tui.parametric_study.study.read_case_before_each_dp_update("no")
+                    solver.tui.parametric_study.study.read_case_before_each_dp_update(
+                        "no"
+                    )
                 else:
-                    solver.tui.parametric_study.study.read_case_before_each_dp_update("yes")
+                    solver.tui.parametric_study.study.read_case_before_each_dp_update(
+                        "yes"
+                    )
 
             # Run all Design Points
             if studyEl.setdefault("updateAllDPs", False):

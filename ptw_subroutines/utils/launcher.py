@@ -120,9 +120,14 @@ def hook_to_existing_session(
             server_info_filepath=fullpath_to_sf,
             cleanup_on_exit=cleanup_on_exit,
         )
-    else:
+    elif version.parse(pyfluent.__version__) <= version.parse("0.18.0"):
         solver = pyfluent.connect_to_fluent(
             server_info_filepath=fullpath_to_sf,
+            cleanup_on_exit=cleanup_on_exit,
+        )
+    else:
+        solver = pyfluent.connect_to_fluent(
+            server_info_file_name=fullpath_to_sf,
             cleanup_on_exit=cleanup_on_exit,
         )
 
@@ -134,5 +139,5 @@ def get_launcher_defaults(launchEl: dict):
     launchEl.setdefault("exitatend", True)
     launchEl.setdefault("show_gui", True)
     launchEl.setdefault("precision", True)
-    launchEl.setdefault("py", False)
+    launchEl.setdefault("py", True)
     launchEl.setdefault("gpu", False)

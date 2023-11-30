@@ -73,6 +73,10 @@ def cleanup_input_expressions(availableKeyEl: dict, fileData: str):
             expKey = columns[1].replace('"{', "").replace('}"', "")
             if availableKeyEl.get(expKey) is not None:
                 cleanfiledata = cleanfiledata + "\n" + line
+            elif line.startswith('"GEO_NPSHa"'):
+                columns[1] = columns[1].replace("{" + expKey + "}", "0 [m]")
+                line = "\t".join(columns)
+                cleanfiledata = cleanfiledata + "\n" + line
             else:
                 columns[1] = columns[1].replace("{" + expKey + "}", "1")
                 line = "\t".join(columns)
@@ -92,47 +96,6 @@ def cleanup_input_expressions(availableKeyEl: dict, fileData: str):
                 cleanfiledata = cleanfiledata + "\n" + line
             else:
                 continue
-
-        elif line.startswith('"fl_density'):
-            if availableKeyEl.get("fl_density") is not None:
-                insert_index = line.find('}') + 1
-                line_str = line[:insert_index] + ' [kg/m^3]' + line[insert_index:]
-                cleanfiledata = cleanfiledata + "\n" + line_str
-            else:
-                continue
-
-        elif line.startswith('"fl_specific_heat'):
-            if availableKeyEl.get("fl_specific_heat") is not None:
-                insert_index = line.find('}') + 1
-                line_str = line[:insert_index] + ' [J/(kg K)]' + line[insert_index:]
-                cleanfiledata = cleanfiledata + "\n" + line_str
-            else:
-                continue
-
-        elif line.startswith('"fl_thermal_conductivity'):
-            if availableKeyEl.get("fl_thermal_conductivity") is not None:
-                insert_index = line.find('}') + 1
-                line_str = line[:insert_index] + ' [W/(m K)]' + line[insert_index:]
-                cleanfiledata = cleanfiledata + "\n" + line_str
-            else:
-                continue
-
-        elif line.startswith('"fl_viscosity'):
-            if availableKeyEl.get("fl_viscosity") is not None:
-                insert_index = line.find('}') + 1
-                line_str = line[:insert_index] + ' [kg/(m s)]' + line[insert_index:]
-                cleanfiledata = cleanfiledata + "\n" + line_str
-            else:
-                continue
-
-        elif line.startswith('"fl_mol_wight'):
-            if availableKeyEl.get("fl_mol_wight") is not None:
-                insert_index = line.find('}') + 1
-                line_str = line[:insert_index] + ' [kg/kmol]' + line[insert_index:]
-                cleanfiledata = cleanfiledata + "\n" + line_str
-            else:
-                continue
-
         else:
             cleanfiledata = cleanfiledata + "\n" + line
 
@@ -169,4 +132,20 @@ def check_output_parameter_expressions(caseEl: dict, solver):
                 f"Setting expression '{expName}' as output-parameter"
             )
             exp.set_state({"output_parameter": True})
+    return
+
+
+def check_expression_versions(solver):
+    import re
+    if solver.version < "24.1.0":
+        for expName in solver.setup.named_expressions():
+            if expName == "MP_Isentropic_Efficiency" or expName == "MP_Polytropic_Efficiency":
+                exp = solver.setup.named_expressions.get(expName)
+                logger.info(
+                    f"Checking & updating expression '{expName}' to latest version"
+                )
+                definition = exp.get_state()["definition"]
+                definition_new = re.sub(r",Process='\w+'", "", definition)
+                exp.set_state({"definition": definition_new})
+
     return
