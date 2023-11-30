@@ -45,5 +45,5 @@ name	definition	description	input-parameter	output-parameter
 "MP_OUT_p"	"AreaAve(StaticPressure,{bz_outlet_names}) + BC_pref"	""	#f	#f
 "MP_DIFF_pt_p"	"MP_OUT_p - MP_IN_massFlowAve_pt"	""	#f	#t
 "MP_Efficiency_Torque"	"MP_Power_dpt_360 / MP_Power_Torque_360"	""	#f	#t
-"MP_Power_dpt_360"	"MP_IN_VolumeFlow_360 * (MP_IN_massFlowAve_pt - MP_OUT_p)"	""	#f	#t
+"MP_Power_dpt_360"	"MP_IN_VolumeFlow_360 * (MP_IN_massFlowAve_pt - MP_OUT_massFlowAve_pt)"	""	#f	#t
 "MP_IN_VolumeFlow_360"	"MP_IN_MassFlow_360 / AreaAve(Density,{bz_inlet_names})"	""	#f	#t
