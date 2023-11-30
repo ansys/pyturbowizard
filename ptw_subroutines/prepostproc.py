@@ -121,17 +121,21 @@ def spanPlots(data, solver, launchEl):
         spanName = f"span-{int(spanVal*100)}"
         logger.info(f"Creating spanwise ISO-surface: {spanName}")
         solver.results.surfaces.iso_surface[spanName] = {}
-        if solver.version < "24.1.0":
-            zones = solver.results.surfaces.iso_surface[spanName].zone.get_attr(
-                "allowed-values"
-            )
-        else:
+
+        if solver.version >= "24.1.0":
             zones = solver.results.surfaces.iso_surface[spanName].zones.get_attr(
                 "allowed-values"
             )
-        solver.results.surfaces.iso_surface[spanName](
-            field="spanwise-coordinate", zone=zones, iso_value=[spanVal]
-        )
+            solver.results.surfaces.iso_surface[spanName](
+                field="spanwise-coordinate", zones=zones, iso_values=[spanVal]
+            )
+        else:
+            zones = solver.results.surfaces.iso_surface[spanName].zone.get_attr(
+                "allowed-values"
+            )
+            solver.results.surfaces.iso_surface[spanName](
+                field="spanwise-coordinate", zone=zones, iso_value=[spanVal]
+            )
 
         for contVar in contVars:
             if contVar in availableFieldDataNames:
