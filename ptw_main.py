@@ -209,6 +209,10 @@ class PTW_Run:
                 )
                 # Check if all expressions are valid for specific solver version
                 expressions_utils.check_expression_versions(solver=solver)
+                # Remove exp-file & write final expressions-file
+                if os.path.exists(expressionFilename):
+                    os.remove(expressionFilename)
+                solver.tui.define.named_expressions.export_to_tsv(expressionFilename)
                 ### Expression Definition... done!
 
                 # Enable Beta-Features
