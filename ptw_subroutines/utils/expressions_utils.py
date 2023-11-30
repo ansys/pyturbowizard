@@ -73,6 +73,10 @@ def cleanup_input_expressions(availableKeyEl: dict, fileData: str):
             expKey = columns[1].replace('"{', "").replace('}"', "")
             if availableKeyEl.get(expKey) is not None:
                 cleanfiledata = cleanfiledata + "\n" + line
+            elif line.startswith('"GEO_NPSHa"'):
+                columns[1] = columns[1].replace("{" + expKey + "}", "0 [m]")
+                line = "\t".join(columns)
+                cleanfiledata = cleanfiledata + "\n" + line
             else:
                 columns[1] = columns[1].replace("{" + expKey + "}", "1")
                 line = "\t".join(columns)
