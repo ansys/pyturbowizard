@@ -35,8 +35,7 @@ def prepost(data, solver, functionEl, launchEl):
 def prepost_01(data, solver, launchEl):
     fl_WorkingDir = launchEl.get("workingDir")
     # Check version -> for version 24.1 use python command
-    use_python_command = False
-    #use_python_command = solver.version >= "24.1.0"
+    use_python_command = solver.version >= "24.1.0"
 
     # Set output for time statistics in transcript
     command_name = "print-time-statistics"
@@ -170,7 +169,6 @@ def spanPlots(data, solver, launchEl):
                 
                 if use_python_command:
                     # Python commands
-                    plot_filename = f"{contName}_plot"
                     contour_display_command = f"solver.results.graphics.contour['{contName}'].display()"
                     contour_save_command = f"solver.results.graphics.picture.save_picture(file_name='{plot_filename}')"
                 else:
@@ -210,7 +208,7 @@ def oilflow_pathlines(data, solver, launchEl):
             logger.info(f"Available Scalar Values are: '{availableFieldDataNames}'")
 
     oilflowPL_surfaces = data["results"]["oilflow_pathlines_surfaces"]
-    
+
     # Create oil flow pathlines on specified surfaces colorized by the specified variables
     oilflowPL_objects = []
     for oilflowPL_var in oilflowPL_vars:
@@ -240,7 +238,7 @@ def oilflow_pathlines(data, solver, launchEl):
         sceneName = f"sc-{oilflowPL_object}"
         logger.info(f"Creating scene: {sceneName}")
         scene_inputs = [oilflowPL_object,meshName]
-        for scene_input in scene_inputs:     
+        for scene_input in scene_inputs:
             solver.results.scene[sceneName] = {}
             solver.results.scene[sceneName].graphics_objects[scene_input] = {
             "name": scene_input
@@ -263,7 +261,7 @@ def pathlines(data, solver, launchEl):
             logger.info(f"Available Scalar Values are: '{availableFieldDataNames}'")
 
     pathlinesRelSurf = data["results"]["pathlines_releaseSurfaces"]
-    
+
     # Create pathlines from specified surfaces colorized by the specified variables
     for pathlineVar in pathlineVars:
         pathlineName = f"pathlines-{pathlineVar}"

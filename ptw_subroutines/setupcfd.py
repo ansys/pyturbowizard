@@ -36,14 +36,14 @@ def setup_incompressible_01(data, solver):
 
 def setup_01(data, solver, solveEnergy: bool = True):
     # Set physics
-    physics_01(data=data, solver=solver, solveEnergy=solveEnergy)
+    set_physics(data=data, solver=solver, solveEnergy=solveEnergy)
     # Materials
-    material_01(data=data, solver=solver, solveEnergy=solveEnergy)
+    set_material(data=data, solver=solver, solveEnergy=solveEnergy)
     # Set Boundaries
     if solver.version < "24.1.0":
-        boundary_01(data=data, solver=solver, solveEnergy=solveEnergy)
+        set_boundaries_v232(data=data, solver=solver, solveEnergy=solveEnergy)
     else:
-        boundary_v241(data=data, solver=solver, solveEnergy=solveEnergy)
+        set_boundaries(data=data, solver=solver, solveEnergy=solveEnergy)
 
     # Do some Mesh Checks
     solver.mesh.check()
@@ -52,7 +52,7 @@ def setup_01(data, solver, solveEnergy: bool = True):
     return
 
 
-def material_01(data, solver, solveEnergy: bool = True):
+def set_material(data, solver, solveEnergy: bool = True):
     fl_name = data["fluid_properties"].get("fl_name")
     if fl_name is None:
         if solveEnergy:
@@ -103,7 +103,7 @@ def material_01(data, solver, solveEnergy: bool = True):
     return
 
 
-def physics_01(data, solver, solveEnergy: bool = True):
+def set_physics(data, solver, solveEnergy: bool = True):
     if solveEnergy:
         solver.setup.models.energy = {"enabled": True, "viscous_dissipation": True}
 
@@ -176,7 +176,7 @@ def physics_01(data, solver, solveEnergy: bool = True):
     return
 
 
-def boundary_01(data, solver, solveEnergy: bool = True):
+def set_boundaries_v232(data, solver, solveEnergy: bool = True):
     # Enable Turbo Models
     solver.tui.define.turbo_model.enable_turbo_model("yes")
 
@@ -681,7 +681,7 @@ def boundary_01(data, solver, solveEnergy: bool = True):
     return
 
 
-def boundary_v241(data, solver, solveEnergy: bool = True):
+def set_boundaries(data, solver, solveEnergy: bool = True):
     # Enable Turbo Models
     solver.tui.define.turbo_model.enable_turbo_model("yes")
 
@@ -1263,7 +1263,7 @@ def boundary_v241(data, solver, solveEnergy: bool = True):
     return
 
 
-def report_01(data, solver, launchEl):
+def set_reports(data, solver, launchEl):
     # Get Solution-Dict
     solutionDict = data.get("solution")
     # Get PTW Output folder path
