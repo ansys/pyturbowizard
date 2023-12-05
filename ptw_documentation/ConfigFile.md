@@ -509,7 +509,6 @@ In the example "Case_CoarseMesh" includes all setup definitions, case "Case_Fine
 to "Case_CoarseMesh".
 This means all objects are copied from case "Case_CoarseMesh" except the elements prescribed in the case itself, in this
 case the objects ```caseFilename``` and ```meshFilename```.
-
 **Note:** If you specify a new element with sub-elements (i.e. a new dict), all sub-elements need to be specified in the
 new element!
 

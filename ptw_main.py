@@ -29,7 +29,6 @@ ptw_version = "1.7.0"
 # Set Logger
 logger = ptw_logger.init_logger()
 
-
 class PTW_Run:
     """Object to setup & run the PyTurboWizard"""
 
