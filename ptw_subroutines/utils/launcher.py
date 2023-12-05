@@ -114,13 +114,13 @@ def hook_to_existing_session(
     fullpath_to_sf = os.path.join(fl_workingDir, serverfilename)
     logger.info("Connecting to Fluent Session...")
     # Start Session via hook
-    if version.parse(pyfluent.__version__) <= version.parse("0.17"):
+    if version.parse(pyfluent.__version__) <= version.parse("0.17.1"):
         solver = pyfluent.launch_fluent(
             start_instance=False,
             server_info_filepath=fullpath_to_sf,
             cleanup_on_exit=cleanup_on_exit,
         )
-    elif version.parse(pyfluent.__version__) <= version.parse("0.18.0"):
+    elif version.parse(pyfluent.__version__) <= version.parse("0.18.2"):
         solver = pyfluent.connect_to_fluent(
             server_info_filepath=fullpath_to_sf,
             cleanup_on_exit=cleanup_on_exit,
