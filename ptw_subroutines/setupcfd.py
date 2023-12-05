@@ -207,8 +207,8 @@ def set_boundaries_v232(data, solver, solveEnergy: bool = True):
 
     # 2. Search for periodic interfaces
     peri_if_El = data["locations"].get("bz_interfaces_periodic_names")
+    non_conformal_list = []
     if peri_if_El is not None:
-        non_conformal_list = []
         for key_if in peri_if_El:
             logger.info(f"Setting up periodic BC: {key_if}")
             side1 = peri_if_El[key_if].get("side1")
@@ -712,8 +712,8 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
 
     # 2. Search for periodic interfaces
     peri_if_El = data["locations"].get("bz_interfaces_periodic_names")
+    non_conformal_list = []
     if peri_if_El is not None:
-        non_conformal_list = []
         for key_if in peri_if_El:
             logger.info(f"Setting up periodic BC: {key_if}")
             side1 = peri_if_El[key_if].get("side1")
