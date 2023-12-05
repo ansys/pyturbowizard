@@ -28,6 +28,7 @@ def write_expression_file(data: dict, script_dir: str, working_dir: str):
         helperDict = data["locations"]
         expressionEl = data.get("expressions")
         helperDict.update(expressionEl)
+        helperDict.update(data["fluid_properties"])
         # add rotation axis
         helperDict["rotation_axis_direction"] = tuple(
             data.setdefault("rotation_axis_direction", [0.0, 0.0, 1.0])
@@ -71,6 +72,10 @@ def cleanup_input_expressions(availableKeyEl: dict, fileData: str):
             columns = line.split("\t")
             expKey = columns[1].replace('"{', "").replace('}"', "")
             if availableKeyEl.get(expKey) is not None:
+                cleanfiledata = cleanfiledata + "\n" + line
+            elif line.startswith('"GEO_NPSHa"'):
+                columns[1] = columns[1].replace("{" + expKey + "}", "0 [m]")
+                line = "\t".join(columns)
                 cleanfiledata = cleanfiledata + "\n" + line
             else:
                 columns[1] = columns[1].replace("{" + expKey + "}", "1")
@@ -127,4 +132,20 @@ def check_output_parameter_expressions(caseEl: dict, solver):
                 f"Setting expression '{expName}' as output-parameter"
             )
             exp.set_state({"output_parameter": True})
+    return
+
+
+def check_expression_versions(solver):
+    import re
+    if solver.version < "24.1.0":
+        for expName in solver.setup.named_expressions():
+            if expName == "MP_Isentropic_Efficiency" or expName == "MP_Polytropic_Efficiency":
+                exp = solver.setup.named_expressions.get(expName)
+                logger.info(
+                    f"Checking & updating expression '{expName}' to latest version"
+                )
+                definition = exp.get_state()["definition"]
+                definition_new = re.sub(r",Process='\w+'", "", definition)
+                exp.set_state({"definition": definition_new})
+
     return

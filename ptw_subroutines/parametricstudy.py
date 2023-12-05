@@ -22,9 +22,7 @@ def study(data, solver, functionEl):
         study01(data, solver)
     else:
         logger.info(
-            'Prescribed Function "'
-            + functionName
-            + '" not known. Skipping Parametric Study!'
+            f"Prescribed Function '{functionName}' not known. Skipping Parametric Study!"
         )
 
     logger.info(f"Running ParametricStudy-Function '{functionName}'...  finished!")
@@ -60,29 +58,29 @@ def study01(data, solver):
         studyFolderPath = os.path.join(flworking_Dir, studyFolderPath)
         if os.path.isfile(studyFileName) or os.path.isdir(studyFolderPath):
             if not studyEl.setdefault("overwriteExisting", False):
-                logger.info("Fluent-Project already exists " + studyFileName)
                 logger.info(
-                    'and "overwriteExisting"-flag is set to False or not existing in Config-File'
+                    f"Fluent-Project '{studyFileName}' already exists and 'overwriteExisting'-flag is set to 'False' or not existing in Config-File \nSkipping Parametric Study '{studyName}'"
                 )
-                logger.info('Skipping Parametric Study "' + studyName)
                 break
         else:
             if runExisting:
-                logger.info("Specified Fluent-Project does not exist " + studyFileName)
-                logger.info('Skipping Parametric Study "' + studyName)
+                logger.info(
+                    f"Specified Fluent-Project '{studyFileName}' does not exist \nSkipping Parametric Study '{studyName}"
+                )
                 break
 
         # Check if a new Project should be created or an existing is executed
         if not runExisting:
             # Read Ref Case
             refCaseFilePath = os.path.join(flworking_Dir, refCase)
-            if studyIndex == 0:
+            if solver.version >= "24.1.0":
                 solver.file.read_case_data(file_name=refCaseFilePath)
             else:
-                tuicommand = 'file/rcd "' + refCaseFilePath + '" yes'
-                solver.execute_tui(tuicommand)
-                # solver.tui.file.read_case_data(refCaseFilePath)
-                # solver.file.read_case_data(file_name=refCaseFilePath)
+                if studyIndex == 0:
+                    solver.file.read_case_data(file_name=refCaseFilePath)
+                else:
+                    tuicommand = 'file/rcd "' + refCaseFilePath + '" yes'
+                    solver.execute_tui(tuicommand)
 
             # Initialize a new parametric study
             projectFilename = os.path.join(flworking_Dir, studyName)
@@ -110,10 +108,8 @@ def study01(data, solver):
                 valueListArray = studyDef.get("valueList")
                 numDPs = len(valueListArray[0])
                 for dpIndex in range(numDPs):
-                    # new_dp = fluent_study.add_design_point()
                     fluent_study.design_points.duplicate(design_point="Base DP")
-                    designPointName = "DP" + str(designPointCounter)
-                    # new_dp = {"BC_P_Out": 0.}
+                    designPointName = list(fluent_study.design_points)[-1]
                     new_dp = fluent_study.design_points[designPointName]
                     for ipIndex in range(numIPs):
                         ipName = ipList[ipIndex]
@@ -126,13 +122,13 @@ def study01(data, solver):
                             refValue = ref_dp[ipName]
                             modValue = refValue * modValue
 
-                        # new_dp[ipName] = modValue
                         new_dp.input_parameters = {ipName: modValue}
-                        write_data_flag = studyEl.setdefault("write_data", False)
-                        new_dp.write_data = write_data_flag
-                        studyEl["write_data"] = write_data_flag
+                        new_dp.write_data = studyEl.setdefault("write_data", False)
+                        simulation_report_flag = studyEl.setdefault(
+                            "simulation_report", False
+                        )
+                        new_dp.capture_simulation_report_data = simulation_report_flag
 
-                    # fluent_study.design_points[designPointName].input_parameters = new_dp
                     designPointCounter = designPointCounter + 1
 
             # Set Initialization Method
@@ -151,8 +147,18 @@ def study01(data, solver):
                 logger.info("Using base DP data for Initialization")
                 solver.tui.parametric_study.study.use_base_data("yes")
             elif initMethod == "prevDP":
-                logger.info("Using previous DP data for Initialization")
+                logger.info("Using previous updated data for Initialization")
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
+
+            if solver.version >= "24.1.0":
+                if not studyEl.setdefault("reread_case", False):
+                    solver.tui.parametric_study.study.read_case_before_each_dp_update(
+                        "no"
+                    )
+                else:
+                    solver.tui.parametric_study.study.read_case_before_each_dp_update(
+                        "yes"
+                    )
 
             # Run all Design Points
             if studyEl.setdefault("updateAllDPs", False):
@@ -202,8 +208,18 @@ def study01(data, solver):
                 logger.info("Using base DP data for Initialization")
                 solver.tui.parametric_study.study.use_base_data("yes")
             elif initMethod == "prevDP":
-                logger.info("Using previous DP data for Initialization")
+                logger.info("Using previous updated data for Initialization")
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
+
+            if solver.version >= "24.1.0":
+                if not studyEl.setdefault("reread_case", False):
+                    solver.tui.parametric_study.study.read_case_before_each_dp_update(
+                        "no"
+                    )
+                else:
+                    solver.tui.parametric_study.study.read_case_before_each_dp_update(
+                        "yes"
+                    )
 
             # Run all Design Points
             if studyEl.setdefault("updateAllDPs", False):

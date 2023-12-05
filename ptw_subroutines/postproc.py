@@ -22,14 +22,12 @@ def post(data, solver, functionEl, launchEl, trn_name):
         defaultName="post_01",
     )
 
-    logger.info('Running Postprocessing Function "' + functionName + '"...')
+    logger.info(f"Running Postprocessing Function '{functionName}' ...")
     if functionName == "post_01":
         post_01(data, solver, launchEl, trn_name)
     else:
         logger.info(
-            'Prescribed Function "'
-            + functionName
-            + '" not known. Skipping Postprocessing!'
+            f"Prescribed Function '{functionName}' not known. Skipping Postprocessing!"
         )
 
     logger.info("Running Postprocessing Function... finished!")
