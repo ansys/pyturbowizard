@@ -439,7 +439,11 @@ conservative) or ```pseudo_timestep``` and ``` iter_count ``` respectively.
           "filename_outputParameter": "outParameters.out",
           "filename_summary": "report.sum",
           "span_plot_var": ["total-pressure","total-temperature","velocity-magnitude"],
-          "span_plot_height": [0.2, 0.5, 0.9]
+          "span_plot_height": [0.2, 0.5, 0.9],
+          "pathlines_releaseSurfaces": ["inblock-inflow"],
+          "pathlines_var": ["absolute-pressure"],
+          "oilflow_pathlines_surfaces": ["blade-ps", "blade-ss", "blade-te"],
+          "oilflow_pathlines_var": ["absolute-pressure"]
         }
 ```
 
@@ -455,6 +459,13 @@ correct variable names.
 
 ```span_plot_height``` is used to specify the relative channel height, at which the different variable contour plots are
 created. Note that all variable plots are created for each respective channel height.
+
+To create pathlines, ```pathlines_releaseSurfaces``` is used to define the surfaces, from which pathlines are released. 
+```pathlines_var``` is used to define the variable names, for which the pathlines are created.
+
+To create oil flow pathlines, ```oilflow_pathlines_surfaces``` is used to define surfaces, on which the pathlines are generated.
+With ```oilflow_pathlines_var```, variables are defined for which the oil flow pathlines are generated. Besides the pathline object,
+a scene containing the pathline object and a mesh object with surfaces defined in ```oilflow_pathlines_surfaces``` is created.
 
 ### Additional Setup Specifications
 
