@@ -24,7 +24,8 @@ from ptw_subroutines.utils import (
     misc_utils,
 )
 
-ptw_version = "1.7.0"
+
+ptw_version = "1.7.1"
 
 # Set Logger
 logger = ptw_logger.init_logger()
