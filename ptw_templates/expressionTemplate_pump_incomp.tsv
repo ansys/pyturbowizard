@@ -41,5 +41,6 @@ name	definition	description	input-parameter	output-parameter
 "MP_EP2_massFlowAve_ptEuler"	"(BC_omega / 1[rad]) * MassFlowAve(Density * RadialCoordinate * TangentialVelocity, {bz_ep2_Euler})"	""	#f	#f
 "MP_Efficiency_Euler"	"(MP_IN_massFlowAve_pt - MP_OUT_massFlowAve_pt) / (MP_EP1_massFlowAve_ptEuler - MP_EP2_massFlowAve_ptEuler)"	""	#f	#t
 "MP_Head"	"(MP_OUT_massFlowAve_pt - MP_IN_massFlowAve_pt)/(FL_Density * 9.81 [m/s^2])"	""	#f	#t
+"MP_Head_Static"	"(MP_OUT_p - MP_IN_p)/(FL_Density * 9.81 [m/s^2])"	""	#f	#t
 "MP_p_min"	"(Minimum(StaticPressure, {cz_rotating_names}))"	""	#f	#t
 "MP_NPSHi"	"(MP_IN_massFlowAve_pt - MP_p_min) / (FL_Density * 9.81 [m/s^2])"	""	#f	#t
