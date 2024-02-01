@@ -127,10 +127,12 @@ def init_hybrid_basic(data, solver):
 
     if solver.version >= "24.1.0":
         solver.solution.initialization.initialization_type = "hybrid"
+        solver.solution.initialization.reference_frame = "absolute"
+    else:
+        solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
+            "absolute"
+        )
 
-    solver.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
-        "absolute"
-    )
     solver.solution.initialization.hybrid_init_options.general_settings.initial_pressure = (
         True
     )
