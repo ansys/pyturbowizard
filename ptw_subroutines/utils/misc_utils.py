@@ -48,9 +48,9 @@ def get_free_filename_maxIndex(dirname, base_filename):
 
 
 def run_extsch_script(scriptPath: str, workingDir: str, caseEl: dict):
-    from sys import platform
+    import platform
 
-    if platform == "linux" or platform == "linux2":
+    if platform.system() == "Linux":
         logger.info(f"Running 'extsch' script...")
         caseFilename = caseEl.get("caseFilename")
         output_filename = f"{caseFilename}.extsch"
