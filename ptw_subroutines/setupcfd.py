@@ -856,7 +856,10 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
                     if data["expressions"].get("BC_IN_TuIn") is not None:
                         inBC.turbulence.turbulent_intensity = "BC_IN_TuIn"
                     if data["expressions"].get("BC_IN_TuVR") is not None:
-                        inBC.turbulence.turbulent_viscosity_ratio_real = "BC_IN_TuVR"
+                        if solver.version < "24.2.0":
+                            inBC.turbulence.turbulent_viscosity_ratio_real = "BC_IN_TuVR"
+                        else:
+                            inBC.turbulence.turbulent_viscosity_ratio = "BC_IN_TuVR"
 
                     # If Expressions for a direction are specified
                     if (
