@@ -76,7 +76,7 @@ def multiple_mesh_import(solver, meshnamelist):
     solver.workflow.InitializeWorkflow(WorkflowType=r"Turbo Workflow")
     solver.workflow.TaskObject["Describe Component"].Execute()
     solver.workflow.TaskObject["Define Blade Row Scope"].Execute()
-    meshname_strings = rf";".join(meshnamelist)
+    meshname_strings = ";".join(rf"{meshnamelist}")
     for meshname in meshnamelist:
         meshname_formatted = rf"{meshname}"
         solver.workflow.TaskObject["Import Mesh"].Arguments.set_state(
