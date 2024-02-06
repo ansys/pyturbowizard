@@ -85,7 +85,7 @@ def launch_queuing_session(launchEl: dict):
     logger.info(
         "Max waiting time (launching-key: 'queue_waiting_time') set to: " + str(maxtime)
     )
-    if version.parse(pyfluent.__version__) >= version.parse("0.19.0"):
+    if version.parse(pyfluent.__version__) < version.parse("0.19.0"):
         # Get a free server-filename
         serverfilename = launchEl.get("serverfilename", "server-info.txt")
         serverfilename = misc_utils.get_free_filename(
