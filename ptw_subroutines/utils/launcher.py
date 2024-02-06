@@ -72,7 +72,8 @@ def hook_to_existing_session(
 
     return solver
 
-def launch_queuing_session(launchEl:dict):
+
+def launch_queuing_session(launchEl: dict):
     import ansys.fluent.core as pyfluent
 
     solver = None
@@ -80,12 +81,9 @@ def launch_queuing_session(launchEl:dict):
     fl_workingDir = launchEl["workingDir"]
     maxtime = float(launchEl.setdefault("queue_waiting_time", 600.0))
 
+    logger.info("Trying to launching new Fluent Session on queue '" + queueEl + "'")
     logger.info(
-        "Trying to launching new Fluent Session on queue '" + queueEl + "'"
-    )
-    logger.info(
-        "Max waiting time (launching-key: 'queue_waiting_time') set to: "
-        + str(maxtime)
+        "Max waiting time (launching-key: 'queue_waiting_time') set to: " + str(maxtime)
     )
     if version.parse(pyfluent.__version__) < version.parse("0.19.0"):
         # Get a free server-filename
@@ -97,11 +95,16 @@ def launch_queuing_session(launchEl:dict):
         serverfilename = os.path.join(fl_workingDir, serverfilename)
 
         commandlist = list()
-        commandlist.append(
-            pyfluent.launcher.launcher.get_fluent_exe_path(
+
+        # Get Fluent Executable
+        fluent_path = get_fluent_exe_path(product_version=launchEl["fl_version"])
+        if version.parse(pyfluent.__version__) < version.parse("0.19.0"):
+            fluent_path = pyfluent.launcher.launcher.get_fluent_exe_path(
                 product_version=launchEl["fl_version"]
             )
-        )
+        logger.info("Used Fluent executable: '" + fluent_path + "'")
+        commandlist.append(fluent_path)
+
         precisionCommand = "3d"
         if launchEl["precision"]:
             precisionCommand = precisionCommand + "dp"
@@ -113,7 +116,7 @@ def launch_queuing_session(launchEl:dict):
             "-sifile=%s" % (serverfilename),
             "-py" if launchEl["py"] else "",
             "-gpu" if launchEl["gpu"] else "",
-            ]
+        ]
         if not launchEl["show_gui"]:
             batch_arguments.extend(["-gu", "-driver dx11"])
         commandlist.extend(batch_arguments)
@@ -145,7 +148,10 @@ def launch_queuing_session(launchEl:dict):
             cleanup_on_exit=launchEl["exitatend"],
         )
     else:
-        scheduler_options = {"scheduler": "slurm", "scheduler_queue": launchEl["queue_slurm"]}
+        scheduler_options = {
+            "scheduler": "slurm",
+            "scheduler_queue": launchEl["queue_slurm"],
+        }
         solver = pyfluent.launch_fluent(
             precision=launchEl["precision"],
             processor_count=int(launchEl["noCore"]),
@@ -157,9 +163,32 @@ def launch_queuing_session(launchEl:dict):
             py=launchEl["py"],
             gpu=launchEl["gpu"],
             scheduler_options=scheduler_options,
-            start_timeout=maxtime,
-        )
+        ).result(timeout=maxtime)
     return solver
+
+
+def get_fluent_exe_path(product_version: str):
+    import platform
+
+    fluent_path = None
+    product_version_split = product_version.split(".")
+    root_env_name = "AWP_ROOT" + product_version_split[0] + product_version_split[1]
+    ansys_root_path = os.getenv(root_env_name)
+    if ansys_root_path is None:
+        logger.error(f"Environment '{root_env_name}' not found on system")
+        return fluent_path
+
+    if platform.system() == "Windows":
+        fluent_path = os.path.join(ansys_root_path, "fluent", "ntbin", "win64")
+        if platform.architecture()[0] == "32bit":
+            fluent_path = os.path.join(ansys_root_path, "fluent", "ntbin", "win32")
+    elif platform.system() == "Linux":
+        fluent_path = os.path.join(ansys_root_path, "fluent", "bin", "fluent")
+    else:
+        logger.error(f"System '{platform.system()}' not supported.")
+
+    return fluent_path
+
 
 def get_launcher_defaults(launchEl: dict):
     # Set defaults
