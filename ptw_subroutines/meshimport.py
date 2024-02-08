@@ -31,7 +31,7 @@ def import_01(data, solver):
                 break
 
         if import_mesh_type:
-            if solver.version < "24.1.0":
+            if solver.version < "241":
                 logger.error(f"Import of multiple meshes only supported by version v241 or later")
                 return success
             else:

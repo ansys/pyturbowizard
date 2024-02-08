@@ -40,7 +40,7 @@ def setup_01(data, solver, solveEnergy: bool = True):
     # Materials
     set_material(data=data, solver=solver, solveEnergy=solveEnergy)
     # Set Boundaries
-    if solver.version < "24.1.0":
+    if solver.version < "241":
         set_boundaries_v232(data=data, solver=solver, solveEnergy=solveEnergy)
     else:
         set_boundaries(data=data, solver=solver, solveEnergy=solveEnergy)
@@ -233,11 +233,25 @@ def set_boundaries_v232(data, solver, solveEnergy: bool = True):
                         "auto", key_if, side1, side2, "yes", "no", "no", "yes", "yes"
                     )
                 except Exception as e:
-                    # if auto detection of periodic angle does not work, it gets calculated from input value for number of rot passages              
-                    if str(e.args) == "('+ (add): invalid argument [1]: wrong type [not a number]\\nError Object: #f',)":
-                        per_angle = 360 / int(data["expressions"].get("GEO_ROT_No_Passages_360"))
+                    # if auto detection of periodic angle does not work, it gets calculated from input value for number of rot passages
+                    if (
+                        str(e.args)
+                        == "('+ (add): invalid argument [1]: wrong type [not a number]\\nError Object: #f',)"
+                    ):
+                        per_angle = 360 / int(
+                            data["expressions"].get("GEO_ROT_No_Passages_360")
+                        )
                         solver.tui.mesh.modify_zones.create_periodic_interface(
-                        "auto", key_if, side1, side2, "yes", "no", "no", "yes", per_angle, "yes"
+                            "auto",
+                            key_if,
+                            side1,
+                            side2,
+                            "yes",
+                            "no",
+                            "no",
+                            "yes",
+                            per_angle,
+                            "yes",
                         )
 
                 # check for non-conformal periodics (fluent creates normal interfaces if non-conformal)
@@ -738,14 +752,27 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
                         "auto", key_if, side1, side2, "yes", "no", "no", "yes", "yes"
                     )
                 except Exception as e:
-                    # if auto detection of periodic angle does not work, it gets calculated from input value for number of rot passages              
-                    if str(e.args) == "('+ (add): invalid argument [1]: wrong type [not a number]\\nError Object: #f',)":
-                        per_angle = 360 / int(data["expressions"].get("GEO_ROT_No_Passages_360"))
+                    # if auto detection of periodic angle does not work, it gets calculated from input value for number of rot passages
+                    if (
+                        str(e.args)
+                        == "('+ (add): invalid argument [1]: wrong type [not a number]\\nError Object: #f',)"
+                    ):
+                        per_angle = 360 / int(
+                            data["expressions"].get("GEO_ROT_No_Passages_360")
+                        )
                         solver.tui.mesh.modify_zones.create_periodic_interface(
-                        "auto", key_if, side1, side2, "yes", "no", "no", "yes", per_angle, "yes"
+                            "auto",
+                            key_if,
+                            side1,
+                            side2,
+                            "yes",
+                            "no",
+                            "no",
+                            "yes",
+                            per_angle,
+                            "yes",
                         )
 
-                        
                 # check for non-conformal periodics (fluent creates normal interfaces if non-conformal)
                 intf_check_side1 = solver.setup.boundary_conditions.interface.get(side1)
                 intf_check_side2 = solver.setup.boundary_conditions.interface.get(side2)
@@ -856,11 +883,14 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
                     if data["expressions"].get("BC_IN_TuIn") is not None:
                         inBC.turbulence.turbulent_intensity = "BC_IN_TuIn"
                     if data["expressions"].get("BC_IN_TuVR") is not None:
-                        inBC.turbulence.turbulent_viscosity_ratio_real = "BC_IN_TuVR"
+                        if solver.version < "242":
+                            inBC.turbulence.turbulent_viscosity_ratio_real = "BC_IN_TuVR"
+                        else:
+                            inBC.turbulence.turbulent_viscosity_ratio = "BC_IN_TuVR"
 
                     # If Expressions for a direction are specified
                     if (
-                        (data["expressions"].get("BC_IN_radDir") is not None)
+                       (data["expressions"].get("BC_IN_radDir") is not None)
                         and (data["expressions"].get("BC_IN_tangDir") is not None)
                         and (data["expressions"].get("BC_IN_axDir") is not None)
                     ):
@@ -1284,7 +1314,7 @@ def set_reports(data, solver, launchEl):
         for report in reportList:
             reportName = report.replace("_", "-")
             reportName = "rep-" + reportName.lower()
-            if solver.version < "24.1.0":
+            if solver.version < "241":
                 solver.solution.report_definitions.single_val_expression[
                     reportName
                 ] = {}

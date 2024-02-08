@@ -25,10 +25,11 @@ from ptw_subroutines.utils import (
 )
 
 
-ptw_version = "1.7.3"
+ptw_version = "1.7.4"
 
 # Set Logger
 logger = ptw_logger.init_logger()
+
 
 class PTW_Run:
     """Object to setup & run the PyTurboWizard"""
@@ -112,8 +113,8 @@ class PTW_Run:
         solver.execute_tui("/display/set/picture/driver avz")
 
         # Fluent Version Check
-        if solver.version < "24.1.0":
-            # For version before 24.1.0, remove the streamhandler from the logger
+        if solver.version < "241":
+            # For version before 24.1, remove the streamhandler from the logger
             ptw_logger.remove_handlers(streamhandlers=True, filehandlers=False)
             # Set Batch options: Old API
             solver.file.confirm_overwrite = False
@@ -189,6 +190,7 @@ class PTW_Run:
                 result = meshimport.import_01(caseEl, solver)
 
                 ### Expression Definition
+                logger.info("Expression definition... starting")
                 # Write ExpressionFile with specified Template
                 expressions_utils.write_expression_file(
                     data=caseEl, script_dir=self.script_path, working_dir=fl_workingDir
@@ -213,9 +215,11 @@ class PTW_Run:
                 if os.path.exists(expressionFilename):
                     os.remove(expressionFilename)
                 solver.tui.define.named_expressions.export_to_tsv(expressionFilename)
+                logger.info("Expression definition... done!")
                 ### Expression Definition... done!
 
                 # Enable Beta-Features
+                #solver.tui.define.beta_feature_access("yes")
                 solver.tui.define.beta_feature_access("yes ok")
 
                 # Case Setup
