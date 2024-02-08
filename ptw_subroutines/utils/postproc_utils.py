@@ -231,7 +231,7 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
         time_step = solver.scheme_eval.string_eval("(rpgetvar 'pseudo-auto-time-step)")
 
         # write out flux reports
-        if solver.version < "24.1.0":
+        if solver.version < "241":
             fluxes = solver.report.fluxes
         else:
             fluxes = solver.results.report.fluxes

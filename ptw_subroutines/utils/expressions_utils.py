@@ -137,7 +137,7 @@ def check_output_parameter_expressions(caseEl: dict, solver):
 
 def check_expression_versions(solver):
     import re
-    if solver.version < "24.1.0":
+    if solver.version < "241":
         for expName in solver.setup.named_expressions():
             if expName == "MP_Isentropic_Efficiency" or expName == "MP_Polytropic_Efficiency":
                 exp = solver.setup.named_expressions.get(expName)
