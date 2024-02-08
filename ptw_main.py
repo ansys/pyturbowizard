@@ -190,7 +190,7 @@ class PTW_Run:
                 result = meshimport.import_01(caseEl, solver)
 
                 ### Expression Definition
-                logger.info("Expression definition... starting")
+                logger.info("Expression Definition... starting")
                 # Write ExpressionFile with specified Template
                 expressions_utils.write_expression_file(
                     data=caseEl, script_dir=self.script_path, working_dir=fl_workingDir
@@ -215,11 +215,10 @@ class PTW_Run:
                 if os.path.exists(expressionFilename):
                     os.remove(expressionFilename)
                 solver.tui.define.named_expressions.export_to_tsv(expressionFilename)
-                logger.info("Expression definition... done!")
+                logger.info("Expression Definition... done!")
                 ### Expression Definition... done!
 
                 # Enable Beta-Features
-                #solver.tui.define.beta_feature_access("yes")
                 solver.tui.define.beta_feature_access("yes ok")
 
                 # Case Setup
