@@ -746,36 +746,64 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
                     f"Creation of periodic interface is skipped!"
                 )
             else:
-                # As the origin & axis have been set for all cell-zones,
-                # these are the defaults for all containing boundary zones
-                # Therefore, we do not need to set them
+                # As the origin & axis have been set for all cell-zones, these are the defaults for
+                # all containing boundary zones --> Therefore, we do not need to set them
                 try:
                     rotation_angle = peri_if_El[key_if].get("rotation_angle")
                     if (type(rotation_angle) is int) or (type(rotation_angle) is float):
-                        solver.mesh.modify_zones.create_periodic_interface(
-                            periodic_method="auto",
-                            interface_name=key_if,
-                            zone_name=side1,
-                            shadow_zone_name=side2,
-                            rotate_periodic=True,
-                            new_axis=False,
-                            new_direction=False,
-                            auto_offset=False,
-                            rotation_angle=rotation_angle,
-                            nonconformal_create_periodic=True,
+                        solver.tui.mesh.modify_zones.create_periodic_interface(
+                            "auto",
+                            key_if,
+                            side1,
+                            side2,
+                            "yes",
+                            "no",
+                            "no",
+                            "no",
+                            rotation_angle,
+                            "yes",
                         )
+                        # New API:Currently this method shows up a warning message,
+                        # if periodic angle does not divide 360 (deg) evenly.
+                        # Should be replaced in future versions
+                        # solver.mesh.modify_zones.create_periodic_interface(
+                        #     periodic_method="auto",
+                        #     interface_name=key_if,
+                        #     zone_name=side1,
+                        #     shadow_zone_name=side2,
+                        #     rotate_periodic=True,
+                        #     new_axis=False,
+                        #     new_direction=False,
+                        #     auto_offset=False,
+                        #     rotation_angle=rotation_angle,
+                        #     nonconformal_create_periodic=True,
+                        # )
                     else:
-                        solver.mesh.modify_zones.create_periodic_interface(
-                            periodic_method="auto",
-                            interface_name=key_if,
-                            zone_name=side1,
-                            shadow_zone_name=side2,
-                            rotate_periodic=True,
-                            new_axis=False,
-                            new_direction=False,
-                            auto_offset=True,
-                            nonconformal_create_periodic=True,
+                        solver.tui.mesh.modify_zones.create_periodic_interface(
+                            "auto",
+                            key_if,
+                            side1,
+                            side2,
+                            "yes",
+                            "no",
+                            "no",
+                            "yes",
+                            "yes",
                         )
+                        # New API:Currently this method shows up a warning message,
+                        # if periodic angle does not divide 360 (deg) evenly.
+                        # Should be replaced in future versions
+                        # solver.mesh.modify_zones.create_periodic_interface(
+                        #     periodic_method="auto",
+                        #     interface_name=key_if,
+                        #     zone_name=side1,
+                        #     shadow_zone_name=side2,
+                        #     rotate_periodic=True,
+                        #     new_axis=False,
+                        #     new_direction=False,
+                        #     auto_offset=True,
+                        #     nonconformal_create_periodic=True,
+                        # )
                 except Exception as e:
                     # if auto-detection of periodic angle does not work,
                     # it gets calculated from input value for number of rot passages
@@ -791,17 +819,17 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
                             rotation_angle = 360.0 / passage_nr
 
                         if rotation_angle is not None:
-                            solver.mesh.modify_zones.create_periodic_interface(
-                                periodic_method="auto",
-                                interface_name=key_if,
-                                zone_name=side1,
-                                shadow_zone_name=side2,
-                                rotate_periodic=True,
-                                new_axis=False,
-                                new_direction=False,
-                                auto_offset=False,
-                                rotation_angle=rotation_angle,
-                                nonconformal_create_periodic=True,
+                            solver.tui.mesh.modify_zones.create_periodic_interface(
+                                "auto",
+                                key_if,
+                                side1,
+                                side2,
+                                "yes",
+                                "no",
+                                "no",
+                                "no",
+                                rotation_angle,
+                                "yes",
                             )
                         else:
                             logger.error(
