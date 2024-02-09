@@ -728,6 +728,7 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
     peri_if_El = data["locations"].get("bz_interfaces_periodic_names")
     non_conformal_list = []
     if peri_if_El is not None:
+        peri_idx = 0
         for key_if in peri_if_El:
             logger.info(f"Setting up periodic BC: {key_if}")
             side1 = peri_if_El[key_if].get("side1")
@@ -746,32 +747,66 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
                 )
             else:
                 # As the origin & axis have been set for all cell-zones these are the defaults for all containing boundary zones
-                # Therefore, we do not need to set them -> "no", "no"
+                # Therefore, we do not need to set them
                 try:
-                    solver.tui.mesh.modify_zones.create_periodic_interface(
-                        "auto", key_if, side1, side2, "yes", "no", "no", "yes", "yes"
-                    )
+                    rotation_angle = peri_if_El[key_if].get("rotation_angle")
+                    if type(rotation_angle) is int or float:
+                        solver.mesh.modify_zones.create_periodic_interface(
+                            periodic_method="auto",
+                            interface_name=key_if,
+                            zone_name=side1,
+                            shadow_zone_name=side2,
+                            rotate_periodic=True,
+                            new_axis=False,
+                            new_direction=False,
+                            auto_offset=False,
+                            rotation_angle=rotation_angle,
+                            nonconformal_create_periodic=True,
+                        )
+                    else:
+                        solver.mesh.modify_zones.create_periodic_interface(
+                            periodic_method="auto",
+                            interface_name=key_if,
+                            zone_name=side1,
+                            shadow_zone_name=side2,
+                            rotate_periodic=True,
+                            new_axis=False,
+                            new_direction=False,
+                            auto_offset=True,
+                            nonconformal_create_periodic=True,
+                        )
                 except Exception as e:
-                    # if auto detection of periodic angle does not work, it gets calculated from input value for number of rot passages
+                    # if auto-detection of periodic angle does not work,
+                    # it gets calculated from input value for number of rot passages
                     if (
                         str(e.args)
                         == "('+ (add): invalid argument [1]: wrong type [not a number]\\nError Object: #f',)"
                     ):
-                        per_angle = 360 / int(
-                            data["expressions"].get("GEO_ROT_No_Passages_360")
-                        )
-                        solver.tui.mesh.modify_zones.create_periodic_interface(
-                            "auto",
-                            key_if,
-                            side1,
-                            side2,
-                            "yes",
-                            "no",
-                            "no",
-                            "yes",
-                            per_angle,
-                            "yes",
-                        )
+                        # old definition via info of expression 'GEO_ROT_No_Passages_360'
+                        # last try to create manually the periodic interface
+                        rotation_angle = None
+                        passage_nr = data["expressions"].get("GEO_ROT_No_Passages_360")
+                        if type(passage_nr) is int:
+                            rotation_angle = 360.0 / passage_nr
+
+                        if rotation_angle is not None:
+                            solver.mesh.modify_zones.create_periodic_interface(
+                                periodic_method="auto",
+                                interface_name=key_if,
+                                zone_name=side1,
+                                shadow_zone_name=side2,
+                                rotate_periodic=True,
+                                new_axis=False,
+                                new_direction=False,
+                                auto_offset=False,
+                                rotation_angle=rotation_angle,
+                                nonconformal_create_periodic=True,
+                            )
+                        else:
+                            logger.error(
+                                f"Specifying a manual rotation angle for '{key_if}' failed, please directly define the "
+                                f"rotation angle in the periodic interface definition via the key 'rotation_angle'"
+                            )
 
                 # check for non-conformal periodics (fluent creates normal interfaces if non-conformal)
                 intf_check_side1 = solver.setup.boundary_conditions.interface.get(side1)
@@ -784,6 +819,9 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
                     )
                     # Add the non-conformal interface to the list for correct turbo topology definition
                     non_conformal_list.append(key_if)
+
+                # increase peri_idx
+                peri_idx = peri_idx + 1
 
     # after important steps loop over all keys -> no order important
     for key in data["locations"]:
@@ -884,13 +922,15 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
                         inBC.turbulence.turbulent_intensity = "BC_IN_TuIn"
                     if data["expressions"].get("BC_IN_TuVR") is not None:
                         if solver.version < "242":
-                            inBC.turbulence.turbulent_viscosity_ratio_real = "BC_IN_TuVR"
+                            inBC.turbulence.turbulent_viscosity_ratio_real = (
+                                "BC_IN_TuVR"
+                            )
                         else:
                             inBC.turbulence.turbulent_viscosity_ratio = "BC_IN_TuVR"
 
                     # If Expressions for a direction are specified
                     if (
-                       (data["expressions"].get("BC_IN_radDir") is not None)
+                        (data["expressions"].get("BC_IN_radDir") is not None)
                         and (data["expressions"].get("BC_IN_tangDir") is not None)
                         and (data["expressions"].get("BC_IN_axDir") is not None)
                     ):
