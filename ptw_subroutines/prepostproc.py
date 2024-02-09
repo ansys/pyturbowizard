@@ -76,14 +76,22 @@ def prepost_01(data, solver, launchEl):
             logger.info(f"No span plots have been created: {e}")
 
     # Create Oil Flow Pathlines if specified by user
-    if solver.version >= "241" and data["results"].get("oilflow_pathlines_surfaces") is not None and data["results"].get("oilflow_pathlines_var") is not None:
+    if (
+        solver.version >= "241"
+        and data["results"].get("oilflow_pathlines_surfaces") is not None
+        and data["results"].get("oilflow_pathlines_var") is not None
+    ):
         try:
             oilflow_pathlines(data, solver, launchEl)
         except Exception as e:
             logger.info(f"No oil flow pathlines have been created: {e}")
 
     # Create Pathlines if specified by user
-    if solver.version >= "241" and data["results"].get("pathlines_releaseSurfaces") is not None and data["results"].get("pathlines_var") is not None:
+    if (
+        solver.version >= "241"
+        and data["results"].get("pathlines_releaseSurfaces") is not None
+        and data["results"].get("pathlines_var") is not None
+    ):
         try:
             pathlines(data, solver, launchEl)
         except Exception as e:
@@ -168,7 +176,9 @@ def spanPlots(data, solver, launchEl):
                 plot_filename = "./" + f"{contName}_plot"
                 if use_python_command:
                     # Python commands
-                    contour_display_command = f"solver.results.graphics.contour['{contName}'].display()"
+                    contour_display_command = (
+                        f"solver.results.graphics.contour['{contName}'].display()"
+                    )
                     contour_save_command = f"solver.results.graphics.picture.save_picture(file_name='{plot_filename}')"
                 else:
                     # TUI commands
@@ -193,8 +203,8 @@ def spanPlots(data, solver, launchEl):
 
     return
 
-def oilflow_pathlines(data, solver, launchEl):
 
+def oilflow_pathlines(data, solver, launchEl):
     oilflowPL_vars = data["results"].get("oilflow_pathlines_var")
 
     availableFieldDataNames = (
@@ -202,7 +212,9 @@ def oilflow_pathlines(data, solver, launchEl):
     )
     for oilflowPL_var in oilflowPL_vars:
         if oilflowPL_var not in availableFieldDataNames:
-            logger.info(f"FieldVariable: '{oilflowPL_var}' not available in Solution-Data!")
+            logger.info(
+                f"FieldVariable: '{oilflowPL_var}' not available in Solution-Data!"
+            )
             logger.info(f"Available Scalar Values are: '{availableFieldDataNames}'")
 
     oilflowPL_surfaces = data["results"]["oilflow_pathlines_surfaces"]
@@ -215,11 +227,12 @@ def oilflow_pathlines(data, solver, launchEl):
         solver.results.graphics.pathline[oilflowPL_name] = {}
         solver.results.graphics.pathline[oilflowPL_name].options(oil_flow=True)
         solver.results.graphics.pathline[oilflowPL_name](
-            onzone = oilflowPL_surfaces,
-            release_from_surfaces = oilflowPL_surfaces,
-            field = oilflowPL_var,
-            step = 3000,
-            skip = 15)
+            onzone=oilflowPL_surfaces,
+            release_from_surfaces=oilflowPL_surfaces,
+            field=oilflowPL_var,
+            step=3000,
+            skip=15,
+        )
         solver.results.graphics.pathline[oilflowPL_name].color_map(size=20)
         oilflowPL_objects.append(oilflowPL_name)
 
@@ -227,27 +240,23 @@ def oilflow_pathlines(data, solver, launchEl):
     meshName = "oilflowPL-surfaces"
     logger.info(f"Creating mesh object: {meshName}")
     solver.results.graphics.mesh[meshName] = {}
-    solver.results.graphics.mesh[meshName](
-        surfaces_list = oilflowPL_surfaces
-    )
+    solver.results.graphics.mesh[meshName](surfaces_list=oilflowPL_surfaces)
 
     # Create scenes including the pathlines and the blade mesh object
     for oilflowPL_object in oilflowPL_objects:
         sceneName = f"sc-{oilflowPL_object}"
         logger.info(f"Creating scene: {sceneName}")
-        scene_inputs = [oilflowPL_object,meshName]
+        scene_inputs = [oilflowPL_object, meshName]
         for scene_input in scene_inputs:
             solver.results.scene[sceneName] = {}
             solver.results.scene[sceneName].graphics_objects[scene_input] = {
-            "name": scene_input
+                "name": scene_input
             }
-
 
     return
 
 
 def pathlines(data, solver, launchEl):
-
     pathlineVars = data["results"].get("pathlines_var")
 
     availableFieldDataNames = (
@@ -255,7 +264,9 @@ def pathlines(data, solver, launchEl):
     )
     for pathlineVar in pathlineVars:
         if pathlineVar not in availableFieldDataNames:
-            logger.info(f"FieldVariable: '{pathlineVar}' not available in Solution-Data!")
+            logger.info(
+                f"FieldVariable: '{pathlineVar}' not available in Solution-Data!"
+            )
             logger.info(f"Available Scalar Values are: '{availableFieldDataNames}'")
 
     pathlinesRelSurf = data["results"]["pathlines_releaseSurfaces"]
@@ -266,10 +277,8 @@ def pathlines(data, solver, launchEl):
         logger.info(f"Creating pathlines: {pathlineName}")
         solver.results.graphics.pathline[pathlineName] = {}
         solver.results.graphics.pathline[pathlineName](
-            release_from_surfaces = pathlinesRelSurf,
-            field = pathlineVar,
-            step = 3000,
-            skip = 5)
+            release_from_surfaces=pathlinesRelSurf, field=pathlineVar, step=3000, skip=5
+        )
         solver.results.graphics.pathline[pathlineName].color_map(size=20)
 
     return
