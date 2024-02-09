@@ -750,7 +750,7 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
                 # Therefore, we do not need to set them
                 try:
                     rotation_angle = peri_if_El[key_if].get("rotation_angle")
-                    if type(rotation_angle) is int or float:
+                    if (type(rotation_angle) is int) or (type(rotation_angle) is float):
                         solver.mesh.modify_zones.create_periodic_interface(
                             periodic_method="auto",
                             interface_name=key_if,
