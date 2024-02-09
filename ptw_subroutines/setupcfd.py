@@ -746,7 +746,8 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
                     f"Creation of periodic interface is skipped!"
                 )
             else:
-                # As the origin & axis have been set for all cell-zones these are the defaults for all containing boundary zones
+                # As the origin & axis have been set for all cell-zones,
+                # these are the defaults for all containing boundary zones
                 # Therefore, we do not need to set them
                 try:
                     rotation_angle = peri_if_El[key_if].get("rotation_angle")
