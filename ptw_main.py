@@ -389,7 +389,8 @@ class PTW_Run:
 
             import ntpath
 
-            debug_filename = f"ptw_{ntpath.basename(self.config_file_name)}"
+            config_basename = os.path.splitext(ntpath.basename(self.config_file_name))[0]
+            debug_filename = f"ptw_{config_basename}.json"
             ptwOutPath = misc_utils.ptw_output(fl_workingDir=self.fl_workingDir)
             debug_file_path = os.path.join(ptwOutPath, debug_filename)
             jsonString = json.dumps(self.turbo_data, indent=4, sort_keys=True)
