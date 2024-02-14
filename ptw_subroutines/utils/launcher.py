@@ -1,6 +1,7 @@
 import os
 import subprocess
 import time
+from packaging import version
 
 # Logger
 from ptw_subroutines.utils import ptw_logger, misc_utils
@@ -20,12 +21,71 @@ def launchFluent(launchEl: dict):
 
     # open new session in queue
     if queueEl is not None:
-        maxtime = float(launchEl.setdefault("queue_waiting_time", 600.0))
-        logger.info("Trying to launching new Fluent Session on queue '" + queueEl + "'")
-        logger.info(
-            "Max waiting time (launching-key: 'queue_waiting_time') set to: "
-            + str(maxtime)
+        solver = launch_queuing_session(launchEl=launchEl)
+    # If no serverFilename is specified, a new session will be started
+    elif serverfilename is None or serverfilename == "":
+        solver = pyfluent.launch_fluent(
+            precision=launchEl["precision"],
+            processor_count=int(launchEl["noCore"]),
+            mode="solver",
+            show_gui=launchEl["show_gui"],
+            product_version=launchEl["fl_version"],
+            cwd=fl_workingDir,
+            cleanup_on_exit=launchEl["exitatend"],
+            py=launchEl["py"],
+            gpu=launchEl["gpu"],
         )
+    # Hook to existing Session
+    else:
+        solver = hook_to_existing_session(
+            fl_workingDir=fl_workingDir,
+            serverfilename=serverfilename,
+            cleanup_on_exit=launchEl["exitatend"],
+        )
+    return solver
+
+
+def hook_to_existing_session(
+    fl_workingDir: str, serverfilename: str, cleanup_on_exit: bool
+):
+    import ansys.fluent.core as pyfluent
+
+    fullpath_to_sf = os.path.join(fl_workingDir, serverfilename)
+    logger.info("Connecting to Fluent Session...")
+    # Start Session via hook
+    if version.parse(pyfluent.__version__) <= version.parse("0.17.1"):
+        solver = pyfluent.launch_fluent(
+            start_instance=False,
+            server_info_filepath=fullpath_to_sf,
+            cleanup_on_exit=cleanup_on_exit,
+        )
+    elif version.parse(pyfluent.__version__) <= version.parse("0.18.2"):
+        solver = pyfluent.connect_to_fluent(
+            server_info_filepath=fullpath_to_sf,
+            cleanup_on_exit=cleanup_on_exit,
+        )
+    else:
+        solver = pyfluent.connect_to_fluent(
+            server_info_file_name=fullpath_to_sf,
+            cleanup_on_exit=cleanup_on_exit,
+        )
+
+    return solver
+
+
+def launch_queuing_session(launchEl: dict):
+    import ansys.fluent.core as pyfluent
+
+    solver = None
+    queueEl = launchEl.get("queue_slurm")
+    fl_workingDir = launchEl["workingDir"]
+    maxtime = float(launchEl.setdefault("queue_waiting_time", 600.0))
+
+    logger.info("Trying to launching new Fluent Session on queue '" + queueEl + "'")
+    logger.info(
+        "Max waiting time (launching-key: 'queue_waiting_time') set to: " + str(maxtime)
+    )
+    if version.parse(pyfluent.__version__) < version.parse("0.19.0"):
         # Get a free server-filename
         serverfilename = launchEl.get("serverfilename", "server-info.txt")
         serverfilename = misc_utils.get_free_filename(
@@ -35,11 +95,16 @@ def launchFluent(launchEl: dict):
         serverfilename = os.path.join(fl_workingDir, serverfilename)
 
         commandlist = list()
-        commandlist.append(
-            pyfluent.launcher.launcher.get_fluent_exe_path(
+
+        # Get Fluent Executable
+        fluent_path = get_fluent_exe_path(product_version=launchEl["fl_version"])
+        if version.parse(pyfluent.__version__) < version.parse("0.19.0"):
+            fluent_path = pyfluent.launcher.launcher.get_fluent_exe_path(
                 product_version=launchEl["fl_version"]
             )
-        )
+        logger.info("Used Fluent executable: '" + fluent_path + "'")
+        commandlist.append(fluent_path)
+
         precisionCommand = "3d"
         if launchEl["precision"]:
             precisionCommand = precisionCommand + "dp"
@@ -82,8 +147,11 @@ def launchFluent(launchEl: dict):
             serverfilename=serverfilename,
             cleanup_on_exit=launchEl["exitatend"],
         )
-    # If no serverFilename is specified, a new session will be started
-    elif serverfilename is None or serverfilename == "":
+    else:
+        scheduler_options = {
+            "scheduler": "slurm",
+            "scheduler_queue": launchEl["queue_slurm"],
+        }
         solver = pyfluent.launch_fluent(
             precision=launchEl["precision"],
             processor_count=int(launchEl["noCore"]),
@@ -94,44 +162,32 @@ def launchFluent(launchEl: dict):
             cleanup_on_exit=launchEl["exitatend"],
             py=launchEl["py"],
             gpu=launchEl["gpu"],
-        )
-    # Hook to existing Session
-    else:
-        solver = hook_to_existing_session(
-            fl_workingDir=fl_workingDir,
-            serverfilename=serverfilename,
-            cleanup_on_exit=launchEl["exitatend"],
-        )
+            scheduler_options=scheduler_options,
+        ).result(timeout=maxtime)
     return solver
 
 
-def hook_to_existing_session(
-    fl_workingDir: str, serverfilename: str, cleanup_on_exit: bool
-):
-    import ansys.fluent.core as pyfluent
-    from packaging import version
+def get_fluent_exe_path(product_version: str):
+    import platform
 
-    fullpath_to_sf = os.path.join(fl_workingDir, serverfilename)
-    logger.info("Connecting to Fluent Session...")
-    # Start Session via hook
-    if version.parse(pyfluent.__version__) <= version.parse("0.17.1"):
-        solver = pyfluent.launch_fluent(
-            start_instance=False,
-            server_info_filepath=fullpath_to_sf,
-            cleanup_on_exit=cleanup_on_exit,
-        )
-    elif version.parse(pyfluent.__version__) <= version.parse("0.18.2"):
-        solver = pyfluent.connect_to_fluent(
-            server_info_filepath=fullpath_to_sf,
-            cleanup_on_exit=cleanup_on_exit,
-        )
+    fluent_path = None
+    product_version_split = product_version.split(".")
+    root_env_name = "AWP_ROOT" + product_version_split[0] + product_version_split[1]
+    ansys_root_path = os.getenv(root_env_name)
+    if ansys_root_path is None:
+        logger.error(f"Environment '{root_env_name}' not found on system")
+        return fluent_path
+
+    if platform.system() == "Windows":
+        fluent_path = os.path.join(ansys_root_path, "fluent", "ntbin", "win64", "fluent.exe")
+        if platform.architecture()[0] == "32bit":
+            fluent_path = os.path.join(ansys_root_path, "fluent", "ntbin", "win32", "fluent.exe")
+    elif platform.system() == "Linux":
+        fluent_path = os.path.join(ansys_root_path, "fluent", "bin", "fluent")
     else:
-        solver = pyfluent.connect_to_fluent(
-            server_info_file_name=fullpath_to_sf,
-            cleanup_on_exit=cleanup_on_exit,
-        )
+        logger.error(f"System '{platform.system()}' not supported.")
 
-    return solver
+    return fluent_path
 
 
 def get_launcher_defaults(launchEl: dict):
