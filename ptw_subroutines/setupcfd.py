@@ -40,7 +40,7 @@ def setup_01(data, solver, solveEnergy: bool = True):
     # Materials
     set_material(data=data, solver=solver, solveEnergy=solveEnergy)
     # Set Boundaries
-    if solver.version < "24.1.0":
+    if solver.version < "241":
         set_boundaries_v232(data=data, solver=solver, solveEnergy=solveEnergy)
     else:
         set_boundaries(data=data, solver=solver, solveEnergy=solveEnergy)
@@ -233,11 +233,25 @@ def set_boundaries_v232(data, solver, solveEnergy: bool = True):
                         "auto", key_if, side1, side2, "yes", "no", "no", "yes", "yes"
                     )
                 except Exception as e:
-                    # if auto detection of periodic angle does not work, it gets calculated from input value for number of rot passages              
-                    if str(e.args) == "('+ (add): invalid argument [1]: wrong type [not a number]\\nError Object: #f',)":
-                        per_angle = 360 / int(data["expressions"].get("GEO_ROT_No_Passages_360"))
+                    # if auto detection of periodic angle does not work, it gets calculated from input value for number of rot passages
+                    if (
+                        str(e.args)
+                        == "('+ (add): invalid argument [1]: wrong type [not a number]\\nError Object: #f',)"
+                    ):
+                        per_angle = 360 / int(
+                            data["expressions"].get("GEO_ROT_No_Passages_360")
+                        )
                         solver.tui.mesh.modify_zones.create_periodic_interface(
-                        "auto", key_if, side1, side2, "yes", "no", "no", "yes", per_angle, "yes"
+                            "auto",
+                            key_if,
+                            side1,
+                            side2,
+                            "yes",
+                            "no",
+                            "no",
+                            "yes",
+                            per_angle,
+                            "yes",
                         )
 
                 # check for non-conformal periodics (fluent creates normal interfaces if non-conformal)
@@ -714,6 +728,7 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
     peri_if_El = data["locations"].get("bz_interfaces_periodic_names")
     non_conformal_list = []
     if peri_if_El is not None:
+        peri_idx = 0
         for key_if in peri_if_El:
             logger.info(f"Setting up periodic BC: {key_if}")
             side1 = peri_if_El[key_if].get("side1")
@@ -731,21 +746,97 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
                     f"Creation of periodic interface is skipped!"
                 )
             else:
-                # As the origin & axis have been set for all cell-zones these are the defaults for all containing boundary zones
-                # Therefore, we do not need to set them -> "no", "no"
+                # As the origin & axis have been set for all cell-zones, these are the defaults for
+                # all containing boundary zones --> Therefore, we do not need to set them
                 try:
-                    solver.tui.mesh.modify_zones.create_periodic_interface(
-                        "auto", key_if, side1, side2, "yes", "no", "no", "yes", "yes"
-                    )
-                except Exception as e:
-                    # if auto detection of periodic angle does not work, it gets calculated from input value for number of rot passages              
-                    if str(e.args) == "('+ (add): invalid argument [1]: wrong type [not a number]\\nError Object: #f',)":
-                        per_angle = 360 / int(data["expressions"].get("GEO_ROT_No_Passages_360"))
+                    rotation_angle = peri_if_El[key_if].get("rotation_angle")
+                    if (type(rotation_angle) is int) or (type(rotation_angle) is float):
                         solver.tui.mesh.modify_zones.create_periodic_interface(
-                        "auto", key_if, side1, side2, "yes", "no", "no", "yes", per_angle, "yes"
+                            "auto",
+                            key_if,
+                            side1,
+                            side2,
+                            "yes",
+                            "no",
+                            "no",
+                            "no",
+                            rotation_angle,
+                            "yes",
                         )
+                        # New API:Currently this method shows up a warning message,
+                        # if periodic angle does not divide 360 (deg) evenly.
+                        # Should be replaced in future versions
+                        # solver.mesh.modify_zones.create_periodic_interface(
+                        #     periodic_method="auto",
+                        #     interface_name=key_if,
+                        #     zone_name=side1,
+                        #     shadow_zone_name=side2,
+                        #     rotate_periodic=True,
+                        #     new_axis=False,
+                        #     new_direction=False,
+                        #     auto_offset=False,
+                        #     rotation_angle=rotation_angle,
+                        #     nonconformal_create_periodic=True,
+                        # )
+                    else:
+                        solver.tui.mesh.modify_zones.create_periodic_interface(
+                            "auto",
+                            key_if,
+                            side1,
+                            side2,
+                            "yes",
+                            "no",
+                            "no",
+                            "yes",
+                            "yes",
+                        )
+                        # New API:Currently this method shows up a warning message,
+                        # if periodic angle does not divide 360 (deg) evenly.
+                        # Should be replaced in future versions
+                        # solver.mesh.modify_zones.create_periodic_interface(
+                        #     periodic_method="auto",
+                        #     interface_name=key_if,
+                        #     zone_name=side1,
+                        #     shadow_zone_name=side2,
+                        #     rotate_periodic=True,
+                        #     new_axis=False,
+                        #     new_direction=False,
+                        #     auto_offset=True,
+                        #     nonconformal_create_periodic=True,
+                        # )
+                except Exception as e:
+                    # if auto-detection of periodic angle does not work,
+                    # it gets calculated from input value for number of rot passages
+                    if (
+                        str(e.args)
+                        == "('+ (add): invalid argument [1]: wrong type [not a number]\\nError Object: #f',)"
+                    ):
+                        # old definition via info of expression 'GEO_ROT_No_Passages_360'
+                        # last try to create manually the periodic interface
+                        rotation_angle = None
+                        passage_nr = data["expressions"].get("GEO_ROT_No_Passages_360")
+                        if type(passage_nr) is int:
+                            rotation_angle = 360.0 / passage_nr
 
-                        
+                        if rotation_angle is not None:
+                            solver.tui.mesh.modify_zones.create_periodic_interface(
+                                "auto",
+                                key_if,
+                                side1,
+                                side2,
+                                "yes",
+                                "no",
+                                "no",
+                                "no",
+                                rotation_angle,
+                                "yes",
+                            )
+                        else:
+                            logger.error(
+                                f"Specifying a manual rotation angle for '{key_if}' failed, please directly define the "
+                                f"rotation angle in the periodic interface definition via the key 'rotation_angle'"
+                            )
+
                 # check for non-conformal periodics (fluent creates normal interfaces if non-conformal)
                 intf_check_side1 = solver.setup.boundary_conditions.interface.get(side1)
                 intf_check_side2 = solver.setup.boundary_conditions.interface.get(side2)
@@ -757,6 +848,9 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
                     )
                     # Add the non-conformal interface to the list for correct turbo topology definition
                     non_conformal_list.append(key_if)
+
+                # increase peri_idx
+                peri_idx = peri_idx + 1
 
     # after important steps loop over all keys -> no order important
     for key in data["locations"]:
@@ -856,8 +950,10 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
                     if data["expressions"].get("BC_IN_TuIn") is not None:
                         inBC.turbulence.turbulent_intensity = "BC_IN_TuIn"
                     if data["expressions"].get("BC_IN_TuVR") is not None:
-                        if solver.version < "24.2.0":
-                            inBC.turbulence.turbulent_viscosity_ratio_real = "BC_IN_TuVR"
+                        if solver.version < "242":
+                            inBC.turbulence.turbulent_viscosity_ratio_real = (
+                                "BC_IN_TuVR"
+                            )
                         else:
                             inBC.turbulence.turbulent_viscosity_ratio = "BC_IN_TuVR"
 
@@ -1287,7 +1383,7 @@ def set_reports(data, solver, launchEl):
         for report in reportList:
             reportName = report.replace("_", "-")
             reportName = "rep-" + reportName.lower()
-            if solver.version < "24.1.0":
+            if solver.version < "241":
                 solver.solution.report_definitions.single_val_expression[
                     reportName
                 ] = {}

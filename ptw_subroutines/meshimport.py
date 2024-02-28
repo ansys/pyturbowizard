@@ -31,8 +31,10 @@ def import_01(data, solver):
                 break
 
         if import_mesh_type:
-            if solver.version < "24.1.0":
-                logger.error(f"Import of multiple meshes only supported by version v241 or later")
+            if solver.version < "241":
+                logger.error(
+                    f"Import of multiple meshes only supported by version v241 or later"
+                )
                 return success
             else:
                 logger.info(f"Importing multiple meshes '{meshFilename}'")
@@ -73,6 +75,7 @@ def multiple_mesh_read(solver, meshnamelist):
 
 def multiple_mesh_import(solver, meshnamelist):
     # using turbo-workflow to import multiple meshes
+    solver.tui.turbo_workflow.workflow.enable()
     solver.workflow.InitializeWorkflow(WorkflowType=r"Turbo Workflow")
     solver.workflow.TaskObject["Describe Component"].Execute()
     solver.workflow.TaskObject["Define Blade Row Scope"].Execute()
@@ -94,13 +97,13 @@ def multiple_mesh_import(solver, meshnamelist):
         )
         solver.workflow.TaskObject[meshname_formatted].Execute()
     # Clean-up
-    for meshname in meshnamelist:
-        solver.workflow.TaskObject["Import Mesh"].Arguments.set_state(
-            {
-                r"MeshFilePath": r"",
-                r"MeshName": rf"{meshname}",
-            }
-        )
+    # for meshname in meshnamelist:
+    #     solver.workflow.TaskObject["Import Mesh"].Arguments.set_state(
+    #         {
+    #             r"MeshFilePath": r"",
+    #             r"MeshName": rf"{meshname}",
+    #         }
+    #     )
     # Turn off Turbo-Workflow
-    solver.workflow.set_state(None)
+    solver.tui.turbo_workflow.workflow.disable("yes")
     return

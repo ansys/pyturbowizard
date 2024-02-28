@@ -179,9 +179,9 @@ def get_fluent_exe_path(product_version: str):
         return fluent_path
 
     if platform.system() == "Windows":
-        fluent_path = os.path.join(ansys_root_path, "fluent", "ntbin", "win64")
+        fluent_path = os.path.join(ansys_root_path, "fluent", "ntbin", "win64", "fluent.exe")
         if platform.architecture()[0] == "32bit":
-            fluent_path = os.path.join(ansys_root_path, "fluent", "ntbin", "win32")
+            fluent_path = os.path.join(ansys_root_path, "fluent", "ntbin", "win32", "fluent.exe")
     elif platform.system() == "Linux":
         fluent_path = os.path.join(ansys_root_path, "fluent", "bin", "fluent")
     else:
