@@ -107,7 +107,7 @@ def check_input_parameter_expressions(solver):
         exp = solver.setup.named_expressions.get(expName)
         if expName.startswith("BC_"):
             expValue = exp.get_value()
-            if type(expValue) is not float:
+            if not isinstance(expValue, float):
                 logger.info(
                     f"'{expName}' seems not to be valid: '{expValue}' "
                     f"--> Removing definition as Input Parameter..."
