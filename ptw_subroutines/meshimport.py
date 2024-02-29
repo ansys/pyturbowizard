@@ -7,7 +7,7 @@ logger = ptw_logger.getLogger()
 def import_01(data, solver):
     success = False
     meshFilename = data.get("meshFilename")
-    if type(meshFilename) is str:
+    if isinstance(meshFilename, str):
         logger.info(f"Importing mesh '{meshFilename}'")
         if meshFilename.endswith(".def"):
             solver.file.import_.read(file_type="cfx-definition", file_name=meshFilename)
@@ -18,7 +18,7 @@ def import_01(data, solver):
         else:
             solver.file.read(file_type="mesh", file_name=meshFilename)
             success = True
-    elif type(meshFilename) is list:
+    elif isinstance(meshFilename, list):
         logger.info(f"Importing multiple meshes...")
         import_mesh_type = False
         for fileName in meshFilename:

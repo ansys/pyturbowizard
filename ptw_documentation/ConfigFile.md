@@ -98,7 +98,7 @@ The following functions and corresponding options are available:
         - "init_standard_01": standard initialization, using inlet data as reference
         - "init_standard_02": standard initialization, using 0 velocity, 0.01 TKE , 0.01 Omega, inlet temperature,
           initial gauge pressure
-        - "init_hybrid_01": Hybrid initialization using intial gauge pressure
+        - "init_hybrid_01": Hybrid initialization using initial gauge pressure
         - **"init_fmg_01"(default):** FMG initialization, using standard "init_standard_01" for pre-initialization
         - "init_fmg_02": FMG initialization, using standard "init_standard_02" for pre-initialization
         - "init_fmg_03": FMG initialization, using standard "init_hybrid_01" for pre-initialization
@@ -385,7 +385,7 @@ regions (e.g. rotors and stators), separate topologies have to be created.
 ```
 
 **Note**:  If a periodic interface specified under ```"tz_theta_periodic_names"``` is non-conformal, it will be
-automaticaly handeled by the script.
+automatically handled by the script.
 
 This completes the setup of the ``` locations ``` section.
 

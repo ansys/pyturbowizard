@@ -60,9 +60,7 @@ def run_extsch_script(scriptPath: str, workingDir: str, caseEl: dict):
         commandlist.append(f"{caseFilename}.cas.h5")
         commandlist.append("| uniq")
         commandlist.append(f"> {output_filename}")
-        process_files = subprocess.Popen(
-            commandlist, cwd=workingDir, stdout=subprocess.DEVNULL
-        )
+        process_files = subprocess.Popen(commandlist, cwd=workingDir, stdout=subprocess.DEVNULL)
         logger.info(f"'extsch' output written to: {output_filename}")
     else:
         logger.info(
@@ -78,7 +76,7 @@ def ptw_output(fl_workingDir, study_name=None, case_name=None):
         if not os.path.exists(ptw_output_path):
             os.makedirs(ptw_output_path)
 
-    # Get the Path to a seprate case folder
+    # Get the Path to a separate case folder
     if study_name is not None:
         study_name = "study_" + study_name
         study_path = os.path.join(ptw_output_path, study_name)
@@ -86,7 +84,7 @@ def ptw_output(fl_workingDir, study_name=None, case_name=None):
             os.makedirs(study_path)
         return study_path
 
-    # Get the Path to a seprate study folder
+    # Get the Path to a separate study folder
     if case_name is not None:
         case_name = "case_" + case_name
         case_path = os.path.join(ptw_output_path, case_name)
@@ -105,15 +103,11 @@ def can_convert_to_number(value):
         return False
 
 
-def move_files(
-    source_dir: str, target_dir: str, filename_wildcard: str, overwrite: bool = True
-):
+def move_files(source_dir: str, target_dir: str, filename_wildcard: str, overwrite: bool = True):
     filenames = glob.glob(os.path.join(source_dir, filename_wildcard))
     for source_file in filenames:
         target_file = ntpath.basename(source_file)
-        logger.info(
-            f"Moving file '{target_file}' from '{source_dir}' to '{target_dir}'"
-        )
+        logger.info(f"Moving file '{target_file}' from '{source_dir}' to '{target_dir}'")
         target_file = os.path.join(target_dir, target_file)
         if overwrite:
             shutil.move(source_file, target_file)
@@ -127,10 +121,10 @@ def move_files(
 def remove_files(working_dir: str, filename_wildcard):
     import glob
 
-    if type(filename_wildcard) is list:
+    if isinstance(filename_wildcard, list):
         for wc in filename_wildcard:
             remove_files(working_dir=working_dir, filename_wildcard=wc)
-    if type(filename_wildcard) is str:
+    if isinstance(filename_wildcard, str):
         filenames = glob.glob(os.path.join(working_dir, filename_wildcard))
         for file_name in filenames:
             logger.info(f"Removing file '{file_name}'")
@@ -148,9 +142,10 @@ def fluent_cleanup(working_dir: str, cleanup_data):
         remove_files(working_dir=working_dir, filename_wildcard="fluent*.trn")
         remove_files(working_dir=working_dir, filename_wildcard="*slurm*")
         logger.info("Doing standard clean-up... finished!")
-    elif type(cleanup_data) is list:
+    elif isinstance(cleanup_data, list):
         # Wait some time, till the fluent session is closed to avoid any file-locks
         time.sleep(5)
         logger.info("Doing user-adjusted clean-up...")
         remove_files(working_dir=working_dir, filename_wildcard=cleanup_data)
         logger.info("Doing user-adjusted clean-up...  finished!")
+
