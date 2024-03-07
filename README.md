@@ -1,5 +1,10 @@
 # **PyTurboWizard**
 
+## **Open-Source Software Disclaimer**
+This deliverable depends on Open-Source Software (OSS), which are subject to their own terms & conditions and may contain vulnerabilities. 
+Ansys is not responsible for such Third-Party Software.  
+It is recommended to consult your company’s Software Security department before installing any software on company hardware.
+
 ## **Overview**
 This project aims to provide a standardized testing setup for turbomachinery-cases in Ansys Fluent through the Pythonic access with PyFluent.
 The functionalities are displayed in the following Feature-Matrix:
@@ -20,9 +25,9 @@ The functionalities are displayed in the following Feature-Matrix:
 
 Required libraries:
 - PyFluent
-- Matplotlib
-- NumPy
-- Pandas
+- Matplotlib (included in PyFluent)
+- NumPy (included in PyFluent)
+- Pandas (included in PyFluent)
 
 
 #### Linux / Cluster
@@ -55,7 +60,8 @@ Required libraries:
   - Adjust the Configuration File to your setup ([Configuration File Setup](ptw_documentation/ConfigFile.md))
 - Get latest Version From GitHub: [main branch](https://github.com/ansys-internal/pyturbowizard/tree/main)
   - Copy complete file structure from GitHub to a specific folder
-  - Open Windows PowerShell in Fluent data folder
+  - Open a Console / Windows Powershell & activate your PyFluent virtual environment, e.g. via [Ansys Python Manager](https://github.com/ansys/python-installer-qt-gui/releases)
+  - Change the console working directory to your Fluent data folder  
   - Execute script via: ```python <PathToPTWMain.py> <PathToConfigurationFile.json/yaml>```
 
 ## Useful Documents
