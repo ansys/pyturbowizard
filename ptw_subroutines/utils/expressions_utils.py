@@ -126,7 +126,8 @@ def check_input_parameter_expressions(solver):
                     exp.set_state({"input_parameter": True})
                 except ValueError:
                     logger.info(
-                        f"'{exp_name}' seems to depend on another expression: {exp_def} "
+                        f"'{exp_name}' seems not to be const. value and "
+                        f"may depend on another expression or function: {exp_def} "
                         f"--> Removing definition as Input Parameter..."
                     )
                     exp.set_state({"input_parameter": False})
