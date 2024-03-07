@@ -84,3 +84,20 @@ def detect_unused_keywords(refDict: dict, compareDict: dict, path="root"):
                 detect_unused_keywords(
                     refDict=refEl, compareDict=compareEl, path=newpath
                 )
+
+
+def check_keys(case_dict: dict, case_name: str):
+    # check if all basic elements exist
+    check_list = [
+        "expressions",
+        "locations",
+        "fluid_properties",
+        "setup",
+        "solution",
+        "results",
+    ]
+    for check_item in check_list:
+        if case_dict.get(check_item) is None:
+            logger.warning(f"No key '{check_item}' found in case '{case_name}' ... "
+                           f"creating empty key in case-dict to avoid errors")
+            case_dict[check_item] = {}

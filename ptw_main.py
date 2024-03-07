@@ -155,8 +155,11 @@ class PTW_Run:
                     continue
                 # Update initial case-function-dict
                 caseFunctionEl = dict_utils.merge_functionDicts(caseDict=caseEl, glfunctionDict=gl_function_data)
+
                 # Check if material from lib should be used
                 dict_utils.get_material_from_lib(caseDict=caseEl, scriptPath=self.script_path)
+                # Check if all important keys are available to avoid errors
+                dict_utils.check_keys(case_dict=caseEl, case_name=casename)
                 # Basic Dict Stuff -> done
 
                 # Get base caseFilename and update dict
