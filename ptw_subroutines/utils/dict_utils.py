@@ -8,9 +8,7 @@ from ptw_subroutines.utils import ptw_logger
 logger = ptw_logger.getLogger()
 
 
-def get_funcname_and_upd_funcdict(
-    parentDict: dict, functionDict: dict, funcDictName: str, defaultName: str
-):
+def get_funcname_and_upd_funcdict(parentDict: dict, functionDict: dict, funcDictName: str, defaultName: str):
     functionName = None
     if functionDict is not None:
         functionName = functionDict.get(funcDictName)
@@ -44,9 +42,7 @@ def merge_data_with_refDict(caseDict: dict, allCasesDict: dict):
     refCaseName = caseDict.get("refCase")
     refDict = allCasesDict.get(refCaseName)
     if refDict is None:
-        logger.info(
-            f"Specified Reference Case {refCaseName} not found in Config-File! --> Skipping CopyFunction..."
-        )
+        logger.info(f"Specified Reference Case {refCaseName} not found in Config-File! --> Skipping CopyFunction...")
         return caseDict
     helpCaseDict = copy.deepcopy(refDict)
     helpCaseDict.update(caseDict)
@@ -55,7 +51,7 @@ def merge_data_with_refDict(caseDict: dict, allCasesDict: dict):
 
 
 def get_material_from_lib(caseDict: dict, scriptPath: str):
-    if type(caseDict.get("fluid_properties")) is str:
+    if isinstance(caseDict.get("fluid_properties"), str):
         materialStr = caseDict.get("fluid_properties")
         materialFileName = os.path.join(scriptPath, "ptw_misc", "material_lib.json")
         materialFile = open(materialFileName, "r")
@@ -79,11 +75,9 @@ def detect_unused_keywords(refDict: dict, compareDict: dict, path="root"):
         else:
             refEl = refDict.get(item)
             compareEl = compareDict.get(item)
-            if type(refEl) is dict and type(compareEl) is dict:
+            if isinstance(refEl, dict) and isinstance(compareEl, dict):
                 newpath = f"{path} / {item}"
-                detect_unused_keywords(
-                    refDict=refEl, compareDict=compareEl, path=newpath
-                )
+                detect_unused_keywords(refDict=refEl, compareDict=compareEl, path=newpath)
 
 
 def check_keys(case_dict: dict, case_name: str):
@@ -98,6 +92,8 @@ def check_keys(case_dict: dict, case_name: str):
     ]
     for check_item in check_list:
         if case_dict.get(check_item) is None:
-            logger.warning(f"No key '{check_item}' found in case '{case_name}' ... "
-                           f"creating empty key in case-dict to avoid errors")
+            logger.warning(
+                f"No key '{check_item}' found in case '{case_name}' ... "
+                f"creating empty key in case-dict to avoid errors"
+            )
             case_dict[check_item] = {}
