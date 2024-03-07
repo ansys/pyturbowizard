@@ -1008,11 +1008,27 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
                             "BC_IN_tangDir",
                             "BC_IN_axDir",
                         ]
+                    elif (
+                        (data["expressions"].get("BC_IN_xDir") is not None)
+                        and (data["expressions"].get("BC_IN_yDir") is not None)
+                        and (data["expressions"].get("BC_IN_zDir") is not None)
+                    ):
+                        inBC.momentum.direction_specification_method = (
+                            "Direction Vector"
+                        )
+                        inBC.momentum.coordinate_system = (
+                            "Cartesian (X, Y, Z)"
+                        )
+                        inBC.momentum.flow_direction = [
+                            "BC_IN_xDir",
+                            "BC_IN_yDir",
+                            "BC_IN_zDir",
+                        ]
 
                     # Use Definitions from Profile-Data if specified
                     # check profile naming convention:
                     # profile_name: "inlet-bc"
-                    # directions (cylindrical): vrad-dir,vrad-dir,vax-dir
+                    # directions (cylindrical): vrad-dir,vtang-dir,vax-dir
                     if useProfileData:
                         inBC.momentum.direction_specification_method = (
                             "Direction Vector"
