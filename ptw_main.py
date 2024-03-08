@@ -25,7 +25,7 @@ from ptw_subroutines.utils import (
 )
 
 
-ptw_version = "1.7.7"
+ptw_version = "1.7.8"
 
 # Set Logger
 logger = ptw_logger.init_logger()
@@ -100,10 +100,10 @@ class PTW_Run:
     def ini_fluent_settings(self):
         solver = self.solver
         if solver is None:
-            logger.warning(f"No Fluent solver specified... Skipping PTW_Run-function 'ini_fluent_settings'!")
+            logger.warning("No Fluent solver specified... Skipping PTW_Run-function 'ini_fluent_settings'!")
             return
 
-        logger.info(f"Initializing Fluent settings")
+        logger.info("Initializing Fluent settings")
 
         # Set standard image output format to AVZ
         solver.execute_tui("/display/set/picture/driver avz")
@@ -121,19 +121,19 @@ class PTW_Run:
             solver.file.batch_options.hide_answer = True
             solver.file.batch_options.redisplay_question = False
 
-        logger.info(f"Initializing Fluent settings... done!")
+        logger.info("Initializing Fluent settings... done!")
 
     def do_case_study(self):
         # Get Data from Class
         solver = self.solver
         if solver is None:
-            logger.warning(f"No Fluent solver specified... Skipping PTW_Run-function 'do_case_study'!")
+            logger.warning("No Fluent solver specified... Skipping PTW_Run-function 'do_case_study'!")
             return
         if self.turbo_data is None:
-            logger.warning(f"No Turbo-Dict loaded... Skipping PTW_Run-function 'do_case_study'!")
+            logger.warning("No Turbo-Dict loaded... Skipping PTW_Run-function 'do_case_study'!")
             return
 
-        logger.info(f"Running Case Study")
+        logger.info("Running Case Study")
         # get data from class
         launchEl = self.launch_data
         fl_workingDir = self.fl_workingDir
@@ -157,6 +157,8 @@ class PTW_Run:
                 caseFunctionEl = dict_utils.merge_functionDicts(caseDict=caseEl, glfunctionDict=gl_function_data)
                 # Check if material from lib should be used
                 dict_utils.get_material_from_lib(caseDict=caseEl, scriptPath=self.script_path)
+                # Check if all important keys are available to avoid errors
+                dict_utils.check_keys(case_dict=caseEl, case_name=casename)
                 # Basic Dict Stuff -> done
 
                 # Get base caseFilename and update dict
@@ -169,7 +171,7 @@ class PTW_Run:
                 solver.file.start_transcript(file_name=trnFileName)
 
                 # Mesh import, expressions, profiles
-                result = meshimport.import_01(caseEl, solver)
+                meshimport.import_01(caseEl, solver)
 
                 ### Expression Definition
                 logger.info("Expression Definition... starting")
@@ -290,19 +292,19 @@ class PTW_Run:
             if len(caseDict) > 1:
                 postproc.mergeReportTables(turboData=turbo_data, solver=solver)
 
-        logger.info(f"Running Case Study... done!")
+        logger.info("Running Case Study... done!")
 
     def do_parametric_study(self):
         # Get Data from Class
         solver = self.solver
         if solver is None:
-            logger.warning(f"No Fluent solver specified... Skipping PTW_Run-function 'do_parametric_study'!")
+            logger.warning("No Fluent solver specified... Skipping PTW_Run-function 'do_parametric_study'!")
             return
         if self.turbo_data is None:
-            logger.warning(f"No Turbo-Dict loaded... Skipping PTW_Run-function 'do_parametric_study'!")
+            logger.warning("No Turbo-Dict loaded... Skipping PTW_Run-function 'do_parametric_study'!")
             return
 
-        logger.info(f"Running Parametric Study")
+        logger.info("Running Parametric Study")
         turbo_data = self.turbo_data
         gl_function_data = self.gl_function_data
 
@@ -313,19 +315,19 @@ class PTW_Run:
             # Post Process Studies
             parametricstudy_post.study_post(data=turbo_data, solver=solver, functionEl=gl_function_data)
 
-        logger.info(f"Running Parametric Study... done!")
+        logger.info("Running Parametric Study... done!")
 
     def finalize_session(self):
         # Get Data from Class
         solver = self.solver
         if solver is None:
-            logger.warning(f"No Fluent solver specified... Skipping PTW_Run-function 'finalize_session'!")
+            logger.warning("No Fluent solver specified... Skipping PTW_Run-function 'finalize_session'!")
             return
         if self.turbo_data is None:
-            logger.warning(f"No Turbo-Dict loaded... Skipping PTW_Run-function 'finalize_session'!")
+            logger.warning("No Turbo-Dict loaded... Skipping PTW_Run-function 'finalize_session'!")
             return
 
-        logger.info(f"Finalizing Fluent-Session")
+        logger.info("Finalizing Fluent-Session")
 
         # Exit Solver
         solver.exit()
@@ -352,7 +354,7 @@ class PTW_Run:
                 logger.info(f"Writing ptw-json-File: {debug_file_path}")
                 jsonFile.write(jsonString)
 
-        logger.info(f"Finalizing Fluent-Session... done!")
+        logger.info("Finalizing Fluent-Session... done!")
 
     def do_full_run(self, script_path, config_filename, solver):
         logger.info(f"*** Starting PyTurboWizard (Version {ptw_version}) ***")
