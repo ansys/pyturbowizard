@@ -45,4 +45,4 @@ name	definition	description	input-parameter	output-parameter
 "MP_PR"	"MP_OUT_areaAve_p / MP_IN_areaAve_p"	""	#f	#f
 "MP_PRt"	"MP_OUT_massFlowAve_pt / MP_IN_massFlowAve_pt"	""	#f	#t
 "MP_TRt"	"MP_OUT_massFlowAve_Tt / MP_IN_massFlowAve_Tt"	""	#f	#f
-"MP_delta_pt"	"MP_OUT_massFlowAve_pt - MP_IN_massFlowAve_pt"	""	#f	#t
+"MP_delta_pt"	"MP_IN_massFlowAve_pt - MP_OUT_massFlowAve_pt"	""	#f	#t
