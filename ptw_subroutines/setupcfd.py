@@ -5,7 +5,7 @@ import os
 logger = ptw_logger.getLogger()
 
 
-def setup(data, solver, functionEl):
+def setup(data, solver, functionEl, gpu):
     # Get FunctionName & Update FunctionEl
     functionName = dict_utils.get_funcname_and_upd_funcdict(
         parentDict=data,
@@ -15,9 +15,9 @@ def setup(data, solver, functionEl):
     )
     logger.info(f"Running Setup Function '{functionName}' ...")
     if functionName == "setup_compressible_01":
-        setup_compressible_01(data, solver)
+        setup_compressible_01(data, solver, gpu)
     elif functionName == "setup_incompressible_01":
-        setup_incompressible_01(data, solver)
+        setup_incompressible_01(data, solver, gpu)
     else:
         logger.info(f"Prescribed Function '{functionName}' not known. Skipping Setup!")
 
@@ -29,14 +29,14 @@ def setup_compressible_01(data, solver):
     return
 
 
-def setup_incompressible_01(data, solver):
-    setup_01(data=data, solver=solver, solveEnergy=False)
+def setup_incompressible_01(data, solver, gpu):
+    setup_01(data=data, solver=solver, solveEnergy=False, gpu=gpu)
     return
 
 
-def setup_01(data, solver, solveEnergy: bool = True):
+def setup_01(data, solver, solveEnergy: bool = True, gpu: bool = False):
     # Set physics
-    set_physics(data=data, solver=solver, solveEnergy=solveEnergy)
+    set_physics(data=data, solver=solver, solveEnergy=solveEnergy, gpu=gpu)
     # Materials
     set_material(data=data, solver=solver, solveEnergy=solveEnergy)
     # Set Boundaries
@@ -103,7 +103,7 @@ def set_material(data, solver, solveEnergy: bool = True):
     return
 
 
-def set_physics(data, solver, solveEnergy: bool = True):
+def set_physics(data, solver, solveEnergy: bool = True, gpu: bool = False):
     if solveEnergy:
         solver.setup.models.energy = {"enabled": True, "viscous_dissipation": True}
 
@@ -118,13 +118,20 @@ def set_physics(data, solver, solveEnergy: bool = True):
     default_turb_model = "sst"
     turb_model = data["setup"].setdefault("turbulence_model", default_turb_model)
     supported_kw_models = solver.setup.models.viscous.k_omega_model.allowed_values()
+    supported_kw_models_gpu = [
+        "sst",
+        "geko"
+    ]
     # filtering specificly for transition models  not available
     supported_transition_models = [
         "transition-sst",
         "transition-gamma",
         "transition-algebraic",
     ]
-    if turb_model in supported_kw_models:
+    supported_transition_models_gpu = [
+        "transition-algebraic"
+        ]
+    if (turb_model in supported_kw_models) and not gpu:
         logger.info(f"Setting kw-turbulence-model: '{turb_model}'")
         solver.setup.models.viscous.model = "k-omega"
         solver.setup.models.viscous.k_omega_model = turb_model
@@ -143,7 +150,26 @@ def set_physics(data, solver, solveEnergy: bool = True):
             if c_jet is not None:
                 solver.tui.define.models.viscous.geko_options.cjet("yes", f"{c_jet}")
 
-    elif turb_model in supported_transition_models:
+    elif (turb_model in supported_kw_models_gpu) and gpu:
+        logger.info(f"Setting kw-turbulence-model: '{turb_model}'")
+        solver.setup.models.viscous.model = "k-omega"
+        solver.setup.models.viscous.k_omega_model = turb_model
+
+        # Set geko Model Parameters
+        if turb_model == "geko":
+            c_sep = data["setup"].get("geko_csep")
+            if c_sep is not None:
+                solver.tui.define.models.viscous.geko_options.csep("yes", f"{c_sep}")
+
+            c_nw = data["setup"].get("geko_cnw")
+            if c_nw is not None:
+                solver.tui.define.models.viscous.geko_options.cnw("yes", f"{c_nw}")
+
+            c_jet = data["setup"].get("geko_cjet")
+            if c_jet is not None:
+                solver.tui.define.models.viscous.geko_options.cjet("yes", f"{c_jet}")
+
+    elif (turb_model in supported_transition_models) and not gpu:
         if turb_model == "transition-sst":
             solver.setup.models.viscous.model = turb_model
         elif turb_model == "transition-gamma":
@@ -154,6 +180,13 @@ def set_physics(data, solver, solveEnergy: bool = True):
             solver.setup.models.viscous.model = "k-omega"
             solver.setup.models.viscous.k_omega_model = "sst"
             solver.setup.models.viscous.transition_module = "gamma-algebraic"
+
+    elif (turb_model in supported_transition_models_gpu) and gpu:
+        if turb_model == "transition-algebraic":
+            solver.setup.models.viscous.model = "k-omega"
+            solver.setup.models.viscous.k_omega_model = "sst"
+            solver.setup.models.viscous.transition_module = "gamma-algebraic"
+
     else:
         logger.warning(
             f"Specified turbulence-model not supported: '{turb_model}'! Default turbulence model will be used: '{default_turb_model}'!"

@@ -8,7 +8,7 @@ from ptw_subroutines.utils import ptw_logger, dict_utils, misc_utils, fluent_uti
 logger = ptw_logger.getLogger()
 
 
-def study(data, solver, functionEl):
+def study(data, solver, functionEl, gpu):
     # Get FunctionName & Update FunctionEl
     functionName = dict_utils.get_funcname_and_upd_funcdict(
         parentDict=data,
@@ -19,7 +19,7 @@ def study(data, solver, functionEl):
 
     logger.info(f"Running ParametricStudy-Function '{functionName}' ...")
     if functionName == "study_01":
-        study01(data, solver)
+        study01(data, solver, gpu)
     else:
         logger.info(
             f"Prescribed Function '{functionName}' not known. Skipping Parametric Study!"
@@ -28,7 +28,7 @@ def study(data, solver, functionEl):
     logger.info(f"Running ParametricStudy-Function '{functionName}'...  finished!")
 
 
-def study01(data, solver):
+def study01(data, solver, gpu):
     studyDict = data.get("studies")
     flworking_Dir = data.get("launching")["workingDir"]
 
@@ -248,10 +248,13 @@ def study01(data, solver):
         logger.info(f"Running Study '{studyName}' finished!")
         # break
 
-        # Extract CoV information and store in temporary file for post processing
-        tempDataDict = (
-            solver.solution.monitor.convergence_conditions.convergence_reports()
-        )
+        # Extract CoV information and store in temporary file for post processing (CoV not available with GPU solver at the moment)
+        if gpu:
+            tempDataDict = {"num_eqs":0}
+        else:
+            tempDataDict = (
+                solver.solution.monitor.convergence_conditions.convergence_reports()
+            )       
         number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
         tempDataDict["num_eqs"] = number_eqs
 

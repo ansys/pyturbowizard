@@ -147,6 +147,7 @@ class PTW_Run:
         fl_workingDir = self.fl_workingDir
         gl_function_data = self.gl_function_data
         turbo_data = self.turbo_data
+        gpu = turbo_data.get("launching")["gpu"]
 
         caseDict = turbo_data.get("cases")
         if caseDict is not None:
@@ -222,12 +223,12 @@ class PTW_Run:
                 solver.tui.define.beta_feature_access("yes ok")
 
                 # Case Setup
-                setupcfd.setup(data=caseEl, solver=solver, functionEl=caseFunctionEl)
+                setupcfd.setup(data=caseEl, solver=solver, functionEl=caseFunctionEl, gpu=gpu)
                 setupcfd.set_reports(caseEl, solver, launchEl)
 
                 # Solution
                 # Set Solver Settings
-                numerics.numerics(data=caseEl, solver=solver, functionEl=caseFunctionEl)
+                numerics.numerics(data=caseEl, solver=solver, functionEl=caseFunctionEl, gpu=gpu)
 
                 # Read Additional Journals, if specified
                 fluent_utils.read_journals(
@@ -237,7 +238,7 @@ class PTW_Run:
                 )
 
                 # Initialization
-                solve.init(data=caseEl, solver=solver, functionEl=caseFunctionEl)
+                solve.init(data=caseEl, solver=solver, functionEl=caseFunctionEl, gpu=gpu)
 
                 # Setup for Post Processing
                 prepostproc.prepost(
@@ -337,12 +338,13 @@ class PTW_Run:
         logger.info(f"Running Parametric Study")
         turbo_data = self.turbo_data
         gl_function_data = self.gl_function_data
+        gpu = turbo_data.get("launching")["gpu"]
 
         studyDict = turbo_data.get("studies")
         # Do Studies
         if studyDict is not None:
             parametricstudy.study(
-                data=turbo_data, solver=solver, functionEl=gl_function_data
+                data=turbo_data, solver=solver, functionEl=gl_function_data, gpu=gpu
             )
             # Post Process Studies
             parametricstudy_post.study_post(
