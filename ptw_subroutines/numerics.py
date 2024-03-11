@@ -7,6 +7,11 @@ logger = ptw_logger.getLogger()
 def numerics(data, solver, functionEl, gpu):
     # Get FunctionName & Update FunctionEl
 
+    if "tsn" not in data.get("solution"):
+        tsn = False
+    else:
+        tsn = data.get("solution")["tsn"]
+
     supported_num = [
         "numerics_defaults",
         "numerics_bp_tn_2305",
@@ -38,6 +43,19 @@ def numerics(data, solver, functionEl, gpu):
                 "Prescribed Function '{functionName}' not supported in GPU solver. Using Fluent default numerics settings!"
                 )
                 functionName = "numerics_defaults"
+
+                if tsn:
+                    logger.info(
+                    "Turbomachinery specific numerics are not supported in GPU solver and will therefore not be used!"
+                    )
+
+        else:
+            if tsn:
+                logger.info(
+                "Turbomachinery specific numerics are not supported in GPU solver and will therefore not be used!"
+                )
+
+
 
 
     logger.info(f"Specifying Numerics '{functionName}' ...")
