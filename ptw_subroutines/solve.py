@@ -49,10 +49,11 @@ def init(data, solver, functionEl, gpu):
                 f"Prescribed Initialization Function '{functionName}' not supported in GPU solver. Using 'init_standard_01' instead!"
                 )
             functionName = "init_standard_01"
-        else:
-             logger.info(
-            f"'Prescribed Function '{functionName}' not known. Skipping Initialization!"
-            )
+        elif (functionName not in supported_ini_gpu) and (functionName not in supported_ini):
+            logger.info(
+                f"Prescribed Function '{functionName}' not known. Using 'init_standard_01' instead!"
+                )
+            functionName = "init_standard_01"
 
 
 

@@ -36,11 +36,11 @@ def numerics(data, solver, functionEl, gpu):
         if functionName != "numerics_defaults":
             if functionName not in supported_num:
                 logger.info(
-                "Prescribed Function '{functionName}' not known. Skipping Specifying Numerics!"
+                f"Prescribed Function '{functionName}' not known. Skipping Specifying Numerics!"
                 )
             else:
                 logger.info(
-                "Prescribed Function '{functionName}' not supported in GPU solver. Using Fluent default numerics settings!"
+                f"Prescribed Function '{functionName}' not supported in GPU solver. Using Fluent default numerics settings!"
                 )
                 functionName = "numerics_defaults"
 
@@ -69,7 +69,7 @@ def numerics(data, solver, functionEl, gpu):
         numerics_bp_all_2305(data, solver)
     else:
         logger.info(
-            "Prescribed Function '{functionName}' not known. Skipping Specifying Numerics!"
+            f"Prescribed Function '{functionName}' not known. Skipping Specifying Numerics!"
         )
 
     logger.info("Specifying Numerics... finished!")
