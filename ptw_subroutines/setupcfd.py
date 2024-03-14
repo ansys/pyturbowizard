@@ -24,8 +24,8 @@ def setup(data, solver, functionEl, gpu):
     logger.info("Running Setup Function... finished!")
 
 
-def setup_compressible_01(data, solver):
-    setup_01(data=data, solver=solver, solveEnergy=True)
+def setup_compressible_01(data, solver, gpu):
+    setup_01(data=data, solver=solver, solveEnergy=True, gpu=gpu)
     return
 
 
@@ -1395,7 +1395,7 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
     return
 
 
-def set_reports(data, solver, launchEl):
+def set_reports(data, solver, launchEl, gpu: bool = False):
     # Get Solution-Dict
     solutionDict = data.get("solution")
     # Get PTW Output folder path
@@ -1472,7 +1472,7 @@ def set_reports(data, solver, launchEl):
 
     # Set CoVs
     cov_list = solutionDict.get("cov_list")
-    if cov_list is not None:
+    if (cov_list is not None) and (not gpu):
         stop_criterion = solutionDict.setdefault("cov_crit", 1.0e-4)
         for solve_cov in cov_list:
             reportName = solve_cov.replace("_", "-")
@@ -1493,8 +1493,10 @@ def set_reports(data, solver, launchEl):
                     }
                 }
             }
-    else:
+    elif (cov_list is None) and (not gpu):
         logger.warning(f"No CoV definitions specified in Case: Keyword 'cov_list'!")
+    elif (cov_list is not None) and gpu:
+        logger.warning(f"CoV is not supported in GPU solver! Sepcified CoVs will not be used!")
 
     # Set Convergence Conditions
     conv_check_freq = solutionDict.setdefault("conv_check_freq", 5)
@@ -1503,6 +1505,8 @@ def set_reports(data, solver, launchEl):
         "condition": "all-conditions-are-met",
         "frequency": conv_check_freq,
     }
+
+
     # Set Basic Solver-Solution-Settings
     tsf = solutionDict.get("time_step_factor", 5)
     # Check for a pseudo-time-step-size

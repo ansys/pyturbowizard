@@ -224,7 +224,7 @@ class PTW_Run:
 
                 # Case Setup
                 setupcfd.setup(data=caseEl, solver=solver, functionEl=caseFunctionEl, gpu=gpu)
-                setupcfd.set_reports(caseEl, solver, launchEl)
+                setupcfd.set_reports(caseEl, solver, launchEl, gpu=gpu)
 
                 # Solution
                 # Set Solver Settings

@@ -45,12 +45,12 @@ def init(data, solver, functionEl, gpu):
 
     if gpu:
         if (functionName not in supported_ini_gpu) and (functionName in supported_ini):
-            logger.info(
+            logger.warning(
                 f"Prescribed Initialization Function '{functionName}' not supported in GPU solver. Using 'init_standard_01' instead!"
                 )
             functionName = "init_standard_01"
         elif (functionName not in supported_ini_gpu) and (functionName not in supported_ini):
-            logger.info(
+            logger.warning(
                 f"Prescribed Function '{functionName}' not known. Using 'init_standard_01' instead!"
                 )
             functionName = "init_standard_01"
