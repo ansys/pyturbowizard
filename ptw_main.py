@@ -297,6 +297,7 @@ class PTW_Run:
                         functionEl=caseFunctionEl,
                         launchEl=launchEl,
                         trn_name=trnFileName,
+                        gpu=gpu
                     )
                     # version 1.5.3: no alteration of case/data done in post processing, removed additonal saving
                     # filename = caseFilename + "_fin"
@@ -348,7 +349,7 @@ class PTW_Run:
             )
             # Post Process Studies
             parametricstudy_post.study_post(
-                data=turbo_data, solver=solver, functionEl=gl_function_data
+                data=turbo_data, solver=solver, functionEl=gl_function_data, gpu=gpu
             )
 
         logger.info(f"Running Parametric Study... done!")

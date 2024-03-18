@@ -13,7 +13,7 @@ from ptw_subroutines.utils import (
 logger = ptw_logger.getLogger()
 
 
-def post(data, solver, functionEl, launchEl, trn_name):
+def post(data, solver, functionEl, launchEl, trn_name, gpu):
     # Get FunctionName & Update FunctionEl
     functionName = dict_utils.get_funcname_and_upd_funcdict(
         parentDict=data,
@@ -24,7 +24,7 @@ def post(data, solver, functionEl, launchEl, trn_name):
 
     logger.info(f"Running Postprocessing Function '{functionName}' ...")
     if functionName == "post_01":
-        post_01(data, solver, launchEl, trn_name)
+        post_01(data, solver, launchEl, trn_name, gpu)
     else:
         logger.info(
             f"Prescribed Function '{functionName}' not known. Skipping Postprocessing!"
@@ -33,7 +33,7 @@ def post(data, solver, functionEl, launchEl, trn_name):
     logger.info("Running Postprocessing Function... finished!")
 
 
-def post_01(data, solver, launchEl, trn_name):
+def post_01(data, solver, launchEl, trn_name, gpu):
     fl_workingDir = launchEl.get("workingDir")
     caseFilename = data["caseFilename"]
     caseOutPath = misc_utils.ptw_output(
@@ -74,7 +74,7 @@ def post_01(data, solver, launchEl, trn_name):
 
     ## write report table
     createReportTable(
-        data=data, fl_workingDir=fl_workingDir, solver=solver, trn_filename=trn_name
+        data=data, fl_workingDir=fl_workingDir, solver=solver, trn_filename=trn_name, gpu=gpu
     )
 
     ## move case span-plots to case output folder
@@ -86,7 +86,7 @@ def post_01(data, solver, launchEl, trn_name):
     return
 
 
-def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
+def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
     try:
         import pandas as pd
     except ImportError as e:
@@ -152,50 +152,52 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
             logger.info(f"Writing Monitor Plot to Directory: {plot_filename}")
             plt.savefig(plot_filename)
             plt.close()  # Close the figure to release memory
-        else:
-            logger.info("Missing Report File data: Monitor Plots not created")
+    else:
+        logger.info("Missing Report File data: Monitor Plots not created")
 
-        if not cov_df.empty:
-            # Get CoV information
-            covDict = (
-                solver.solution.monitor.convergence_conditions.convergence_reports()
-            )
-            filtCovDict = {
-                key: value
-                for key, value in covDict.items()
-                if value.get("active", False) and value.get("cov", False)
-            }
+    if (not cov_df.empty) and (not gpu):
+        # Get CoV information
+        covDict = (
+            solver.solution.monitor.convergence_conditions.convergence_reports()
+        )
+        filtCovDict = {
+            key: value
+            for key, value in covDict.items()
+            if value.get("active", False) and value.get("cov", False)
+        }
 
-            cov_df.reset_index(inplace=True)
+        cov_df.reset_index(inplace=True)
 
-            # Get the list of columns excluding 'Iteration'
-            y_columns = cov_df.columns[2:]
-            filtered_y_columns = [
-                col
-                for col in y_columns
-                if any(col.startswith(key[:-4]) for key in filtCovDict)
-            ]
+        # Get the list of columns excluding 'Iteration'
+        y_columns = cov_df.columns[2:]
+        filtered_y_columns = [
+            col
+            for col in y_columns
+            if any(col.startswith(key[:-4]) for key in filtCovDict)
+        ]
 
-            plt.figure(figsize=(10, 6))
-            # Plot each column separately on the same plot
-            for col in filtered_y_columns:
-                plt.plot(cov_df["Iteration"], cov_df[col], label=col)
+        plt.figure(figsize=(10, 6))
+        # Plot each column separately on the same plot
+        for col in filtered_y_columns:
+            plt.plot(cov_df["Iteration"], cov_df[col], label=col)
 
-            plt.xlabel("Iteration")
-            plt.ylabel("")
-            plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
-            plt.title(f"Coefficient of Variation (CoV 50) - {caseFilename}")
-            plt.grid(True)
-            plt.yscale("log")
+        plt.xlabel("Iteration")
+        plt.ylabel("")
+        plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
+        plt.title(f"Coefficient of Variation (CoV 50) - {caseFilename}")
+        plt.grid(True)
+        plt.yscale("log")
 
-            # Save the plot in folder
-            plot_filename = os.path.join(plot_folder, f"cov_plot.png")
-            plt.tight_layout()
-            logger.info(f"Writing CoV Plot to Directory: {plot_filename}")
-            plt.savefig(plot_filename)
-            plt.close()  # Close the figure to release memory
-        else:
-            logger.info("Missing Report File data: CoV Plot not created")
+        # Save the plot in folder
+        plot_filename = os.path.join(plot_folder, f"cov_plot.png")
+        plt.tight_layout()
+        logger.info(f"Writing CoV Plot to Directory: {plot_filename}")
+        plt.savefig(plot_filename)
+        plt.close()  # Close the figure to release memory
+    elif (not cov_df.empty) and gpu:
+        logger.info("CoVs are not supported in GPU solver: CoV Plot not created")
+    else:
+        logger.info("Missing Report File data: CoV Plot not created")
 
     # Read in transcript file
     caseOutPath = misc_utils.ptw_output(

@@ -8,7 +8,7 @@ from ptw_subroutines.utils import ptw_logger, dict_utils, postproc_utils, misc_u
 logger = ptw_logger.getLogger()
 
 
-def study_post(data, solver, functionEl):
+def study_post(data, solver, functionEl, gpu):
     # Get FunctionName & Update FunctionEl
     functionName = dict_utils.get_funcname_and_upd_funcdict(
         parentDict=data,
@@ -17,17 +17,23 @@ def study_post(data, solver, functionEl):
         defaultName="study_post_01",
     )
 
-    logger.info(f"Running ParametricStudy-Postprocessing Function '{functionName}' ...")
-    if functionName == "study_post_01":
+    
+    if (functionName == "study_post_01") and (not gpu):
+        logger.info(f"Running ParametricStudy-Postprocessing Function '{functionName}' ...")
         study_post_01(data=data, solver=solver)
+        logger.info(
+        f"Running ParametricStudy-Postprocessing Function '{functionName}'...  finished!"
+        )
+    elif gpu:
+        logger.info(
+            f"As with GPU solver, there is no CoV data available, prescribed Function '{functionName}' cannot be run. Skipping ParametricStudy-Postprocessing Function!"
+        )
     else:
         logger.info(
             f"Prescribed Function '{functionName}' not known. Skipping ParametricStudy-Postprocessing Function!"
         )
 
-    logger.info(
-        f"Running ParametricStudy-Postprocessing Function '{functionName}'...  finished!"
-    )
+    
 
 
 def study_post_01(data, solver):
