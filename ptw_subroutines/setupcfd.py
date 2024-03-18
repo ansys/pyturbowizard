@@ -43,7 +43,7 @@ def setup_01(data, solver, solveEnergy: bool = True, gpu: bool = False):
     if solver.version < "241":
         set_boundaries_v232(data=data, solver=solver, solveEnergy=solveEnergy)
     else:
-        set_boundaries(data=data, solver=solver, solveEnergy=solveEnergy)
+        set_boundaries(data=data, solver=solver, solveEnergy=solveEnergy, gpu=gpu)
 
     # Do some Mesh Checks
     solver.mesh.check()
@@ -728,7 +728,7 @@ def set_boundaries_v232(data, solver, solveEnergy: bool = True):
     return
 
 
-def set_boundaries(data, solver, solveEnergy: bool = True):
+def set_boundaries(data, solver, solveEnergy: bool = True, gpu: bool = False):
     # Enable Turbo Models
     solver.tui.define.turbo_model.enable_turbo_model("yes")
 
@@ -1283,6 +1283,9 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
             # solver.tui.define.boundary_conditions.zone_type(side1, "interface")
             # solver.tui.define.boundary_conditions.zone_type(side2, "interface")
             # Create Interface
+            if gpu:
+                logger.error("GTI Interfaces are not supported in GPU solver and will cause the setup to fail. Currently, only general interfaces are supported.")
+
             solver.tui.define.turbo_model.turbo_create(
                 key_if, side1, "()", side2, "()", "2"
             )
@@ -1301,6 +1304,9 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
             # solver.tui.define.boundary_conditions.zone_type(side1, "interface")
             # solver.tui.define.boundary_conditions.zone_type(side2, "interface")
             # Create Interface
+            if gpu:
+                logger.error("GTI Interfaces are not supported in GPU solver and will cause the setup to fail. Currently, only general interfaces are supported.")
+
             solver.tui.define.turbo_model.turbo_create(
                 key_if, side1, "()", side2, "()", "1"
             )
@@ -1319,6 +1325,9 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
             # solver.tui.define.boundary_conditions.zone_type(side1, "interface")
             # solver.tui.define.boundary_conditions.zone_type(side2, "interface")
             # Create Interface
+            if gpu:
+                logger.error("GTI Interfaces are not supported in GPU solver and will cause the setup to fail. Currently, only general interfaces are supported.")
+                
             solver.tui.define.turbo_model.turbo_create(
                 key_if, side1, "()", side2, "()", "0"
             )
