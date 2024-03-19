@@ -1517,7 +1517,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # create output parameter
-                solver.solution.report_definitions.surface[reportName].create_output_parameter()
+                solver.solution.report_definitions.surface[report].create_output_parameter()
 
             elif scope == "volume":
                 cell_zones = basicReportDict[report].get("cell_zones")
@@ -1571,7 +1571,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # create output parameter
-                solver.solution.report_definitions.volume[reportName].create_output_parameter()
+                solver.solution.report_definitions.volume[report].create_output_parameter()
 
             elif scope == "force":
                 zones = basicReportDict[report].get("zones")
@@ -1591,7 +1591,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 solver.solution.report_definitions.force[reportName] = {"force_vector":force_vector}
 
                 # create output parameter
-                solver.solution.report_definitions.force[reportName].create_output_parameter()
+                solver.solution.report_definitions.force[report].create_output_parameter()
 
             elif scope == "drag":
                 zones = basicReportDict[report].get("zones")
@@ -1621,7 +1621,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # create output parameter
-                solver.solution.report_definitions.drag[reportName].create_output_parameter()
+                solver.solution.report_definitions.drag[report].create_output_parameter()
 
             elif scope == "lift":
                 zones = basicReportDict[report].get("zones")
@@ -1651,7 +1651,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # create output parameter
-                solver.solution.report_definitions.lift[reportName].create_output_parameter()
+                solver.solution.report_definitions.lift[report].create_output_parameter()
 
             elif scope == "moment":
                 zones = basicReportDict[report].get("zones")
@@ -1685,7 +1685,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # create output parameter
-                solver.solution.report_definitions.moment[reportName].create_output_parameter()
+                solver.solution.report_definitions.moment[report].create_output_parameter()
 
 
             elif scope == "flux":
@@ -1713,7 +1713,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # create output parameter
-                solver.solution.report_definitions.flux[reportName].create_output_parameter()
+                solver.solution.report_definitions.flux[report].create_output_parameter()
 
 
             else:
