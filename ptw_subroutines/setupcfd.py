@@ -1447,6 +1447,11 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 "report_defs": [reportName]
             }
 
+        if gpu:
+            logger.warning(
+            f"In GPU solver, Report Definitions specified in 'report_list' cannot be plotted or saved in the report file! However, the Report Definitions are still created.\nOnly Report Definitions specified in 'basic_reports' will be plotted and stored in the report-file."
+            )
+
     if basicReportDict is not None:
         if reportList is None:
             reportList = []
@@ -1458,7 +1463,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
 
             # define scope --> create new report definition from the specified scope
             if scope == "surface":
-                surfaces = basicReportDict[report].get("surfaces")
+                surfaces = basicReportDict[report].get("zones")
                 variable = basicReportDict[report].get("variable")
                 type = basicReportDict[report].get("type")
                 solver.solution.report_definitions.surface[reportName] = {}
@@ -1520,7 +1525,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 solver.solution.report_definitions.surface[reportName].create_output_parameter()
 
             elif scope == "volume":
-                cell_zones = basicReportDict[report].get("cell_zones")
+                cell_zones = basicReportDict[report].get("zones")
                 variable = basicReportDict[report].get("variable")
                 type = basicReportDict[report].get("type")
                 solver.solution.report_definitions.volume[reportName] = {}
@@ -1690,7 +1695,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
 
             elif scope == "flux":
                 type = basicReportDict[report].get("type")
-                boundaries = basicReportDict[report].get("boundaries")
+                boundaries = basicReportDict[report].get("zones")
                 solver.solution.report_definitions.flux[reportName] = {}
 
                  # define type
@@ -1744,10 +1749,6 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
             f"No report-definitions specified in Case: Keyword 'reportlist' and 'basic_reports'!"
         )
 
-    if gpu:
-        logger.warning(
-        f"In GPU solver, Report Definitions specified in 'report_list' cannot be plotted or saved in the report file! However, the Report Definitions are still created.\nOnly Report Definitions specified in 'basic_reports' will be plotted and stored in the report-file."
-        )
 
     # Set Residuals
     # solver.tui.preferences.simulation.local_residual_scaling("yes")

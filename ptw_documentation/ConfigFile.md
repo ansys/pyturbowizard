@@ -269,19 +269,19 @@ report definitions from expressions are not supported yet.
           "IN_massflowave_pt": {
             "scope": "surface",
             "type": "surface-massavg",
-            "surfaces": ["inblock-inflow"],
+            "zones": ["inblock-inflow"],
             "variable": "total-pressure"
           },
           "OUT_massflowave_pt": {
             "scope": "surface",
             "type": "surface-massavg",
-            "surfaces": ["outblock-outflow"],
+            "zones": ["outblock-outflow"],
             "variable": "total-pressure"
           },
           "Vol_Ave_pt": {
             "scope": "volume",
             "type": "volume-massavg",
-            "cell_zones": ["passage"],
+            "zones": ["passage"],
             "variable": "total-pressure"
           },
           "Force_blades_Z": {
@@ -311,7 +311,7 @@ report definitions from expressions are not supported yet.
           "Flux_Mass_In": {
             "scope": "flux",
             "type": "flux-massflow",
-            "boundaries": ["inblock-inflow"]
+            "zones": ["inblock-inflow"]
           }
         },
       ...
