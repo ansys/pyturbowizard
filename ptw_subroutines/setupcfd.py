@@ -906,12 +906,12 @@ def set_boundaries(data, solver, solveEnergy: bool = True):
                     #    inletName, "mass-flow-inlet"
                     # )
                     inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
-                    inBC.momentum.flow_spec = "Mass Flow Rate"
-                    inBC.momentum.mass_flow = "BC_IN_MassFlow"
-                    inBC.momentum.supersonic_or_initial_gauge_pressure = "BC_IN_p_gauge"
-                    inBC.momentum.direction_specification_method = "Normal to Boundary"
+                    inBC.momentum.mass_flow_specification = "Mass Flow Rate"
+                    inBC.momentum.mass_flow_rate = "BC_IN_MassFlow"
+                    inBC.momentum.supersonic_gauge_pressure = "BC_IN_p_gauge"
+                    inBC.momentum.direction_specification = "Normal to Boundary"
                     if solveEnergy:
-                        inBC.thermal.t0 = "BC_IN_Tt"
+                        inBC.thermal.total_temperature = "BC_IN_Tt"
 
                 if (
                     data["expressions"].get("BC_IN_VolumeFlow")
