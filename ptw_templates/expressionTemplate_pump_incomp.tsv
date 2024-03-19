@@ -14,6 +14,13 @@ name	definition	description	input-parameter	output-parameter
 "BC_IN_p_gauge"	"{BC_IN_p_gauge}"	""	#f	#f
 "BC_IN_VolumeFlow"	"{BC_IN_VolumeFlow}"	""	#t	#f
 "BC_IN_VolumeFlowDensity"	"FL_Density"	""	#f	#f
+"BC_IN_FlowAngle"	"{BC_IN_FlowAngle}"	""	#f	#f
+"BC_IN_xDir"	"{BC_IN_xDir}"	""	#f	#f
+"BC_IN_yDir"	"{BC_IN_yDir}"	""	#f	#f
+"BC_IN_zDir"	"{BC_IN_zDir}"	""	#f	#f
+"BC_IN_radDir"	"{BC_IN_radDir}"	""	#f	#f
+"BC_IN_tangDir"	"{BC_IN_tangDir}"	""	#f	#f
+"BC_IN_axDir"	"{BC_IN_axDir}"	""	#f	#f
 "BC_IN_TuIn"	"{BC_IN_TuIn}"	""	#t	#f
 "BC_IN_TuVR"	"{BC_IN_TuVR}"	""	#t	#f
 "BC_OUT_p"	"{BC_OUT_p}"	""	#t	#f
