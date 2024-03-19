@@ -79,6 +79,7 @@ def launch_queuing_session(launchEl: dict):
     solver = None
     queueEl = launchEl.get("queue_slurm")
     fl_workingDir = launchEl["workingDir"]
+    additional_args = launchEl.get("additional_args")
     maxtime = float(launchEl.setdefault("queue_waiting_time", 600.0))
 
     logger.info("Trying to launching new Fluent Session on queue '" + queueEl + "'")
@@ -163,6 +164,7 @@ def launch_queuing_session(launchEl: dict):
             py=launchEl["py"],
             gpu=launchEl["gpu"],
             scheduler_options=scheduler_options,
+            additional_arguments=additional_args
         ).result(timeout=maxtime)
     return solver
 
