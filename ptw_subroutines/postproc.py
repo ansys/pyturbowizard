@@ -160,40 +160,43 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
         covDict = (
             solver.solution.monitor.convergence_conditions.convergence_reports()
         )
-        filtCovDict = {
-            key: value
-            for key, value in covDict.items()
-            if value.get("active", False) and value.get("cov", False)
-        }
+        if covDict is not None:
+            filtCovDict = {
+                key: value
+                for key, value in covDict.items()
+                if value.get("active", False) and value.get("cov", False)
+            }
 
-        cov_df.reset_index(inplace=True)
+            cov_df.reset_index(inplace=True)
 
-        # Get the list of columns excluding 'Iteration'
-        y_columns = cov_df.columns[2:]
-        filtered_y_columns = [
-            col
-            for col in y_columns
-            if any(col.startswith(key[:-4]) for key in filtCovDict)
-        ]
+            # Get the list of columns excluding 'Iteration'
+            y_columns = cov_df.columns[2:]
+            filtered_y_columns = [
+                col
+                for col in y_columns
+                if any(col.startswith(key[:-4]) for key in filtCovDict)
+            ]
 
-        plt.figure(figsize=(10, 6))
-        # Plot each column separately on the same plot
-        for col in filtered_y_columns:
-            plt.plot(cov_df["Iteration"], cov_df[col], label=col)
+            plt.figure(figsize=(10, 6))
+            # Plot each column separately on the same plot
+            for col in filtered_y_columns:
+                plt.plot(cov_df["Iteration"], cov_df[col], label=col)
 
-        plt.xlabel("Iteration")
-        plt.ylabel("")
-        plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
-        plt.title(f"Coefficient of Variation (CoV 50) - {caseFilename}")
-        plt.grid(True)
-        plt.yscale("log")
+            plt.xlabel("Iteration")
+            plt.ylabel("")
+            plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
+            plt.title(f"Coefficient of Variation (CoV 50) - {caseFilename}")
+            plt.grid(True)
+            plt.yscale("log")
 
-        # Save the plot in folder
-        plot_filename = os.path.join(plot_folder, f"cov_plot.png")
-        plt.tight_layout()
-        logger.info(f"Writing CoV Plot to Directory: {plot_filename}")
-        plt.savefig(plot_filename)
-        plt.close()  # Close the figure to release memory
+            # Save the plot in folder
+            plot_filename = os.path.join(plot_folder, f"cov_plot.png")
+            plt.tight_layout()
+            logger.info(f"Writing CoV Plot to Directory: {plot_filename}")
+            plt.savefig(plot_filename)
+            plt.close()  # Close the figure to release memory
+        else:
+            logger.info("No CoVs have been specified: CoV Plot not created")
     else:
         logger.info("Missing Report File data: CoV Plot not created")
 
