@@ -38,7 +38,10 @@ version, number of processes and single or double precision solver.
 For running Fluent on Linux or a Cluster, there are two options:
 
 - Submit job to a slurm-queue: ```queue_slurm``` (e.g. ```"ottc01"```) and a maximal waiting time in
-  sec ```queue_waiting_time``` (default: 600sec). Other options identical to usual launching options
+  sec ```queue_waiting_time``` (default: 600sec). Further, if additional launch arguments are needed
+  (e.g. for launching session in GPU queue) these can be specified with ```additional_args```
+  (e.g. ```"-scheduler_ppn=4 -scheduler_gpn=4"```).
+  Other options identical to usual launching options
 - Hook on to an existing Fluent session ([How to Run on Linux](/README.md#linux--cluster-1)): For this a server file
   name has to be specified under ``` serverfilename ```. When hooking onto a existing Fluent session
   the ``` launching ``` options are not used, except for ```workingDir```.
