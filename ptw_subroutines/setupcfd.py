@@ -1263,9 +1263,17 @@ def set_boundaries(data, solver, solveEnergy: bool = True, gpu: bool = False):
                 # solver.tui.define.boundary_conditions.zone_type(side2, "interface")
                 # Create Interface
                 # solver.tui.define.mesh_interfaces.create(key_if, side1, '()', side2,'()', 'no', 'no', 'no', 'yes', 'no')
-                solver.tui.define.turbo_model.turbo_create(
-                    key_if, side1, "()", side2, "()", "3"
-                )
+                if not gpu:
+                    solver.tui.define.turbo_model.turbo_create(
+                        key_if, side1, "()", side2, "()", "3"
+                    )
+                else:
+                    if list(keyEl.keys()).index(key_if) == 0:
+                        key_if = key_if.replace("-","_")
+                        solver.tui.define.mesh_interfaces.create(key_if, 'no', side1, side2, '()', 'no')
+                    else:
+                        key_if = key_if.replace("-","_")
+                        solver.tui.define.mesh_interfaces.create(key_if, side1, side2)
 
     # Setup turbo-interfaces at end
     keyEl = data["locations"].get("bz_interfaces_mixingplane_names")
