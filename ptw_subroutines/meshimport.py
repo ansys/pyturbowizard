@@ -15,22 +15,31 @@ def import_01(data, solver):
         elif meshFilename.endswith(".cgns"):
             solver.file.import_.read(file_type="cgns-mesh", file_name=meshFilename)
             success = True
+        elif meshFilename.endswith(".gtm"):
+            if solver.version < "241":
+                logger.error(
+                    f"Import of multiple meshes only supported by version v241 or later"
+                )
+            else:
+                meshnamelist = [meshFilename]
+                multiple_mesh_import(solver=solver, meshname_list=meshnamelist)
+                success = True
         else:
             solver.file.read(file_type="mesh", file_name=meshFilename)
             success = True
     elif isinstance(meshFilename, list):
         logger.info(f"Importing multiple meshes...")
-        import_mesh_type = False
+        supported_import_mesh_type = False
         for fileName in meshFilename:
             if (
                 fileName.endswith(".def")
                 or fileName.endswith(".gtm")
                 or fileName.endswith(".cgns")
             ):
-                import_mesh_type = True
+                supported_import_mesh_type = True
                 break
 
-        if import_mesh_type:
+        if supported_import_mesh_type:
             if solver.version < "241":
                 logger.error(
                     f"Import of multiple meshes only supported by version v241 or later"
@@ -38,7 +47,7 @@ def import_01(data, solver):
                 return success
             else:
                 logger.info(f"Importing multiple meshes '{meshFilename}'")
-                multiple_mesh_import(solver=solver, meshnamelist=meshFilename)
+                multiple_mesh_import(solver=solver, meshname_list=meshFilename)
         else:
             multiple_mesh_read(solver=solver, meshnamelist=meshFilename)
 
@@ -73,14 +82,14 @@ def multiple_mesh_read(solver, meshnamelist):
         meshIndex += 1
 
 
-def multiple_mesh_import(solver, meshnamelist):
+def multiple_mesh_import(solver, meshname_list:list):
     # using turbo-workflow to import multiple meshes
     solver.tui.turbo_workflow.workflow.enable()
     solver.workflow.InitializeWorkflow(WorkflowType=r"Turbo Workflow")
     solver.workflow.TaskObject["Describe Component"].Execute()
     solver.workflow.TaskObject["Define Blade Row Scope"].Execute()
-    meshname_strings = ";".join(rf"{meshnamelist}")
-    for meshname in meshnamelist:
+    meshname_strings = ";".join(rf"{meshname_list}")
+    for meshname in meshname_list:
         meshname_formatted = rf"{meshname}"
         solver.workflow.TaskObject["Import Mesh"].Arguments.set_state(
             {
