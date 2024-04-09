@@ -4,14 +4,59 @@ from ptw_subroutines.utils import ptw_logger, dict_utils
 logger = ptw_logger.getLogger()
 
 
-def numerics(data, solver, functionEl):
+def numerics(data, solver, functionEl, gpu):
     # Get FunctionName & Update FunctionEl
-    functionName = dict_utils.get_funcname_and_upd_funcdict(
-        parentDict=data,
-        functionDict=functionEl,
-        funcDictName="numerics",
-        defaultName="numerics_bp_tn_2305",
-    )
+
+    if "tsn" not in data.get("solution"):
+        tsn = False
+    else:
+        tsn = data.get("solution")["tsn"]
+
+    supported_num = [
+        "numerics_defaults",
+        "numerics_bp_tn_2305",
+        "numerics_bp_tn_2305_lsq",
+        "numerics_bp_all_2305"
+    ]
+
+    if not gpu:
+        functionName = dict_utils.get_funcname_and_upd_funcdict(
+            parentDict=data,
+            functionDict=functionEl,
+            funcDictName="numerics",
+            defaultName="numerics_bp_tn_2305",
+        )
+    else:
+        functionName = dict_utils.get_funcname_and_upd_funcdict(
+            parentDict=data,
+            functionDict=functionEl,
+            funcDictName="numerics",
+            defaultName="numerics_defaults",
+        )
+        if functionName != "numerics_defaults":
+            if functionName not in supported_num:
+                logger.warning(
+                f"Prescribed Function '{functionName}' not known. Skipping Specifying Numerics!"
+                )
+            else:
+                logger.warning(
+                f"Prescribed Function '{functionName}' not supported in GPU solver. Using Fluent default numerics settings!"
+                )
+                functionName = "numerics_defaults"
+
+                if tsn:
+                    logger.warning(
+                    "Turbomachinery specific numerics are not supported in GPU solver and will therefore not be used!"
+                    )
+
+        else:
+            if tsn:
+                logger.warning(
+                "Turbomachinery specific numerics are not supported in GPU solver and will therefore not be used!"
+                )
+
+
+
 
     logger.info(f"Specifying Numerics '{functionName}' ...")
     if functionName == "numerics_defaults":
@@ -24,7 +69,7 @@ def numerics(data, solver, functionEl):
         numerics_bp_all_2305(data, solver)
     else:
         logger.info(
-            "Prescribed Function '{functionName}' not known. Skipping Specifying Numerics!"
+            f"Prescribed Function '{functionName}' not known. Skipping Specifying Numerics!"
         )
 
     logger.info("Specifying Numerics... finished!")
