@@ -152,14 +152,15 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
             logger.info(f"Writing Monitor Plot to Directory: {plot_filename}")
             plt.savefig(plot_filename)
             plt.close()  # Close the figure to release memory
-        else:
-            logger.info("Missing Report File data: Monitor Plots not created")
+    else:
+        logger.info("Missing Report File data: Monitor Plots not created")
 
-        if not cov_df.empty:
-            # Get CoV information
-            covDict = (
-                solver.solution.monitor.convergence_conditions.convergence_reports()
-            )
+    if not cov_df.empty:
+        # Get CoV information
+        covDict = (
+            solver.solution.monitor.convergence_conditions.convergence_reports()
+        )
+        if covDict is not None:
             filtCovDict = {
                 key: value
                 for key, value in covDict.items()
@@ -195,7 +196,9 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
             plt.savefig(plot_filename)
             plt.close()  # Close the figure to release memory
         else:
-            logger.info("Missing Report File data: CoV Plot not created")
+            logger.info("No CoVs have been specified: CoV Plot not created")
+    else:
+        logger.info("Missing Report File data: CoV Plot not created")
 
     # Read in transcript file
     caseOutPath = misc_utils.ptw_output(
