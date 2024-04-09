@@ -74,14 +74,22 @@ def post_01(data, solver, launchEl, trn_name, gpu):
 
     ## write report table
     createReportTable(
-        data=data, fl_workingDir=fl_workingDir, solver=solver, trn_filename=trn_name, gpu=gpu
+        data=data,
+        fl_workingDir=fl_workingDir,
+        solver=solver,
+        trn_filename=trn_name,
+        gpu=gpu,
     )
 
     ## move case span-plots to case output folder
     spansSurf = data["results"].get("span_plot_height")
     contVars = data["results"].get("span_plot_var")
     if (spansSurf is not None) and (contVars is not None):
-      misc_utils.move_files(source_dir=fl_workingDir, target_dir=caseOutPath, filename_wildcard="span*plot.avz")
+        misc_utils.move_files(
+            source_dir=fl_workingDir,
+            target_dir=caseOutPath,
+            filename_wildcard="span*plot.avz",
+        )
 
     return
 
@@ -157,9 +165,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
 
     if (not cov_df.empty) and (not gpu):
         # Get CoV information
-        covDict = (
-            solver.solution.monitor.convergence_conditions.convergence_reports()
-        )
+        covDict = solver.solution.monitor.convergence_conditions.convergence_reports()
         if covDict is not None:
             filtCovDict = {
                 key: value

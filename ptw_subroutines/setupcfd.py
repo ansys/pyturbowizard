@@ -119,19 +119,14 @@ def set_physics(data, solver, solveEnergy: bool = True, gpu: bool = False):
     turb_model = data["setup"].setdefault("turbulence_model", default_turb_model)
     supported_kw_models = solver.setup.models.viscous.k_omega_model.allowed_values()
     # filtering specifically for transition models  not available
-    supported_kw_models_gpu = [
-        "sst",
-        "geko"
-    ]
+    supported_kw_models_gpu = ["sst", "geko"]
     # filtering specificly for transition models  not available
     supported_transition_models = [
         "transition-sst",
         "transition-gamma",
         "transition-algebraic",
     ]
-    supported_transition_models_gpu = [
-        "transition-algebraic"
-        ]
+    supported_transition_models_gpu = ["transition-algebraic"]
     if (turb_model in supported_kw_models) and not gpu:
         logger.info(f"Setting kw-turbulence-model: '{turb_model}'")
         solver.setup.models.viscous.model = "k-omega"
@@ -1050,9 +1045,7 @@ def set_boundaries(data, solver, solveEnergy: bool = True, gpu: bool = False):
                         inBC.momentum.direction_specification_method = (
                             "Direction Vector"
                         )
-                        inBC.momentum.coordinate_system = (
-                            "Cartesian (X, Y, Z)"
-                        )
+                        inBC.momentum.coordinate_system = "Cartesian (X, Y, Z)"
                         inBC.momentum.flow_direction = [
                             "BC_IN_xDir",
                             "BC_IN_yDir",
@@ -1321,10 +1314,12 @@ def set_boundaries(data, solver, solveEnergy: bool = True, gpu: bool = False):
                     )
                 else:
                     if list(keyEl.keys()).index(key_if) == 0:
-                        key_if = key_if.replace("-","_")
-                        solver.tui.define.mesh_interfaces.create(key_if, 'no', side1, side2, '()', 'no')
+                        key_if = key_if.replace("-", "_")
+                        solver.tui.define.mesh_interfaces.create(
+                            key_if, "no", side1, side2, "()", "no"
+                        )
                     else:
-                        key_if = key_if.replace("-","_")
+                        key_if = key_if.replace("-", "_")
                         solver.tui.define.mesh_interfaces.create(key_if, side1, side2)
 
     # Setup turbo-interfaces at end
@@ -1344,7 +1339,9 @@ def set_boundaries(data, solver, solveEnergy: bool = True, gpu: bool = False):
             # solver.tui.define.boundary_conditions.zone_type(side2, "interface")
             # Create Interface
             if gpu:
-                logger.error("GTI Interfaces are not supported in GPU solver and will cause the setup to fail. Currently, only general interfaces are supported.")
+                logger.error(
+                    "GTI Interfaces are not supported in GPU solver and will cause the setup to fail. Currently, only general interfaces are supported."
+                )
 
             solver.tui.define.turbo_model.turbo_create(
                 key_if, side1, "()", side2, "()", "2"
@@ -1365,7 +1362,9 @@ def set_boundaries(data, solver, solveEnergy: bool = True, gpu: bool = False):
             # solver.tui.define.boundary_conditions.zone_type(side2, "interface")
             # Create Interface
             if gpu:
-                logger.error("GTI Interfaces are not supported in GPU solver and will cause the setup to fail. Currently, only general interfaces are supported.")
+                logger.error(
+                    "GTI Interfaces are not supported in GPU solver and will cause the setup to fail. Currently, only general interfaces are supported."
+                )
 
             solver.tui.define.turbo_model.turbo_create(
                 key_if, side1, "()", side2, "()", "1"
@@ -1386,7 +1385,9 @@ def set_boundaries(data, solver, solveEnergy: bool = True, gpu: bool = False):
             # solver.tui.define.boundary_conditions.zone_type(side2, "interface")
             # Create Interface
             if gpu:
-                logger.error("GTI Interfaces are not supported in GPU solver and will cause the setup to fail. Currently, only general interfaces are supported.")
+                logger.error(
+                    "GTI Interfaces are not supported in GPU solver and will cause the setup to fail. Currently, only general interfaces are supported."
+                )
 
             solver.tui.define.turbo_model.turbo_create(
                 key_if, side1, "()", side2, "()", "0"
@@ -1509,7 +1510,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
 
         if gpu:
             logger.warning(
-            f"In GPU solver, Report Definitions specified in 'report_list' cannot be plotted or saved in the report file! However, the Report Definitions are still created.\nOnly Report Definitions specified in 'basic_reports' will be plotted and stored in the report-file."
+                f"In GPU solver, Report Definitions specified in 'report_list' cannot be plotted or saved in the report file! However, the Report Definitions are still created.\nOnly Report Definitions specified in 'basic_reports' will be plotted and stored in the report-file."
             )
 
     if basicReportDict is not None:
@@ -1529,60 +1530,108 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 solver.solution.report_definitions.surface[reportName] = {}
 
                 # define type
-                allowed_types = solver.solution.report_definitions.surface[reportName].report_type.allowed_values()
+                allowed_types = solver.solution.report_definitions.surface[
+                    reportName
+                ].report_type.allowed_values()
                 if type in allowed_types:
                     if type == "surface-area":
-                        solver.solution.report_definitions.surface[reportName] = {"report_type":"surface-area"}
+                        solver.solution.report_definitions.surface[reportName] = {
+                            "report_type": "surface-area"
+                        }
                     elif type == "surface-areaavg":
-                        solver.solution.report_definitions.surface[reportName] = {"report_type":"surface-areaavg"}
+                        solver.solution.report_definitions.surface[reportName] = {
+                            "report_type": "surface-areaavg"
+                        }
                     elif type == "surface-facetavg":
-                        solver.solution.report_definitions.surface[reportName] = {"report_type":"surface-facetavg"}
+                        solver.solution.report_definitions.surface[reportName] = {
+                            "report_type": "surface-facetavg"
+                        }
                     elif type == "surface-facetmax":
-                        solver.solution.report_definitions.surface[reportName] = {"report_type":"surface-facetmax"}
+                        solver.solution.report_definitions.surface[reportName] = {
+                            "report_type": "surface-facetmax"
+                        }
                     elif type == "surface-facetmin":
-                        solver.solution.report_definitions.surface[reportName] = {"report_type":"surface-facetmin"}
+                        solver.solution.report_definitions.surface[reportName] = {
+                            "report_type": "surface-facetmin"
+                        }
                     elif type == "surface-integral":
-                        solver.solution.report_definitions.surface[reportName] = {"report_type":"surface-integral"}
+                        solver.solution.report_definitions.surface[reportName] = {
+                            "report_type": "surface-integral"
+                        }
                     elif type == "surface-massflowrate":
-                        solver.solution.report_definitions.surface[reportName] = {"report_type":"surface-massflowrate"}
+                        solver.solution.report_definitions.surface[reportName] = {
+                            "report_type": "surface-massflowrate"
+                        }
                     elif type == "surface-massavg":
-                        solver.solution.report_definitions.surface[reportName] = {"report_type":"surface-massavg"}
+                        solver.solution.report_definitions.surface[reportName] = {
+                            "report_type": "surface-massavg"
+                        }
                     elif type == "surface-stddev":
-                        solver.solution.report_definitions.surface[reportName] = {"report_type":"surface-stddev"}
+                        solver.solution.report_definitions.surface[reportName] = {
+                            "report_type": "surface-stddev"
+                        }
                     elif type == "surface-sum":
-                        solver.solution.report_definitions.surface[reportName] = {"report_type":"surface-sum"}
+                        solver.solution.report_definitions.surface[reportName] = {
+                            "report_type": "surface-sum"
+                        }
                     elif type == "surface-areawtui":
-                        solver.solution.report_definitions.surface[reportName] = {"report_type":"surface-areawtui"}
+                        solver.solution.report_definitions.surface[reportName] = {
+                            "report_type": "surface-areawtui"
+                        }
                     elif type == "surface-masswtui":
-                        solver.solution.report_definitions.surface[reportName] = {"report_type":"surface-masswtui"}
+                        solver.solution.report_definitions.surface[reportName] = {
+                            "report_type": "surface-masswtui"
+                        }
                     elif type == "surface-volumeflowrate":
-                        solver.solution.report_definitions.surface[reportName] = {"report_type":"surface-volumeflowrate"}
+                        solver.solution.report_definitions.surface[reportName] = {
+                            "report_type": "surface-volumeflowrate"
+                        }
                 else:
-                    logger.warning(f"Specified type '{type}' not known. Allowed types are: {allowed_types}.\nSkipping setup of Report '{report}'")
+                    logger.warning(
+                        f"Specified type '{type}' not known. Allowed types are: {allowed_types}.\nSkipping setup of Report '{report}'"
+                    )
                     solver.tui.solve.report_definitions.delete(reportName)
                     continue
 
                 # define surfaces
-                allowed_surfaces = solver.solution.report_definitions.surface[reportName].surface_names.allowed_values()
+                allowed_surfaces = solver.solution.report_definitions.surface[
+                    reportName
+                ].surface_names.allowed_values()
                 if set(surfaces).issubset(allowed_surfaces):
-                    solver.solution.report_definitions.surface[reportName] = {"surface_names":surfaces}
+                    solver.solution.report_definitions.surface[reportName] = {
+                        "surface_names": surfaces
+                    }
                 else:
-                    logger.warning(f"Specified surfaces '{surfaces}' not valid. Allowed surfaces are: {allowed_surfaces}.\nSkipping setup of Report '{report}'")
+                    logger.warning(
+                        f"Specified surfaces '{surfaces}' not valid. Allowed surfaces are: {allowed_surfaces}.\nSkipping setup of Report '{report}'"
+                    )
                     solver.tui.solve.report_definitions.delete(reportName)
                     continue
 
                 # define variable
-                allowed_variables = solver.solution.report_definitions.surface[reportName].field.allowed_values()
+                allowed_variables = solver.solution.report_definitions.surface[
+                    reportName
+                ].field.allowed_values()
                 if variable in allowed_variables:
-                    if (type != "surface-area") and (type != "surface-massflowrate") and (type != "surface-volumeflowrate"):
-                        solver.solution.report_definitions.surface[reportName] = {"field":variable}
+                    if (
+                        (type != "surface-area")
+                        and (type != "surface-massflowrate")
+                        and (type != "surface-volumeflowrate")
+                    ):
+                        solver.solution.report_definitions.surface[reportName] = {
+                            "field": variable
+                        }
                 else:
-                    logger.warning(f"Specified variable '{variable}' not known. Allowed variables are: {allowed_variables}.\nSkipping setup of Report '{report}'")
+                    logger.warning(
+                        f"Specified variable '{variable}' not known. Allowed variables are: {allowed_variables}.\nSkipping setup of Report '{report}'"
+                    )
                     solver.tui.solve.report_definitions.delete(reportName)
                     continue
 
                 # create output parameter
-                solver.solution.report_definitions.surface[reportName].create_output_parameter()
+                solver.solution.report_definitions.surface[
+                    reportName
+                ].create_output_parameter()
 
             elif scope == "volume":
                 cell_zones = basicReportDict[report].get("zones")
@@ -1591,52 +1640,88 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 solver.solution.report_definitions.volume[reportName] = {}
 
                 # define type
-                allowed_types = solver.solution.report_definitions.volume[reportName].report_type.allowed_values()
+                allowed_types = solver.solution.report_definitions.volume[
+                    reportName
+                ].report_type.allowed_values()
                 if type in allowed_types:
                     if type == "volume-mass":
-                        solver.solution.report_definitions.volume[reportName] = {"report_type":"volume-mass"}
+                        solver.solution.report_definitions.volume[reportName] = {
+                            "report_type": "volume-mass"
+                        }
                     elif type == "volume-massavg":
-                        solver.solution.report_definitions.volume[reportName] = {"report_type":"volume-massavg"}
+                        solver.solution.report_definitions.volume[reportName] = {
+                            "report_type": "volume-massavg"
+                        }
                     elif type == "volume-massintegral":
-                        solver.solution.report_definitions.volume[reportName] = {"report_type":"volume-massintegral"}
+                        solver.solution.report_definitions.volume[reportName] = {
+                            "report_type": "volume-massintegral"
+                        }
                     elif type == "volume-max":
-                        solver.solution.report_definitions.volume[reportName] = {"report_type":"volume-max"}
+                        solver.solution.report_definitions.volume[reportName] = {
+                            "report_type": "volume-max"
+                        }
                     elif type == "volume-min":
-                        solver.solution.report_definitions.volume[reportName] = {"report_type":"volume-min"}
+                        solver.solution.report_definitions.volume[reportName] = {
+                            "report_type": "volume-min"
+                        }
                     elif type == "volume-zonevol":
-                        solver.solution.report_definitions.volume[reportName] = {"report_type":"volume-zonevol"}
+                        solver.solution.report_definitions.volume[reportName] = {
+                            "report_type": "volume-zonevol"
+                        }
                     elif type == "volume-average":
-                        solver.solution.report_definitions.volume[reportName] = {"report_type":"volume-average"}
+                        solver.solution.report_definitions.volume[reportName] = {
+                            "report_type": "volume-average"
+                        }
                     elif type == "volume-integral":
-                        solver.solution.report_definitions.volume[reportName] = {"report_type":"volume-integral"}
+                        solver.solution.report_definitions.volume[reportName] = {
+                            "report_type": "volume-integral"
+                        }
                     elif type == "volume-sum":
-                        solver.solution.report_definitions.volume[reportName] = {"report_type":"volume-sum"}
+                        solver.solution.report_definitions.volume[reportName] = {
+                            "report_type": "volume-sum"
+                        }
                 else:
-                    logger.warning(f"Specified type '{type}' not known. Allowed types are: {allowed_types}.\nSkipping setup of Report '{report}'")
+                    logger.warning(
+                        f"Specified type '{type}' not known. Allowed types are: {allowed_types}.\nSkipping setup of Report '{report}'"
+                    )
                     solver.tui.solve.report_definitions.delete(reportName)
                     continue
 
                 # define cell zones
-                allowed_zones = solver.solution.report_definitions.volume[reportName].cell_zones.allowed_values()
+                allowed_zones = solver.solution.report_definitions.volume[
+                    reportName
+                ].cell_zones.allowed_values()
                 if set(cell_zones).issubset(allowed_zones):
-                    solver.solution.report_definitions.volume[reportName] = {"cell_zones":cell_zones}
+                    solver.solution.report_definitions.volume[reportName] = {
+                        "cell_zones": cell_zones
+                    }
                 else:
-                    logger.warning(f"Specified cell zones '{cell_zones}' not valid. Allowed cell zones are: {allowed_zones}.\nSkipping setup of Report '{report}'")
+                    logger.warning(
+                        f"Specified cell zones '{cell_zones}' not valid. Allowed cell zones are: {allowed_zones}.\nSkipping setup of Report '{report}'"
+                    )
                     solver.tui.solve.report_definitions.delete(reportName)
                     continue
 
                 # define variable
-                allowed_variables = solver.solution.report_definitions.volume[reportName].field.allowed_values()
+                allowed_variables = solver.solution.report_definitions.volume[
+                    reportName
+                ].field.allowed_values()
                 if variable in allowed_variables:
                     if (type != "volume-mass") and (type != "volume-zonevol"):
-                        solver.solution.report_definitions.volume[reportName] = {"field":variable}
+                        solver.solution.report_definitions.volume[reportName] = {
+                            "field": variable
+                        }
                 else:
-                    logger.warning(f"Specified variable '{variable}' not known. Allowed variables are: {allowed_variables}.\nSkipping setup of Report '{report}'")
+                    logger.warning(
+                        f"Specified variable '{variable}' not known. Allowed variables are: {allowed_variables}.\nSkipping setup of Report '{report}'"
+                    )
                     solver.tui.solve.report_definitions.delete(reportName)
                     continue
 
                 # create output parameter
-                solver.solution.report_definitions.volume[reportName].create_output_parameter()
+                solver.solution.report_definitions.volume[
+                    reportName
+                ].create_output_parameter()
 
             elif scope == "force":
                 zones = basicReportDict[report].get("zones")
@@ -1644,19 +1729,29 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 solver.solution.report_definitions.force[reportName] = {}
 
                 # define zones
-                allowed_zones = solver.solution.report_definitions.force[reportName].zones.allowed_values()
+                allowed_zones = solver.solution.report_definitions.force[
+                    reportName
+                ].zones.allowed_values()
                 if set(zones).issubset(allowed_zones):
-                    solver.solution.report_definitions.force[reportName] = {"zones":zones}
+                    solver.solution.report_definitions.force[reportName] = {
+                        "zones": zones
+                    }
                 else:
-                    logger.warning(f"Specified zones '{zones}' not valid. Allowed zones are: {allowed_zones}.\nSkipping setup of Report '{report}'")
+                    logger.warning(
+                        f"Specified zones '{zones}' not valid. Allowed zones are: {allowed_zones}.\nSkipping setup of Report '{report}'"
+                    )
                     solver.tui.solve.report_definitions.delete(reportName)
                     continue
 
                 # define force vector
-                solver.solution.report_definitions.force[reportName] = {"force_vector":force_vector}
+                solver.solution.report_definitions.force[reportName] = {
+                    "force_vector": force_vector
+                }
 
                 # create output parameter
-                solver.solution.report_definitions.force[reportName].create_output_parameter()
+                solver.solution.report_definitions.force[
+                    reportName
+                ].create_output_parameter()
 
             elif scope == "drag":
                 zones = basicReportDict[report].get("zones")
@@ -1665,28 +1760,44 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 solver.solution.report_definitions.drag[reportName] = {}
 
                 # define zones
-                allowed_zones = solver.solution.report_definitions.drag[reportName].zones.allowed_values()
+                allowed_zones = solver.solution.report_definitions.drag[
+                    reportName
+                ].zones.allowed_values()
                 if set(zones).issubset(allowed_zones):
-                    solver.solution.report_definitions.drag[reportName] = {"zones":zones}
+                    solver.solution.report_definitions.drag[reportName] = {
+                        "zones": zones
+                    }
                 else:
-                    logger.warning(f"Specified zones '{zones}' not valid. Allowed zones are: {allowed_zones}.\nSkipping setup of Report '{report}'")
+                    logger.warning(
+                        f"Specified zones '{zones}' not valid. Allowed zones are: {allowed_zones}.\nSkipping setup of Report '{report}'"
+                    )
                     solver.tui.solve.report_definitions.delete(reportName)
                     continue
 
                 # define force vector
-                solver.solution.report_definitions.drag[reportName] = {"force_vector":force_vector}
+                solver.solution.report_definitions.drag[reportName] = {
+                    "force_vector": force_vector
+                }
 
                 # define report output type
-                allowed_report_output_types = solver.solution.report_definitions.drag[reportName].report_output_type.allowed_values()
+                allowed_report_output_types = solver.solution.report_definitions.drag[
+                    reportName
+                ].report_output_type.allowed_values()
                 if report_output_type in allowed_report_output_types:
-                    solver.solution.report_definitions.drag[reportName] = {"report_output_type":report_output_type}
+                    solver.solution.report_definitions.drag[reportName] = {
+                        "report_output_type": report_output_type
+                    }
                 else:
-                    logger.warning(f"Specified report output type '{report_output_type}' not valid. Allowed report output types are: {allowed_report_output_types}.\nSkipping setup of Report '{report}'")
+                    logger.warning(
+                        f"Specified report output type '{report_output_type}' not valid. Allowed report output types are: {allowed_report_output_types}.\nSkipping setup of Report '{report}'"
+                    )
                     solver.tui.solve.report_definitions.delete(reportName)
                     continue
 
                 # create output parameter
-                solver.solution.report_definitions.drag[reportName].create_output_parameter()
+                solver.solution.report_definitions.drag[
+                    reportName
+                ].create_output_parameter()
 
             elif scope == "lift":
                 zones = basicReportDict[report].get("zones")
@@ -1695,28 +1806,44 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 solver.solution.report_definitions.lift[reportName] = {}
 
                 # define zones
-                allowed_zones = solver.solution.report_definitions.lift[reportName].zones.allowed_values()
+                allowed_zones = solver.solution.report_definitions.lift[
+                    reportName
+                ].zones.allowed_values()
                 if set(zones).issubset(allowed_zones):
-                    solver.solution.report_definitions.lift[reportName] = {"zones":zones}
+                    solver.solution.report_definitions.lift[reportName] = {
+                        "zones": zones
+                    }
                 else:
-                    logger.warning(f"Specified zones '{zones}' not valid. Allowed zones are: {allowed_zones}.\nSkipping setup of Report '{report}'")
+                    logger.warning(
+                        f"Specified zones '{zones}' not valid. Allowed zones are: {allowed_zones}.\nSkipping setup of Report '{report}'"
+                    )
                     solver.tui.solve.report_definitions.delete(reportName)
                     continue
 
                 # define force vector
-                solver.solution.report_definitions.lift[reportName] = {"force_vector":force_vector}
+                solver.solution.report_definitions.lift[reportName] = {
+                    "force_vector": force_vector
+                }
 
                 # define report output type
-                allowed_report_output_types = solver.solution.report_definitions.lift[reportName].report_output_type.allowed_values()
+                allowed_report_output_types = solver.solution.report_definitions.lift[
+                    reportName
+                ].report_output_type.allowed_values()
                 if report_output_type in allowed_report_output_types:
-                    solver.solution.report_definitions.lift[reportName] = {"report_output_type":report_output_type}
+                    solver.solution.report_definitions.lift[reportName] = {
+                        "report_output_type": report_output_type
+                    }
                 else:
-                    logger.warning(f"Specified report output type '{report_output_type}' not valid. Allowed report output types are: {allowed_report_output_types}.\nSkipping setup of Report '{report}'")
+                    logger.warning(
+                        f"Specified report output type '{report_output_type}' not valid. Allowed report output types are: {allowed_report_output_types}.\nSkipping setup of Report '{report}'"
+                    )
                     solver.tui.solve.report_definitions.delete(reportName)
                     continue
 
                 # create output parameter
-                solver.solution.report_definitions.lift[reportName].create_output_parameter()
+                solver.solution.report_definitions.lift[
+                    reportName
+                ].create_output_parameter()
 
             elif scope == "moment":
                 zones = basicReportDict[report].get("zones")
@@ -1726,69 +1853,103 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 solver.solution.report_definitions.moment[reportName] = {}
 
                 # define zones
-                allowed_zones = solver.solution.report_definitions.moment[reportName].zones.allowed_values()
+                allowed_zones = solver.solution.report_definitions.moment[
+                    reportName
+                ].zones.allowed_values()
                 if set(zones).issubset(allowed_zones):
-                    solver.solution.report_definitions.moment[reportName] = {"zones":zones}
+                    solver.solution.report_definitions.moment[reportName] = {
+                        "zones": zones
+                    }
                 else:
-                    logger.warning(f"Specified zones '{zones}' not valid. Allowed zones are: {allowed_zones}.\nSkipping setup of Report '{report}'")
+                    logger.warning(
+                        f"Specified zones '{zones}' not valid. Allowed zones are: {allowed_zones}.\nSkipping setup of Report '{report}'"
+                    )
                     solver.tui.solve.report_definitions.delete(reportName)
                     continue
 
                 # define moment center
-                solver.solution.report_definitions.moment[reportName] = {"mom_center":mom_center}
+                solver.solution.report_definitions.moment[reportName] = {
+                    "mom_center": mom_center
+                }
 
                 # define moment axis
-                solver.solution.report_definitions.moment[reportName] = {"mom_axis":mom_axis}
+                solver.solution.report_definitions.moment[reportName] = {
+                    "mom_axis": mom_axis
+                }
 
                 # define report output type
-                allowed_report_output_types = solver.solution.report_definitions.moment[reportName].report_output_type.allowed_values()
+                allowed_report_output_types = solver.solution.report_definitions.moment[
+                    reportName
+                ].report_output_type.allowed_values()
                 if report_output_type in allowed_report_output_types:
-                    solver.solution.report_definitions.moment[reportName] = {"report_output_type":report_output_type}
+                    solver.solution.report_definitions.moment[reportName] = {
+                        "report_output_type": report_output_type
+                    }
                 else:
-                    logger.warning(f"Specified report output type '{report_output_type}' not valid. Allowed report output types are: {allowed_report_output_types}.\nSkipping setup of Report '{report}'")
+                    logger.warning(
+                        f"Specified report output type '{report_output_type}' not valid. Allowed report output types are: {allowed_report_output_types}.\nSkipping setup of Report '{report}'"
+                    )
                     solver.tui.solve.report_definitions.delete(reportName)
                     continue
 
                 # create output parameter
-                solver.solution.report_definitions.moment[reportName].create_output_parameter()
-
+                solver.solution.report_definitions.moment[
+                    reportName
+                ].create_output_parameter()
 
             elif scope == "flux":
                 type = basicReportDict[report].get("type")
                 boundaries = basicReportDict[report].get("zones")
                 solver.solution.report_definitions.flux[reportName] = {}
 
-                 # define type
-                allowed_types = solver.solution.report_definitions.flux[reportName].report_type.allowed_values()
+                # define type
+                allowed_types = solver.solution.report_definitions.flux[
+                    reportName
+                ].report_type.allowed_values()
                 if type in allowed_types:
                     if type == "flux-massflow":
-                        solver.solution.report_definitions.flux[reportName] = {"report_type":"flux-massflow"}
+                        solver.solution.report_definitions.flux[reportName] = {
+                            "report_type": "flux-massflow"
+                        }
                 else:
-                    logger.warning(f"Specified type '{type}' not supported. Allowed types are: {allowed_types}.\nSkipping setup of Report '{report}'")
+                    logger.warning(
+                        f"Specified type '{type}' not supported. Allowed types are: {allowed_types}.\nSkipping setup of Report '{report}'"
+                    )
                     solver.tui.solve.report_definitions.delete(reportName)
                     continue
 
                 # define boundaries
-                allowed_boundaries = solver.solution.report_definitions.flux[reportName].boundaries.allowed_values()
+                allowed_boundaries = solver.solution.report_definitions.flux[
+                    reportName
+                ].boundaries.allowed_values()
                 if set(boundaries).issubset(allowed_boundaries):
-                    solver.solution.report_definitions.flux[reportName] = {"boundaries":boundaries}
+                    solver.solution.report_definitions.flux[reportName] = {
+                        "boundaries": boundaries
+                    }
                 else:
-                    logger.warning(f"Specified boundaries '{boundaries}' not valid. Allowed boundaries are: {allowed_boundaries}.\nSkipping setup of Report '{report}'")
+                    logger.warning(
+                        f"Specified boundaries '{boundaries}' not valid. Allowed boundaries are: {allowed_boundaries}.\nSkipping setup of Report '{report}'"
+                    )
                     solver.tui.solve.report_definitions.delete(reportName)
                     continue
 
                 # create output parameter
-                solver.solution.report_definitions.flux[reportName].create_output_parameter()
-
+                solver.solution.report_definitions.flux[
+                    reportName
+                ].create_output_parameter()
 
             else:
-                logger.warning(f"Specified scope '{scope}' not supported. Skipping setup of Report '{report}'")
+                logger.warning(
+                    f"Specified scope '{scope}' not supported. Skipping setup of Report '{report}'"
+                )
                 continue
 
             # create report plot and append to report file list
             reportList.append(report)
             reportPlotName = reportName + "-plot"
-            solver.solution.monitor.report_plots[reportPlotName] = {"report_defs":reportName}
+            solver.solution.monitor.report_plots[reportPlotName] = {
+                "report_defs": reportName
+            }
 
     # Report File
     if reportList is not None:
@@ -1808,7 +1969,6 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
         logger.warning(
             "No report-definitions specified in Case: Keyword 'reportlist' and 'basic_reports'!"
         )
-
 
     # Set Residuals
     # solver.tui.preferences.simulation.local_residual_scaling("yes")
@@ -1852,7 +2012,9 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
     elif (cov_list is None) and (not gpu):
         logger.warning("No CoV definitions specified in Case: Keyword 'cov_list'!")
     elif (cov_list is not None) and gpu:
-        logger.warning("CoV is not supported in GPU solver! Sepcified CoVs will not be used!")
+        logger.warning(
+            "CoV is not supported in GPU solver! Sepcified CoVs will not be used!"
+        )
 
     # Set Convergence Conditions
     conv_check_freq = solutionDict.setdefault("conv_check_freq", 5)
@@ -1861,7 +2023,6 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
         "condition": "all-conditions-are-met",
         "frequency": conv_check_freq,
     }
-
 
     # Set Basic Solver-Solution-Settings
     tsf = solutionDict.get("time_step_factor", 5)
