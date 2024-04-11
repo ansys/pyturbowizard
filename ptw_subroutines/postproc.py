@@ -13,7 +13,7 @@ from ptw_subroutines.utils import (
 logger = ptw_logger.getLogger()
 
 
-def post(data, solver, functionEl, launchEl, trn_name):
+def post(data, solver, functionEl, launchEl, trn_name, gpu):
     # Get FunctionName & Update FunctionEl
     functionName = dict_utils.get_funcname_and_upd_funcdict(
         parentDict=data,
@@ -24,7 +24,7 @@ def post(data, solver, functionEl, launchEl, trn_name):
 
     logger.info(f"Running Postprocessing Function '{functionName}' ...")
     if functionName == "post_01":
-        post_01(data, solver, launchEl, trn_name)
+        post_01(data, solver, launchEl, trn_name, gpu)
     else:
         logger.info(
             f"Prescribed Function '{functionName}' not known. Skipping Postprocessing!"
@@ -33,7 +33,7 @@ def post(data, solver, functionEl, launchEl, trn_name):
     logger.info("Running Postprocessing Function... finished!")
 
 
-def post_01(data, solver, launchEl, trn_name):
+def post_01(data, solver, launchEl, trn_name, gpu):
     fl_workingDir = launchEl.get("workingDir")
     caseFilename = data["caseFilename"]
     caseOutPath = misc_utils.ptw_output(
@@ -74,19 +74,27 @@ def post_01(data, solver, launchEl, trn_name):
 
     ## write report table
     createReportTable(
-        data=data, fl_workingDir=fl_workingDir, solver=solver, trn_filename=trn_name
+        data=data,
+        fl_workingDir=fl_workingDir,
+        solver=solver,
+        trn_filename=trn_name,
+        gpu=gpu,
     )
 
     ## move case span-plots to case output folder
     spansSurf = data["results"].get("span_plot_height")
     contVars = data["results"].get("span_plot_var")
     if (spansSurf is not None) and (contVars is not None):
-      misc_utils.move_files(source_dir=fl_workingDir, target_dir=caseOutPath, filename_wildcard="span*plot.avz")
+        misc_utils.move_files(
+            source_dir=fl_workingDir,
+            target_dir=caseOutPath,
+            filename_wildcard="span*plot.avz",
+        )
 
     return
 
 
-def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
+def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
     try:
         import pandas as pd
     except ImportError as e:
@@ -155,11 +163,9 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
     else:
         logger.info("Missing Report File data: Monitor Plots not created")
 
-    if not cov_df.empty:
+    if (not cov_df.empty) and (not gpu):
         # Get CoV information
-        covDict = (
-            solver.solution.monitor.convergence_conditions.convergence_reports()
-        )
+        covDict = solver.solution.monitor.convergence_conditions.convergence_reports()
         if covDict is not None:
             filtCovDict = {
                 key: value
@@ -197,6 +203,8 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
             plt.close()  # Close the figure to release memory
         else:
             logger.info("No CoVs have been specified: CoV Plot not created")
+    elif (not cov_df.empty) and gpu:
+        logger.info("CoVs are not supported in GPU solver: CoV Plot not created")
     else:
         logger.info("Missing Report File data: CoV Plot not created")
 

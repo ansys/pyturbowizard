@@ -25,7 +25,7 @@ from ptw_subroutines.utils import (
 )
 
 
-ptw_version = "1.7.9"
+ptw_version = "1.8.0"
 
 # Set Logger
 logger = ptw_logger.init_logger()
@@ -55,7 +55,7 @@ class PTW_Run:
     def load_config_file(self, script_path: str, config_filename: str):
         self.script_path = script_path
         self.config_file_name = config_filename
-        logger.info(f"Opening ConfigFile: {os.path.abspath(config_filename)}")
+        logger.info(f"Reading ConfigFile: {os.path.abspath(config_filename)}")
         config_file = open(config_filename, "r")
         self.turbo_data = dict()
         # Load a yaml file if specified, otherwise json
@@ -86,7 +86,7 @@ class PTW_Run:
         self.fl_workingDir = fl_workingDir
         logger.info(f"Used Fluent Working-Directory: {self.fl_workingDir}")
 
-        logger.info(f"Opening ConfigFile: {os.path.abspath(config_filename)}... done!")
+        logger.info(f"Reading ConfigFile: {os.path.abspath(config_filename)}... done!")
 
     def launch_fluent(self, solver=None):
         if solver is None:
@@ -139,6 +139,7 @@ class PTW_Run:
         fl_workingDir = self.fl_workingDir
         gl_function_data = self.gl_function_data
         turbo_data = self.turbo_data
+        gpu = turbo_data.get("launching")["gpu"]
 
         caseDict = turbo_data.get("cases")
         if caseDict is not None:
@@ -200,12 +201,12 @@ class PTW_Run:
                 solver.tui.define.beta_feature_access("yes ok")
 
                 # Case Setup
-                setupcfd.setup(data=caseEl, solver=solver, functionEl=caseFunctionEl)
-                setupcfd.set_reports(caseEl, solver, launchEl)
+                setupcfd.setup(data=caseEl, solver=solver, functionEl=caseFunctionEl, gpu=gpu)
+                setupcfd.set_reports(caseEl, solver, launchEl, gpu=gpu)
 
                 # Solution
                 # Set Solver Settings
-                numerics.numerics(data=caseEl, solver=solver, functionEl=caseFunctionEl)
+                numerics.numerics(data=caseEl, solver=solver, functionEl=caseFunctionEl, gpu=gpu)
 
                 # Read Additional Journals, if specified
                 fluent_utils.read_journals(
@@ -215,7 +216,7 @@ class PTW_Run:
                 )
 
                 # Initialization
-                solve.init(data=caseEl, solver=solver, functionEl=caseFunctionEl)
+                solve.init(data=caseEl, solver=solver, functionEl=caseFunctionEl, gpu=gpu)
 
                 # Setup for Post Processing
                 prepostproc.prepost(
@@ -270,8 +271,9 @@ class PTW_Run:
                         functionEl=caseFunctionEl,
                         launchEl=launchEl,
                         trn_name=trnFileName,
+                        gpu=gpu
                     )
-                    # version 1.5.3: no alteration of case/data done in post processing, removed additional saving
+                    # version 1.5.3: no alteration of case/data done in post processing, removed additonal saving
                     # filename = caseFilename + "_fin"
                     # solver.file.write(file_type="case-data", file_name=filename)
                 else:
@@ -307,13 +309,18 @@ class PTW_Run:
         logger.info("Running Parametric Study")
         turbo_data = self.turbo_data
         gl_function_data = self.gl_function_data
+        gpu = turbo_data.get("launching")["gpu"]
 
         studyDict = turbo_data.get("studies")
         # Do Studies
         if studyDict is not None:
-            parametricstudy.study(data=turbo_data, solver=solver, functionEl=gl_function_data)
+            parametricstudy.study(
+                data=turbo_data, solver=solver, functionEl=gl_function_data, gpu=gpu
+            )
             # Post Process Studies
-            parametricstudy_post.study_post(data=turbo_data, solver=solver, functionEl=gl_function_data)
+            parametricstudy_post.study_post(
+                data=turbo_data, solver=solver, functionEl=gl_function_data, gpu=gpu
+            )
 
         logger.info("Running Parametric Study... done!")
 
