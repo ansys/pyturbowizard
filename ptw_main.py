@@ -55,7 +55,7 @@ class PTW_Run:
     def load_config_file(self, script_path: str, config_filename: str):
         self.script_path = script_path
         self.config_file_name = config_filename
-        logger.info(f"Opening ConfigFile: {os.path.abspath(config_filename)}")
+        logger.info(f"Reading ConfigFile: {os.path.abspath(config_filename)}")
         config_file = open(config_filename, "r")
         self.turbo_data = dict()
         # Load a yaml file if specified, otherwise json
@@ -86,7 +86,7 @@ class PTW_Run:
         self.fl_workingDir = fl_workingDir
         logger.info(f"Used Fluent Working-Directory: {self.fl_workingDir}")
 
-        logger.info(f"Opening ConfigFile: {os.path.abspath(config_filename)}... done!")
+        logger.info(f"Reading ConfigFile: {os.path.abspath(config_filename)}... done!")
 
     def launch_fluent(self, solver=None):
         if solver is None:
