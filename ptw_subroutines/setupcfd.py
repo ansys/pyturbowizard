@@ -961,7 +961,10 @@ def set_boundaries(data, solver, solveEnergy: bool = True, gpu: bool = False):
                     inBC.momentum.supersonic_or_initial_gauge_pressure = "BC_IN_p_gauge"
                     inBC.momentum.direction_specification_method = "Normal to Boundary"
                     if solveEnergy:
-                        inBC.thermal.t0 = "BC_IN_Tt"
+                        if solver.version < "242":
+                            inBC.thermal.t0 = "BC_IN_Tt"
+                        else:
+                            inBC.thermal.total_temperature = "BC_IN_Tt"
 
                 elif data["expressions"].get("BC_IN_pt") is not None:
                     # settings api command
@@ -987,11 +990,18 @@ def set_boundaries(data, solver, solveEnergy: bool = True, gpu: bool = False):
                             "BC_IN_p_gauge"
                         )
                         if solveEnergy:
-                            inBC.thermal.t0 = {
-                                "option": "profile",
-                                "profile_name": "inlet-bc",
-                                "field_name": "tt-in",
-                            }
+                            if solver.version < "242":
+                                inBC.thermal.t0 = {
+                                    "option": "profile",
+                                    "profile_name": "inlet-bc",
+                                    "field_name": "tt-in",
+                                }
+                            else:
+                                inBC.thermal.total_temperature = {
+                                    "option": "profile",
+                                    "profile_name": "inlet-bc",
+                                    "field_name": "tt-in",
+                                }
                     else:
                         inBC.momentum.gauge_total_pressure = "BC_IN_pt"
                         inBC.momentum.supersonic_or_initial_gauge_pressure = (
@@ -1001,7 +1011,10 @@ def set_boundaries(data, solver, solveEnergy: bool = True, gpu: bool = False):
                             "Normal to Boundary"
                         )
                         if solveEnergy:
-                            inBC.thermal.t0 = "BC_IN_Tt"
+                            if solver.version < "242":
+                                inBC.thermal.t0 = "BC_IN_Tt"
+                            else:
+                                inBC.thermal.total_temperature = "BC_IN_Tt"
 
                     # Set reverse BC
                     reverse_option = data["setup"].setdefault("BC_IN_reverse", False)
