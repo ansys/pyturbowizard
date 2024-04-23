@@ -7,6 +7,21 @@
     "fl_viscosity": 1.831e-05,
     "fl_mol_wight": 28.96
   },
+  "air-comp-sutherland-ptw": {
+    "fl_name": "air-comp-sutherland-ptw",
+    "fl_density": "ideal-gas",
+    "fl_specific_heat": 1004.4,
+    "fl_thermal_conductivity": 0.0261,
+    "fl_viscosity": {
+      "option": "sutherland",
+      "settings": {
+          "effective_temperature": 1.716e-05,
+          "reference_temperature": 273.11,
+          "reference_viscosity": 1.716e-05
+      }
+    },
+    "fl_mol_wight": 28.96
+  },
   "water-incomp-ptw": {
     "fl_name": "water-incomp-ptw",
     "fl_density": 999.19,

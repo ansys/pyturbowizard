@@ -120,13 +120,30 @@ def add_material_property(material_object, fl_prop_name: str, fl_prop_data):
             fl_settings = fl_prop_data.get("settings")
             if fl_option is not None:
                 material_prop.option = fl_option
-                if fl_settings is not None:
-                    material_prop[fl_option].update(fl_settings)
-                else:
-                    logger.info(
-                        f"Material-settings for '{fl_prop_name}' not specified: 'settings'= {fl_settings}! "
-                        f"Fluent-default values are used!"
-                    )
+                settings_obj = getattr(material_prop, fl_option)
+                if settings_obj is not None:
+                    if fl_settings is not None:
+                        if isinstance(fl_settings, dict):
+                            for setting in fl_settings:
+                                setting_attr = getattr(settings_obj, setting)
+                                try:
+                                    setting_attr = fl_settings.get(setting)
+                                except Exception as e:
+                                    logger.warning(
+                                        f"Specifying material-setting '{setting}' for '{fl_prop_name}' failed!"
+                                    )
+                        else:
+                            try:
+                                settings_obj = fl_settings
+                            except Exception as e:
+                                logger.warning(
+                                    f"Specifying material-settings for '{fl_prop_name}' failed: 'settings'= {fl_settings}!"
+                                )
+                    else:
+                        logger.info(
+                            f"Material-settings for '{fl_prop_name}' not specified: 'settings'= {fl_settings}! "
+                            f"Fluent-default values are used!"
+                        )
             else:
                 logger.warning(
                     f"Material-option for '{fl_prop_name}' not specified: 'option'= {fl_option}!"
