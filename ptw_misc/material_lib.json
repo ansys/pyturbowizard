@@ -15,6 +15,7 @@
     "fl_viscosity": {
       "option": "sutherland",
       "settings": {
+          "option": "three-coefficient-method",
           "effective_temperature": 110.56,
           "reference_temperature": 273.11,
           "reference_viscosity": 1.716e-05
