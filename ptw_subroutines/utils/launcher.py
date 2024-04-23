@@ -153,19 +153,33 @@ def launch_queuing_session(launchEl: dict):
             "scheduler": "slurm",
             "scheduler_queue": launchEl["queue_slurm"],
         }
-        solver = pyfluent.launch_fluent(
-            precision=launchEl["precision"],
-            processor_count=int(launchEl["noCore"]),
-            mode="solver",
-            show_gui=launchEl["show_gui"],
-            product_version=launchEl["fl_version"],
-            cwd=fl_workingDir,
-            cleanup_on_exit=launchEl["exitatend"],
-            py=launchEl["py"],
-            gpu=launchEl["gpu"],
-            scheduler_options=scheduler_options,
-            additional_arguments=additional_args
-        ).result(timeout=maxtime)
+        if additional_args is None:
+            solver = pyfluent.launch_fluent(
+                precision=launchEl["precision"],
+                processor_count=int(launchEl["noCore"]),
+                mode="solver",
+                show_gui=launchEl["show_gui"],
+                product_version=launchEl["fl_version"],
+                cwd=fl_workingDir,
+                cleanup_on_exit=launchEl["exitatend"],
+                py=launchEl["py"],
+                gpu=launchEl["gpu"],
+                scheduler_options=scheduler_options,
+            ).result(timeout=maxtime)
+        else:
+            solver = pyfluent.launch_fluent(
+                precision=launchEl["precision"],
+                processor_count=int(launchEl["noCore"]),
+                mode="solver",
+                show_gui=launchEl["show_gui"],
+                product_version=launchEl["fl_version"],
+                cwd=fl_workingDir,
+                cleanup_on_exit=launchEl["exitatend"],
+                py=launchEl["py"],
+                gpu=launchEl["gpu"],
+                scheduler_options=scheduler_options,
+                additional_arguments=additional_args,
+            ).result(timeout=maxtime)
     return solver
 
 
@@ -181,9 +195,13 @@ def get_fluent_exe_path(product_version: str):
         return fluent_path
 
     if platform.system() == "Windows":
-        fluent_path = os.path.join(ansys_root_path, "fluent", "ntbin", "win64", "fluent.exe")
+        fluent_path = os.path.join(
+            ansys_root_path, "fluent", "ntbin", "win64", "fluent.exe"
+        )
         if platform.architecture()[0] == "32bit":
-            fluent_path = os.path.join(ansys_root_path, "fluent", "ntbin", "win32", "fluent.exe")
+            fluent_path = os.path.join(
+                ansys_root_path, "fluent", "ntbin", "win32", "fluent.exe"
+            )
     elif platform.system() == "Linux":
         fluent_path = os.path.join(ansys_root_path, "fluent", "bin", "fluent")
     else:
