@@ -55,7 +55,6 @@ def setup_01(data, solver, solveEnergy: bool = True, gpu: bool = False):
 def set_material(data, solver, solveEnergy: bool = True):
     fl_prop_el = data["fluid_properties"]
     fl_name = fl_prop_el.get("fl_name")
-    logger.info(f"Setting Material '{fl_name}'...")
     if fl_name is None:
         if solveEnergy:
             fl_name = "custom-comp-fluid"
@@ -63,6 +62,7 @@ def set_material(data, solver, solveEnergy: bool = True):
             fl_name = "custom-incomp-fluid"
         fl_prop_el["fl_name"] = fl_name
 
+    logger.info(f"Setting Material '{fl_name}'...")
     fluid_list = list(solver.setup.materials.fluid.keys())
 
     solver.setup.materials.fluid.rename(fl_name, fluid_list[0])
