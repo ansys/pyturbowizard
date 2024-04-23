@@ -53,54 +53,113 @@ def setup_01(data, solver, solveEnergy: bool = True, gpu: bool = False):
 
 
 def set_material(data, solver, solveEnergy: bool = True):
-    fl_name = data["fluid_properties"].get("fl_name")
+    fl_prop_el = data["fluid_properties"]
+    fl_name = fl_prop_el.get("fl_name")
     if fl_name is None:
         if solveEnergy:
             fl_name = "custom-comp-fluid"
         else:
             fl_name = "custom-incomp-fluid"
-        data["fluid_properties"]["fl_name"] = fl_name
+        fl_prop_el["fl_name"] = fl_name
 
+    logger.info(f"Setting Material '{fl_name}'...")
     fluid_list = list(solver.setup.materials.fluid.keys())
 
     solver.setup.materials.fluid.rename(fl_name, fluid_list[0])
-
+    material_object = solver.setup.materials.fluid[fl_name]
     if solveEnergy:
-        solver.setup.materials.fluid[fl_name] = {
-            "density": {"option": data["fluid_properties"]["fl_density"]},
-            "specific_heat": {
-                "option": "constant",
-                "value": data["fluid_properties"]["fl_specific_heat"],
-            },
-            "thermal_conductivity": {
-                "option": "constant",
-                "value": data["fluid_properties"]["fl_thermal_conductivity"],
-            },
-            "viscosity": {
-                "option": "constant",
-                "value": data["fluid_properties"]["fl_viscosity"],
-            },
-            "molecular_weight": {
-                "option": "constant",
-                "value": data["fluid_properties"]["fl_mol_wight"],
-            },
-        }
+        add_material_property(
+            material_object=material_object,
+            fl_prop_name="density",
+            fl_prop_data=fl_prop_el["fl_density"],
+        )
+        add_material_property(
+            material_object=material_object,
+            fl_prop_name="specific_heat",
+            fl_prop_data=fl_prop_el["fl_specific_heat"],
+        )
+        add_material_property(
+            material_object=material_object,
+            fl_prop_name="thermal_conductivity",
+            fl_prop_data=fl_prop_el["fl_thermal_conductivity"],
+        )
+        add_material_property(
+            material_object=material_object,
+            fl_prop_name="molecular_weight",
+            fl_prop_data=fl_prop_el["fl_mol_wight"],
+        )
+        add_material_property(
+            material_object=material_object,
+            fl_prop_name="viscosity",
+            fl_prop_data=fl_prop_el["fl_viscosity"],
+        )
     else:
-        solver.setup.materials.fluid[fl_name] = {
-            "density": {
-                "option": "constant",
-                "value": data["fluid_properties"]["fl_density"],
-            },
-            "viscosity": {
-                "option": "constant",
-                "value": data["fluid_properties"]["fl_viscosity"],
-            },
-        }
+        add_material_property(
+            material_object=material_object,
+            fl_prop_name="density",
+            fl_prop_data=fl_prop_el["fl_density"],
+        )
+        add_material_property(
+            material_object=material_object,
+            fl_prop_name="viscosity",
+            fl_prop_data=fl_prop_el["fl_viscosity"],
+        )
 
     # Boundary Conditions
     solver.setup.general.operating_conditions.operating_pressure = "BC_pref"
-
+    logger.info(f"Setting Material '{fl_name}'... done!")
     return
+
+
+def add_material_property(material_object, fl_prop_name: str, fl_prop_data):
+    logger.info(f"Setting property '{fl_prop_name}'...")
+    material_prop = getattr(material_object, fl_prop_name)
+    if material_prop is not None:
+        if isinstance(fl_prop_data, dict):
+            fl_option = fl_prop_data.get("option")
+            fl_settings = fl_prop_data.get("settings")
+            if fl_option is not None:
+                material_prop.option = fl_option
+                settings_obj = getattr(material_prop, fl_option)
+                if settings_obj is not None:
+                    if fl_settings is not None:
+                        if isinstance(fl_settings, dict):
+                            for setting in fl_settings:
+                                setting_attr = getattr(settings_obj, setting)
+                                try:
+                                    setting_attr = fl_settings.get(setting)
+                                except Exception as e:
+                                    logger.warning(
+                                        f"Specifying material-setting '{setting}' for '{fl_prop_name}' failed!"
+                                    )
+                        else:
+                            try:
+                                settings_obj = fl_settings
+                            except Exception as e:
+                                logger.warning(
+                                    f"Specifying material-settings for '{fl_prop_name}' failed: 'settings'= {fl_settings}!"
+                                )
+                    else:
+                        logger.info(
+                            f"Material-settings for '{fl_prop_name}' not specified: 'settings'= {fl_settings}! "
+                            f"Fluent-default values are used!"
+                        )
+            else:
+                logger.warning(
+                    f"Material-option for '{fl_prop_name}' not specified: 'option'= {fl_option}!"
+                    f"Fluent-default values are used!"
+                )
+        elif isinstance(fl_prop_data, int) or isinstance(fl_prop_data, float):
+            material_prop.option = "constant"
+            material_prop.value = fl_prop_data
+        elif isinstance(fl_prop_data, str):
+            material_prop.option = fl_prop_data
+        else:
+            logger.error(
+                f"Material property for '{fl_prop_name}' not specified properly: {fl_prop_data}!"
+            )
+    else:
+        logger.warning(f"Material property '{fl_prop_name}' not known or available!")
 
 
 def set_physics(data, solver, solveEnergy: bool = True, gpu: bool = False):
