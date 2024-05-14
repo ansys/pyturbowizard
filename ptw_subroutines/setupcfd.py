@@ -127,14 +127,14 @@ def add_material_property(material_object, fl_prop_name: str, fl_prop_data):
                             for setting in fl_settings:
                                 setting_attr = getattr(settings_obj, setting)
                                 try:
-                                    setting_attr = fl_settings.get(setting)
+                                    setting_attr.set_state(fl_settings.get(setting))
                                 except Exception as e:
                                     logger.warning(
                                         f"Specifying material-setting '{setting}' for '{fl_prop_name}' failed!"
                                     )
                         else:
                             try:
-                                settings_obj = fl_settings
+                                settings_obj.set_state(fl_settings)
                             except Exception as e:
                                 logger.warning(
                                     f"Specifying material-settings for '{fl_prop_name}' failed: 'settings'= {fl_settings}!"
