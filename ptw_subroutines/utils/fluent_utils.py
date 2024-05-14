@@ -17,17 +17,19 @@ def read_journals(data: dict, solver, element_name: str):
 
 
 def getNumberOfEquations(solver):
-    # Check active number of equations
-    equDict = solver.solution.controls.equations()
     number_eqs = 0
-    for equ in equDict:
-        if equ == "flow":
-            number_eqs += 4
-        if equ == "kw":
-            number_eqs += 2
-        if equ == "temperature":
-            number_eqs += 1
-
+    if solver.version < "241":
+        # Check active number of equations
+        equDict = solver.solution.controls.equations()
+        for equ in equDict:
+            if equ == "flow":
+                number_eqs += 4
+            if equ == "kw":
+                number_eqs += 2
+            if equ == "temperature":
+                number_eqs += 1
+    else:
+        number_eqs = len(solver.solution.monitor.residual.equations.keys())
     return number_eqs
 
 
