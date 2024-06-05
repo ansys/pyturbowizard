@@ -301,5 +301,7 @@ def mergeReportTables(turboData, solver):
             merged_file_name = os.path.join(ptwOutPath, "merged_reporttable.csv")
             logger.info(f"Writing merged report-file: {merged_file_name}")
             df.to_csv(merged_file_name)
+        else:
+            logger.info("No report-files found, nothing to merge...")
 
     return
