@@ -270,8 +270,10 @@ def mergeReportTables(turboData, solver):
         import pandas as pd
     except ImportError as e:
         logger.info(f"ImportError! Could not import lib: {str(e)}")
-        logger.info(f"Skipping mergeReportTables function!")
+        logger.info("Skipping mergeReportTables function!")
         return
+
+    logger.info("Merging Report-Tables of all defined cases")
 
     fl_workingDir = turboData["launching"].get("workingDir")
     caseDict = turboData.get("cases")
@@ -296,7 +298,8 @@ def mergeReportTables(turboData, solver):
 
         if len(reportFiles) > 1:
             df = pd.concat((pd.read_csv(f, header=0) for f in reportFiles))
-            mergedFileName = os.path.join(ptwOutPath, "merged_reporttable.csv")
-            df.to_csv(mergedFileName)
+            merged_file_name = os.path.join(ptwOutPath, "merged_reporttable.csv")
+            logger.info(f"Writing merged report-file: {merged_file_name}")
+            df.to_csv(merged_file_name)
 
     return
