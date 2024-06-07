@@ -39,7 +39,13 @@ def setup_incompressible_01(data, solver, gpu, bcs):
 
 
 def setup_01(
-    data, solver, solveEnergy: bool = True, gpu: bool = False, bcs: bool = True, mat: bool = True, physics: bool = True,
+    data,
+    solver,
+    solveEnergy: bool = True,
+    gpu: bool = False,
+    bcs: bool = True,
+    mat: bool = True,
+    physics: bool = True,
 ):
     # Set physics
     if physics:
