@@ -15,35 +15,44 @@ def setup(data, solver, functionEl, gpu):
     )
     logger.info(f"Running Setup Function '{functionName}' ...")
     if functionName == "setup_compressible_01":
-        setup_compressible_01(data, solver, gpu)
+        setup_compressible_01(data, solver, gpu, True)
+    elif functionName == "setup_compressible_woBCs":
+        setup_compressible_01(data, solver, gpu, False)
     elif functionName == "setup_incompressible_01":
-        setup_incompressible_01(data, solver, gpu)
+        setup_incompressible_01(data, solver, gpu, True)
+    elif functionName == "setup_incompressible_woBCs":
+        setup_incompressible_01(data, solver, gpu, False)
     else:
         logger.info(f"Prescribed Function '{functionName}' not known. Skipping Setup!")
 
     logger.info("Running Setup Function... finished!")
 
 
-def setup_compressible_01(data, solver, gpu):
-    setup_01(data=data, solver=solver, solveEnergy=True, gpu=gpu)
+def setup_compressible_01(data, solver, gpu, bcs):
+    setup_01(data=data, solver=solver, solveEnergy=True, bcs=bcs, gpu=gpu)
     return
 
 
-def setup_incompressible_01(data, solver, gpu):
-    setup_01(data=data, solver=solver, solveEnergy=False, gpu=gpu)
+def setup_incompressible_01(data, solver, gpu, bcs):
+    setup_01(data=data, solver=solver, solveEnergy=False, bcs=bcs, gpu=gpu)
     return
 
 
-def setup_01(data, solver, solveEnergy: bool = True, gpu: bool = False):
+def setup_01(
+    data, solver, solveEnergy: bool = True, gpu: bool = False, bcs: bool = True, mat: bool = True, physics: bool = True,
+):
     # Set physics
-    set_physics(data=data, solver=solver, solveEnergy=solveEnergy, gpu=gpu)
+    if physics:
+        set_physics(data=data, solver=solver, solveEnergy=solveEnergy, gpu=gpu)
     # Materials
-    set_material(data=data, solver=solver, solveEnergy=solveEnergy)
+    if mat:
+        set_material(data=data, solver=solver, solveEnergy=solveEnergy)
     # Set Boundaries
-    if solver.version < "241":
-        set_boundaries_v232(data=data, solver=solver, solveEnergy=solveEnergy)
-    else:
-        set_boundaries(data=data, solver=solver, solveEnergy=solveEnergy, gpu=gpu)
+    if bcs:
+        if solver.version < "241":
+            set_boundaries_v232(data=data, solver=solver, solveEnergy=solveEnergy)
+        else:
+            set_boundaries(data=data, solver=solver, solveEnergy=solveEnergy, gpu=gpu)
 
     # Do some Mesh Checks
     solver.mesh.check()
