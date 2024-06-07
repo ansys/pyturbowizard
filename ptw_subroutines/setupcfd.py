@@ -120,8 +120,6 @@ def set_material(data, solver, solve_energy: bool = True):
             fl_prop_data=fl_prop_el["fl_viscosity"],
         )
 
-    # Boundary Conditions
-    solver.setup.general.operating_conditions.operating_pressure = "BC_pref"
     logger.info(f"Setting Material '{fl_name}'... done!")
     return
 
@@ -282,6 +280,9 @@ def set_physics(data, solver, solve_energy: bool = True, gpu: bool = False):
 
 
 def set_boundaries_v232(data, solver, solve_energy: bool = True):
+    # Boundary Conditions
+    solver.setup.general.operating_conditions.operating_pressure = "BC_pref"
+
     # Enable Turbo Models
     solver.tui.define.turbo_model.enable_turbo_model("yes")
 
@@ -805,6 +806,9 @@ def set_boundaries_v232(data, solver, solve_energy: bool = True):
 
 
 def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
+    # Boundary Conditions
+    solver.setup.general.operating_conditions.operating_pressure = "BC_pref"
+
     # Enable Turbo Models
     solver.tui.define.turbo_model.enable_turbo_model("yes")
 
