@@ -44,14 +44,14 @@ def setup_01(
     solve_energy: bool = True,
     gpu: bool = False,
     bcs: bool = True,
-    mat: bool = True,
+    material: bool = True,
     physics: bool = True,
 ):
     # Set physics
     if physics:
         set_physics(data=data, solver=solver, solve_energy=solve_energy, gpu=gpu)
     # Materials
-    if mat:
+    if material:
         set_material(data=data, solver=solver, solve_energy=solve_energy)
     # Set Boundaries
     if bcs:
