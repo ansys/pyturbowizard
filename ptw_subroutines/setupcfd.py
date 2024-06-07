@@ -29,19 +29,19 @@ def setup(data, solver, functionEl, gpu):
 
 
 def setup_compressible_01(data, solver, gpu, bcs):
-    setup_01(data=data, solver=solver, solveEnergy=True, bcs=bcs, gpu=gpu)
+    setup_01(data=data, solver=solver, solve_energy=True, bcs=bcs, gpu=gpu)
     return
 
 
 def setup_incompressible_01(data, solver, gpu, bcs):
-    setup_01(data=data, solver=solver, solveEnergy=False, bcs=bcs, gpu=gpu)
+    setup_01(data=data, solver=solver, solve_energy=False, bcs=bcs, gpu=gpu)
     return
 
 
 def setup_01(
     data,
     solver,
-    solveEnergy: bool = True,
+    solve_energy: bool = True,
     gpu: bool = False,
     bcs: bool = True,
     mat: bool = True,
@@ -49,16 +49,16 @@ def setup_01(
 ):
     # Set physics
     if physics:
-        set_physics(data=data, solver=solver, solveEnergy=solveEnergy, gpu=gpu)
+        set_physics(data=data, solver=solver, solve_energy=solve_energy, gpu=gpu)
     # Materials
     if mat:
-        set_material(data=data, solver=solver, solveEnergy=solveEnergy)
+        set_material(data=data, solver=solver, solve_energy=solve_energy)
     # Set Boundaries
     if bcs:
         if solver.version < "241":
-            set_boundaries_v232(data=data, solver=solver, solveEnergy=solveEnergy)
+            set_boundaries_v232(data=data, solver=solver, solve_energy=solve_energy)
         else:
-            set_boundaries(data=data, solver=solver, solveEnergy=solveEnergy, gpu=gpu)
+            set_boundaries(data=data, solver=solver, solve_energy=solve_energy, gpu=gpu)
 
     # Do some Mesh Checks
     solver.mesh.check()
@@ -67,11 +67,11 @@ def setup_01(
     return
 
 
-def set_material(data, solver, solveEnergy: bool = True):
+def set_material(data, solver, solve_energy: bool = True):
     fl_prop_el = data["fluid_properties"]
     fl_name = fl_prop_el.get("fl_name")
     if fl_name is None:
-        if solveEnergy:
+        if solve_energy:
             fl_name = "custom-comp-fluid"
         else:
             fl_name = "custom-incomp-fluid"
@@ -82,7 +82,7 @@ def set_material(data, solver, solveEnergy: bool = True):
 
     solver.setup.materials.fluid.rename(fl_name, fluid_list[0])
     material_object = solver.setup.materials.fluid[fl_name]
-    if solveEnergy:
+    if solve_energy:
         add_material_property(
             material_object=material_object,
             fl_prop_name="density",
@@ -177,8 +177,8 @@ def add_material_property(material_object, fl_prop_name: str, fl_prop_data):
         logger.warning(f"Material property '{fl_prop_name}' not known or available!")
 
 
-def set_physics(data, solver, solveEnergy: bool = True, gpu: bool = False):
-    if solveEnergy:
+def set_physics(data, solver, solve_energy: bool = True, gpu: bool = False):
+    if solve_energy:
         solver.setup.models.energy = {"enabled": True, "viscous_dissipation": True}
 
     gravityVector = data.get("gravity_vector")
@@ -281,7 +281,7 @@ def set_physics(data, solver, solveEnergy: bool = True, gpu: bool = False):
     return
 
 
-def set_boundaries_v232(data, solver, solveEnergy: bool = True):
+def set_boundaries_v232(data, solver, solve_energy: bool = True):
     # Enable Turbo Models
     solver.tui.define.turbo_model.enable_turbo_model("yes")
 
@@ -397,7 +397,7 @@ def set_boundaries_v232(data, solver, solveEnergy: bool = True):
                     inBC.mass_flow = "BC_IN_MassFlow"
                     inBC.gauge_pressure = "BC_IN_p_gauge"
                     inBC.direction_spec = "Normal to Boundary"
-                    if solveEnergy:
+                    if solve_energy:
                         inBC.t0 = "BC_IN_Tt"
 
                 if (
@@ -418,7 +418,7 @@ def set_boundaries_v232(data, solver, solveEnergy: bool = True):
                     inBC.mass_flow = "BC_IN_VolumeFlow*BC_IN_VolumeFlowDensity"
                     inBC.gauge_pressure = "BC_IN_p_gauge"
                     inBC.direction_spec = "Normal to Boundary"
-                    if solveEnergy:
+                    if solve_energy:
                         inBC.t0 = "BC_IN_Tt"
 
                 elif data["expressions"].get("BC_IN_pt") is not None:
@@ -442,7 +442,7 @@ def set_boundaries_v232(data, solver, solveEnergy: bool = True):
                             "field_name": "pt-in",
                         }
                         inBC.gauge_pressure = "BC_IN_p_gauge"
-                        if solveEnergy:
+                        if solve_energy:
                             inBC.t0 = {
                                 "option": "profile",
                                 "profile_name": "inlet-bc",
@@ -452,7 +452,7 @@ def set_boundaries_v232(data, solver, solveEnergy: bool = True):
                         inBC.gauge_total_pressure = "BC_IN_pt"
                         inBC.gauge_pressure = "BC_IN_p_gauge"
                         inBC.direction_spec = "Normal to Boundary"
-                        if solveEnergy:
+                        if solve_energy:
                             inBC.t0 = "BC_IN_Tt"
 
                     # Set reverse BC
@@ -804,7 +804,7 @@ def set_boundaries_v232(data, solver, solveEnergy: bool = True):
     return
 
 
-def set_boundaries(data, solver, solveEnergy: bool = True, gpu: bool = False):
+def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
     # Enable Turbo Models
     solver.tui.define.turbo_model.enable_turbo_model("yes")
 
@@ -1013,7 +1013,7 @@ def set_boundaries(data, solver, solveEnergy: bool = True, gpu: bool = False):
                     inBC.momentum.mass_flow_rate = "BC_IN_MassFlow"
                     inBC.momentum.supersonic_gauge_pressure = "BC_IN_p_gauge"
                     inBC.momentum.direction_specification = "Normal to Boundary"
-                    if solveEnergy:
+                    if solve_energy:
                         inBC.thermal.total_temperature = "BC_IN_Tt"
 
                 if (
@@ -1034,7 +1034,7 @@ def set_boundaries(data, solver, solveEnergy: bool = True, gpu: bool = False):
                     inBC.momentum.mass_flow = "BC_IN_VolumeFlow*BC_IN_VolumeFlowDensity"
                     inBC.momentum.supersonic_or_initial_gauge_pressure = "BC_IN_p_gauge"
                     inBC.momentum.direction_specification_method = "Normal to Boundary"
-                    if solveEnergy:
+                    if solve_energy:
                         if solver.version < "242":
                             inBC.thermal.t0 = "BC_IN_Tt"
                         else:
@@ -1063,7 +1063,7 @@ def set_boundaries(data, solver, solveEnergy: bool = True, gpu: bool = False):
                         inBC.momentum.supersonic_or_initial_gauge_pressure = (
                             "BC_IN_p_gauge"
                         )
-                        if solveEnergy:
+                        if solve_energy:
                             if solver.version < "242":
                                 inBC.thermal.t0 = {
                                     "option": "profile",
@@ -1084,7 +1084,7 @@ def set_boundaries(data, solver, solveEnergy: bool = True, gpu: bool = False):
                         inBC.momentum.direction_specification_method = (
                             "Normal to Boundary"
                         )
-                        if solveEnergy:
+                        if solve_energy:
                             if solver.version < "242":
                                 inBC.thermal.t0 = "BC_IN_Tt"
                             else:
