@@ -627,7 +627,13 @@ def set_boundaries_v232(data, solver, solve_energy: bool = True):
         # elif key == "bz_walls_shroud_names":
         #    solver.setup.boundary_conditions.wall[data["locations"][key]] =\
         #      {"motion_bc": "Moving Wall","relative": False,"rotating": True}
-
+        elif key == "bz_symmetry_names":
+            keyEl = data["locations"].get(key)
+            for key_symm in keyEl:
+                logger.info(f"Prescribing a symmetry boundary condition: {key_symm}")
+                solver.setup.boundary_conditions.change_type(
+                    zone_list=[key_symm], new_type="symmetry"
+                )
         elif key == "bz_walls_counterrotating_names":
             keyEl = data["locations"].get(key)
             for key_cr in keyEl:
@@ -1314,7 +1320,13 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
         # elif key == "bz_walls_shroud_names":
         #    solver.setup.boundary_conditions.wall[data["locations"][key]] = \
         # {"motion_bc": "Moving Wall","relative": False,"rotating": True}
-
+        elif key == "bz_symmetry_names":
+            keyEl = data["locations"].get(key)
+            for key_symm in keyEl:
+                logger.info(f"Prescribing a symmetry boundary condition: {key_symm}")
+                solver.setup.boundary_conditions.set_zone_type(
+                    zone_list=[key_symm], new_type="symmetry"
+                )
         elif key == "bz_walls_counterrotating_names":
             keyEl = data["locations"].get(key)
             for key_cr in keyEl:
