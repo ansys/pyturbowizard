@@ -288,7 +288,7 @@ def mergeReportTables(turboData, solver):
                 reportTableName = resultEl.setdefault(
                     "filename_reporttable", "reporttable.csv"
                 )
-                reportTableName = caseFilename + "_" + reportTableName
+                #reportTableName = caseFilename + "_" + reportTableName
                 caseOutPath = misc_utils.ptw_output(
                     fl_workingDir=fl_workingDir, case_name=caseFilename
                 )
