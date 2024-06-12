@@ -165,6 +165,7 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
 
     wall_clock_tot = 0
     nodes = 0
+    cell_size = None
     filtered_values = []
     filtered_headers = []
     res_df = None
@@ -184,11 +185,14 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
         else:
             number_eqs = tempData.get("num_eqs", 6)
 
-        for line in lines:
+        for line_nr, line in enumerate(lines):
             if "Total wall-clock time" in line:
                 wall_clock_tot = line.split(":")[1].strip()
                 wall_clock_tot = wall_clock_tot.split(" ")[0].strip()
                 logger.info(f"Detected Total Wall Clock Time: {wall_clock_tot}")
+            elif "Mesh Size" in line:
+                mesh_info_line = lines[line_nr + 3]
+                cell_size = mesh_info_line.split()[1]
             elif "compute nodes" in line:
                 nodes = line.split(" ")[6].strip()
                 logger.info(f"Detected Number of Nodes: {nodes}")
@@ -255,6 +259,8 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
 
     report_table.loc[0, "Total Wall Clock Time"] = wall_clock_tot
     report_table.loc[0, "Compute Nodes"] = nodes
+    if cell_size is not None:
+        report_table.loc[0, "Number Cells"] = cell_size
     report_table.insert(0, "Case Name", caseFilename)
 
     if solver is not None:

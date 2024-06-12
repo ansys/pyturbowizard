@@ -61,6 +61,7 @@ def setup_01(
             set_boundaries(data=data, solver=solver, solve_energy=solve_energy, gpu=gpu)
 
     # Do some Mesh Checks
+    solver.mesh.size_info()
     solver.mesh.check()
     solver.mesh.quality()
 
