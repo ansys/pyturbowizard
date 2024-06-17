@@ -1,4 +1,5 @@
 import os
+from packaging.version import Version
 
 from ptw_subroutines.utils import (
     ptw_logger,
@@ -35,7 +36,7 @@ def prepost(data, solver, functionEl, launchEl):
 def prepost_01(data, solver, launchEl):
     fl_WorkingDir = launchEl.get("workingDir")
     # Check version -> for version 24.1 use python command
-    use_python_command = solver.version >= "241"
+    use_python_command = Version(solver._version) >= Version("241")
 
     # Set output for time statistics in transcript
     command_name = "print-time-statistics"
@@ -77,7 +78,7 @@ def prepost_01(data, solver, launchEl):
 
     # Create Oil Flow Pathlines if specified by user
     if (
-        solver.version >= "241"
+        Version(solver._version) >= Version("241")
         and data["results"].get("oilflow_pathlines_surfaces") is not None
         and data["results"].get("oilflow_pathlines_var") is not None
     ):
@@ -88,7 +89,7 @@ def prepost_01(data, solver, launchEl):
 
     # Create Pathlines if specified by user
     if (
-        solver.version >= "241"
+        Version(solver._version) >= Version("241")
         and data["results"].get("pathlines_releaseSurfaces") is not None
         and data["results"].get("pathlines_var") is not None
     ):
@@ -100,7 +101,7 @@ def prepost_01(data, solver, launchEl):
 
 def spanPlots(data, solver, launchEl):
     # Check version -> for version 24.1 use python command
-    use_python_command = solver.version >= "241"
+    use_python_command = Version(solver._version) >= Version("241")
 
     # Create spanwise surfaces
     spansSurf = data["results"].get("span_plot_height")
@@ -130,7 +131,7 @@ def spanPlots(data, solver, launchEl):
         logger.info(f"Creating spanwise ISO-surface: {spanName}")
         solver.results.surfaces.iso_surface[spanName] = {}
 
-        if solver.version >= "241":
+        if Version(solver._version) >= Version("241"):
             zones = solver.results.surfaces.iso_surface[spanName].zones.get_attr(
                 "allowed-values"
             )

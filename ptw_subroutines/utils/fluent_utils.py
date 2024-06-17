@@ -1,6 +1,5 @@
-import os.path
-
-from packaging import version
+import os
+from packaging.version import Version
 
 # Logger
 from ptw_subroutines.utils import ptw_logger
@@ -48,7 +47,7 @@ def read_journals(
 def getNumberOfEquations(solver):
     number_eqs = 0
     # Check active number of equations
-    if solver.version < "241":
+    if Version(solver._version) < Version("241"):
         equDict = solver.solution.controls.equations()
         for equ in equDict:
             if equ == "flow":
@@ -72,3 +71,12 @@ def addExecuteCommand(solver, command_name, command, pythonCommand: bool = False
         solver.tui.solve.execute_commands.add_edit(
             f"{command_name}", "yes", "yes", "no", f'"{command}"'
         )
+
+
+def check_version(solver):
+
+    fluent_version = solver.get_fluent_version()
+    if isinstance(fluent_version, str):
+        return fluent_version
+    else:
+        return str(fluent_version.number)

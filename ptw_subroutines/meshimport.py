@@ -1,5 +1,7 @@
 # Logger
-from ptw_subroutines.utils import ptw_logger
+from ptw_subroutines.utils import ptw_logger, fluent_utils
+
+from packaging.version import Version
 
 logger = ptw_logger.getLogger()
 
@@ -16,7 +18,7 @@ def import_01(data, solver):
             solver.file.import_.read(file_type="cgns-mesh", file_name=meshFilename)
             success = True
         elif meshFilename.endswith(".gtm"):
-            if solver.version < "241":
+            if Version(solver._version) < Version("241"):
                 logger.error(
                     f"Import of multiple meshes only supported by version v241 or later"
                 )
@@ -40,7 +42,7 @@ def import_01(data, solver):
                 break
 
         if supported_import_mesh_type:
-            if solver.version < "241":
+            if Version(solver._version) < Version("241"):
                 logger.error(
                     f"Import of multiple meshes only supported by version v241 or later"
                 )

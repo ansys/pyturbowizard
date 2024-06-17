@@ -1,6 +1,7 @@
 # Logger
 from ptw_subroutines.utils import ptw_logger, dict_utils, misc_utils, fluent_utils
 import os
+from packaging.version import Version
 
 logger = ptw_logger.getLogger()
 
@@ -55,7 +56,7 @@ def setup_01(
         set_material(data=data, solver=solver, solve_energy=solve_energy)
     # Set Boundaries
     if bcs:
-        if solver.version < "241":
+        if Version(solver._version) < Version("241"):
             set_boundaries_v232(data=data, solver=solver, solve_energy=solve_energy)
         else:
             set_boundaries(data=data, solver=solver, solve_energy=solve_energy, gpu=gpu)
@@ -1046,7 +1047,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     inBC.momentum.supersonic_or_initial_gauge_pressure = "BC_IN_p_gauge"
                     inBC.momentum.direction_specification_method = "Normal to Boundary"
                     if solve_energy:
-                        if solver.version < "242":
+                        if Version(solver._version) < Version("242"):
                             inBC.thermal.t0 = "BC_IN_Tt"
                         else:
                             inBC.thermal.total_temperature = "BC_IN_Tt"
@@ -1075,7 +1076,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                             "BC_IN_p_gauge"
                         )
                         if solve_energy:
-                            if solver.version < "242":
+                            if Version(solver._version) < Version("242"):
                                 inBC.thermal.t0 = {
                                     "option": "profile",
                                     "profile_name": "inlet-bc",
@@ -1096,7 +1097,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                             "Normal to Boundary"
                         )
                         if solve_energy:
-                            if solver.version < "242":
+                            if Version(solver._version) < Version("242"):
                                 inBC.thermal.t0 = "BC_IN_Tt"
                             else:
                                 inBC.thermal.total_temperature = "BC_IN_Tt"
@@ -1111,7 +1112,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     if data["expressions"].get("BC_IN_TuIn") is not None:
                         inBC.turbulence.turbulent_intensity = "BC_IN_TuIn"
                     if data["expressions"].get("BC_IN_TuVR") is not None:
-                        if solver.version < "242":
+                        if Version(solver._version) < Version("242"):
                             inBC.turbulence.turbulent_viscosity_ratio_real = (
                                 "BC_IN_TuVR"
                             )
@@ -1586,13 +1587,20 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
 
     # Reports
     reportList = solutionDict.get("reportlist")
-    basicReportDict = data.get("basic_reports")
+    basicReportDict = solutionDict.get("basic_reports")
+    # Old definitions stored directly in case section
+    if data.get("basic_reports") is not None:
+        if basicReportDict is None:
+            basicReportDict = data.get("basic_reports")
+        else:
+            # Combine if both definitions should exist
+            basicReportDict.update(data.get("basic_reports"))
 
     if reportList is not None:
         for report in reportList:
             reportName = report.replace("_", "-")
             reportName = "rep-" + reportName.lower()
-            if solver.version < "241":
+            if Version(solver._version) < Version("241"):
                 solver.solution.report_definitions.single_val_expression[
                     reportName
                 ] = {}
@@ -2128,40 +2136,57 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
         "frequency": conv_check_freq,
     }
 
-    # Set Basic Solver-Solution-Settings
-    tsf = solutionDict.get("time_step_factor", 5)
-    # Check for a pseudo-time-step-size
-    pseudo_timestep = solutionDict.get("pseudo_timestep")
-    if pseudo_timestep is not None:
-        # Use pseudo timestep
-        logger.info(
-            f"Direct Specification of pseudo timestep size from Configfile: {pseudo_timestep}"
+
+def set_run_calculation(data, solver):
+    # Get Solution-Dict
+    solutionDict = data.get("solution")
+
+    if solutionDict is None:
+        logger.warning(
+            f"No Solution-Dict specified in Case: 'solution'. Skipping 'set_run_calculation'!"
         )
-        solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = (
-            "user-specified"
-        )
-        solver.solution.run_calculation.pseudo_time_settings.time_step_method.pseudo_time_step_size = (
-            pseudo_timestep
-        )
-        # Update dict
-        if solutionDict.get("time_step_factor") is not None:
-            solutionDict.pop("time_step_factor")
+        return
+
+    # check if pseudo-time-step method is activated in setup
+    if "pseudo_time_settings" in solver.solution.run_calculation().keys():
+        # Set Basic Solver-Solution-Settings
+        tsf = solutionDict.get("time_step_factor", 5)
+        # Check for a pseudo-time-step-size
+        pseudo_timestep = solutionDict.get("pseudo_timestep")
+        if pseudo_timestep is not None:
+            # Use pseudo timestep
+            logger.info(
+                f"Direct Specification of pseudo timestep size from Configfile: {pseudo_timestep}"
+            )
+            solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = (
+                "user-specified"
+            )
+            solver.solution.run_calculation.pseudo_time_settings.time_step_method.pseudo_time_step_size = (
+                pseudo_timestep
+            )
+            # Update dict
+            if solutionDict.get("time_step_factor") is not None:
+                solutionDict.pop("time_step_factor")
+        else:
+            # Use timescale factor
+            logger.info(
+                f"Using 'conservative'-'automatic' timestep method with timescale-factor: {tsf}"
+            )
+            solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = (
+                "automatic"
+            )
+            solver.solution.run_calculation.pseudo_time_settings.time_step_method.length_scale_methods = (
+                "conservative"
+            )
+            solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_size_scale_factor = (
+                tsf
+            )
+            # Update dict
+            solutionDict["time_step_factor"] = tsf
     else:
-        # Use timescale factor
         logger.info(
-            f"Using 'conservative'-'automatic' timestep method with timescale-factor: {tsf}"
+            "Pseudo-Time-Step Method not active, no change to timestep-settings"
         )
-        solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = (
-            "automatic"
-        )
-        solver.solution.run_calculation.pseudo_time_settings.time_step_method.length_scale_methods = (
-            "conservative"
-        )
-        solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_size_scale_factor = (
-            tsf
-        )
-        # Update dict
-        solutionDict["time_step_factor"] = tsf
 
     iter_count = solutionDict.setdefault("iter_count", 500)
     solver.solution.run_calculation.iter_count = int(iter_count)

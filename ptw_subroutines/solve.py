@@ -1,26 +1,22 @@
+from packaging.version import Version
 # Logger
-from ptw_subroutines.utils import ptw_logger, dict_utils
+from ptw_subroutines.utils import ptw_logger, dict_utils, fluent_utils
 
 logger = ptw_logger.getLogger()
 
 
 def init(data, solver, functionEl, gpu):
     # Get FunctionName & Update FunctionEl
+    defaultName = "init_fmg_01"
+    if gpu:
+        defaultName = "init_standard_01"
 
-    if not gpu:
-        functionName = dict_utils.get_funcname_and_upd_funcdict(
-            parentDict=data,
-            functionDict=functionEl,
-            funcDictName="initialization",
-            defaultName="init_fmg_01",
-        )
-    else:
-        functionName = dict_utils.get_funcname_and_upd_funcdict(
-            parentDict=data,
-            functionDict=functionEl,
-            funcDictName="initialization",
-            defaultName="init_standard_01",
-        )
+    functionName = dict_utils.get_funcname_and_upd_funcdict(
+        parentDict=data,
+        functionDict=functionEl,
+        funcDictName="initialization",
+        defaultName=defaultName,
+    )
 
     # Reordering Domain
     # Can have influence on convergence, but can lead to freeze on some cases
@@ -162,7 +158,7 @@ def init_hybrid_basic(data, solver):
     )
     solver.solution.initialization.standard_initialize()
 
-    if solver.version >= "241":
+    if Version(solver._version) >= Version("241"):
         solver.solution.initialization.initialization_type = "hybrid"
         solver.solution.initialization.reference_frame = "absolute"
     else:
@@ -179,7 +175,7 @@ def init_hybrid_basic(data, solver):
 
 def init_fmg_basic(data, solver):
     logger.info("Performing a FMG initialization")
-    if solver.version < "241":
+    if Version(solver._version) < Version("241"):
         # setting rp variable which is needed for version v232 when using gtis, may be obsolete in future versions
         solver.execute_tui(r"""(rpsetvar 'fmg-init/enable-with-gti? #t)""")
         solver.solution.initialization.fmg_initialize()

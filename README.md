@@ -24,7 +24,7 @@ The functionalities are displayed in the following Feature-Matrix:
 ### **PyFluent Installation**
 
 Required libraries:
-- PyFluent
+- PyFluent (supporting version 0.19.2, latter versions may introduce changes)
 - Matplotlib (included in PyFluent)
 - NumPy (included in PyFluent)
 - Pandas (included in PyFluent)
