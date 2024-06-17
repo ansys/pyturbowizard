@@ -1586,7 +1586,8 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
         return
 
     # Reports
-    reportList = solutionDict.get("reportlist")
+    # working on a copy, as we are going to modify it
+    reportList = list(solutionDict.get("reportlist"))
     basicReportDict = solutionDict.get("basic_reports")
     # Old definitions stored directly in case section
     if data.get("basic_reports") is not None:
