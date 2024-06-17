@@ -3,6 +3,7 @@ import json
 import sys
 import copy
 import ansys.fluent.core as pyfluent
+from packaging.version import Version
 
 # Load Script Modules
 from ptw_subroutines import (
@@ -25,7 +26,7 @@ from ptw_subroutines.utils import (
 )
 
 
-ptw_version = "1.8.6"
+ptw_version = "1.8.7"
 
 # Set Logger
 logger = ptw_logger.init_logger()
@@ -113,7 +114,7 @@ class PTW_Run:
         solver.execute_tui("/display/set/picture/driver avz")
 
         # Fluent Version Check
-        if solver.version < "241":
+        if Version(solver._version) < Version("241"):
             # For version before 24.1, remove the streamhandler from the logger
             ptw_logger.remove_handlers(streamhandlers=True, filehandlers=False)
             # Set Batch options: Old API
@@ -235,6 +236,9 @@ class PTW_Run:
                 numerics.numerics(
                     data=caseEl, solver=solver, functionEl=caseFunctionEl, gpu=gpu
                 )
+
+                # Set "Run Calculation" properties
+                setupcfd.set_run_calculation(caseEl, solver)
 
                 # Read Additional Journals, if specified
                 fluent_utils.read_journals(

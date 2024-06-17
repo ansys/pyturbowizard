@@ -1,5 +1,6 @@
 import os
 import json
+from packaging.version import Version
 
 # Logger
 
@@ -73,7 +74,7 @@ def study01(data, solver, gpu):
         if not runExisting:
             # Read Ref Case
             refCaseFilePath = os.path.join(flworking_Dir, refCase)
-            if solver.version >= "241":
+            if Version(solver._version) >= Version("241"):
                 solver.file.read_case_data(file_name=refCaseFilePath)
             else:
                 if studyIndex == 0:
@@ -150,7 +151,7 @@ def study01(data, solver, gpu):
                 logger.info("Using previous updated data for Initialization")
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
-            if solver.version >= "241":
+            if Version(solver._version) >= Version("241"):
                 if not studyEl.setdefault("reread_case", False):
                     solver.tui.parametric_study.study.read_case_before_each_dp_update(
                         "no"
@@ -211,7 +212,7 @@ def study01(data, solver, gpu):
                 logger.info("Using previous updated data for Initialization")
                 solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
 
-            if solver.version >= "241":
+            if Version(solver._version) >= Version("241"):
                 if not studyEl.setdefault("reread_case", False):
                     solver.tui.parametric_study.study.read_case_before_each_dp_update(
                         "no"
