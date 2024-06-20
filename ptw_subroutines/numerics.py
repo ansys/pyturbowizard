@@ -19,9 +19,9 @@ def numerics(data, solver, functionEl, gpu):
         "numerics_defaults_pseudo_timestep",
     ]
 
-    numerics_defaults = "numerics_bp_tn_2305"
+    defaultName = "numerics_bp_tn_2305"
     if gpu:
-        numerics_defaults = "numerics_defaults_pseudo_timestep"
+        defaultName = "numerics_defaults_pseudo_timestep"
         if tsn:
             logger.warning(
                 "Turbomachinery specific numerics are not supported in GPU solver and will therefore not be used!"
@@ -32,7 +32,7 @@ def numerics(data, solver, functionEl, gpu):
         parentDict=data,
         functionDict=functionEl,
         funcDictName="numerics",
-        defaultName=numerics_defaults,
+        defaultName=defaultName,
     )
 
     logger.info(f"Specifying Numerics '{functionName}' ...")

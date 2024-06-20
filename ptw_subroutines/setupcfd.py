@@ -192,16 +192,14 @@ def set_physics(data, solver, solve_energy: bool = True, gpu: bool = False):
     default_turb_model = "sst"
     turb_model = data["setup"].setdefault("turbulence_model", default_turb_model)
     supported_kw_models = solver.setup.models.viscous.k_omega_model.allowed_values()
-    # filtering specifically for transition models  not available
-    supported_kw_models_gpu = ["sst", "geko"]
-    # filtering specificly for transition models  not available
+    # filtering specifically for transition models not available
     supported_transition_models = [
         "transition-sst",
         "transition-gamma",
         "transition-algebraic",
     ]
-    supported_transition_models_gpu = ["transition-algebraic"]
-    if (turb_model in supported_kw_models) and not gpu:
+
+    if turb_model in supported_kw_models:
         logger.info(f"Setting kw-turbulence-model: '{turb_model}'")
         solver.setup.models.viscous.model = "k-omega"
         solver.setup.models.viscous.k_omega_model = turb_model
@@ -220,26 +218,7 @@ def set_physics(data, solver, solve_energy: bool = True, gpu: bool = False):
             if c_jet is not None:
                 solver.tui.define.models.viscous.geko_options.cjet("yes", f"{c_jet}")
 
-    elif (turb_model in supported_kw_models_gpu) and gpu:
-        logger.info(f"Setting kw-turbulence-model: '{turb_model}'")
-        solver.setup.models.viscous.model = "k-omega"
-        solver.setup.models.viscous.k_omega_model = turb_model
-
-        # Set geko Model Parameters
-        if turb_model == "geko":
-            c_sep = data["setup"].get("geko_csep")
-            if c_sep is not None:
-                solver.tui.define.models.viscous.geko_options.csep("yes", f"{c_sep}")
-
-            c_nw = data["setup"].get("geko_cnw")
-            if c_nw is not None:
-                solver.tui.define.models.viscous.geko_options.cnw("yes", f"{c_nw}")
-
-            c_jet = data["setup"].get("geko_cjet")
-            if c_jet is not None:
-                solver.tui.define.models.viscous.geko_options.cjet("yes", f"{c_jet}")
-
-    elif (turb_model in supported_transition_models) and not gpu:
+    elif turb_model in supported_transition_models:
         if turb_model == "transition-sst":
             solver.setup.models.viscous.model = turb_model
         elif turb_model == "transition-gamma":
@@ -250,13 +229,6 @@ def set_physics(data, solver, solve_energy: bool = True, gpu: bool = False):
             solver.setup.models.viscous.model = "k-omega"
             solver.setup.models.viscous.k_omega_model = "sst"
             solver.setup.models.viscous.transition_module = "gamma-algebraic"
-
-    elif (turb_model in supported_transition_models_gpu) and gpu:
-        if turb_model == "transition-algebraic":
-            solver.setup.models.viscous.model = "k-omega"
-            solver.setup.models.viscous.k_omega_model = "sst"
-            solver.setup.models.viscous.transition_module = "gamma-algebraic"
-
     else:
         logger.warning(
             f"Specified turbulence-model not supported: '{turb_model}'! \
@@ -1586,7 +1558,8 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
         return
 
     # Reports
-    reportList = solutionDict.get("reportlist")
+    # working on a copy, as we are going to modify it
+    reportList = list(solutionDict.get("reportlist"))
     basicReportDict = solutionDict.get("basic_reports")
     # Old definitions stored directly in case section
     if data.get("basic_reports") is not None:

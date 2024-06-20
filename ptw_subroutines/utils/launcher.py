@@ -34,6 +34,7 @@ def launchFluent(launchEl: dict):
             cleanup_on_exit=launchEl["exitatend"],
             py=launchEl["py"],
             gpu=launchEl["gpu"],
+            version=launchEl["version"],
         )
     # Hook to existing Session
     else:
@@ -106,7 +107,7 @@ def launch_queuing_session(launchEl: dict):
         logger.info("Used Fluent executable: '" + fluent_path + "'")
         commandlist.append(fluent_path)
 
-        precisionCommand = "3d"
+        precisionCommand = launchEl["version"]
         if launchEl["precision"]:
             precisionCommand = precisionCommand + "dp"
         batch_arguments = [
@@ -164,7 +165,8 @@ def launch_queuing_session(launchEl: dict):
             py=launchEl["py"],
             gpu=launchEl["gpu"],
             scheduler_options=scheduler_options,
-            additional_arguments=additional_args
+            additional_arguments=additional_args,
+            version=launchEl["version"],
         ).result(timeout=maxtime)
     return solver
 
@@ -181,9 +183,13 @@ def get_fluent_exe_path(product_version: str):
         return fluent_path
 
     if platform.system() == "Windows":
-        fluent_path = os.path.join(ansys_root_path, "fluent", "ntbin", "win64", "fluent.exe")
+        fluent_path = os.path.join(
+            ansys_root_path, "fluent", "ntbin", "win64", "fluent.exe"
+        )
         if platform.architecture()[0] == "32bit":
-            fluent_path = os.path.join(ansys_root_path, "fluent", "ntbin", "win32", "fluent.exe")
+            fluent_path = os.path.join(
+                ansys_root_path, "fluent", "ntbin", "win32", "fluent.exe"
+            )
     elif platform.system() == "Linux":
         fluent_path = os.path.join(ansys_root_path, "fluent", "bin", "fluent")
     else:
@@ -199,3 +205,4 @@ def get_launcher_defaults(launchEl: dict):
     launchEl.setdefault("precision", True)
     launchEl.setdefault("py", True)
     launchEl.setdefault("gpu", False)
+    launchEl.setdefault("version", "3d")
