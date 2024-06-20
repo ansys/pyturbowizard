@@ -38,7 +38,10 @@ version, number of processes and single or double precision solver.
 For running Fluent on Linux or a Cluster, there are two options:
 
 - Submit job to a slurm-queue: ```queue_slurm``` (e.g. ```"ottc01"```) and a maximal waiting time in
-  sec ```queue_waiting_time``` (default: 600sec). Other options identical to usual launching options
+  sec ```queue_waiting_time``` (default: 600sec). Further, if additional launch arguments are needed
+  (e.g. for launching session in GPU queue) these can be specified with ```additional_args```
+  (e.g. ```"-scheduler_ppn=4 -scheduler_gpn=4"```).
+  Other options identical to usual launching options
 - Hook on to an existing Fluent session ([How to Run on Linux](/README.md#linux--cluster-1)): For this a server file
   name has to be specified under ``` serverfilename ```. When hooking onto a existing Fluent session
   the ``` launching ``` options are not used, except for ```workingDir```.
@@ -98,7 +101,7 @@ The following functions and corresponding options are available:
         - "init_standard_01": standard initialization, using inlet data as reference
         - "init_standard_02": standard initialization, using 0 velocity, 0.01 TKE , 0.01 Omega, inlet temperature,
           initial gauge pressure
-        - "init_hybrid_01": Hybrid initialization using intial gauge pressure
+        - "init_hybrid_01": Hybrid initialization using initial gauge pressure
         - **"init_fmg_01"(default):** FMG initialization, using standard "init_standard_01" for pre-initialization
         - "init_fmg_02": FMG initialization, using standard "init_standard_02" for pre-initialization
         - "init_fmg_03": FMG initialization, using standard "init_hybrid_01" for pre-initialization
@@ -385,7 +388,7 @@ regions (e.g. rotors and stators), separate topologies have to be created.
 ```
 
 **Note**:  If a periodic interface specified under ```"tz_theta_periodic_names"``` is non-conformal, it will be
-automaticaly handeled by the script.
+automatically handled by the script.
 
 This completes the setup of the ``` locations ``` section.
 
@@ -430,6 +433,69 @@ conservative) or ```pseudo_timestep``` and ``` iter_count ``` respectively.
 
 ```reorder_domain``` is an optional argument, that turns on/off domain reordering before initialization (**default: true
 **)
+
+##### Basic Report Definitions
+
+It is optional to define basic report definitions with the keyword ``` basic_reports ``` in the ``` solution ``` section. 
+Basic refers to these report definitions being created as surface, volume, force, drag, lift, 
+moment or flux (only mass flux supported) reports.
+When using the GPU solver, this is currently the only option to monitor desired quantities for every iteration as 
+report definitions from expressions are not supported yet. 
+
+```
+ "Case_1": {
+       "solution": {
+           "basic_reports": {
+              "IN_massflowave_pt": {
+                "scope": "surface",
+                "type": "surface-massavg",
+                "zones": ["inblock-inflow"],
+                "variable": "total-pressure"
+              },
+              "OUT_massflowave_pt": {
+                "scope": "surface",
+                "type": "surface-massavg",
+                "zones": ["outblock-outflow"],
+                "variable": "total-pressure"
+              },
+              "Vol_Ave_pt": {
+                "scope": "volume",
+                "type": "volume-massavg",
+                "zones": ["passage"],
+                "variable": "total-pressure"
+              },
+              "Force_blades_Z": {
+                "scope": "force",
+                "zones": ["blade","bld-geo-high","bld-geo-low","bld-high"],
+                "force_vector": [0,0,1]
+              },
+              "Drag_blades_Z": {
+                "scope": "drag",
+                "zones": ["blade","bld-geo-high","bld-geo-low","bld-high"],
+                "force_vector": [0,0,1],
+                "report_output_type": "Drag Force"
+              },
+              "Lift_blades_Z": {
+                "scope": "lift",
+                "zones": ["blade","bld-geo-high","bld-geo-low","bld-high"],
+                "force_vector": [0,0,1],
+                "report_output_type": "Lift Force"
+              },
+              "Moment_blades_Z": {
+                "scope": "moment",
+                "zones": ["blade","bld-geo-high","bld-geo-low","bld-high"],
+                "mom_center": [0,0,0],
+                "mom_axis": [0,0,1],
+                "report_output_type": "Moment"
+              },
+              "Flux_Mass_In": {
+                "scope": "flux",
+                "type": "flux-massflow",
+                "zones": ["inblock-inflow"]
+              }
+            },
+      ...
+```
 
 #### Results
 

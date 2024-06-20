@@ -1,7 +1,9 @@
 import os
+import re
+from packaging.version import Version
 
 # Logger
-from ptw_subroutines.utils import ptw_logger, misc_utils
+from ptw_subroutines.utils import ptw_logger, misc_utils, fluent_utils
 
 logger = ptw_logger.getLogger()
 
@@ -103,16 +105,34 @@ def cleanup_input_expressions(availableKeyEl: dict, fileData: str):
 
 
 def check_input_parameter_expressions(solver):
-    for expName in solver.setup.named_expressions():
-        exp = solver.setup.named_expressions.get(expName)
-        if expName.startswith("BC_"):
+    for exp_name in solver.setup.named_expressions():
+        exp = solver.setup.named_expressions.get(exp_name)
+        if exp_name.startswith("BC_"):
+            # First check
             expValue = exp.get_value()
-            if type(expValue) is not float:
+            if not isinstance(expValue, float):
                 logger.info(
-                    f"'{expName}' seems not to be valid: '{expValue}' "
+                    f"'{exp_name}' seems not to be valid: '{expValue}' "
                     f"--> Removing definition as Input Parameter..."
                 )
                 exp.set_state({"input_parameter": False})
+            else:
+                # Second check:
+                # if any strings in the expression except units or brackets, it's probably not valid
+                exp_def = exp.definition()
+                cleaned_def = re.sub(r"[\[].*?[\]]", "", exp_def)
+                cleaned_def = cleaned_def.replace("(", "").replace(")", "")
+                try:
+                    float(cleaned_def)
+                    exp.set_state({"input_parameter": True})
+                except ValueError:
+                    logger.info(
+                        f"'{exp_name}' seems not to be const. value and "
+                        f"may depend on another expression or function: {exp_def} "
+                        f"--> Removing definition as Input Parameter..."
+                    )
+                    exp.set_state({"input_parameter": False})
+
     return
 
 
@@ -137,9 +157,13 @@ def check_output_parameter_expressions(caseEl: dict, solver):
 
 def check_expression_versions(solver):
     import re
-    if solver.version < "241":
+
+    if Version(solver._version) < Version("241"):
         for expName in solver.setup.named_expressions():
-            if expName == "MP_Isentropic_Efficiency" or expName == "MP_Polytropic_Efficiency":
+            if (
+                expName == "MP_Isentropic_Efficiency"
+                or expName == "MP_Polytropic_Efficiency"
+            ):
                 exp = solver.setup.named_expressions.get(expName)
                 logger.info(
                     f"Checking & updating expression '{expName}' to latest version"

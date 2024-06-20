@@ -1,6 +1,7 @@
 import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+from packaging.version import Version
 from matplotlib.lines import Line2D
 import matplotlib.colors as mcolors
 
@@ -30,9 +31,8 @@ def calcCov(reportOut, window_size=50):
 
     # calculate the Coefficient of Variation over the window size
     cov_df = mp_df.copy()
-    cov_df.iloc[:, 1:] = (
-        mp_df.iloc[:, 1:].rolling(window=window_size).std()
-        / abs(mp_df.iloc[:, 1:].rolling(window=window_size).mean())
+    cov_df.iloc[:, 1:] = mp_df.iloc[:, 1:].rolling(window=window_size).std() / abs(
+        mp_df.iloc[:, 1:].rolling(window=window_size).mean()
     )
 
     mean_values = mp_df.iloc[:, 1:].rolling(window=window_size).mean().iloc[-1]
@@ -166,6 +166,7 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
 
     wall_clock_tot = 0
     nodes = 0
+    cell_size = None
     filtered_values = []
     filtered_headers = []
     res_df = None
@@ -185,11 +186,15 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
         else:
             number_eqs = tempData.get("num_eqs", 6)
 
-        for line in lines:
+        for line_nr, line in enumerate(lines):
             if "Total wall-clock time" in line:
                 wall_clock_tot = line.split(":")[1].strip()
                 wall_clock_tot = wall_clock_tot.split(" ")[0].strip()
                 logger.info(f"Detected Total Wall Clock Time: {wall_clock_tot}")
+            elif "Mesh Size" in line:
+                if "Level    Cells" in lines[line_nr + 2]:
+                    mesh_info_line = lines[line_nr + 3]
+                    cell_size = mesh_info_line.split()[1]
             elif "compute nodes" in line:
                 nodes = line.split(" ")[6].strip()
                 logger.info(f"Detected Number of Nodes: {nodes}")
@@ -230,16 +235,21 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
         # get pseudo time step value
         time_step = solver.scheme_eval.string_eval("(rpgetvar 'pseudo-auto-time-step)")
 
+        # check if energy is solved
+        solveEnergy = solver.setup.models.energy.enabled()
+
         # write out flux reports
-        if solver.version < "241":
-            fluxes = solver.report.fluxes
+        if Version(solver._version) < Version("241"):
+            massBalance = solver.report.fluxes.mass_flow()
+            if solveEnergy:
+                heatBalance = solver.report.fluxes.heat_transfer()
         else:
             fluxes = solver.results.report.fluxes
-
-        massBalance = fluxes.mass_flow()
-        solveEnergy = solver.setup.models.energy.enabled()
-        if solveEnergy:
-            heatBalance = fluxes.heat_transfer()
+            zones = fluxes.mass_flow.zones.allowed_values()
+            massBalance = fluxes.mass_flow(zones=zones)
+            if solveEnergy:
+                zones = fluxes.heat_transfer.zones.allowed_values()
+                heatBalance = fluxes.heat_transfer(zones=zones)
 
     ## write report table
     report_table = pd.DataFrame()
@@ -251,6 +261,8 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
 
     report_table.loc[0, "Total Wall Clock Time"] = wall_clock_tot
     report_table.loc[0, "Compute Nodes"] = nodes
+    if cell_size is not None:
+        report_table.loc[0, "Number Cells"] = cell_size
     report_table.insert(0, "Case Name", caseFilename)
 
     if solver is not None:

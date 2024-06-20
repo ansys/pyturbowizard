@@ -1,16 +1,21 @@
+from packaging.version import Version
 # Logger
-from ptw_subroutines.utils import ptw_logger, dict_utils
+from ptw_subroutines.utils import ptw_logger, dict_utils, fluent_utils
 
 logger = ptw_logger.getLogger()
 
 
-def init(data, solver, functionEl):
+def init(data, solver, functionEl, gpu):
     # Get FunctionName & Update FunctionEl
+    defaultName = "init_fmg_01"
+    if gpu:
+        defaultName = "init_standard_01"
+
     functionName = dict_utils.get_funcname_and_upd_funcdict(
         parentDict=data,
         functionDict=functionEl,
         funcDictName="initialization",
-        defaultName="init_fmg_01",
+        defaultName=defaultName,
     )
 
     # Reordering Domain
@@ -19,6 +24,34 @@ def init(data, solver, functionEl):
     if reorder:
         logger.info("Reordering domain to reduce bandwidth according to the setup")
         solver.mesh.reorder.reorder_domain()
+
+    supported_ini_gpu = [
+        "init_standard_01",
+        "init_hybrid_01"
+    ]
+
+    supported_ini = [
+        "init_standard_01",
+        "init_standard_02",
+        "init_hybrid_01",
+        "init_fmg_01",
+        "init_fmg_02",
+        "init_fmg_03"
+    ]
+
+    if gpu:
+        if (functionName not in supported_ini_gpu) and (functionName in supported_ini):
+            logger.warning(
+                f"Prescribed Initialization Function '{functionName}' not supported in GPU solver. Using 'init_standard_01' instead!"
+                )
+            functionName = "init_standard_01"
+        elif (functionName not in supported_ini_gpu) and (functionName not in supported_ini):
+            logger.warning(
+                f"Prescribed Function '{functionName}' not known. Using 'init_standard_01' instead!"
+                )
+            functionName = "init_standard_01"
+
+
 
     logger.info(f"Running Initialization Function '{functionName}'")
     if functionName == "init_standard_01":
@@ -125,7 +158,7 @@ def init_hybrid_basic(data, solver):
     )
     solver.solution.initialization.standard_initialize()
 
-    if solver.version >= "241":
+    if Version(solver._version) >= Version("241"):
         solver.solution.initialization.initialization_type = "hybrid"
         solver.solution.initialization.reference_frame = "absolute"
     else:
@@ -142,7 +175,7 @@ def init_hybrid_basic(data, solver):
 
 def init_fmg_basic(data, solver):
     logger.info("Performing a FMG initialization")
-    if solver.version < "241":
+    if Version(solver._version) < Version("241"):
         # setting rp variable which is needed for version v232 when using gtis, may be obsolete in future versions
         solver.execute_tui(r"""(rpsetvar 'fmg-init/enable-with-gti? #t)""")
         solver.solution.initialization.fmg_initialize()

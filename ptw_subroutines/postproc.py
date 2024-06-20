@@ -13,7 +13,7 @@ from ptw_subroutines.utils import (
 logger = ptw_logger.getLogger()
 
 
-def post(data, solver, functionEl, launchEl, trn_name):
+def post(data, solver, functionEl, launchEl, trn_name, gpu):
     # Get FunctionName & Update FunctionEl
     functionName = dict_utils.get_funcname_and_upd_funcdict(
         parentDict=data,
@@ -24,7 +24,7 @@ def post(data, solver, functionEl, launchEl, trn_name):
 
     logger.info(f"Running Postprocessing Function '{functionName}' ...")
     if functionName == "post_01":
-        post_01(data, solver, launchEl, trn_name)
+        post_01(data, solver, launchEl, trn_name, gpu)
     else:
         logger.info(
             f"Prescribed Function '{functionName}' not known. Skipping Postprocessing!"
@@ -33,7 +33,7 @@ def post(data, solver, functionEl, launchEl, trn_name):
     logger.info("Running Postprocessing Function... finished!")
 
 
-def post_01(data, solver, launchEl, trn_name):
+def post_01(data, solver, launchEl, trn_name, gpu):
     fl_workingDir = launchEl.get("workingDir")
     caseFilename = data["caseFilename"]
     caseOutPath = misc_utils.ptw_output(
@@ -74,19 +74,27 @@ def post_01(data, solver, launchEl, trn_name):
 
     ## write report table
     createReportTable(
-        data=data, fl_workingDir=fl_workingDir, solver=solver, trn_filename=trn_name
+        data=data,
+        fl_workingDir=fl_workingDir,
+        solver=solver,
+        trn_filename=trn_name,
+        gpu=gpu,
     )
 
     ## move case span-plots to case output folder
     spansSurf = data["results"].get("span_plot_height")
     contVars = data["results"].get("span_plot_var")
     if (spansSurf is not None) and (contVars is not None):
-      misc_utils.move_files(source_dir=fl_workingDir, target_dir=caseOutPath, filename_wildcard="span*plot.avz")
+        misc_utils.move_files(
+            source_dir=fl_workingDir,
+            target_dir=caseOutPath,
+            filename_wildcard="span*plot.avz",
+        )
 
     return
 
 
-def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
+def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
     try:
         import pandas as pd
     except ImportError as e:
@@ -152,14 +160,13 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
             logger.info(f"Writing Monitor Plot to Directory: {plot_filename}")
             plt.savefig(plot_filename)
             plt.close()  # Close the figure to release memory
-        else:
-            logger.info("Missing Report File data: Monitor Plots not created")
+    else:
+        logger.info("Missing Report File data: Monitor Plots not created")
 
-        if not cov_df.empty:
-            # Get CoV information
-            covDict = (
-                solver.solution.monitor.convergence_conditions.convergence_reports()
-            )
+    if (not cov_df.empty) and (not gpu):
+        # Get CoV information
+        covDict = solver.solution.monitor.convergence_conditions.convergence_reports()
+        if covDict is not None:
             filtCovDict = {
                 key: value
                 for key, value in covDict.items()
@@ -195,7 +202,11 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename):
             plt.savefig(plot_filename)
             plt.close()  # Close the figure to release memory
         else:
-            logger.info("Missing Report File data: CoV Plot not created")
+            logger.info("No CoVs have been specified: CoV Plot not created")
+    elif (not cov_df.empty) and gpu:
+        logger.info("CoVs are not supported in GPU solver: CoV Plot not created")
+    else:
+        logger.info("Missing Report File data: CoV Plot not created")
 
     # Read in transcript file
     caseOutPath = misc_utils.ptw_output(
@@ -259,8 +270,10 @@ def mergeReportTables(turboData, solver):
         import pandas as pd
     except ImportError as e:
         logger.info(f"ImportError! Could not import lib: {str(e)}")
-        logger.info(f"Skipping mergeReportTables function!")
+        logger.info("Skipping mergeReportTables function!")
         return
+
+    logger.info("Merging Report-Tables of all defined cases")
 
     fl_workingDir = turboData["launching"].get("workingDir")
     caseDict = turboData.get("cases")
@@ -275,7 +288,7 @@ def mergeReportTables(turboData, solver):
                 reportTableName = resultEl.setdefault(
                     "filename_reporttable", "reporttable.csv"
                 )
-                reportTableName = caseFilename + "_" + reportTableName
+                #reportTableName = caseFilename + "_" + reportTableName
                 caseOutPath = misc_utils.ptw_output(
                     fl_workingDir=fl_workingDir, case_name=caseFilename
                 )
@@ -285,7 +298,10 @@ def mergeReportTables(turboData, solver):
 
         if len(reportFiles) > 1:
             df = pd.concat((pd.read_csv(f, header=0) for f in reportFiles))
-            mergedFileName = os.path.join(ptwOutPath, "merged_reporttable.csv")
-            df.to_csv(mergedFileName)
+            merged_file_name = os.path.join(ptwOutPath, "merged_reporttable.csv")
+            logger.info(f"Writing merged report-file: {merged_file_name}")
+            df.to_csv(merged_file_name)
+        else:
+            logger.info("No report-files found, nothing to merge...")
 
     return

@@ -4,7 +4,7 @@
     <option name="enabledOnReformat" value="true" />
     <option name="executionMode" value="BINARY" />
     <option name="pathToExecutable" value="C:\Python310\Scripts\black.exe" />
-    <option name="sdkUUID" value="580341c8-ace1-49c8-8d84-edf79ddd2172" />
+    <option name="sdkName" value="Python 3.10 (pve_241)" />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.10 (pve_241)" project-jdk-type="Python SDK" />
 </project>
