@@ -131,7 +131,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
             key=lambda x: [int(num) for num in x.split("_") if num.isdigit()],
         )
         report_file = os.path.join(caseOutPath, report_file)
-        report_values, cov_df, mp_df = postproc_utils.calcCov(report_file)
+        report_values, cov_df, mp_df = postproc_utils.calcCov(reportOut=report_file)
         logger.info(f"Using: {report_file} for Evaluation.")
 
     else:
