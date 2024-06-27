@@ -66,4 +66,4 @@ Required libraries:
 
 ## Useful Documents
 - [Configuration File Setup](ptw_documentation/ConfigFile.md)
-- [Tutorial: Speedline Simulation Setup](/ptw_examples/tutorial_speedline/speedline_tutorial.md)
+- [Tutorial: Speedline Simulation Setup](ptw_examples/tutorial_speedline/speedline_tutorial.md)
