@@ -157,10 +157,19 @@ class PTW_Run:
                 caseEl = turbo_data["cases"][casename]
                 # Basic Dict Stuff...
                 # First: Copy data from reference if refCase is set
-                if caseEl.get("refCase") is not None:
-                    dict_utils.merge_data_with_refDict(
-                        caseDict=caseEl, allCasesDict=caseDict
-                    )
+                ref_case = caseEl.get("refCase")
+                if ref_case is not None:
+                    # Check if reference case is available
+                    if caseDict.get(ref_case) is not None:
+                        dict_utils.merge_data_with_refDict(
+                            caseDict=caseEl, allCasesDict=caseDict
+                        )
+                    else:
+                        logger.error(
+                            f"Case '{casename}' is skipped: "
+                            f"Specified Reference-Case: '{ref_case}' not available."
+                        )
+                        continue
                 # Check if case should be executed
                 if caseEl.setdefault("skip_execution", False):
                     logger.info(
@@ -315,7 +324,7 @@ class PTW_Run:
                         trn_name=trnFileName,
                         gpu=gpu,
                     )
-                    # version 1.5.3: no alteration of case/data done in post processing, removed additonal saving
+                    # version 1.5.3: no alteration of case/data done in post processing, removed additional saving
                     # filename = caseFilename + "_fin"
                     # solver.file.write(file_type="case-data", file_name=filename)
                 else:

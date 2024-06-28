@@ -216,6 +216,11 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
     report_table, res_df = postproc_utils.evaluateTranscript(
         trnFilePath=trnFilePath, caseFilename=caseFilename, solver=solver
     )
+    # we should test the MontiorsManager as more robust alternative:
+    # solver_session.monitors_manager.get_monitor_set_names()
+    # mp = solver_session.monitors_manager.get_monitor_set_data(
+    #     monitor_set_name="residual"
+    # )
 
     # Select columns from report_table
     columns_before_report_values = report_table.iloc[:, :2]
@@ -288,7 +293,7 @@ def mergeReportTables(turboData, solver):
                 reportTableName = resultEl.setdefault(
                     "filename_reporttable", "reporttable.csv"
                 )
-                #reportTableName = caseFilename + "_" + reportTableName
+                # reportTableName = caseFilename + "_" + reportTableName
                 caseOutPath = misc_utils.ptw_output(
                     fl_workingDir=fl_workingDir, case_name=caseFilename
                 )

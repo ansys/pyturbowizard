@@ -228,7 +228,17 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
                     try:
                         values = int(values[0])
                     except ValueError:
-                        table_started = False
+                        # We will also check the next line,
+                        # as there might be a solver-output inbetween the iterations (limiter active etc...)
+                        values = lines[line_nr + 1].split()
+                        all_convertible = all(
+                            misc_utils.can_convert_to_number(value)
+                            for value in values[: number_eqs + 1]
+                        )
+                        table_started = (
+                            len(values[: number_eqs + 1]) == len(filtered_headers)
+                            and all_convertible
+                        )
 
         res_df = pd.DataFrame(filtered_values_list, columns=filtered_headers)
 
