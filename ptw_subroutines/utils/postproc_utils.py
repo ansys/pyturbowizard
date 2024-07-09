@@ -284,3 +284,19 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
         report_table.insert(1, "Pseudo Time Step [s]", time_step)
 
     return report_table, res_df
+
+
+def check_lines(line_list, number_eqs, filtered_headers):
+    valid_data = False
+    for line in line_list:
+        values = line.split()
+        all_convertible = all(
+            misc_utils.can_convert_to_number(value)
+            for value in values[: number_eqs + 1]
+        )
+        valid_data = (
+            len(values[: number_eqs + 1]) == len(filtered_headers) and all_convertible
+        )
+        if valid_data:
+            return valid_data
+    return valid_data
