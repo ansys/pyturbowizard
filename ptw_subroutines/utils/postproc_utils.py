@@ -11,7 +11,7 @@ from ptw_subroutines.utils import ptw_logger, fluent_utils, misc_utils
 logger = ptw_logger.getLogger()
 
 
-def calcCov(reportOut, window_size=50):
+def calcCov(reportOut, window_size=50, write_mean=True):
     try:
         import pandas as pd
     except ImportError as e:
@@ -23,7 +23,7 @@ def calcCov(reportOut, window_size=50):
     mp_df.columns = mp_df.columns.str.strip('()"')
 
     # Subtract the first entry in the 'Iteration' column from all other entries
-    mp_df["Iteration"] = mp_df["Iteration"] - mp_df["Iteration"].iloc[0]
+    mp_df["Iteration"] = mp_df["Iteration"] - mp_df["Iteration"].iloc[0] + 1
 
     # Initialize lists to store mean and COV values
     mean_values = []
@@ -42,10 +42,15 @@ def calcCov(reportOut, window_size=50):
         {mp_df.columns[0]: [mp_df[mp_df.columns[0]].iloc[-1]]}, index=[0]
     )  # format the headers of the dataframe
 
-    # Add mean values to the DataFrame
+    # Add last/latest value to the DataFrame
     for column in mp_df.columns[1:]:
-        col_name_mean = column
-        formatted_report_df[col_name_mean] = mean_values[column]
+        formatted_report_df[column] = mp_df[column].iloc[-1]
+
+    # Add mean values to the DataFrame
+    if write_mean:
+        for column in mp_df.columns[1:]:
+            col_name = column + "-mean"
+            formatted_report_df[col_name] = mean_values[column]
 
     # Add COV values to the DataFrame with modified column headers
     for column in mp_df.columns[1:]:
@@ -86,7 +91,7 @@ def getStudyReports(pathtostudy, tempData=None):
         if out_files:
             # Take the first .out file as the file_path
             report_file_path = os.path.join(folder_path, out_files[0])
-            report_table, cov_df, mp_df = calcCov(report_file_path)
+            report_table, cov_df, mp_df = calcCov(reportOut=report_file_path)
             report_table.insert(0, "Design Point", dpname)
         else:
             continue
@@ -223,7 +228,17 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
                     try:
                         values = int(values[0])
                     except ValueError:
-                        table_started = False
+                        # We will also check the next line,
+                        # as there might be a solver-output inbetween the iterations (limiter active etc...)
+                        values = lines[line_nr + 1].split()
+                        all_convertible = all(
+                            misc_utils.can_convert_to_number(value)
+                            for value in values[: number_eqs + 1]
+                        )
+                        table_started = (
+                            len(values[: number_eqs + 1]) == len(filtered_headers)
+                            and all_convertible
+                        )
 
         res_df = pd.DataFrame(filtered_values_list, columns=filtered_headers)
 
@@ -269,3 +284,19 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
         report_table.insert(1, "Pseudo Time Step [s]", time_step)
 
     return report_table, res_df
+
+
+def check_lines(line_list, number_eqs, filtered_headers):
+    valid_data = False
+    for line in line_list:
+        values = line.split()
+        all_convertible = all(
+            misc_utils.can_convert_to_number(value)
+            for value in values[: number_eqs + 1]
+        )
+        valid_data = (
+            len(values[: number_eqs + 1]) == len(filtered_headers) and all_convertible
+        )
+        if valid_data:
+            return valid_data
+    return valid_data
