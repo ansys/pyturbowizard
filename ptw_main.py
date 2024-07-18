@@ -202,6 +202,15 @@ class PTW_Run:
                 # Mesh import, expressions, profiles
                 meshimport.import_01(caseEl, solver)
 
+                # Read Additional Journals, if specified
+                fluent_utils.read_journals(
+                    case_data=caseEl,
+                    solver=solver,
+                    element_name="post_meshimport_journal_filenames",
+                    fluent_dir=fl_workingDir,
+                    execution_dir=caseOutPath,
+                )
+
                 ### Expression Definition
                 logger.info("Expression Definition... starting")
                 # Write ExpressionFile with specified Template
