@@ -1619,58 +1619,9 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].report_type.allowed_values()
                 if type in allowed_types:
-                    if type == "surface-area":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-area"
-                        }
-                    elif type == "surface-areaavg":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-areaavg"
-                        }
-                    elif type == "surface-facetavg":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-facetavg"
-                        }
-                    elif type == "surface-facetmax":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-facetmax"
-                        }
-                    elif type == "surface-facetmin":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-facetmin"
-                        }
-                    elif type == "surface-integral":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-integral"
-                        }
-                    elif type == "surface-massflowrate":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-massflowrate"
-                        }
-                    elif type == "surface-massavg":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-massavg"
-                        }
-                    elif type == "surface-stddev":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-stddev"
-                        }
-                    elif type == "surface-sum":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-sum"
-                        }
-                    elif type == "surface-areawtui":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-areawtui"
-                        }
-                    elif type == "surface-masswtui":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-masswtui"
-                        }
-                    elif type == "surface-volumeflowrate":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-volumeflowrate"
-                        }
+                    solver.solution.report_definitions.surface[reportName] = {
+                        "report_type": type
+                    }
                 else:
                     logger.warning(
                         f"Specified type '{type}' not known. Allowed types are: {allowed_types}.\nSkipping setup of Report '{report}'"
@@ -1729,42 +1680,9 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].report_type.allowed_values()
                 if type in allowed_types:
-                    if type == "volume-mass":
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "report_type": "volume-mass"
-                        }
-                    elif type == "volume-massavg":
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "report_type": "volume-massavg"
-                        }
-                    elif type == "volume-massintegral":
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "report_type": "volume-massintegral"
-                        }
-                    elif type == "volume-max":
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "report_type": "volume-max"
-                        }
-                    elif type == "volume-min":
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "report_type": "volume-min"
-                        }
-                    elif type == "volume-zonevol":
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "report_type": "volume-zonevol"
-                        }
-                    elif type == "volume-average":
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "report_type": "volume-average"
-                        }
-                    elif type == "volume-integral":
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "report_type": "volume-integral"
-                        }
-                    elif type == "volume-sum":
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "report_type": "volume-sum"
-                        }
+                    solver.solution.report_definitions.volume[reportName] = {
+                        "report_type": type
+                    }
                 else:
                     logger.warning(
                         f"Specified type '{type}' not known. Allowed types are: {allowed_types}.\nSkipping setup of Report '{report}'"
@@ -1992,10 +1910,9 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].report_type.allowed_values()
                 if type in allowed_types:
-                    if type == "flux-massflow":
-                        solver.solution.report_definitions.flux[reportName] = {
-                            "report_type": "flux-massflow"
-                        }
+                    solver.solution.report_definitions.flux[reportName] = {
+                        "report_type": type
+                    }
                 else:
                     logger.warning(
                         f"Specified type '{type}' not supported. Allowed types are: {allowed_types}.\nSkipping setup of Report '{report}'"
