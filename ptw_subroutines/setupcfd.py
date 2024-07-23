@@ -1614,10 +1614,6 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 type = basicReportDict[report].get("type")
                 solver.solution.report_definitions.surface[reportName] = {}
 
-                solver.solution.report_definitions.surface[
-                    reportName
-                ].per_surface = basicReportDict[report].get("per_zone", False)
-
                 # define type
                 allowed_types = solver.solution.report_definitions.surface[
                     reportName
@@ -1653,14 +1649,9 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].field.allowed_values()
                 if variable in allowed_variables:
-                    if (
-                        (type != "surface-area")
-                        and (type != "surface-massflowrate")
-                        and (type != "surface-volumeflowrate")
-                    ):
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "field": variable
-                        }
+                    solver.solution.report_definitions.surface[reportName] = {
+                        "field": variable
+                    }
                 else:
                     logger.warning(
                         f"Specified variable '{variable}' not known. Allowed variables are: {allowed_variables}.\nSkipping setup of Report '{report}'"
@@ -1673,15 +1664,16 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].create_output_parameter()
 
+                # set if per_zone should be used
+                solver.solution.report_definitions.surface[
+                    reportName
+                ].per_surface = basicReportDict[report].get("per_zone", False)
+
             elif scope == "volume":
                 cell_zones = basicReportDict[report].get("zones")
                 variable = basicReportDict[report].get("variable")
                 type = basicReportDict[report].get("type")
                 solver.solution.report_definitions.volume[reportName] = {}
-
-                solver.solution.report_definitions.volume[
-                    reportName
-                ].per_zone = basicReportDict[report].get("per_zone", False)
 
                 # define type
                 allowed_types = solver.solution.report_definitions.volume[
@@ -1718,10 +1710,9 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].field.allowed_values()
                 if variable in allowed_variables:
-                    if (type != "volume-mass") and (type != "volume-zonevol"):
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "field": variable
-                        }
+                    solver.solution.report_definitions.volume[reportName] = {
+                        "field": variable
+                    }
                 else:
                     logger.warning(
                         f"Specified variable '{variable}' not known. Allowed variables are: {allowed_variables}.\nSkipping setup of Report '{report}'"
@@ -1734,14 +1725,15 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].create_output_parameter()
 
+                # set if per_zone should be used
+                solver.solution.report_definitions.volume[
+                    reportName
+                ].per_zone = basicReportDict[report].get("per_zone", False)
+
             elif scope == "force":
                 zones = basicReportDict[report].get("zones")
                 force_vector = basicReportDict[report].get("force_vector")
                 solver.solution.report_definitions.force[reportName] = {}
-
-                solver.solution.report_definitions.force[
-                    reportName
-                ].per_zone = basicReportDict[report].get("per_zone", False)
 
                 # define zones
                 allowed_zones = solver.solution.report_definitions.force[
@@ -1768,15 +1760,16 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].create_output_parameter()
 
+                # set if per_zone should be used
+                solver.solution.report_definitions.force[
+                    reportName
+                ].per_zone = basicReportDict[report].get("per_zone", False)
+
             elif scope == "drag":
                 zones = basicReportDict[report].get("zones")
                 force_vector = basicReportDict[report].get("force_vector")
                 report_output_type = basicReportDict[report].get("report_output_type")
                 solver.solution.report_definitions.drag[reportName] = {}
-
-                solver.solution.report_definitions.drag[
-                    reportName
-                ].per_zone = basicReportDict[report].get("per_zone", False)
 
                 # define zones
                 allowed_zones = solver.solution.report_definitions.drag[
@@ -1818,15 +1811,16 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].create_output_parameter()
 
+                # set if per_zone should be used
+                solver.solution.report_definitions.drag[
+                    reportName
+                ].per_zone = basicReportDict[report].get("per_zone", False)
+
             elif scope == "lift":
                 zones = basicReportDict[report].get("zones")
                 force_vector = basicReportDict[report].get("force_vector")
                 report_output_type = basicReportDict[report].get("report_output_type")
                 solver.solution.report_definitions.lift[reportName] = {}
-
-                solver.solution.report_definitions.lift[
-                    reportName
-                ].per_zone = basicReportDict[report].get("per_zone", False)
 
                 # define zones
                 allowed_zones = solver.solution.report_definitions.lift[
@@ -1868,6 +1862,11 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].create_output_parameter()
 
+                # set if per_zone should be used
+                solver.solution.report_definitions.lift[
+                    reportName
+                ].per_zone = basicReportDict[report].get("per_zone", False)
+
             elif scope == "moment":
                 zones = basicReportDict[report].get("zones")
                 mom_center = basicReportDict[report].get("mom_center")
@@ -1875,10 +1874,10 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 report_output_type = basicReportDict[report].get("report_output_type")
                 solver.solution.report_definitions.moment[reportName] = {}
 
-                solver.solution.report_definitions.moment[reportName].per_zone = basicReportDict[report].get("per_zone", False)
-
                 # define zones
-                solver.solution.report_definitions.moment[reportName].zones.allowed_values()
+                allowed_zones = solver.solution.report_definitions.moment[
+                    reportName
+                ].zones.allowed_values()
                 if set(zones).issubset(allowed_zones):
                     solver.solution.report_definitions.moment[reportName] = {
                         "zones": zones
@@ -1920,14 +1919,15 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].create_output_parameter()
 
+                # set if per_zone should be used
+                solver.solution.report_definitions.moment[
+                    reportName
+                ].per_zone = basicReportDict[report].get("per_zone", False)
+
             elif scope == "flux":
                 type = basicReportDict[report].get("type")
                 boundaries = basicReportDict[report].get("zones")
                 solver.solution.report_definitions.flux[reportName] = {}
-
-                solver.solution.report_definitions.flux[
-                    reportName
-                ].per_zone = basicReportDict[report].get("per_zone", False)
 
                 # define type
                 allowed_types = solver.solution.report_definitions.flux[
@@ -1963,6 +1963,11 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 solver.solution.report_definitions.flux[
                     reportName
                 ].create_output_parameter()
+
+                # set if per_zone should be used
+                solver.solution.report_definitions.flux[
+                    reportName
+                ].per_zone = basicReportDict[report].get("per_zone", False)
 
             else:
                 logger.warning(
