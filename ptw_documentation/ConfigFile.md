@@ -442,6 +442,9 @@ moment or flux (only mass flux supported) reports.
 When using the GPU solver, this is currently the only option to monitor desired quantities for every iteration as 
 report definitions from expressions are not supported yet. 
 
+The keyword ``` per_zone ``` is optional (default: false). With this option you can select if the corresponding 
+definition is separated for all selected surfaces.
+
 ```
  "Case_1": {
        "solution": {
@@ -450,7 +453,7 @@ report definitions from expressions are not supported yet.
                 "scope": "surface",
                 "type": "surface-massavg",
                 "zones": ["inblock-inflow"],
-                "variable": "total-pressure"
+                "variable": "total-pressure"                
               },
               "OUT_massflowave_pt": {
                 "scope": "surface",
@@ -468,12 +471,14 @@ report definitions from expressions are not supported yet.
                 "scope": "force",
                 "zones": ["blade","bld-geo-high","bld-geo-low","bld-high"],
                 "force_vector": [0,0,1]
+                "per_zone": false
               },
               "Drag_blades_Z": {
                 "scope": "drag",
                 "zones": ["blade","bld-geo-high","bld-geo-low","bld-high"],
                 "force_vector": [0,0,1],
                 "report_output_type": "Drag Force"
+                "per_zone": true
               },
               "Lift_blades_Z": {
                 "scope": "lift",
