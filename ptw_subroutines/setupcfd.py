@@ -1614,6 +1614,10 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 type = basicReportDict[report].get("type")
                 solver.solution.report_definitions.surface[reportName] = {}
 
+                solver.solution.report_definitions.surface[
+                    reportName
+                ].per_surface = basicReportDict[report].get("per_zone", False)
+
                 # define type
                 allowed_types = solver.solution.report_definitions.surface[
                     reportName
@@ -1675,6 +1679,10 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 type = basicReportDict[report].get("type")
                 solver.solution.report_definitions.volume[reportName] = {}
 
+                solver.solution.report_definitions.volume[
+                    reportName
+                ].per_zone = basicReportDict[report].get("per_zone", False)
+
                 # define type
                 allowed_types = solver.solution.report_definitions.volume[
                     reportName
@@ -1731,6 +1739,10 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 force_vector = basicReportDict[report].get("force_vector")
                 solver.solution.report_definitions.force[reportName] = {}
 
+                solver.solution.report_definitions.force[
+                    reportName
+                ].per_zone = basicReportDict[report].get("per_zone", False)
+
                 # define zones
                 allowed_zones = solver.solution.report_definitions.force[
                     reportName
@@ -1761,6 +1773,10 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 force_vector = basicReportDict[report].get("force_vector")
                 report_output_type = basicReportDict[report].get("report_output_type")
                 solver.solution.report_definitions.drag[reportName] = {}
+
+                solver.solution.report_definitions.drag[
+                    reportName
+                ].per_zone = basicReportDict[report].get("per_zone", False)
 
                 # define zones
                 allowed_zones = solver.solution.report_definitions.drag[
@@ -1807,6 +1823,10 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 force_vector = basicReportDict[report].get("force_vector")
                 report_output_type = basicReportDict[report].get("report_output_type")
                 solver.solution.report_definitions.lift[reportName] = {}
+
+                solver.solution.report_definitions.lift[
+                    reportName
+                ].per_zone = basicReportDict[report].get("per_zone", False)
 
                 # define zones
                 allowed_zones = solver.solution.report_definitions.lift[
@@ -1855,10 +1875,10 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 report_output_type = basicReportDict[report].get("report_output_type")
                 solver.solution.report_definitions.moment[reportName] = {}
 
+                solver.solution.report_definitions.moment[reportName].per_zone = basicReportDict[report].get("per_zone", False)
+
                 # define zones
-                allowed_zones = solver.solution.report_definitions.moment[
-                    reportName
-                ].zones.allowed_values()
+                solver.solution.report_definitions.moment[reportName].zones.allowed_values()
                 if set(zones).issubset(allowed_zones):
                     solver.solution.report_definitions.moment[reportName] = {
                         "zones": zones
@@ -1904,6 +1924,10 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 type = basicReportDict[report].get("type")
                 boundaries = basicReportDict[report].get("zones")
                 solver.solution.report_definitions.flux[reportName] = {}
+
+                solver.solution.report_definitions.flux[
+                    reportName
+                ].per_zone = basicReportDict[report].get("per_zone", False)
 
                 # define type
                 allowed_types = solver.solution.report_definitions.flux[
