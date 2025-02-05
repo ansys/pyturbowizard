@@ -26,7 +26,7 @@ from ptw_subroutines.utils import (
 )
 
 
-ptw_version = "1.8.9"
+ptw_version = "1.9.0"
 
 # Set Logger
 logger = ptw_logger.init_logger()
@@ -349,7 +349,8 @@ class PTW_Run:
                 )
 
                 # Finalize
-                solver.file.stop_transcript()
+                if "stop_transcript" in solver.file.get_active_command_names():
+                    solver.file.stop_transcript()
                 # End of Case-Loop
 
             # Merge if multiple cases are defined
