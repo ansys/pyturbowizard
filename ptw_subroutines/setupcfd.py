@@ -973,7 +973,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                 # increase peri_idx
                 peri_idx = peri_idx + 1
 
-    # after important steps loop over all keys -> no order important
+    # after important steps loop over all keys -> order not important
     for key in data["locations"]:
         # Inlet
         if key == "bz_inlet_names":
@@ -1014,10 +1014,12 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     #    inletName, "mass-flow-inlet"
                     # )
                     inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
-                    inBC.momentum.flow_spec = "Mass Flow Rate"
-                    inBC.momentum.mass_flow = "BC_IN_VolumeFlow*BC_IN_VolumeFlowDensity"
-                    inBC.momentum.supersonic_or_initial_gauge_pressure = "BC_IN_p_gauge"
-                    inBC.momentum.direction_specification_method = "Normal to Boundary"
+                    inBC.momentum.mass_flow_specification = "Mass Flow Rate"
+                    inBC.momentum.mass_flow_rate = (
+                        "BC_IN_VolumeFlow*BC_IN_VolumeFlowDensity"
+                    )
+                    inBC.momentum.supersonic_gauge_pressure = "BC_IN_p_gauge"
+                    inBC.momentum.direction_specification = "Normal to Boundary"
                     if solve_energy:
                         if Version(solver._version) < Version("242"):
                             inBC.thermal.t0 = "BC_IN_Tt"
@@ -1097,9 +1099,15 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                         and (data["expressions"].get("BC_IN_tangDir") is not None)
                         and (data["expressions"].get("BC_IN_axDir") is not None)
                     ):
-                        inBC.momentum.direction_specification_method = (
-                            "Direction Vector"
-                        )
+                        if (
+                            inBC.name()
+                            in solver.setup.boundary_conditions.mass_flow_inlet.keys()
+                        ):
+                            inBC.momentum.direction_specification = "Direction Vector"
+                        else:
+                            inBC.momentum.direction_specification_method = (
+                                "Direction Vector"
+                            )
                         inBC.momentum.coordinate_system = (
                             "Cylindrical (Radial, Tangential, Axial)"
                         )
@@ -1113,9 +1121,15 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                         and (data["expressions"].get("BC_IN_yDir") is not None)
                         and (data["expressions"].get("BC_IN_zDir") is not None)
                     ):
-                        inBC.momentum.direction_specification_method = (
-                            "Direction Vector"
-                        )
+                        if (
+                            inBC.name()
+                            in solver.setup.boundary_conditions.mass_flow_inlet.keys()
+                        ):
+                            inBC.momentum.direction_specification = "Direction Vector"
+                        else:
+                            inBC.momentum.direction_specification_method = (
+                                "Direction Vector"
+                            )
                         inBC.momentum.coordinate_system = "Cartesian (X, Y, Z)"
                         inBC.momentum.flow_direction = [
                             "BC_IN_xDir",
@@ -1128,9 +1142,15 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     # profile_name: "inlet-bc"
                     # directions (cylindrical): vrad-dir,vtang-dir,vax-dir
                     if useProfileData:
-                        inBC.momentum.direction_specification_method = (
-                            "Direction Vector"
-                        )
+                        if (
+                            inBC.name()
+                            in solver.setup.boundary_conditions.mass_flow_inlet.keys()
+                        ):
+                            inBC.momentum.direction_specification = "Direction Vector"
+                        else:
+                            inBC.momentum.direction_specification_method = (
+                                "Direction Vector"
+                            )
                         inBC.momentum.coordinate_system = (
                             "Cylindrical (Radial, Tangential, Axial)"
                         )
@@ -1559,7 +1579,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
 
     # Reports
     # working on a copy, as we are going to modify it
-    reportList = list(solutionDict.get("reportlist"))
+    reportList = solutionDict.get("reportlist")
     basicReportDict = solutionDict.get("basic_reports")
     # Old definitions stored directly in case section
     if data.get("basic_reports") is not None:

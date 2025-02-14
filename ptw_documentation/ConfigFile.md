@@ -83,7 +83,11 @@ The following functions and corresponding options are available:
     - Specify setup function
     - Available functions:
         - **"setup_compressible_01" (default):** standard setup for compressible fluids
-        - "setup_incompressible_01": standard setup for incompressible fluids (beta)
+        - "setup_incompressible_01": standard setup for incompressible fluids
+        - "setup_compressible_woBCs": reduced setup function for compressible fluids, just material & physics are set,
+          no boundary conditions
+        - "setup_incompressible_woBCs": reduced setup function for incompressible fluids, just material & physics are
+          set, no boundary conditions
 - ```numerics```:
     - Specify numeric settings
     - Available functions:
@@ -94,6 +98,7 @@ The following functions and corresponding options are available:
           discretization-scheme
         - "numerics_bp_all_2305": Use turbo best practice settings from May 2023, additionally set explicitly all
           discretization-schemes to second order
+        - "numerics_defaults_pseudo_timestep": default numerics with pseudo-transient vp-coupling
 
 - ```initialization```:
     - Specify initialization settings
@@ -198,6 +203,17 @@ Optional objects are:
 - ```skip_execution```: Skips the execution of the case, default: ```false```
 - ```run_extsch```: Run extsch-script: extracts all rp-variables of the case-file as ascii-file (linux-platforms
   only!) , default: ```false```
+- You can hook additional journal files to the setup/solution procedure, using following keywords the case-dictionary:
+    - ```post_meshimport_journal_filenames```: Run a journal files after mesh has been imported (for example defining
+      not-supported BCs), expects a list,
+      e.g. ```['myJournal1.jou', 'myJournal2.jou']```
+    - ```pre_init_journal_filenames```: Run a journal files before initializing solution, expects a list,
+      e.g. ```['myJournal1.jou', 'myJournal2.jou']```
+    - ```pre_solve_journal_filenames```: Run a journal files before solver starts, expects a list,
+      e.g. ```['myJournal1.jou', 'myJournal2.jou']```
+    - ```pre_exit_journal_filenames```: Run a journal files before exiting fluent (for example for custom
+      postprocessing), expects a list,
+      e.g. ```['myJournal1.jou', 'myJournal2.jou']```
 
 #### Profiles
 
@@ -235,8 +251,18 @@ radius, pt-in, tt-in, vax-dir, vrad-dir, vtang-dir
 
 #### Expression Templates
 
-Next, you can choose your ``` expressionTemplate ```. Currently there are expression templates available for a
-compressor and a turbine setup, as well as for compressible and incompressible setups.
+Next, you can choose your ``` expressionTemplate ```. Currently, there are expression templates available for a
+compressors, fans, pumps, turbine & cascade setups, as well as for compressible and incompressible setups:
+
+- "expressionTemplate_cascade_comp.tsv": Accounting for cascades or non-turbo-machinery applications, compressible
+  fluids
+- "expressionTemplate_compressor_comp.tsv": Accounting for compressors, compressible fluids
+- "expressionTemplate_compressor_incomp.tsv": Accounting for compressors, incompressible fluids
+- "expressionTemplate_fan_comp.tsv": Accounting for fans, compressible fluids
+- "expressionTemplate_fan_incomp.tsv": Accounting for fans, incompressible fluids
+- "expressionTemplate_pump_incomp.tsv": Accounting for pumps, incompressible fluids
+- "expressionTemplate_turbine_comp.tsv": Accounting for turbines, compressible fluids
+- "expressionTemplate_turbine_incomp.tsv": Accounting for turbines, incompressible fluids
 
 ```
  "Case_1": {
@@ -436,11 +462,15 @@ conservative) or ```pseudo_timestep``` and ``` iter_count ``` respectively.
 
 ##### Basic Report Definitions
 
-It is optional to define basic report definitions with the keyword ``` basic_reports ``` in the ``` solution ``` section. 
-Basic refers to these report definitions being created as surface, volume, force, drag, lift, 
+It is optional to define basic report definitions with the keyword ``` basic_reports ``` in the ``` solution ```
+section.
+Basic refers to these report definitions being created as surface, volume, force, drag, lift,
 moment or flux (only mass flux supported) reports.
-When using the GPU solver, this is currently the only option to monitor desired quantities for every iteration as 
-report definitions from expressions are not supported yet. 
+When using the GPU solver, this is currently the only option to monitor desired quantities for every iteration as
+report definitions from expressions are not supported yet.
+
+The keyword ``` per_zone ``` is optional (default: false). With this option you can select if the corresponding
+definition is separated for all selected surfaces.
 
 The keyword ``` per_zone ``` is optional (default: false). With this option you can select if the corresponding 
 definition is separated for all selected surfaces.
@@ -531,12 +561,15 @@ correct variable names.
 ```span_plot_height``` is used to specify the relative channel height, at which the different variable contour plots are
 created. Note that all variable plots are created for each respective channel height.
 
-To create pathlines, ```pathlines_releaseSurfaces``` is used to define the surfaces, from which pathlines are released. 
+To create pathlines, ```pathlines_releaseSurfaces``` is used to define the surfaces, from which pathlines are released.
 ```pathlines_var``` is used to define the variable names, for which the pathlines are created.
 
-To create oil flow pathlines, ```oilflow_pathlines_surfaces``` is used to define surfaces, on which the pathlines are generated.
-With ```oilflow_pathlines_var```, variables are defined for which the oil flow pathlines are generated. Besides the pathline object,
-a scene containing the pathline object and a mesh object with surfaces defined in ```oilflow_pathlines_surfaces``` is created.
+To create oil flow pathlines, ```oilflow_pathlines_surfaces``` is used to define surfaces, on which the pathlines are
+generated.
+With ```oilflow_pathlines_var```, variables are defined for which the oil flow pathlines are generated. Besides the
+pathline object,
+a scene containing the pathline object and a mesh object with surfaces defined in ```oilflow_pathlines_surfaces``` is
+created.
 
 ### Additional Setup Specifications
 
@@ -545,11 +578,12 @@ If there are no subelements defined, Fluent defaults will be used.
 
 Available options:
 
-- Special settings for pressure-outlet-BCs:  
-  - ```BC_settings_pout_blendf```: Prescribe the 'Pressure blending factor',e.g. ```0.05```
-  - ```BC_settings_pout_bins```: Prescribe the 'Number of bins',e.g. ```65 ```
-  - **Note For older Fluent versions (R23.1 & R23.2):** Use ```BC_settings_pout``` as keyword to prescribe 'Pressure blending factor' & 'Number of bins' as list,
-    e.g. ```[0.05, 65]```
+- Special settings for pressure-outlet-BCs:
+    - ```BC_settings_pout_blendf```: Prescribe the 'Pressure blending factor',e.g. ```0.05```
+    - ```BC_settings_pout_bins```: Prescribe the 'Number of bins',e.g. ```65 ```
+    - **Note For older Fluent versions (R23.1 & R23.2):** Use ```BC_settings_pout``` as keyword to prescribe 'Pressure
+      blending factor' & 'Number of bins' as list,
+      e.g. ```[0.05, 65]```
 - ```BC_IN_reverse```: Prevent Reverse Flow for Pressure-Inlet BCs (**default: false**)
 - ```BC_OUT_reverse```: Prevent Reverse Flow for Pressure-Outlet BCs (**default: true**)
 - ```BC_OUT_avg_p```: Use average pressure specification for Pressure-Outlet BCs (**default: true**)
