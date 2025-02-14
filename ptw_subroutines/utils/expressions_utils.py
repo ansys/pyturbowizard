@@ -19,7 +19,10 @@ def write_expression_file(data: dict, script_dir: str, working_dir: str):
         fl_workingDir=working_dir, case_name=data.get("caseFilename")
     )
     fileName = os.path.join(case_output_path, fileName)
-
+    # Remove exp-file
+    if os.path.exists(fileName):
+        os.remove(fileName)
+    # Write new file
     with open(fileName, "w") as sf:
         expressionTemplatePath = os.path.join(
             script_dir, "ptw_templates", data["expressionTemplate"]

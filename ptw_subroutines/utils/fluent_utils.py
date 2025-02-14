@@ -80,3 +80,82 @@ def check_version(solver):
         return fluent_version
     else:
         return str(fluent_version.number)
+
+def create_iso_surface(solver,name:str,field_name:str,iso_value:float,zones:list=None,surfaces:list=None):
+    if (
+            name
+            not in solver.settings.results.surfaces.iso_surface.get_object_names()
+    ):
+        solver.settings.results.surfaces.iso_surface.create(name=name)
+
+    if zones is None:
+        zones = []
+        if surfaces is None:
+            zones = solver.settings.setup.cell_zone_conditions.get_active_child_names()
+
+    if surfaces is None:
+        surfaces = []
+
+    solver.settings.results.surfaces.iso_surface[name] = {
+        "field": field_name,
+        "zones": zones,
+        "surfaces": surfaces,
+        "iso_values": [iso_value],
+    }
+
+def create_iso_clip(solver,name:str,field_name:str,min_value:float,max_value:float,surfaces:list=None):
+    if (
+            name
+            not in solver.settings.results.surfaces.iso_clip.get_object_names()
+    ):
+        solver.settings.results.surfaces.iso_clip.create(name=name)
+
+    if surfaces is None:
+        surfaces = []
+
+    solver.settings.results.surfaces.iso_clip[name] = {
+        "field": field_name,
+        "range": {"minimum": min_value, "maximum": max_value},
+        "surfaces": surfaces,
+    }
+
+def create_point_surface(solver,name:str,point:list,snap_method:str="nearest"):
+    if (
+            name
+            not in solver.settings.results.surfaces.point_surface.get_object_names()
+    ):
+        solver.settings.results.surfaces.point_surface.create(name=name)
+    allowed_values = solver.settings.results.surfaces.point_surface[name].snap_method.allowed_values()
+    if snap_method in allowed_values:
+        solver.settings.results.surfaces.point_surface[name] = {
+            "points": point,
+            "snap_method": snap_method,
+        }
+    else:
+        logger.warning(f"Could not specify prescribed snap_method '{snap_method}' when creating point_surface '{name}'. Allowed methods are: {allowed_values}")
+
+def create_plane_surface(solver,name:str,value:float,method:str='xy-plane'):
+    if (
+            name
+            not in solver.settings.results.surfaces.plane_surface.get_object_names()
+    ):
+        solver.settings.results.surfaces.plane_surface.create(name=name)
+
+    if method == 'xy-plane':
+        solver.settings.results.surfaces.plane_surface[name] = {
+            "method": method,
+            "z": value,
+        }
+    elif method == 'zx-plane':
+        solver.settings.results.surfaces.plane_surface[name] = {
+            "method": method,
+            "y": value,
+        }
+    elif method == 'yz-plane':
+        solver.settings.results.surfaces.plane_surface[name] = {
+            "method": method,
+            "x": value,
+        }
+    else:
+        allowed_methods = solver.settings.results.surfaces.plane_surface["bla"].method.allowed_values()
+        logger.warning(f"Could not specify prescribed method '{method}' when creating plane_surface '{name}'. Allowed methods are: {allowed_methods}")

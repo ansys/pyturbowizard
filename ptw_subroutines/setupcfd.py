@@ -973,7 +973,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                 # increase peri_idx
                 peri_idx = peri_idx + 1
 
-    # after important steps loop over all keys -> no order important
+    # after important steps loop over all keys -> order not important
     for key in data["locations"]:
         # Inlet
         if key == "bz_inlet_names":
