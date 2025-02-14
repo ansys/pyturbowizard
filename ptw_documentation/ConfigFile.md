@@ -472,6 +472,9 @@ report definitions from expressions are not supported yet.
 The keyword ``` per_zone ``` is optional (default: false). With this option you can select if the corresponding
 definition is separated for all selected surfaces.
 
+The keyword ``` per_zone ``` is optional (default: false). With this option you can select if the corresponding 
+definition is separated for all selected surfaces.
+
 ```
  "Case_1": {
        "solution": {
