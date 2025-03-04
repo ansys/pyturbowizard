@@ -2163,3 +2163,33 @@ def set_run_calculation(data, solver):
 
     iter_count = solutionDict.setdefault("iter_count", 500)
     solver.solution.run_calculation.iter_count = int(iter_count)
+
+def source_terms(data, solver):
+    my_sources = data.get("source_terms")
+    if my_sources is None:
+        logger.warning(
+            f"No source terms defined: Skipping 'source terms setting'!"
+        )
+        return
+    list_fluid_zones = solver.settings.setup.cell_zone_conditions.fluid.get_object_names()
+    for key in my_sources:
+        exp_name = key
+        exp_definition = my_sources[key]["definition"]
+        myvalue = create_and_evaluate_expression(solver, exp_name=exp_name, definition=exp_definition, evaluate_value=False)
+        if my_sources[key]["cell_zone"] in list_fluid_zones:
+            solver.settings.setup.cell_zone_conditions.fluid[my_sources[key]["cell_zone"]] = {"sources": {"enable": True, "terms": {my_sources[key]["equation"]: [{'option': 'value', 'value': exp_name}]}}}
+
+
+def create_and_evaluate_expression(solver, exp_name: str, definition: str, overwrite_definition=True, evaluate_value=False):
+    if (exp_name not in solver.settings.setup.named_expressions.get_object_names()):
+        solver.settings.setup.named_expressions.create(name=exp_name)
+        solver.settings.setup.named_expressions[exp_name] = {"definition": definition}
+    if overwrite_definition:
+        solver.settings.setup.named_expressions[exp_name] = {"definition": definition}
+    value = None
+    if evaluate_value:
+        value = solver.settings.setup.named_expressions[exp_name].get_value()
+    if isinstance(value, str):
+        str_value = value.split()[0]
+        value = float(str_value)
+    return value

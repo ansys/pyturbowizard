@@ -434,6 +434,27 @@ conservative) or ```pseudo_timestep``` and ``` iter_count ``` respectively.
 ```reorder_domain``` is an optional argument, that turns on/off domain reordering before initialization (**default: true
 **)
 
+#### Volume Source Terms Definition 
+
+```
+"source_terms" :{
+        "source_m_1":{
+            "equation" : "mass",
+            "cell_zone" : "passage-main_1",
+            "definition" : "0.433[lbm *s^-1]/ (76 * Volume([\"passage-main_1\"]))"
+        }, 
+        "source_e_1":{
+            "equation" : "energy",
+            "cell_zone" : "passage-main_1",
+            "definition" : "(0.433[lbm*s^-1])*SpecificHeatCapacity*((348.96[K]-298.15[K])/(76*Volume([\"passage-main_1\"])))"				
+        }
+},
+
+```
+Equation defines the tpye of source term 
+Cell_zone the domain where the source term should be applied
+the definition should be an expression. The name of the expression is the sub-dict name.  
+
 ##### Basic Report Definitions
 
 It is optional to define basic report definitions with the keyword ``` basic_reports ``` in the ``` solution ``` section. 

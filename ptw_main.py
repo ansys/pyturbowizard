@@ -229,6 +229,9 @@ class PTW_Run:
                 setupcfd.setup(
                     data=caseEl, solver=solver, functionEl=caseFunctionEl, gpu=gpu
                 )
+
+                setupcfd.source_terms(data=caseEl, solver=solver)
+
                 setupcfd.set_reports(caseEl, solver, launchEl, gpu=gpu)
 
                 # Solution
