@@ -2129,3 +2129,20 @@ def set_run_calculation(data, solver):
 
     iter_count = solutionDict.setdefault("iter_count", 500)
     solver.solution.run_calculation.iter_count = int(iter_count)
+
+def source_terms(data, solver):
+    my_sources = data.get("source_terms")
+    if my_sources is None:
+        logger.warning(
+            f"No source terms defined: Skipping 'source terms setting'!"
+        )
+        return
+    list_fluid_zones = solver.settings.setup.cell_zone_conditions.fluid.get_object_names()
+    for key in my_sources:
+        exp_name = key
+        exp_definition = my_sources[key]["definition"]
+        myvalue = fluent_utils.create_and_evaluate_expression(solver, exp_name=exp_name, definition=exp_definition, evaluate_value=False)
+        if my_sources[key]["cell_zone"] in list_fluid_zones:
+            solver.settings.setup.cell_zone_conditions.fluid[my_sources[key]["cell_zone"]] = {"sources": {"enable": True, "terms": {my_sources[key]["equation"]: [{'option': 'value', 'value': exp_name}]}}}
+
+
