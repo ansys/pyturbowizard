@@ -973,7 +973,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                 # increase peri_idx
                 peri_idx = peri_idx + 1
 
-    # after important steps loop over all keys -> no order important
+    # after important steps loop over all keys -> order not important
     for key in data["locations"]:
         # Inlet
         if key == "bz_inlet_names":
@@ -1014,10 +1014,12 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     #    inletName, "mass-flow-inlet"
                     # )
                     inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
-                    inBC.momentum.flow_spec = "Mass Flow Rate"
-                    inBC.momentum.mass_flow = "BC_IN_VolumeFlow*BC_IN_VolumeFlowDensity"
-                    inBC.momentum.supersonic_or_initial_gauge_pressure = "BC_IN_p_gauge"
-                    inBC.momentum.direction_specification_method = "Normal to Boundary"
+                    inBC.momentum.mass_flow_specification = "Mass Flow Rate"
+                    inBC.momentum.mass_flow_rate = (
+                        "BC_IN_VolumeFlow*BC_IN_VolumeFlowDensity"
+                    )
+                    inBC.momentum.supersonic_gauge_pressure = "BC_IN_p_gauge"
+                    inBC.momentum.direction_specification = "Normal to Boundary"
                     if solve_energy:
                         if Version(solver._version) < Version("242"):
                             inBC.thermal.t0 = "BC_IN_Tt"
@@ -1097,9 +1099,15 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                         and (data["expressions"].get("BC_IN_tangDir") is not None)
                         and (data["expressions"].get("BC_IN_axDir") is not None)
                     ):
-                        inBC.momentum.direction_specification_method = (
-                            "Direction Vector"
-                        )
+                        if (
+                            inBC.name()
+                            in solver.setup.boundary_conditions.mass_flow_inlet.keys()
+                        ):
+                            inBC.momentum.direction_specification = "Direction Vector"
+                        else:
+                            inBC.momentum.direction_specification_method = (
+                                "Direction Vector"
+                            )
                         inBC.momentum.coordinate_system = (
                             "Cylindrical (Radial, Tangential, Axial)"
                         )
@@ -1113,9 +1121,15 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                         and (data["expressions"].get("BC_IN_yDir") is not None)
                         and (data["expressions"].get("BC_IN_zDir") is not None)
                     ):
-                        inBC.momentum.direction_specification_method = (
-                            "Direction Vector"
-                        )
+                        if (
+                            inBC.name()
+                            in solver.setup.boundary_conditions.mass_flow_inlet.keys()
+                        ):
+                            inBC.momentum.direction_specification = "Direction Vector"
+                        else:
+                            inBC.momentum.direction_specification_method = (
+                                "Direction Vector"
+                            )
                         inBC.momentum.coordinate_system = "Cartesian (X, Y, Z)"
                         inBC.momentum.flow_direction = [
                             "BC_IN_xDir",
@@ -1128,9 +1142,15 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     # profile_name: "inlet-bc"
                     # directions (cylindrical): vrad-dir,vtang-dir,vax-dir
                     if useProfileData:
-                        inBC.momentum.direction_specification_method = (
-                            "Direction Vector"
-                        )
+                        if (
+                            inBC.name()
+                            in solver.setup.boundary_conditions.mass_flow_inlet.keys()
+                        ):
+                            inBC.momentum.direction_specification = "Direction Vector"
+                        else:
+                            inBC.momentum.direction_specification_method = (
+                                "Direction Vector"
+                            )
                         inBC.momentum.coordinate_system = (
                             "Cylindrical (Radial, Tangential, Axial)"
                         )
@@ -1559,7 +1579,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
 
     # Reports
     # working on a copy, as we are going to modify it
-    reportList = list(solutionDict.get("reportlist"))
+    reportList = solutionDict.get("reportlist")
     basicReportDict = solutionDict.get("basic_reports")
     # Old definitions stored directly in case section
     if data.get("basic_reports") is not None:
@@ -1619,58 +1639,9 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].report_type.allowed_values()
                 if type in allowed_types:
-                    if type == "surface-area":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-area"
-                        }
-                    elif type == "surface-areaavg":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-areaavg"
-                        }
-                    elif type == "surface-facetavg":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-facetavg"
-                        }
-                    elif type == "surface-facetmax":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-facetmax"
-                        }
-                    elif type == "surface-facetmin":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-facetmin"
-                        }
-                    elif type == "surface-integral":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-integral"
-                        }
-                    elif type == "surface-massflowrate":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-massflowrate"
-                        }
-                    elif type == "surface-massavg":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-massavg"
-                        }
-                    elif type == "surface-stddev":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-stddev"
-                        }
-                    elif type == "surface-sum":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-sum"
-                        }
-                    elif type == "surface-areawtui":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-areawtui"
-                        }
-                    elif type == "surface-masswtui":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-masswtui"
-                        }
-                    elif type == "surface-volumeflowrate":
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "report_type": "surface-volumeflowrate"
-                        }
+                    solver.solution.report_definitions.surface[reportName] = {
+                        "report_type": type
+                    }
                 else:
                     logger.warning(
                         f"Specified type '{type}' not known. Allowed types are: {allowed_types}.\nSkipping setup of Report '{report}'"
@@ -1698,14 +1669,9 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].field.allowed_values()
                 if variable in allowed_variables:
-                    if (
-                        (type != "surface-area")
-                        and (type != "surface-massflowrate")
-                        and (type != "surface-volumeflowrate")
-                    ):
-                        solver.solution.report_definitions.surface[reportName] = {
-                            "field": variable
-                        }
+                    solver.solution.report_definitions.surface[reportName] = {
+                        "field": variable
+                    }
                 else:
                     logger.warning(
                         f"Specified variable '{variable}' not known. Allowed variables are: {allowed_variables}.\nSkipping setup of Report '{report}'"
@@ -1718,6 +1684,11 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].create_output_parameter()
 
+                # set if per_zone should be used
+                solver.solution.report_definitions.surface[
+                    reportName
+                ].per_surface = basicReportDict[report].get("per_zone", False)
+
             elif scope == "volume":
                 cell_zones = basicReportDict[report].get("zones")
                 variable = basicReportDict[report].get("variable")
@@ -1729,42 +1700,9 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].report_type.allowed_values()
                 if type in allowed_types:
-                    if type == "volume-mass":
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "report_type": "volume-mass"
-                        }
-                    elif type == "volume-massavg":
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "report_type": "volume-massavg"
-                        }
-                    elif type == "volume-massintegral":
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "report_type": "volume-massintegral"
-                        }
-                    elif type == "volume-max":
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "report_type": "volume-max"
-                        }
-                    elif type == "volume-min":
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "report_type": "volume-min"
-                        }
-                    elif type == "volume-zonevol":
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "report_type": "volume-zonevol"
-                        }
-                    elif type == "volume-average":
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "report_type": "volume-average"
-                        }
-                    elif type == "volume-integral":
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "report_type": "volume-integral"
-                        }
-                    elif type == "volume-sum":
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "report_type": "volume-sum"
-                        }
+                    solver.solution.report_definitions.volume[reportName] = {
+                        "report_type": type
+                    }
                 else:
                     logger.warning(
                         f"Specified type '{type}' not known. Allowed types are: {allowed_types}.\nSkipping setup of Report '{report}'"
@@ -1792,10 +1730,9 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].field.allowed_values()
                 if variable in allowed_variables:
-                    if (type != "volume-mass") and (type != "volume-zonevol"):
-                        solver.solution.report_definitions.volume[reportName] = {
-                            "field": variable
-                        }
+                    solver.solution.report_definitions.volume[reportName] = {
+                        "field": variable
+                    }
                 else:
                     logger.warning(
                         f"Specified variable '{variable}' not known. Allowed variables are: {allowed_variables}.\nSkipping setup of Report '{report}'"
@@ -1807,6 +1744,11 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 solver.solution.report_definitions.volume[
                     reportName
                 ].create_output_parameter()
+
+                # set if per_zone should be used
+                solver.solution.report_definitions.volume[
+                    reportName
+                ].per_zone = basicReportDict[report].get("per_zone", False)
 
             elif scope == "force":
                 zones = basicReportDict[report].get("zones")
@@ -1837,6 +1779,11 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 solver.solution.report_definitions.force[
                     reportName
                 ].create_output_parameter()
+
+                # set if per_zone should be used
+                solver.solution.report_definitions.force[
+                    reportName
+                ].per_zone = basicReportDict[report].get("per_zone", False)
 
             elif scope == "drag":
                 zones = basicReportDict[report].get("zones")
@@ -1884,6 +1831,11 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].create_output_parameter()
 
+                # set if per_zone should be used
+                solver.solution.report_definitions.drag[
+                    reportName
+                ].per_zone = basicReportDict[report].get("per_zone", False)
+
             elif scope == "lift":
                 zones = basicReportDict[report].get("zones")
                 force_vector = basicReportDict[report].get("force_vector")
@@ -1929,6 +1881,11 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 solver.solution.report_definitions.lift[
                     reportName
                 ].create_output_parameter()
+
+                # set if per_zone should be used
+                solver.solution.report_definitions.lift[
+                    reportName
+                ].per_zone = basicReportDict[report].get("per_zone", False)
 
             elif scope == "moment":
                 zones = basicReportDict[report].get("zones")
@@ -1982,6 +1939,11 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].create_output_parameter()
 
+                # set if per_zone should be used
+                solver.solution.report_definitions.moment[
+                    reportName
+                ].per_zone = basicReportDict[report].get("per_zone", False)
+
             elif scope == "flux":
                 type = basicReportDict[report].get("type")
                 boundaries = basicReportDict[report].get("zones")
@@ -1992,10 +1954,9 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     reportName
                 ].report_type.allowed_values()
                 if type in allowed_types:
-                    if type == "flux-massflow":
-                        solver.solution.report_definitions.flux[reportName] = {
-                            "report_type": "flux-massflow"
-                        }
+                    solver.solution.report_definitions.flux[reportName] = {
+                        "report_type": type
+                    }
                 else:
                     logger.warning(
                         f"Specified type '{type}' not supported. Allowed types are: {allowed_types}.\nSkipping setup of Report '{report}'"
@@ -2022,6 +1983,11 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 solver.solution.report_definitions.flux[
                     reportName
                 ].create_output_parameter()
+
+                # set if per_zone should be used
+                solver.solution.report_definitions.flux[
+                    reportName
+                ].per_zone = basicReportDict[report].get("per_zone", False)
 
             else:
                 logger.warning(
@@ -2163,33 +2129,3 @@ def set_run_calculation(data, solver):
 
     iter_count = solutionDict.setdefault("iter_count", 500)
     solver.solution.run_calculation.iter_count = int(iter_count)
-
-def source_terms(data, solver):
-    my_sources = data.get("source_terms")
-    if my_sources is None:
-        logger.warning(
-            f"No source terms defined: Skipping 'source terms setting'!"
-        )
-        return
-    list_fluid_zones = solver.settings.setup.cell_zone_conditions.fluid.get_object_names()
-    for key in my_sources:
-        exp_name = key
-        exp_definition = my_sources[key]["definition"]
-        myvalue = create_and_evaluate_expression(solver, exp_name=exp_name, definition=exp_definition, evaluate_value=False)
-        if my_sources[key]["cell_zone"] in list_fluid_zones:
-            solver.settings.setup.cell_zone_conditions.fluid[my_sources[key]["cell_zone"]] = {"sources": {"enable": True, "terms": {my_sources[key]["equation"]: [{'option': 'value', 'value': exp_name}]}}}
-
-
-def create_and_evaluate_expression(solver, exp_name: str, definition: str, overwrite_definition=True, evaluate_value=False):
-    if (exp_name not in solver.settings.setup.named_expressions.get_object_names()):
-        solver.settings.setup.named_expressions.create(name=exp_name)
-        solver.settings.setup.named_expressions[exp_name] = {"definition": definition}
-    if overwrite_definition:
-        solver.settings.setup.named_expressions[exp_name] = {"definition": definition}
-    value = None
-    if evaluate_value:
-        value = solver.settings.setup.named_expressions[exp_name].get_value()
-    if isinstance(value, str):
-        str_value = value.split()[0]
-        value = float(str_value)
-    return value

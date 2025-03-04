@@ -121,6 +121,7 @@ def launch_queuing_session(launchEl: dict):
         ]
         if not launchEl["show_gui"]:
             batch_arguments.extend(["-gu", "-driver dx11"])
+        batch_arguments.extend(additional_args)
         commandlist.extend(batch_arguments)
         process_files = subprocess.Popen(
             commandlist, cwd=fl_workingDir, stdout=subprocess.DEVNULL
