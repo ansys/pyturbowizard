@@ -135,7 +135,10 @@ def add_material_property(material_object, fl_prop_name: str, fl_prop_data):
             fl_settings = fl_prop_data.get("settings")
             if fl_option is not None:
                 material_prop.option = fl_option
-                settings_obj = getattr(material_prop, fl_option)
+                try:
+                    settings_obj = getattr(material_prop, fl_option)
+                except:
+                    settings_obj = None
                 if settings_obj is not None:
                     if fl_settings is not None:
                         if isinstance(fl_settings, dict):
