@@ -32,19 +32,31 @@ name	definition	description	input-parameter	output-parameter
 "BC_ECMassFlow_tref"	"{BC_ECMassFlow_tref}"	""	#f	#f
 "BC_OUT_VolumeFlow"	"{BC_OUT_VolumeFlow}"	""	#t	#f
 "BC_OUT_VolumeFlowDensity"	"{BC_OUT_VolumeFlowDensity}"	""	#t	#f
+"source_m_1"	"0 [kg/s/m^3]"	""	#f	#f
+"source_m_2"	"0 [kg/s/m^3]"	""	#f	#f
+"source_m_3"	"0 [kg/s/m^3]"	""	#f	#f
+"source_m_4"	"0 [kg/s/m^3]"	""	#f	#f
+"source_m_5"	"0 [kg/s/m^3]"	""	#f	#f
+"source_m_6"	"0 [kg/s/m^3]"	""	#f	#f
+"source_e_1"	"0 [W/m^3]"	""	#f	#f
+"source_e_2"	"0 [W/m^3]"	""	#f	#f
+"source_e_3"	"0 [W/m^3]"	""	#f	#f
+"source_e_4"	"0 [W/m^3]"	""	#f	#f
+"source_e_5"	"0 [W/m^3]"	""	#f	#f
+"source_e_6"	"0 [W/m^3]"	""	#f	#f
 "MP_IN_p"	"AreaAve(StaticPressure,{bz_inlet_names})"	""	#f	#f
 "MP_IN_MassFlow"	"MassFlow({bz_inlet_names})"	""	#f	#t
 "MP_IN_MassFlow_360"	"MassFlow({bz_inlet_names}) * GEO_IN_No_Passages_360 / GEO_IN_No_Passages"	""	#f	#t
-"MP_R1_MassFlow"	"MassFlow({bz_inlet_R1_names})"	""	#f	#t
-"MP_R1_MassFlow_360"	"MassFlow({bz_inlet_R1_names}) * GEO_No_Passages_R1_360 / GEO_No_Passages_R1"	""	#f	#t
+"MP_R1_MassFlow"	"abs(MassFlow({bz_inlet_R1_names}))"	""	#f	#t
+"MP_R1_MassFlow_360"	"MP_R1_MassFlow * GEO_No_Passages_R1_360 / GEO_No_Passages_R1"	""	#f	#t
 "MP_OUT_MassFlow"	"-MassFlow({bz_outlet_names})"	""	#f	#f
 "MP_OUT_MassFlow_360"	"-MassFlow({bz_outlet_names}) * GEO_OUT_No_Passages_360 / GEO_OUT_No_Passages"	""	#f	#f
 "MP_OUT_ECMassFlow"	"-MassFlow({bz_outlet_names}) * sqrt(MP_OUT_massFlowAve_Tt / MP_IN_massFlowAve_Tt) / (MP_OUT_massFlowAve_pt / MP_IN_massFlowAve_pt)"	""	#f	#f
 "MP_OUT_ECMassFlow_360"	"-MassFlow({bz_outlet_names}) * sqrt(MP_OUT_massFlowAve_Tt / MP_IN_massFlowAve_Tt) / (MP_OUT_massFlowAve_pt / MP_IN_massFlowAve_pt) * (GEO_OUT_No_Passages_360 / GEO_OUT_No_Passages) "	""	#f	#f
 "MP_OUT_p"	"AreaAve(StaticPressure,{bz_outlet_names})"	""	#f	#f
-"MP_IN_massFlowAve_Tt"	"Average(TotalTemperature,{bz_inlet_names},Weight = 'MassFlowRate')"	""	#f	#f
+"MP_IN_massFlowAve_Tt"	"Average(TotalTemperature,{bz_inlet_names},Weight = 'MassFlowRate')"	""	#f	#t
 "MP_INR1_massFlowAve_Tt"	"Average(TotalTemperature,{bz_inlet_R1_names},Weight = 'MassFlowRate')"	""	#f	#t
-"MP_OUT_massFlowAve_Tt"	"Average(TotalTemperature,{bz_outlet_names},Weight = 'MassFlowRate')"	""	#f	#f
+"MP_OUT_massFlowAve_Tt"	"Average(TotalTemperature,{bz_outlet_names},Weight = 'MassFlowRate')"	""	#f	#t
 "MP_IN_areaAve_p"	"AreaAve(StaticPressure,{bz_inlet_names}) + BC_pref"	""	#f	#f
 "MP_IN_massFlowAve_pt"	"Average(TotalPressure,{bz_inlet_names},Weight = 'MassFlowRate') + BC_pref"	""	#f	#f
 "MP_IN_th"	"Average(SpecificTotalEnthalpy,{bz_inlet_names},Weight = 'MassFlowRate')"	""	#f	#f
@@ -54,17 +66,17 @@ name	definition	description	input-parameter	output-parameter
 "MP_OUT_massFlowAve_pt"	"Average(TotalPressure,{bz_outlet_names},Weight = 'MassFlowRate') + BC_pref"	""	#f	#f
 "MP_PR"	"MP_IN_areaAve_p/MP_OUT_areaAve_p "	""	#f	#f
 "MP_PRt"	"MP_IN_massFlowAve_pt/MP_OUT_massFlowAve_pt"	""	#f	#t
-"MP_TRt"	"MP_IN_massFlowAve_Tt / MP_OUT_massFlowAve_Tt"	""	#f	#f
-"MP_dh"	"MP_IN_th - MP_OUT_th"	""	#f	#f
-"MP_dhR1"	"MP_INR1_th - MP_OUT_th"	""	#f	#f
+"MP_TRt"	"MP_IN_massFlowAve_Tt / MP_OUT_massFlowAve_Tt"	""	#f	#t
+"MP_dh"	"MP_IN_th - MP_OUT_th"	""	#f	#t
+"MP_dhR1"	"MP_INR1_th - MP_OUT_th"	""	#f	#t
 "MP_Torque_360_R1"	"dot(vector{rotation_axis_direction} , Moment(vector{rotation_axis_origin},{bz_walls_b1_torque})) * (GEO_No_Passages_R1_360 / GEO_No_Passages_R1)"	""	#f	#t
 "MP_Torque_360_R2"	"dot(vector{rotation_axis_direction} , Moment(vector{rotation_axis_origin},{bz_walls_b2_torque})) * (GEO_OUT_No_Passages_360 / GEO_OUT_No_Passages)"	""	#f	#t
 "MP_Isentropic_Efficiency"	"EfficiencyIsentropic(Inlets={bz_inlet_names},Outlets={bz_outlet_names},Ratio='{efficiency_ratio}',Process='Expansion')"	""	#f	#t
 "MP_Polytropic_Efficiency"	"EfficiencyPolytropic(Inlets={bz_inlet_names},Outlets={bz_outlet_names},Ratio='{efficiency_ratio}',Process='Expansion')"	""	#f	#t
-"MP_Torque_360"	"MP_Torque_360_R1 + MP_Torque_360_R2"	""	#f	#t
+"MP_Torque_360"	"(MP_Torque_360_R1 + MP_Torque_360_R2)"	""	#f	#t
 "MP_Power_Torque_360"	"MP_Torque_360 * (BC_omega * PI/180 [deg])"	""	#f	#t
 "MP_GE_Efficiency_R1"	"MP_Power_Torque_360 / (MP_R1_MassFlow_360 * MP_dhR1)"	""	#f	#t
 "MP_GE_Efficiency_IO"	"MP_Power_Torque_360 / (MP_IN_MassFlow_360 * MP_dh)"	""	#f	#t
 "MP_GE_Efficiency_Mix"	"MP_Power_Torque_360 / (MP_R1_MassFlow_360 * MP_dh)"	""	#f	#t
-"MP_Thermal_Efficiency"	"MP_Power_Torque_360 / (MP_IN_MassFlow_360 * MP_dh)"	""	#f	#t
+"MP_Thermal_Efficiency"	"MP_Power_Torque_360 / (MP_IN_MassFlow_360 * MP_dh + VolumeInt(source_e_1,[\"passage-main_1\"]) * GEO_No_Passages_R1_360 / GEO_No_Passages_R1 + VolumeInt(source_e_2,[\"passage-main_3\"])* GEO_OUT_No_Passages_360 / GEO_OUT_No_Passages + VolumeInt(source_e_3,[\"outlet\"]) * GEO_OUT_No_Passages_360 / GEO_OUT_No_Passages + VolumeInt(source_e_4,[\"inlet\"]) * GEO_IN_No_Passages_360 / GEO_IN_No_Passages + VolumeInt(source_e_5,[\"passage-main\"]) * GEO_IN_No_Passages_360 / GEO_IN_No_Passages + VolumeInt(source_e_6,[\"passage-main_2\"]) * GEO_No_Passages_S2_360 / GEO_No_Passages_S2)"	""	#f	#t
 

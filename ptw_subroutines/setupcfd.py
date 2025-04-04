@@ -2144,7 +2144,7 @@ def source_terms(data, solver):
     for key in my_sources:
         exp_name = key
         exp_definition = my_sources[key]["definition"]
-        myvalue = fluent_utils.create_and_evaluate_expression(solver, exp_name=exp_name, definition=exp_definition, evaluate_value=False)
+        myvalue = fluent_utils.create_and_evaluate_expression(solver, exp_name=exp_name, definition=exp_definition, overwrite_definition=True, evaluate_value=False)
         if my_sources[key]["cell_zone"] in list_fluid_zones:
             solver.settings.setup.cell_zone_conditions.fluid[my_sources[key]["cell_zone"]] = {"sources": {"enable": True, "terms": {my_sources[key]["equation"]: [{'option': 'value', 'value': exp_name}]}}}
 
