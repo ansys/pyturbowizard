@@ -250,6 +250,8 @@ class PTW_Run:
                 )
                 setupcfd.source_terms(data=caseEl, solver=solver)
 
+                setupcfd.blade_film_cooling(data=caseEl, solver=solver)
+
                 setupcfd.set_reports(caseEl, solver, launchEl, gpu=gpu)
 
                 # Solution
@@ -466,7 +468,7 @@ def ptw_main():
     # Get script_path (needed to get template-dir)
     script_path = os.path.dirname(sys.argv[0])
     # If arguments are passed take first argument as fullpath to the json file
-    config_filename = r"turboSetupConfig.json"
+    config_filename = r"honeywell_c2.json"
     if len(sys.argv) > 1:
         config_filename = sys.argv[1]
     config_filename = os.path.normpath(config_filename)
