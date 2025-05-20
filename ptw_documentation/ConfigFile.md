@@ -532,6 +532,90 @@ definition is separated for all selected surfaces.
       ...
 ```
 
+#### Volume Source Terms Definition 
+
+```
+"source_terms" :{
+        "source_m_1":{
+            "equation" : "mass",
+            "cell_zone" : "passage-main_1",
+            "definition" : "0.433[lbm *s^-1]/ (76 * Volume([\"passage-main_1\"]))"
+        }, 
+        "source_e_1":{
+            "equation" : "energy",
+            "cell_zone" : "passage-main_1",
+            "definition" : "(0.433[lbm*s^-1])*SpecificHeatCapacity*((348.96[K]-298.15[K])/(76*Volume([\"passage-main_1\"])))"				
+        }
+},
+
+```
+Equation defines the tpye of source term 
+Cell_zone the domain where the source term should be applied
+the definition should be an expression. The name of the expression is the sub-dict name.  
+
+##### Basic Report Definitions
+
+It is optional to define basic report definitions with the keyword ``` basic_reports ``` in the ``` solution ``` section. 
+Basic refers to these report definitions being created as surface, volume, force, drag, lift, 
+moment or flux (only mass flux supported) reports.
+When using the GPU solver, this is currently the only option to monitor desired quantities for every iteration as 
+report definitions from expressions are not supported yet. 
+
+```
+ "Case_1": {
+       "solution": {
+           "basic_reports": {
+              "IN_massflowave_pt": {
+                "scope": "surface",
+                "type": "surface-massavg",
+                "zones": ["inblock-inflow"],
+                "variable": "total-pressure"
+              },
+              "OUT_massflowave_pt": {
+                "scope": "surface",
+                "type": "surface-massavg",
+                "zones": ["outblock-outflow"],
+                "variable": "total-pressure"
+              },
+              "Vol_Ave_pt": {
+                "scope": "volume",
+                "type": "volume-massavg",
+                "zones": ["passage"],
+                "variable": "total-pressure"
+              },
+              "Force_blades_Z": {
+                "scope": "force",
+                "zones": ["blade","bld-geo-high","bld-geo-low","bld-high"],
+                "force_vector": [0,0,1]
+              },
+              "Drag_blades_Z": {
+                "scope": "drag",
+                "zones": ["blade","bld-geo-high","bld-geo-low","bld-high"],
+                "force_vector": [0,0,1],
+                "report_output_type": "Drag Force"
+              },
+              "Lift_blades_Z": {
+                "scope": "lift",
+                "zones": ["blade","bld-geo-high","bld-geo-low","bld-high"],
+                "force_vector": [0,0,1],
+                "report_output_type": "Lift Force"
+              },
+              "Moment_blades_Z": {
+                "scope": "moment",
+                "zones": ["blade","bld-geo-high","bld-geo-low","bld-high"],
+                "mom_center": [0,0,0],
+                "mom_axis": [0,0,1],
+                "report_output_type": "Moment"
+              },
+              "Flux_Mass_In": {
+                "scope": "flux",
+                "type": "flux-massflow",
+                "zones": ["inblock-inflow"]
+              }
+            },
+      ...
+```
+
 #### Results
 
 ```

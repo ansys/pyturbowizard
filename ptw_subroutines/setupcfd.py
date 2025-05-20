@@ -2,6 +2,7 @@
 from ptw_subroutines.utils import ptw_logger, dict_utils, misc_utils, fluent_utils
 import os
 from packaging.version import Version
+import csv
 
 logger = ptw_logger.getLogger()
 
@@ -135,7 +136,10 @@ def add_material_property(material_object, fl_prop_name: str, fl_prop_data):
             fl_settings = fl_prop_data.get("settings")
             if fl_option is not None:
                 material_prop.option = fl_option
-                settings_obj = getattr(material_prop, fl_option)
+                try:
+                    settings_obj = getattr(material_prop, fl_option)
+                except:
+                    settings_obj = None
                 if settings_obj is not None:
                     if fl_settings is not None:
                         if isinstance(fl_settings, dict):
@@ -2129,3 +2133,118 @@ def set_run_calculation(data, solver):
 
     iter_count = solutionDict.setdefault("iter_count", 500)
     solver.solution.run_calculation.iter_count = int(iter_count)
+
+def source_terms(data, solver):
+    my_sources = data.get("source_terms")
+    if my_sources is None:
+        logger.warning(
+            f"No source terms defined: Skipping 'source terms setting'!"
+        )
+        return
+    list_fluid_zones = solver.settings.setup.cell_zone_conditions.fluid.get_object_names()
+    for key in my_sources:
+        exp_name = key
+        exp_definition = my_sources[key]["definition"]
+        myvalue = fluent_utils.create_and_evaluate_expression(solver, exp_name=exp_name, definition=exp_definition, overwrite_definition=True, evaluate_value=False)
+        if my_sources[key]["cell_zone"] in list_fluid_zones:
+            solver.settings.setup.cell_zone_conditions.fluid[my_sources[key]["cell_zone"]] = {"sources": {"enable": True, "terms": {my_sources[key]["equation"]: [{'option': 'value', 'value': exp_name}]}}}
+
+
+
+def blade_film_cooling(data, solver):
+
+    def validate_injection_profile(csv_path, required_headers=None):
+        if required_headers is None:
+            required_headers = [
+                "x [in]", "y [in]", "z [in]",
+                "dia [in]", "flowlbm [lbm s^-1]", "Temp [K]",
+                "x_dir[]", "y_dir[]", "z_dir[]"
+            ]
+        
+        with open(csv_path, newline='') as csvfile:
+            reader = csv.reader(csvfile, delimiter='\t')
+            for row in reader:
+                # Find header line
+                if row and any(h in row[0] for h in required_headers):
+                    headers = [h.strip() for h in row]
+                    break
+            else:
+                raise ValueError(f"Could not find a header row in {csv_path}")
+
+        missing = [h for h in required_headers if h not in headers]
+        if missing:
+            raise ValueError(f"{csv_path} is missing required headers: {missing}")
+
+    solver.scheme_eval.scheme_eval("(rpsetvar 'virtualboundary/diag-level 1)") 
+    solver.scheme_eval.scheme_eval("(rpsetvar 'virtualboundary/bnd-ext-fac 1)") 
+    solver.scheme_eval.scheme_eval("(rpsetvar 'virtualboundary/intersect-searchrad-fac 3)") 
+
+    bf_cooling = data.get("blade_film_cooling", {})
+    cooling_zones = bf_cooling.get("cooling_zones", [])
+    if not cooling_zones:
+        logger.warning("No blade film cooling zones defined — skipping cooling setup.")
+        return
+    for zone in cooling_zones:
+        
+        profile_file = zone["profile_file"]
+        geometry_name = zone["geometry_name"]
+        interface_blade_zone = zone["interface_blade_zone"]
+        vb_name = zone["virtual_boundary_name"]
+        #validate_injection_profile(profile_file) 
+
+        #read cooling profile
+        solver.file.read_profile(file_name=profile_file)
+
+        #virtual boundary definition
+        # solver.tui.define.virtual_boundary.hole_geometry(
+        #     'add', vb_name, 'coordinates', geometry_name,
+        #     'direction', 'cartesian',
+        #     'x-dir', 'profile', 'x_dir',
+        #     'y-dir', 'profile', 'y_dir',
+        #     'z-dir', 'profile', 'z_dir',
+        #     'quit',
+        #     'flowdir', 'hole-direction',
+        #     'flowvars', 'massflow', 'profile', 'flowlbm',
+        #     'temperature', 'profile', 'temp',
+        #     'quit',
+        #     'name', vb_name,
+        #     'shape', 'cylindrical',
+        #     'diameter', 'profile', 'dia',
+        #     'quit',
+        #     'type', 'mass-flow-inlet',
+        #     'preview', 'quit', 'quit', 'quit'
+        # )
+        solver.tui.define.virtual_boundary.hole_geometry(
+        'add', vb_name,
+        'coordinates', geometry_name,
+        'type', 'mass-flow-inlet',
+        'direction', 'normal-to-boundary',
+        'flowdir', 'cartesian',
+        'x-dir', 'profile', 'x_dir',
+        'y-dir', 'profile', 'y_dir',
+        'z-dir', 'profile', 'z_dir',
+        'quit',  # Exits from flowdir block
+        'shape', 'cylindrical',
+        'diameter', 'profile', 'dia',
+        'quit',  # Exits from shape block
+        'flowvars', 'massflow', 'profile', 'flowlbm',
+        'temperature', 'profile', 'temp',
+        'quit',  # Exits from flowvars block
+        'quit',  # Exits from the main block
+        'quit',
+        'quit',
+        'quit')
+
+
+
+
+        # Connect boundary interface
+        solver.tui.define.virtual_boundary.boundary_interface(
+            'add', f'{vb_name}-interface',
+            'boundaries', interface_blade_zone, '()',
+            'geometry',f'"{vb_name}"', '()',
+            'quit', 'quit', 'quit', 'quit'
+        )
+
+
+    logger.info("Blade film cooling setup complete.")
