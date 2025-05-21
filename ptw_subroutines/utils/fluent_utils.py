@@ -1,4 +1,4 @@
-import os
+import os, csv
 from packaging.version import Version
 
 # Logger
@@ -81,7 +81,7 @@ def check_version(solver):
     else:
         return str(fluent_version.number)
 
-def create_iso_surface(solver,name:str,field_name:str,iso_value:float,zones:list=None,surfaces:list=None):
+def create_iso_surface(solver,name:str,field_name:str,iso_values:list,zones:list=None,surfaces:list=None):
     if (
             name
             not in solver.settings.results.surfaces.iso_surface.get_object_names()
@@ -100,7 +100,7 @@ def create_iso_surface(solver,name:str,field_name:str,iso_value:float,zones:list
         "field": field_name,
         "zones": zones,
         "surfaces": surfaces,
-        "iso_values": [iso_value],
+        "iso_values": iso_values,
     }
 
 def create_iso_clip(solver,name:str,field_name:str,min_value:float,max_value:float,surfaces:list=None):
@@ -159,3 +159,18 @@ def create_plane_surface(solver,name:str,value:float,method:str='xy-plane'):
     else:
         allowed_methods = solver.settings.results.surfaces.plane_surface["bla"].method.allowed_values()
         logger.warning(f"Could not specify prescribed method '{method}' when creating plane_surface '{name}'. Allowed methods are: {allowed_methods}")
+
+def export_solver_monitor(solver, filepath: str = "residual.csv", monitor_set_name: str = "residual"):
+    mp = solver.monitors.get_monitor_set_data(monitor_set_name=monitor_set_name)
+    indices = mp[0]
+    data_dict = mp[1]
+    with open(filepath, 'w', newline='') as file:
+        writer = csv.writer(file)
+        # Write header
+        header = ['Index'] + list(data_dict.keys())
+        writer.writerow(header)
+        # Write data rows
+        for i in range(len(indices)):
+            row = [indices[i]] + [data_dict[key][i] for key in data_dict]
+            writer.writerow(row)
+

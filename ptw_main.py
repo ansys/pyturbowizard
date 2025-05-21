@@ -1,3 +1,5 @@
+#©2025 ANSYS, Inc. Unauthorized use, distribution, or duplication is prohibited.
+
 import os
 import json
 import sys
@@ -26,7 +28,7 @@ from ptw_subroutines.utils import (
 )
 
 
-ptw_version = "1.9.1"
+ptw_version = "1.9.2"
 
 # Set Logger
 logger = ptw_logger.init_logger()
