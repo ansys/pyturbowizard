@@ -17,6 +17,7 @@ from ptw_subroutines import (
     postproc,
     parametricstudy_post,
     prepostproc,
+    post_plots,
 )
 from ptw_subroutines.utils import (
     ptw_logger,
@@ -249,6 +250,10 @@ class PTW_Run:
                 setupcfd.setup(
                     data=caseEl, solver=solver, functionEl=caseFunctionEl, gpu=gpu
                 )
+                setupcfd.source_terms(data=caseEl, solver=solver)
+
+                setupcfd.blade_film_cooling(data=caseEl, solver=solver)
+
                 setupcfd.set_reports(caseEl, solver, launchEl, gpu=gpu)
 
                 # Solution
@@ -340,6 +345,9 @@ class PTW_Run:
                     # solver.file.write(file_type="case-data", file_name=filename)
                 else:
                     logger.info("Skipping Postprocessing: No Solution Data available")
+
+                #Plots for Post Processing (Airfoil Loading, Radial Profiles, Integral Values)
+                post_plots.Fplot(solver=solver, file_name=caseEl["caseFilename"], work_dir=fl_workingDir, case_dict=caseEl)
 
                 # Read Additional Journals, if specified
                 fluent_utils.read_journals(
@@ -462,7 +470,7 @@ def ptw_main():
     # Get script_path (needed to get template-dir)
     script_path = os.path.dirname(sys.argv[0])
     # If arguments are passed take first argument as fullpath to the json file
-    config_filename = "turboSetupConfig.json"
+    config_filename = r"honeywell_c2.json"
     if len(sys.argv) > 1:
         config_filename = sys.argv[1]
     config_filename = os.path.normpath(config_filename)

@@ -160,6 +160,7 @@ def create_plane_surface(solver,name:str,value:float,method:str='xy-plane'):
         allowed_methods = solver.settings.results.surfaces.plane_surface["bla"].method.allowed_values()
         logger.warning(f"Could not specify prescribed method '{method}' when creating plane_surface '{name}'. Allowed methods are: {allowed_methods}")
 
+
 def export_solver_monitor(solver, filepath: str = "residual.csv", monitor_set_name: str = "residual"):
     mp = solver.monitors.get_monitor_set_data(monitor_set_name=monitor_set_name)
     indices = mp[0]
@@ -173,4 +174,18 @@ def export_solver_monitor(solver, filepath: str = "residual.csv", monitor_set_na
         for i in range(len(indices)):
             row = [indices[i]] + [data_dict[key][i] for key in data_dict]
             writer.writerow(row)
+
+def create_and_evaluate_expression(solver, exp_name: str, definition: str, overwrite_definition=True, evaluate_value=False):
+    if (exp_name not in solver.settings.setup.named_expressions.get_object_names()):
+        solver.settings.setup.named_expressions.create(name=exp_name)
+        solver.settings.setup.named_expressions[exp_name] = {"definition": definition}
+    if overwrite_definition:
+        solver.settings.setup.named_expressions[exp_name] = {"definition": definition}
+    value = None
+    if evaluate_value:
+        value = solver.settings.setup.named_expressions[exp_name].get_value()
+    if isinstance(value, str):
+        str_value = value.split()[0]
+        value = float(str_value)
+    return value
 
