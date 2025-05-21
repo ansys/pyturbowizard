@@ -29,7 +29,7 @@ from ptw_subroutines.utils import (
 )
 
 
-ptw_version = "1.9.2"
+ptw_version = "1.9.3"
 
 # Set Logger
 logger = ptw_logger.init_logger()
