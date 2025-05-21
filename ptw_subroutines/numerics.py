@@ -17,6 +17,7 @@ def numerics(data, solver, functionEl, gpu):
         "numerics_bp_tn_2305_lsq",
         "numerics_bp_all_2305",
         "numerics_defaults_pseudo_timestep",
+        "numerics_level1",
     ]
 
     defaultName = "numerics_bp_tn_2305"
@@ -46,6 +47,9 @@ def numerics(data, solver, functionEl, gpu):
         numerics_bp_all_2305(data, solver)
     elif functionName == "numerics_defaults_pseudo_timestep":
         numerics_defaults_pseudo_timestep(data, solver)
+    elif functionName == "numerics_level1":
+        numerics_level1(data, solver)
+
     else:
         logger.info(
             f"Prescribed Function '{functionName}' not known. Skipping Specifying Numerics!"
@@ -105,3 +109,17 @@ def numerics_defaults_pseudo_timestep(data, solver):
         "global-time-step"
     )
     return
+
+
+def numerics_level1(data ,solver):
+    solver.tui.solve.set.numerics("no", "no", "no", "no", "no", 0.8)
+    solver.solution.methods.gradient_scheme = "green-gauss-node-based"
+    logger.info(
+        "Best Practice and turbo numerics with green-gauss-node-based will be used"
+    )
+
+    use_tsn = data["solution"].setdefault("tsn", True)
+    if use_tsn:
+        solver.tui.solve.set.advanced.turbomachinery_specific_numerics.enable("yes")
+    return
+

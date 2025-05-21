@@ -88,12 +88,14 @@ def init_standard_01(data, solver):
     )
     solver.solution.initialization.standard_initialize()
 
-    availableBCs = dir(solver.tui.solve.initialize.compute_defaults)
-    if "mass_flow_inlet" in availableBCs:
+    #availableBCs = dir(solver.tui.solve.initialize.compute_defaults)
+    #if "mass_flow_inlet" in availableBCs:
+    if data["locations"]["bz_inlet_names"][0] in solver.settings.setup.boundary_conditions.mass_flow_inlet.keys():
         solver.tui.solve.initialize.compute_defaults.mass_flow_inlet(
             data["locations"]["bz_inlet_names"][0]
         )
-    elif "pressure_inlet" in availableBCs:
+    #if "pressure_inlet" in availableBCs:
+    elif data["locations"]["bz_inlet_names"][0] in solver.settings.setup.boundary_conditions.pressure_inlet.keys():
         solver.tui.solve.initialize.compute_defaults.pressure_inlet(
             data["locations"]["bz_inlet_names"][0]
         )

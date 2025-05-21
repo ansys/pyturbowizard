@@ -56,6 +56,7 @@ def setup_01(
     if material:
         set_material(data=data, solver=solver, solve_energy=solve_energy)
     # Set Boundaries
+
     if bcs:
         if Version(solver._version) < Version("241"):
             set_boundaries_v232(data=data, solver=solver, solve_energy=solve_energy)
@@ -2152,7 +2153,7 @@ def source_terms(data, solver):
 
 
 def blade_film_cooling(data, solver):
-
+    solver.tui.define.turbo_model.enable_turbo_model("yes")
     def validate_injection_profile(csv_path, required_headers=None):
         if required_headers is None:
             required_headers = [
@@ -2184,61 +2185,41 @@ def blade_film_cooling(data, solver):
     if not cooling_zones:
         logger.warning("No blade film cooling zones defined — skipping cooling setup.")
         return
+
     for zone in cooling_zones:
-        
-        profile_file = zone["profile_file"]
-        geometry_name = zone["geometry_name"]
-        interface_blade_zone = zone["interface_blade_zone"]
-        vb_name = zone["virtual_boundary_name"]
+        profile_file = cooling_zones[zone]["profile_file"]
+        geometry_name = cooling_zones[zone]["geometry_name"]
+        interface_blade_zone = cooling_zones[zone]["interface_blade_zone"]
+        vb_name = zone
         #validate_injection_profile(profile_file) 
 
         #read cooling profile
         solver.file.read_profile(file_name=profile_file)
 
-        #virtual boundary definition
-        # solver.tui.define.virtual_boundary.hole_geometry(
-        #     'add', vb_name, 'coordinates', geometry_name,
-        #     'direction', 'cartesian',
-        #     'x-dir', 'profile', 'x_dir',
-        #     'y-dir', 'profile', 'y_dir',
-        #     'z-dir', 'profile', 'z_dir',
-        #     'quit',
-        #     'flowdir', 'hole-direction',
-        #     'flowvars', 'massflow', 'profile', 'flowlbm',
-        #     'temperature', 'profile', 'temp',
-        #     'quit',
-        #     'name', vb_name,
-        #     'shape', 'cylindrical',
-        #     'diameter', 'profile', 'dia',
-        #     'quit',
-        #     'type', 'mass-flow-inlet',
-        #     'preview', 'quit', 'quit', 'quit'
-        # )
+
         solver.tui.define.virtual_boundary.hole_geometry(
-        'add', vb_name,
-        'coordinates', geometry_name,
-        'type', 'mass-flow-inlet',
-        'direction', 'normal-to-boundary',
-        'flowdir', 'cartesian',
-        'x-dir', 'profile', 'x_dir',
-        'y-dir', 'profile', 'y_dir',
-        'z-dir', 'profile', 'z_dir',
-        'quit',  # Exits from flowdir block
-        'shape', 'cylindrical',
-        'diameter', 'profile', 'dia',
-        'quit',  # Exits from shape block
-        'flowvars', 'massflow', 'profile', 'flowlbm',
-        'temperature', 'profile', 'temp',
-        'quit',  # Exits from flowvars block
-        'quit',  # Exits from the main block
-        'quit',
-        'quit',
-        'quit')
+            'add', vb_name,
+            'coordinates', geometry_name,
+            'type', 'mass-flow-inlet',
+            'direction', 'normal-to-boundary',
+            'flowdir', 'cartesian',
+            'x-dir', 'profile', 'x_dir',
+            'y-dir', 'profile', 'y_dir',
+            'z-dir', 'profile', 'z_dir',
+            'quit',  # Exits from flowdir block
+            'shape', 'cylindrical',
+            'diameter', 'profile', 'dia',
+            'quit',  # Exits from shape block
+            'flowvars', 'massflow', 'profile', 'flowlbm',
+            'temperature', 'profile', 'temp',
+            'quit',  # Exits from flowvars block
+            'quit',  # Exits from the main block
+            'quit',
+            'quit',
+            'quit')
 
 
-
-
-        # Connect boundary interface
+        #Connect boundary interface
         solver.tui.define.virtual_boundary.boundary_interface(
             'add', f'{vb_name}-interface',
             'boundaries', interface_blade_zone, '()',
