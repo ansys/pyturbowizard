@@ -1,4 +1,5 @@
 # **PyTurboWizard**
+©2025 ANSYS, Inc. Unauthorized use, distribution, or duplication is prohibited.
 
 ## **Open-Source Software Disclaimer**
 This deliverable depends on Open-Source Software (OSS), which are subject to their own terms & conditions and may contain vulnerabilities. 
@@ -66,4 +67,4 @@ Required libraries:
 
 ## Useful Documents
 - [Configuration File Setup](ptw_documentation/ConfigFile.md)
-- [Tutorial: Speedline Simulation Setup](/ptw_examples/tutorial_speedline/speedline_tutorial.md)
+- [Tutorial: Speedline Simulation Setup](ptw_examples/tutorial_speedline/speedline_tutorial.md)

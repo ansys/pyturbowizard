@@ -2,10 +2,12 @@
 
 thefile="$1"
 
+## if [ "a" == "a" ]; then
+
 function mydump ()
 {
-  set="$1"   ####                                                                                        -e '/^[^(]/d' -e '/^(0): [1-9]$/d'
-  h5dump -d "$set" $thefile | sed -e '1,10d' -e '11s/^.........//' -e 's#^  *##' -e '$a))' -e 's/))"$//'
+  set="$1"   ####                                                                                    -e '/^[^(]/d' -e '/^(0): [1-9]$/d'
+  h5dump -d "$set" $thefile | sed -e '1,10d' -e '11s/^.*: "//' -e 's#^  *##' -e '$a))' -e 's/))"$//' -e '/^[^(]/d' -e '/^(0): [1-9]$/d'
 }
 
 declare -a sets
@@ -20,8 +22,31 @@ do
   mydump "/settings/$set"
 done
 
+exit
+Schrott
+
 #mydump '/settings/Rampant Variables'
 #mydump '/settings/Domain Variables'
 #mydump '/settings/Cortex Variables'
 #mydump '/settings/Thread Variables'
 ## mydump '/settings/TGrid Variables'
+
+else
+
+  set='/settings/Rampant Variables'
+
+  h5dump -d "$set" $thefile | less -sMi
+  ##exit
+  ##Schrott
+  h5dump -d "$set" $thefile | sed -e '1,10d' | less -sMi
+  h5dump -d "$set" $thefile | sed -e '1,10d' -e '11s/^.*: "//' | less -sMi
+  h5dump -d "$set" $thefile | sed -e '1,10d' -e '11s/^.*: "//' -e 's#^  *##' | less -sMi
+  h5dump -d "$set" $thefile | sed -e '1,10d' -e '11s/^.*: "//' -e 's#^  *##' -e '$a))' -n -e '/))"$/p' | less -sMi
+  h5dump -d "$set" $thefile | sed -e '1,10d' -e '11s/^.*: "//' -e 's#^  *##' -e '$a))' -e 's/))"$//' -n -e '/^[^(]/p' | less -sMi
+  h5dump -d "$set" $thefile | sed -e '1,10d' -e '11s/^.*: "//' -e 's#^  *##' -e '$a))' -e 's/))"$//' -e '/^[^(]/d' -n -e '/^(0): [1-9]$/p' | less -sMi
+  h5dump -d "$set" $thefile | sed -e '1,10d' -e '11s/^.*: "//' -e 's#^  *##' -e '$a))' -e 's/))"$//' -e '/^[^(]/d' -e '/^(0): [1-9]$/d' | less -sMi
+# h5dump -d "$set" $thefile | sed -e '1,10d' -e '11s/^.*: "//' -e 's#^  *##' -e '$a))' -e 's/))"$//' -e '/^[^(]/d' -e '/^(0): [1-9]$/d'
+
+fi
+
+

@@ -19,7 +19,10 @@ def write_expression_file(data: dict, script_dir: str, working_dir: str):
         fl_workingDir=working_dir, case_name=data.get("caseFilename")
     )
     fileName = os.path.join(case_output_path, fileName)
-
+    # Remove exp-file
+    if os.path.exists(fileName):
+        os.remove(fileName)
+    # Write new file
     with open(fileName, "w") as sf:
         expressionTemplatePath = os.path.join(
             script_dir, "ptw_templates", data["expressionTemplate"]
@@ -173,3 +176,26 @@ def check_expression_versions(solver):
                 exp.set_state({"definition": definition_new})
 
     return
+
+def create_and_evaluate_expression(exp_name: str, definition: str, overwrite_definition=True, evaluate_value=True):
+    if (
+            exp_name
+            not in solver.settings.setup.named_expressions.get_object_names()
+    ):
+        solver.settings.setup.named_expressions.create(name=exp_name)
+        solver.settings.setup.named_expressions[exp_name] = {
+            "definition": definition
+        }
+    if overwrite_definition:
+        solver.settings.setup.named_expressions[exp_name] = {
+            "definition": definition
+        }
+    value = None
+    if evaluate_value:
+        value = solver.settings.setup.named_expressions[exp_name].get_value()
+        if isinstance(value, str):
+            str_value = value.split()[0]
+            value = float(str_value)
+        else:
+            value = float(value)
+    return value
