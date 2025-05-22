@@ -1586,18 +1586,20 @@ def set_run_calculation(data, solver):
 def source_terms(data, solver):
     my_sources = data.get("source_terms")
     if my_sources is None:
-        logger.warning(
-            f"No source terms defined: Skipping 'source terms setting'!"
+        logger.info(
+            f"No 'source_terms' defined: Skipping 'source_terms' function!"
         )
         return
     list_fluid_zones = solver.settings.setup.cell_zone_conditions.fluid.get_object_names()
     for key in my_sources:
+        logger.info(f"Defining source-term: '{key}'")
         exp_name = key
         exp_definition = my_sources[key]["definition"]
         myvalue = fluent_utils.create_and_evaluate_expression(solver, exp_name=exp_name, definition=exp_definition, overwrite_definition=True, evaluate_value=False)
         if my_sources[key]["cell_zone"] in list_fluid_zones:
             solver.settings.setup.cell_zone_conditions.fluid[my_sources[key]["cell_zone"]] = {"sources": {"enable": True, "terms": {my_sources[key]["equation"]: [{'option': 'value', 'value': exp_name}]}}}
 
+    logger.info("Definition of source-terms completed")
 
 
 def blade_film_cooling(data, solver):
@@ -1631,10 +1633,10 @@ def blade_film_cooling(data, solver):
     bf_cooling = data.get("blade_film_cooling", {})
     cooling_zones = bf_cooling.get("cooling_zones", [])
     if not cooling_zones:
-        logger.warning("No blade film cooling zones defined — skipping cooling setup.")
+        logger.info(f"No 'cooling_zones' defined: Skipping 'blade_film_cooling' function!")
         return
     for zone in cooling_zones:
-        
+        logger.info(f"Defining blade film cooling for zone '{zone}'")
         profile_file = zone["profile_file"]
         geometry_name = zone["geometry_name"]
         interface_blade_zone = zone["interface_blade_zone"]
