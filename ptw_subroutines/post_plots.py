@@ -215,10 +215,18 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
         pct_spans = case_dict["loading_span_cuts"]
         plot_types = case_dict.get("plot_types", [])
 
-        wall_list = [
-            s for s in list(solver.setup.boundary_conditions.wall.get_state().keys())
-            if "bld" in s
-        ]
+        # Virtual blade cooling
+        wall_list = []
+        for key in solver.setup.boundary_conditions.wall.get_state().keys():
+            if "bld" in key and "non-overlapping" in key:
+                wall_list.append(key.split("-non-overlap")[0])
+                # wall_list = [s for s in list(solver.setup.boundary_conditions.interface.get_state().keys())
+                #     if "bld" in s ]
+                # break
+            elif "bld" in key and "non-overlapping" not in key:
+                wall_list.append(key)
+            else:
+                continue
         field = 'spanwise-coordinate'
 
         for af in af_surf:

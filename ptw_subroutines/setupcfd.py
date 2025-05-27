@@ -2227,5 +2227,18 @@ def blade_film_cooling(data, solver):
             'quit', 'quit', 'quit', 'quit'
         )
 
+def blade_film_cooling_adapt(data, solver):
+    if "adapt" in data["blade_film_cooling"]:
+        if  data["blade_film_cooling"]["adapt"]:
+            solver.settings.solution.cell_registers.create(name="cell_register_0")
+            solver.settings.solution.cell_registers['cell_register_0'] = {"type": {"option": "boundary", "boundary": {
+                "boundary_list": ["r2_shroud_cooling-interface-overlap-1-1", "r2_bld_cooling-interface-overlap-1-1",
+                                  "v2_bld_cooling-interface-overlap-1-1", "r1_shroud_cooling-interface-overlap-1-1",
+                                  "v1_hub_cooling-interface-overlap-1-1", "v1_shroud_cooling-interface-overlap-1-1",
+                                  "v1_bld_cooling-interface-overlap-1-1", "r1_bld_cooling-interface-overlap-1-1"],
+                "distance_option": {"cell_distance": 1, "option": "cell-distance"}}}}
+            solver.settings.mesh.adapt.manual_refinement_criteria = "cell_register_0"
+            solver.settings.mesh.adapt.adapt_mesh()
+
 
     logger.info("Blade film cooling setup complete.")

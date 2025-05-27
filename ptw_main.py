@@ -276,7 +276,7 @@ class PTW_Run:
                 solve.init(
                     data=caseEl, solver=solver, functionEl=caseFunctionEl, gpu=gpu
                 )
-
+                setupcfd.blade_film_cooling_adapt(data=caseEl, solver=solver)
                 # Setup for Post Processing
                 prepostproc.prepost(
                     data=caseEl,
@@ -356,6 +356,21 @@ class PTW_Run:
                     execution_dir=caseOutPath,
                 )
 
+                if caseEl["solution"].setdefault("cfd_post_export", False):
+                    solver.settings.results.custom_field_functions.create(name="relat_vel_magnitude",
+                                                                          custom_field_function="rel_velocity_magnitude")
+                    solver.settings.results.custom_field_functions.create(name="absolute_velocity_magnitude",
+                                                                          custom_field_function="velocity_magnitude")
+                    solver.settings.results.custom_field_functions.create(name="relat_mach_number",
+                                                                          custom_field_function="rel_mach_number")
+                    solver.settings.results.custom_field_functions.create(name="relat_total_pressure",
+                                                                          custom_field_function="rel_total_pressure")
+                    solver.settings.results.custom_field_functions.create(name="relat_total_enthalpy",
+                                                                          custom_field_function="rel_total_enthalpy")
+                    solver.settings.results.custom_field_functions.create(name="relat_total_temperature",
+                                                                          custom_field_function="rel_total_temperature")
+                    cdat_out = caseEl["caseFilename"] + "-2post"
+                    solver.tui.file.export_to_cfd_post(cdat_out, '()', '(*)', 'quit', 'no', 'no')
                 # Finalize
                 if "stop_transcript" in solver.file.get_active_command_names():
                     solver.file.stop_transcript()

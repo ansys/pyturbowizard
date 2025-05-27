@@ -47,9 +47,9 @@ name	definition	description	input-parameter	output-parameter
 "MP_OUT_massFlowAve_Tt"	"Average(TotalTemperature,{bz_outlet_names},Weight = 'MassFlowRate')"	""	#f	#t
 "MP_IN_areaAve_p"	"AreaAve(StaticPressure,{bz_inlet_names}) + BC_pref"	""	#f	#f
 "MP_IN_massFlowAve_pt"	"Average(TotalPressure,{bz_inlet_names},Weight = 'MassFlowRate') + BC_pref"	""	#f	#f
-"MP_IN_th"	"Average(SpecificTotalEnthalpy,{bz_inlet_names},Weight = 'MassFlowRate')"	""	#f	#f
-"MP_INR1_th"	"Average(SpecificTotalEnthalpy,{bz_inlet_R1_names},Weight = 'MassFlowRate')"	""	#f	#f
-"MP_OUT_th"	"Average(SpecificTotalEnthalpy,{bz_outlet_names},Weight = 'MassFlowRate')"	""	#f	#f
+"MP_IN_th"	"Average(SpecificTotalEnthalpy,{bz_inlet_names},Weight = 'MassFlowRate')"	""	#f	#t
+"MP_INR1_th"	"Average(SpecificTotalEnthalpy,{bz_inlet_R1_names},Weight = 'MassFlowRate')"	""	#f	#t
+"MP_OUT_th"	"Average(SpecificTotalEnthalpy,{bz_outlet_names},Weight = 'MassFlowRate')"	""	#f	#t
 "MP_OUT_areaAve_p"	"AreaAve(StaticPressure,{bz_outlet_names}) + BC_pref"	""	#f	#f
 "MP_OUT_massFlowAve_pt"	"Average(TotalPressure,{bz_outlet_names},Weight = 'MassFlowRate') + BC_pref"	""	#f	#f
 "MP_PR"	"MP_IN_areaAve_p/MP_OUT_areaAve_p "	""	#f	#f
@@ -59,13 +59,13 @@ name	definition	description	input-parameter	output-parameter
 "MP_dhR1"	"MP_INR1_th - MP_OUT_th"	""	#f	#t
 "MP_Isentropic_Efficiency"	"EfficiencyIsentropic(Inlets={bz_inlet_names},Outlets={bz_outlet_names},Ratio='{efficiency_ratio}',Process='Expansion')"	""	#f	#t
 "MP_Polytropic_Efficiency"	"EfficiencyPolytropic(Inlets={bz_inlet_names},Outlets={bz_outlet_names},Ratio='{efficiency_ratio}',Process='Expansion')"	""	#f	#t
-"MP_Torque_360_R1"	"dot(vector{rotation_axis_direction} , Moment(vector{rotation_axis_origin},{bz_walls_b1_torque})) * (GEO_No_Passages_R1_360 / GEO_No_Passages_R1)"	""	#f	#t
-"MP_Torque_360_R2"	"dot(vector{rotation_axis_direction} , Moment(vector{rotation_axis_origin},{bz_walls_b2_torque})) * (GEO_OUT_No_Passages_360 / GEO_OUT_No_Passages)"	""	#f	#t
-"MP_Torque_360"	"(MP_Torque_360_R1 + MP_Torque_360_R2)"	""	#f	#t
-"MP_Power_Torque_360"	"MP_Torque_360 * (BC_omega * PI/180 [deg])"	""	#f	#t
-"MP_GE_Efficiency_R1"	"MP_Power_Torque_360 / (MP_R1_MassFlow_360 * MP_dhR1)"	""	#f	#t
-"MP_GE_Efficiency_IO"	"MP_Power_Torque_360 / (MP_IN_MassFlow_360 * MP_dh)"	""	#f	#t
-"MP_GE_Efficiency_Mix"	"MP_Power_Torque_360 / (MP_R1_MassFlow_360 * MP_dh)"	""	#f	#t
+"MP_torque_360_R1"	"dot(vector{rotation_axis_direction} , Moment(vector{rotation_axis_origin},{bz_walls_b1_torque})) * (GEO_No_Passages_R1_360 / GEO_No_Passages_R1)"	""	#f	#t
+"MP_torque_360_R2"	"dot(vector{rotation_axis_direction} , Moment(vector{rotation_axis_origin},{bz_walls_b2_torque})) * (GEO_OUT_No_Passages_360 / GEO_OUT_No_Passages)"	""	#f	#t
+"MP_torque_360"	"(MP_torque_360_R1 + MP_torque_360_R2)"	""	#f	#t
+"MP_Power_torque_360"	"MP_torque_360 * (BC_omega * PI/180 [deg])"	""	#f	#t
+"MP_GE_Efficiency_R1"	"MP_Power_torque_360 / (MP_R1_MassFlow_360 * MP_dhR1)"	""	#f	#t
+"MP_GE_Efficiency_IO"	"MP_Power_torque_360 / (MP_IN_MassFlow_360 * MP_dh)"	""	#f	#t
+"MP_GE_Efficiency_Mix"	"MP_Power_torque_360 / (MP_R1_MassFlow_360 * MP_dh)"	""	#f	#t
 "MP_CM_V1"	"MassFlow(['v1_bld_cooling-interface-overlap-1-1','v1_hub_cooling-interface-overlap-1-1','v1_shroud_cooling-interface-overlap-1-1'],phase = 1) * GEO_IN_No_Passages_360 / GEO_IN_No_Passages"	""	#f	#t
 "MP_CM_V2"	"MassFlow(['v2_bld_cooling-interface-overlap-1-1'],phase = 1) * GEO_No_Passages_S2_360 / GEO_No_Passages_S2"	""	#f	#t
 "MP_CM_R1"	"MassFlow(['r1_bld_cooling-interface-overlap-1-1','r1_shroud_cooling-interface-overlap-1-1'],phase = 1) * GEO_No_Passages_R1_360 / GEO_No_Passages_R1"	""	#f	#t
@@ -74,3 +74,11 @@ name	definition	description	input-parameter	output-parameter
 "MP_CT_V2"	"MassFlowAve(TotalTemperature,['v2_bld_cooling-interface-overlap-1-1'])"	""	#f	#t
 "MP_CT_R1"	"MassFlowAve(TotalTemperature,['r1_bld_cooling-interface-overlap-1-1','r1_shroud_cooling-interface-overlap-1-1'])"	""	#f	#t
 "MP_CT_R2"	"MassFlowAve(TotalTemperature,['r2_bld_cooling-interface-overlap-1-1','r2_shroud_cooling-interface-overlap-1-1'])"	""	#f	#t
+"MP_hT_V1"	"MassFlowAve(SpecificTotalEnthalpy,['v1_bld_cooling-interface-overlap-1-1','v1_hub_cooling-interface-overlap-1-1','v1_shroud_cooling-interface-overlap-1-1'])"	""	#f	#t
+"MP_hT_V2"	"MassFlowAve(SpecificTotalEnthalpy,['v2_bld_cooling-interface-overlap-1-1'])"	""	#f	#t
+"MP_hT_R1"	"MassFlowAve(SpecificTotalEnthalpy,['r1_bld_cooling-interface-overlap-1-1','r1_shroud_cooling-interface-overlap-1-1'])"	""	#f	#t
+"MP_hT_R2"	"MassFlowAve(SpecificTotalEnthalpy,['r2_bld_cooling-interface-overlap-1-1','r2_shroud_cooling-interface-overlap-1-1'])"	""	#f	#t
+"MP_Thermal_Efficiency_R1"	"MP_Power_torque_360 / (MP_R1_MassFlow_360 * MP_dhR1 + MP_hT_R1 * MP_CM_R1 +  MP_hT_R2   * MP_CM_R2 + MP_hT_V1 * MP_CM_V1  + MP_hT_V2 * MP_CM_V2)"	""	#f	#t
+"MP_Thermal_Efficiency_IO"	"MP_Power_torque_360 / (MP_IN_MassFlow_360 * MP_dh + MP_hT_R1 * MP_CM_R1 +  MP_hT_R2   * MP_CM_R2 + MP_hT_V1 * MP_CM_V1  + MP_hT_V2 * MP_CM_V2)"	""	#f	#t
+"MP_Thermal_Efficiency_IOR1"	"MP_Power_torque_360 / (MP_IN_MassFlow_360 * MP_dhR1 + MP_hT_R1 * MP_CM_R1 +  MP_hT_R2   * MP_CM_R2 + MP_hT_V1 * MP_CM_V1  + MP_hT_V2 * MP_CM_V2)"	""	#f	#t
+
