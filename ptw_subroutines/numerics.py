@@ -113,7 +113,7 @@ def numerics_defaults_pseudo_timestep(data, solver):
 
 def numerics_level1(data ,solver):
     solver.tui.solve.set.numerics("no", "no", "no", "no", "no", 0.7)
-    solver.solution.methods.gradient_scheme = "green-gauss-node-based"
+    solver.solution.methods.gradient_scheme = "least-square-cell-based"
     logger.info(
         "Best Practice and turbo numerics with green-gauss-node-based will be used"
     )
