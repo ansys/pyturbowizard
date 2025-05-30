@@ -17,7 +17,6 @@ from ptw_subroutines import (
     postproc,
     parametricstudy_post,
     prepostproc,
-    post_plots,
 )
 from ptw_subroutines.utils import (
     ptw_logger,
@@ -348,9 +347,6 @@ class PTW_Run:
                     # solver.settings.file.write(file_type="case-data", file_name=filename)
                 else:
                     logger.info("Skipping Postprocessing: No Solution Data available")
-
-                #Plots for Post Processing (Airfoil Loading, Radial Profiles, Integral Values)
-                post_plots.Fplot(solver=solver, file_name=caseEl["caseFilename"], work_dir=fl_workingDir, case_dict=caseEl)
 
                 # Read Additional Journals, if specified
                 fluent_utils.read_journals(

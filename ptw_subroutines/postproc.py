@@ -1,7 +1,7 @@
 import os
 import matplotlib.pyplot as plt
 
-# Logger
+
 from ptw_subroutines.utils import (
     ptw_logger,
     postproc_utils,
@@ -10,6 +10,9 @@ from ptw_subroutines.utils import (
     misc_utils,
 )
 
+from ptw_subroutines import post_plots
+
+# Logger
 logger = ptw_logger.getLogger()
 
 
@@ -25,6 +28,8 @@ def post(data, solver, functionEl, launchEl, trn_name, gpu):
     logger.info(f"Running Postprocessing Function '{functionName}' ...")
     if functionName == "post_01":
         post_01(data, solver, launchEl, trn_name, gpu)
+    elif functionName == "post_fplot":
+        post_fplot(data, solver, launchEl, trn_name, gpu)
     else:
         logger.info(
             f"Prescribed Function '{functionName}' not known. Skipping Postprocessing!"
@@ -93,6 +98,12 @@ def post_01(data, solver, launchEl, trn_name, gpu):
 
     return
 
+def post_fplot(data, solver, launchEl, trn_name, gpu):
+    # Do standard postprocessing
+    post_01(data, solver, launchEl, trn_name, gpu)
+    # Plots for Post Processing (Airfoil Loading, Radial Profiles, Integral Values)
+    post_plots.Fplot(solver=solver, file_name=data["caseFilename"], work_dir=launchEl.get("workingDir"),
+                                         case_dict=data)
 
 def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
     try:
