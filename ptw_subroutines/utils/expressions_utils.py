@@ -108,8 +108,8 @@ def cleanup_input_expressions(availableKeyEl: dict, fileData: str):
 
 
 def check_input_parameter_expressions(solver):
-    for exp_name in solver.setup.named_expressions():
-        exp = solver.setup.named_expressions.get(exp_name)
+    for exp_name in solver.settings.setup.named_expressions():
+        exp = solver.settings.setup.named_expressions.get(exp_name)
         if exp_name.startswith("BC_"):
             # First check
             expValue = exp.get_value()
@@ -147,8 +147,8 @@ def check_output_parameter_expressions(caseEl: dict, solver):
     if reportlist is None:
         return
 
-    for expName in solver.setup.named_expressions():
-        exp = solver.setup.named_expressions.get(expName)
+    for expName in solver.settings.setup.named_expressions():
+        exp = solver.settings.setup.named_expressions.get(expName)
         if expName in reportlist:
             logger.info(
                 f"Expression '{expName}' found in Config-File: 'Case/Solution/reportlist'"
@@ -162,12 +162,12 @@ def check_expression_versions(solver):
     import re
 
     if Version(solver._version) < Version("241"):
-        for expName in solver.setup.named_expressions():
+        for expName in solver.settings.setup.named_expressions():
             if (
                 expName == "MP_Isentropic_Efficiency"
                 or expName == "MP_Polytropic_Efficiency"
             ):
-                exp = solver.setup.named_expressions.get(expName)
+                exp = solver.settings.setup.named_expressions.get(expName)
                 logger.info(
                     f"Checking & updating expression '{expName}' to latest version"
                 )

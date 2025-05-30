@@ -15,10 +15,9 @@ import pandas as pd
 import re
 from ptw_subroutines.utils import ptw_logger
 
-def Fplot(solver, file_name, work_dir, case_dict=None):
+logger = ptw_logger.getLogger()
 
-    # Set Logger
-    logger = ptw_logger.init_logger()
+def Fplot(solver, file_name, work_dir, case_dict=None):
 
     if case_dict is None:
         import warnings
@@ -38,7 +37,7 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
                 "axial-coordinate","meridional-coordinate","spanwise-coordinate","pitchwise-coordinate",'angular-coordinate']
         if span:
             #Update Span Location
-            solver.results.surfaces.iso_surface[surf].iso_values = [span]
+            solver.settings.results.surfaces.iso_surface[surf].iso_values = [span]
         field_data = solver.fields.field_data
         loading_data = dict()
         loading_data['surf'] = surf
@@ -203,7 +202,6 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
     #####################
     
     def airfoil_loading_analysis(solver, work_dir, case_dict):
-        logger = ptw_logger.init_logger()
 
         if not case_dict.get("airfoil_zones") or not case_dict.get("loading_span_cuts"):
             logger.warning(
@@ -216,7 +214,7 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
         plot_types = case_dict.get("plot_types", [])
 
         wall_list = [
-            s for s in list(solver.setup.boundary_conditions.wall.get_state().keys())
+            s for s in list(solver.settings.setup.boundary_conditions.wall.get_state().keys())
             if "bld" in s
         ]
         field = 'spanwise-coordinate'
@@ -224,10 +222,10 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
         for af in af_surf:
             clip_name = af.replace("-", "_") + "_clip"
             for pct_span in pct_spans:
-                if clip_name not in list(solver.results.surfaces.iso_surface.keys()):
-                    solver.results.surfaces.iso_surface.create(clip_name)
+                if clip_name not in list(solver.settings.results.surfaces.iso_surface.keys()):
+                    solver.settings.results.surfaces.iso_surface.create(clip_name)
 
-                solver.results.surfaces.iso_surface[clip_name] = {
+                solver.settings.results.surfaces.iso_surface[clip_name] = {
                     'surfaces': wall_list,
                     'field': field,
                     'iso_values': [pct_span],
@@ -256,11 +254,11 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
             logger.warning("[Integral Values] No fields defined — nothing will be calculated.")
             return
 
-        bc_types = solver.setup.boundary_conditions.get_state().keys()
+        bc_types = solver.settings.setup.boundary_conditions.get_state().keys()
         target_bc_types = [bc for bc in bc_types if any(key in bc.lower() for key in ["interface", "inlet", "outlet"])]
         faces = []
         for bc_type in target_bc_types:
-            faces += list(getattr(solver.setup.boundary_conditions, bc_type).get_state().keys())
+            faces += list(getattr(solver.settings.setup.boundary_conditions, bc_type).get_state().keys())
 
         surface = [s for s in faces if "inflow" in s.lower() or "outflow" in s.lower()]
 
@@ -268,14 +266,14 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
         mass_flow_filename = os.path.join(work_dir, f"Mass_flow_{basename}.txt")
 
         for field in fields:
-            solver.results.report.surface_integrals.mass_weighted_avg(
+            solver.settings.results.report.surface_integrals.mass_weighted_avg(
                 surface_names=surface,
                 report_of=field,
                 write_to_file=True,
                 file_name=mass_avg_filename
             )
 
-        solver.results.report.surface_integrals.mass_flow_rate(
+        solver.settings.results.report.surface_integrals.mass_flow_rate(
             surface_names=surface,
             write_to_file=True,
             file_name=mass_flow_filename
@@ -329,7 +327,7 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
     basename = os.path.splitext(os.path.basename(input_filename))[0] 
 
     ref_zone = ref_cfg.get("cz_rotating_names", [None])[0]
-    solver.setup.reference_values.zone = ref_zone
+    solver.settings.setup.reference_values.zone = ref_zone
     solver.tui.define.custom_field_functions.define('"swirl-angle"', '"atan(tangential_velocity/axial_velocity)"')
     solver.tui.define.custom_field_functions.define('"rel-swirl-angle"', '"atan(rel_tangential_velocity/rel_axial_velocity)"')
 

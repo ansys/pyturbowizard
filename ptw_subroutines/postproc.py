@@ -52,11 +52,11 @@ def post_01(data, solver, launchEl, trn_name, gpu):
     filename = os.path.join(
         caseOutPath, data["results"].setdefault("filename_summary", "report.sum")
     )
-    solver.results.report.summary(write_to_file=True, file_name=filename)
+    solver.settings.results.report.summary(write_to_file=True, file_name=filename)
 
     # Write out system time
-    solver.tui.report.system.time_stats()
-    # solver.report.system.time_statistics()
+    # solver.tui.report.system.time_stats()
+    solver.settings.results.report.system.print_time_statistics()
 
     # Save Residual Plot
     # plot_folder = os.path.join(caseOutPath, f"plots")
@@ -165,7 +165,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
 
     if (not cov_df.empty) and (not gpu):
         # Get CoV information
-        covDict = solver.solution.monitor.convergence_conditions.convergence_reports()
+        covDict = solver.settings.solution.monitor.convergence_conditions.convergence_reports()
         if covDict is not None:
             filtCovDict = {
                 key: value

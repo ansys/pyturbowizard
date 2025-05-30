@@ -121,13 +121,13 @@ class PTW_Run:
             # For version before 24.1, remove the streamhandler from the logger
             ptw_logger.remove_handlers(streamhandlers=True, filehandlers=False)
             # Set Batch options: Old API
-            solver.file.confirm_overwrite = False
+            solver.settings.file.confirm_overwrite = False
         else:
             # Set Batch options: API changes with v24.1
-            solver.file.batch_options.confirm_overwrite = False
-            solver.file.batch_options.exit_on_error = True
-            solver.file.batch_options.hide_answer = True
-            solver.file.batch_options.redisplay_question = False
+            solver.settings.file.batch_options.confirm_overwrite = False
+            solver.settings.file.batch_options.exit_on_error = True
+            solver.settings.file.batch_options.hide_answer = True
+            solver.settings.file.batch_options.redisplay_question = False
 
         logger.info("Initializing Fluent settings... done!")
 
@@ -200,7 +200,7 @@ class PTW_Run:
                 )
                 trnName = f"{casename}.trn"
                 trnFileName = os.path.join(caseOutPath, trnName)
-                solver.file.start_transcript(file_name=trnFileName)
+                solver.settings.file.start_transcript(file_name=trnFileName)
 
                 # Mesh import, expressions, profiles
                 meshimport.import_01(caseEl, solver)
@@ -244,7 +244,10 @@ class PTW_Run:
                 ### Expression Definition... done!
 
                 # Enable Beta-Features
-                solver.tui.define.beta_feature_access("yes ok")
+                if Version(solver._version) < Version("251"):
+                    solver.tui.define.beta_feature_access("yes ok")
+                else:
+                    solver.settings.file.beta_settings(enable=True)
 
                 # Case Setup
                 setupcfd.setup(
@@ -289,7 +292,7 @@ class PTW_Run:
 
                 # Write case and ini-data & settings file
                 logger.info("Writing initial case & settings file")
-                solver.file.write(file_type="case", file_name=caseFilename)
+                solver.settings.file.write(file_type="case", file_name=caseFilename)
                 settingsFilename = os.path.join(caseOutPath, "settings.set")
                 # Removing file manually, as batch options seem not to work
                 if os.path.exists(settingsFilename):
@@ -307,9 +310,9 @@ class PTW_Run:
                         caseEl=caseEl,
                     )
 
-                if solver.field_data.is_data_valid():
+                if solver.fields.field_data.is_data_valid():
                     logger.info("Writing initial dat file")
-                    solver.file.write(file_type="data", file_name=caseFilename)
+                    solver.settings.file.write(file_type="data", file_name=caseFilename)
                 else:
                     logger.info(
                         "Skipping Writing of Initial Solution Data: No Solution Data available"
@@ -328,10 +331,10 @@ class PTW_Run:
                 if caseEl["solution"].setdefault("runSolver", False):
                     solve.solve_01(caseEl, solver)
                     filename = f"{caseFilename}_fin"
-                    solver.file.write(file_type="case-data", file_name=filename)
+                    solver.settings.file.write(file_type="case-data", file_name=filename)
 
                 # Postprocessing
-                if solver.field_data.is_data_valid():
+                if solver.fields.field_data.is_data_valid():
                     postproc.post(
                         data=caseEl,
                         solver=solver,
@@ -342,7 +345,7 @@ class PTW_Run:
                     )
                     # version 1.5.3: no alteration of case/data done in post processing, removed additional saving
                     # filename = caseFilename + "_fin"
-                    # solver.file.write(file_type="case-data", file_name=filename)
+                    # solver.settings.file.write(file_type="case-data", file_name=filename)
                 else:
                     logger.info("Skipping Postprocessing: No Solution Data available")
 
@@ -359,8 +362,8 @@ class PTW_Run:
                 )
 
                 # Finalize
-                if "stop_transcript" in solver.file.get_active_command_names():
-                    solver.file.stop_transcript()
+                if "stop_transcript" in solver.settings.file.get_active_command_names():
+                    solver.settings.file.stop_transcript()
                 # End of Case-Loop
 
             # Merge if multiple cases are defined
