@@ -247,7 +247,6 @@ def get_launcher_defaults(launchEl: dict):
 def adjust_settings_to_version(launchEl: dict):
     # method will convert old definitions to new
     ui_mode = launchEl.get("show_gui")
-    dimension = launchEl.get("version")
     if isinstance(ui_mode,bool):
         if ui_mode:
             launchEl["ui_mode"] = UIMode.GUI
@@ -256,6 +255,7 @@ def adjust_settings_to_version(launchEl: dict):
         #removing old definition
         launchEl.pop("show_gui")
 
+    dimension = launchEl.get("version")
     if isinstance(dimension, str):
         if dimension == "2d":
             launchEl["dimension"] = Dimension.TWO
