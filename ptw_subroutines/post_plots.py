@@ -28,7 +28,10 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
         )
         case_dict = {}
 
-    post_cfg = case_dict.get("post_processing", {})
+    post_cfg = case_dict.get("post_processing")
+    if post_cfg is None:
+        logger.warning(f"No 'post_processing' element defined for case-dict '{case_dict}'...Skipping function 'Fplot'!")
+        return
     ref_cfg = case_dict.get("locations", {})
 
 
