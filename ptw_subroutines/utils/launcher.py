@@ -252,8 +252,10 @@ def adjust_settings_to_version(launchEl: dict):
                 launchEl["ui_mode"] = UIMode.GUI
             else:
                 launchEl["ui_mode"] = UIMode.NO_GUI
+            logger.info(f"Updating launcher options: 'show_gui':{launchEl.get("show_gui")} -> 'ui_mode':{launchEl.get("ui_mode")}")
             #removing old definition
             launchEl.pop("show_gui")
+
 
         dimension = launchEl.get("version")
         if isinstance(dimension, str):
@@ -261,5 +263,6 @@ def adjust_settings_to_version(launchEl: dict):
                 launchEl["dimension"] = Dimension.TWO
             else:
                 launchEl["dimension"] = Dimension.THREE
+            logger.info(f"Updating launcher options: 'version':{launchEl.get("version")} -> 'dimension':{launchEl.get("dimension")}")
             # removing old definition
             launchEl.pop("version")
