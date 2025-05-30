@@ -15,6 +15,7 @@ import pandas as pd
 import re
 from ptw_subroutines.utils import ptw_logger
 
+# get logger
 logger = ptw_logger.getLogger()
 
 def Fplot(solver, file_name, work_dir, case_dict=None):
