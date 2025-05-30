@@ -1,6 +1,9 @@
 import os
 import subprocess
 import time
+
+import ansys.fluent.core as pyfluent
+from ansys.fluent.core import UIMode, Dimension
 from packaging import version
 
 # Logger
@@ -10,7 +13,6 @@ logger = ptw_logger.getLogger()
 
 
 def launchFluent(launchEl: dict):
-    import ansys.fluent.core as pyfluent
 
     global solver
 
@@ -18,24 +20,39 @@ def launchFluent(launchEl: dict):
     serverfilename = launchEl.get("serverfilename")
     queueEl = launchEl.get("queue_slurm")
     get_launcher_defaults(launchEl=launchEl)
+    adjust_settings_to_version(launchEl=launchEl)
 
     # open new session in queue
     if queueEl is not None:
         solver = launch_queuing_session(launchEl=launchEl)
     # If no serverFilename is specified, a new session will be started
     elif serverfilename is None or serverfilename == "":
-        solver = pyfluent.launch_fluent(
-            precision=launchEl["precision"],
-            processor_count=int(launchEl["noCore"]),
-            mode="solver",
-            show_gui=launchEl["show_gui"],
-            product_version=launchEl["fl_version"],
-            cwd=fl_workingDir,
-            cleanup_on_exit=launchEl["exitatend"],
-            py=launchEl["py"],
-            gpu=launchEl["gpu"],
-            version=launchEl["version"],
-        )
+        if version.parse(pyfluent.__version__) < version.parse("0.29.0"):
+            solver = pyfluent.launch_fluent(
+                precision=launchEl["precision"],
+                processor_count=int(launchEl["noCore"]),
+                mode="solver",
+                show_gui=launchEl["show_gui"],
+                product_version=launchEl["fl_version"],
+                cwd=fl_workingDir,
+                cleanup_on_exit=launchEl["exitatend"],
+                py=launchEl["py"],
+                gpu=launchEl["gpu"],
+                version=launchEl["version"],
+            )
+        else:
+            solver = pyfluent.launch_fluent(
+                precision=launchEl["precision"],
+                processor_count=int(launchEl["noCore"]),
+                mode="solver",
+                ui_mode=launchEl["ui_mode"],
+                product_version=launchEl["fl_version"],
+                cwd=fl_workingDir,
+                cleanup_on_exit=launchEl["exitatend"],
+                py=launchEl["py"],
+                gpu=launchEl["gpu"],
+                dimension=launchEl["dimension"],
+            )
     # Hook to existing Session
     else:
         solver = hook_to_existing_session(
@@ -75,8 +92,6 @@ def hook_to_existing_session(
 
 
 def launch_queuing_session(launchEl: dict):
-    import ansys.fluent.core as pyfluent
-
     solver = None
     queueEl = launchEl.get("queue_slurm")
     fl_workingDir = launchEl["workingDir"]
@@ -155,20 +170,36 @@ def launch_queuing_session(launchEl: dict):
             "scheduler": "slurm",
             "scheduler_queue": launchEl["queue_slurm"],
         }
-        solver = pyfluent.launch_fluent(
-            precision=launchEl["precision"],
-            processor_count=int(launchEl["noCore"]),
-            mode="solver",
-            show_gui=launchEl["show_gui"],
-            product_version=launchEl["fl_version"],
-            cwd=fl_workingDir,
-            cleanup_on_exit=launchEl["exitatend"],
-            py=launchEl["py"],
-            gpu=launchEl["gpu"],
-            scheduler_options=scheduler_options,
-            additional_arguments=additional_args,
-            version=launchEl["version"],
-        ).result(timeout=maxtime)
+        if version.parse(pyfluent.__version__) < version.parse("0.29.0"):
+            solver = pyfluent.launch_fluent(
+                precision=launchEl["precision"],
+                processor_count=int(launchEl["noCore"]),
+                mode="solver",
+                show_gui=launchEl["show_gui"],
+                product_version=launchEl["fl_version"],
+                cwd=fl_workingDir,
+                cleanup_on_exit=launchEl["exitatend"],
+                py=launchEl["py"],
+                gpu=launchEl["gpu"],
+                scheduler_options=scheduler_options,
+                additional_arguments=additional_args,
+                version=launchEl["version"],
+            ).result(timeout=maxtime)
+        else:
+            solver = pyfluent.launch_fluent(
+                precision=launchEl["precision"],
+                processor_count=int(launchEl["noCore"]),
+                mode="solver",
+                ui_mode=launchEl["ui_mode"],
+                product_version=launchEl["fl_version"],
+                cwd=fl_workingDir,
+                cleanup_on_exit=launchEl["exitatend"],
+                py=launchEl["py"],
+                gpu=launchEl["gpu"],
+                scheduler_options=scheduler_options,
+                additional_arguments=additional_args,
+                dimension=launchEl["dimension"],
+            ).result(timeout=maxtime)
     return solver
 
 
@@ -202,8 +233,36 @@ def get_fluent_exe_path(product_version: str):
 def get_launcher_defaults(launchEl: dict):
     # Set defaults
     launchEl.setdefault("exitatend", True)
-    launchEl.setdefault("show_gui", True)
     launchEl.setdefault("precision", True)
     launchEl.setdefault("py", True)
     launchEl.setdefault("gpu", False)
-    launchEl.setdefault("version", "3d")
+    if version.parse(pyfluent.__version__) < version.parse("0.29.0"):
+        launchEl.setdefault("version", "3d")
+        launchEl.setdefault("show_gui", True)
+    else:
+        launchEl.setdefault("dimension", Dimension.THREE)
+        launchEl.setdefault("ui_mode", UIMode.GUI)
+
+def adjust_settings_to_version(launchEl: dict):
+    # method will convert old definitions to new
+    if version.parse(pyfluent.__version__) >= version.parse("0.29.0"):
+        ui_mode = launchEl.get("show_gui")
+        if isinstance(ui_mode,bool):
+            if ui_mode:
+                launchEl["ui_mode"] = UIMode.GUI
+            else:
+                launchEl["ui_mode"] = UIMode.NO_GUI
+            logger.info(f"Updating launcher options: 'show_gui':{launchEl.get("show_gui")} -> 'ui_mode':{launchEl.get("ui_mode")}")
+            #removing old definition
+            launchEl.pop("show_gui")
+
+
+        dimension = launchEl.get("version")
+        if isinstance(dimension, str):
+            if dimension == "2d":
+                launchEl["dimension"] = Dimension.TWO
+            else:
+                launchEl["dimension"] = Dimension.THREE
+            logger.info(f"Updating launcher options: 'version':{launchEl.get("version")} -> 'dimension':{launchEl.get("dimension")}")
+            # removing old definition
+            launchEl.pop("version")

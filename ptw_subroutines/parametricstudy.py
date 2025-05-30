@@ -75,19 +75,19 @@ def study01(data, solver, gpu):
             # Read Ref Case
             refCaseFilePath = os.path.join(flworking_Dir, refCase)
             if Version(solver._version) >= Version("241"):
-                solver.file.read_case_data(file_name=refCaseFilePath)
+                solver.settings.file.read_case_data(file_name=refCaseFilePath)
             else:
                 if studyIndex == 0:
-                    solver.file.read_case_data(file_name=refCaseFilePath)
+                    solver.settings.file.read_case_data(file_name=refCaseFilePath)
                 else:
                     tuicommand = 'file/rcd "' + refCaseFilePath + '" yes'
                     solver.execute_tui(tuicommand)
 
             # Initialize a new parametric study
             projectFilename = os.path.join(flworking_Dir, studyName)
-            solver.parametric_studies.initialize(project_filename=projectFilename)
+            solver.settings.parametric_studies.initialize(project_filename=projectFilename)
             psname = refCase + "-Solve"
-            fluent_study = solver.parametric_studies[psname]
+            fluent_study = solver.settings.parametric_studies[psname]
 
             # Set standard image output format to AVZ
             solver.execute_tui("/display/set/picture/driver avz")
@@ -172,13 +172,13 @@ def study01(data, solver, gpu):
             )
 
             design_point_table_filepath = os.path.join(studyOutPath, "dp_table.csv")
-            solver.parametric_studies.export_design_table(
+            solver.settings.parametric_studies.export_design_table(
                 filepath=design_point_table_filepath
             )
 
             # Save Study
             if studyIndex == 0:
-                solver.file.parametric_project.save()
+                solver.settings.file.parametric_project.save()
             else:
                 projectFilename = os.path.join(flworking_Dir, studyName)
                 solver.tui.file.parametric_project.save_as(projectFilename)
@@ -189,9 +189,9 @@ def study01(data, solver, gpu):
         else:
             # Load Existing Project
             flworking_Dir = data.get("launching")["workingDir"]
-            solver.file.parametric_project.open(project_filename=studyFileName)
+            solver.settings.file.parametric_project.open(project_filename=studyFileName)
             psname = refCase + "-Solve"
-            fluent_study = solver.parametric_studies[psname]
+            fluent_study = solver.settings.parametric_studies[psname]
 
             # Set Initialization Method
             # convert oldkeyword definition (pre v1.4.7)
@@ -232,13 +232,13 @@ def study01(data, solver, gpu):
             )
 
             design_point_table_filepath = os.path.join(studyOutPath, "dp_table.csv")
-            solver.parametric_studies.export_design_table(
+            solver.settings.parametric_studies.export_design_table(
                 filepath=design_point_table_filepath
             )
 
             # Save Study
             if studyIndex == 0:
-                solver.file.parametric_project.save()
+                solver.settings.file.parametric_project.save()
             else:
                 projectFilename = os.path.join(flworking_Dir, studyName)
                 solver.tui.file.parametric_project.save_as(projectFilename)
@@ -254,7 +254,7 @@ def study01(data, solver, gpu):
             tempDataDict = {"num_eqs":0}
         else:
             tempDataDict = (
-                solver.solution.monitor.convergence_conditions.convergence_reports()
+                solver.settings.solution.monitor.convergence_conditions.convergence_reports()
             )       
         number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
         tempDataDict["num_eqs"] = number_eqs

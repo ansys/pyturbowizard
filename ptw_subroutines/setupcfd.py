@@ -60,9 +60,9 @@ def setup_01(
         set_boundaries(data=data, solver=solver, solve_energy=solve_energy, gpu=gpu)
 
     # Do some Mesh Checks
-    solver.mesh.size_info()
-    solver.mesh.check()
-    solver.mesh.quality()
+    solver.settings.mesh.size_info()
+    solver.settings.mesh.check()
+    solver.settings.mesh.quality()
 
     return
 
@@ -78,10 +78,10 @@ def set_material(data, solver, solve_energy: bool = True):
         fl_prop_el["fl_name"] = fl_name
 
     logger.info(f"Setting Material '{fl_name}'...")
-    fluid_list = list(solver.setup.materials.fluid.keys())
+    fluid_list = list(solver.settings.setup.materials.fluid.keys())
 
-    solver.setup.materials.fluid.rename(fl_name, fluid_list[0])
-    material_object = solver.setup.materials.fluid[fl_name]
+    solver.settings.setup.materials.fluid.rename(fl_name, fluid_list[0])
+    material_object = solver.settings.setup.materials.fluid[fl_name]
     if solve_energy:
         add_material_property(
             material_object=material_object,
@@ -180,19 +180,19 @@ def add_material_property(material_object, fl_prop_name: str, fl_prop_data):
 
 def set_physics(data, solver, solve_energy: bool = True, gpu: bool = False):
     if solve_energy:
-        solver.setup.models.energy = {"enabled": True, "viscous_dissipation": True}
+        solver.settings.setup.models.energy = {"enabled": True, "viscous_dissipation": True}
 
     gravityVector = data.get("gravity_vector")
     if isinstance(gravityVector, list) and (len(gravityVector) == 3):
         logger.info(f"Specification of Gravity-Vector: {gravityVector}")
-        solver.setup.general.operating_conditions.gravity.enable = True
-        solver.setup.general.operating_conditions.gravity.components = gravityVector
+        solver.settings.setup.general.operating_conditions.gravity.enable = True
+        solver.settings.setup.general.operating_conditions.gravity.components = gravityVector
 
     # Set turbulence model
     # if not set or in supported list, sst
     default_turb_model = "sst"
     turb_model = data["setup"].setdefault("turbulence_model", default_turb_model)
-    supported_kw_models = solver.setup.models.viscous.k_omega_model.allowed_values()
+    supported_kw_models = solver.settings.setup.models.viscous.k_omega_model.allowed_values()
     # filtering specifically for transition models not available
     supported_transition_models = [
         "transition-sst",
@@ -202,8 +202,8 @@ def set_physics(data, solver, solve_energy: bool = True, gpu: bool = False):
 
     if turb_model in supported_kw_models:
         logger.info(f"Setting kw-turbulence-model: '{turb_model}'")
-        solver.setup.models.viscous.model = "k-omega"
-        solver.setup.models.viscous.k_omega_model = turb_model
+        solver.settings.setup.models.viscous.model = "k-omega"
+        solver.settings.setup.models.viscous.k_omega_model = turb_model
 
         # Set geko Model Parameters
         if turb_model == "geko":
@@ -221,23 +221,23 @@ def set_physics(data, solver, solve_energy: bool = True, gpu: bool = False):
 
     elif turb_model in supported_transition_models:
         if turb_model == "transition-sst":
-            solver.setup.models.viscous.model = turb_model
+            solver.settings.setup.models.viscous.model = turb_model
         elif turb_model == "transition-gamma":
-            solver.setup.models.viscous.model = "k-omega"
-            solver.setup.models.viscous.k_omega_model = "sst"
-            solver.setup.models.viscous.transition_module = "gamma-transport-eqn"
+            solver.settings.setup.models.viscous.model = "k-omega"
+            solver.settings.setup.models.viscous.k_omega_model = "sst"
+            solver.settings.setup.models.viscous.transition_module = "gamma-transport-eqn"
         elif turb_model == "transition-algebraic":
-            solver.setup.models.viscous.model = "k-omega"
-            solver.setup.models.viscous.k_omega_model = "sst"
-            solver.setup.models.viscous.transition_module = "gamma-algebraic"
+            solver.settings.setup.models.viscous.model = "k-omega"
+            solver.settings.setup.models.viscous.k_omega_model = "sst"
+            solver.settings.setup.models.viscous.transition_module = "gamma-algebraic"
     else:
         logger.warning(
             f"Specified turbulence-model not supported: '{turb_model}'! \
                 Default turbulence model will be used: '{default_turb_model}'!"
         )
         data["setup"]["turbulence_model"] = default_turb_model
-        solver.setup.models.viscous.model = "k-omega"
-        solver.setup.models.viscous.k_omega_model = default_turb_model
+        solver.settings.setup.models.viscous.model = "k-omega"
+        solver.settings.setup.models.viscous.k_omega_model = default_turb_model
 
     # rp-variable to avoid turb-visc overshoots at mixing planes
     # default: 0 -> recommended by development: 4
@@ -255,10 +255,13 @@ def set_physics(data, solver, solve_energy: bool = True, gpu: bool = False):
 
 def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
     # Set operating-pressure
-    solver.setup.general.operating_conditions.operating_pressure = "BC_pref"
+    solver.settings.setup.general.operating_conditions.operating_pressure = "BC_pref"
 
     # Enable Turbo Models
-    solver.tui.define.turbo_model.enable_turbo_model("yes")
+    if Version(solver._version) < Version("251"):
+        solver.tui.define.turbo_model.enable_turbo_model("yes")
+    else:
+        solver.settings.setup.turbo_models.enabled = True
 
     # Get rotation axis info: default is z-axis
     rot_ax_dir = data.setdefault("rotation_axis_direction", [0.0, 0.0, 1.0])
@@ -267,11 +270,11 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
     # Do important steps at startup in specified order
     # 1. Fluid cell zone conditions
     cz_rot_list = data["locations"].get("cz_rotating_names")
-    for cz_name in solver.setup.cell_zone_conditions.fluid():
+    for cz_name in solver.settings.setup.cell_zone_conditions.fluid():
         # Check if it´s a rotating cell-zone
         if (cz_rot_list is not None) and (cz_name in cz_rot_list):
             logger.info(f"Prescribing rotating cell zone: {cz_name}")
-            solver.setup.cell_zone_conditions.fluid[cz_name].reference_frame = {
+            solver.settings.setup.cell_zone_conditions.fluid[cz_name].reference_frame = {
                 "reference_frame_axis_origin": rot_ax_orig,
                 "reference_frame_axis_direction": rot_ax_dir,
                 "frame_motion": True,
@@ -280,7 +283,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
         # otherwise its stationary
         else:
             logger.info(f"Prescribing stationary cell zone: {cz_name}")
-            solver.setup.cell_zone_conditions.fluid[cz_name].reference_frame = {
+            solver.settings.setup.cell_zone_conditions.fluid[cz_name].reference_frame = {
                 "reference_frame_axis_origin": rot_ax_orig,
                 "reference_frame_axis_direction": rot_ax_dir,
             }
@@ -295,7 +298,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
             side1 = peri_if_El[key_if].get("side1")
             side2 = peri_if_El[key_if].get("side2")
             # check if specified sides are not already defined as periodics
-            periodicIFs = solver.setup.boundary_conditions.periodic
+            periodicIFs = solver.settings.setup.boundary_conditions.periodic
             if periodicIFs.get(side1) is not None:
                 logger.info(
                     f"Prescribed Boundary-Zones '{side1}' is already defined as periodic interface. "
@@ -329,7 +332,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                         # New API:Currently this method shows up a warning message,
                         # if periodic angle does not divide 360 (deg) evenly.
                         # Should be replaced in future versions
-                        # solver.mesh.modify_zones.create_periodic_interface(
+                        # solver.settings.mesh.modify_zones.create_periodic_interface(
                         #     periodic_method="auto",
                         #     interface_name=key_if,
                         #     zone_name=side1,
@@ -382,7 +385,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                         # New API:Currently this method shows up a warning message,
                         # if periodic angle does not divide 360 (deg) evenly.
                         # Should be replaced in future versions
-                        # solver.mesh.modify_zones.create_periodic_interface(
+                        # solver.settings.mesh.modify_zones.create_periodic_interface(
                         #     periodic_method="auto",
                         #     interface_name=key_if,
                         #     zone_name=side1,
@@ -427,8 +430,8 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                             )
 
                 # check for non-conformal periodics (fluent creates normal interfaces if non-conformal)
-                intf_check_side1 = solver.setup.boundary_conditions.interface.get(side1)
-                intf_check_side2 = solver.setup.boundary_conditions.interface.get(side2)
+                intf_check_side1 = solver.settings.setup.boundary_conditions.interface.get(side1)
+                intf_check_side2 = solver.settings.setup.boundary_conditions.interface.get(side2)
 
                 if intf_check_side1 is not None and intf_check_side2 is not None:
                     logger.info(
@@ -453,14 +456,14 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                 if data["expressions"].get("BC_IN_MassFlow") is not None:
                     logger.info(f"Prescribing a Massflow-Inlet BC @{inletName}")
                     # settings api command
-                    solver.setup.boundary_conditions.set_zone_type(
+                    solver.settings.setup.boundary_conditions.set_zone_type(
                         zone_list=[inletName], new_type="mass-flow-inlet"
                     )
                     # tui command
                     # solver.tui.define.boundary_conditions.zone_type(
                     #    inletName, "mass-flow-inlet"
                     # )
-                    inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
+                    inBC = solver.settings.setup.boundary_conditions.mass_flow_inlet[inletName]
                     inBC.momentum.mass_flow_specification = "Mass Flow Rate"
                     inBC.momentum.mass_flow_rate = "BC_IN_MassFlow"
                     inBC.momentum.supersonic_gauge_pressure = "BC_IN_p_gauge"
@@ -474,14 +477,14 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                 ):
                     logger.info(f"Prescribing a Volumeflow-Inlet BC @{inletName}")
                     # settings api command
-                    solver.setup.boundary_conditions.set_zone_type(
+                    solver.settings.setup.boundary_conditions.set_zone_type(
                         zone_list=[inletName], new_type="mass-flow-inlet"
                     )
                     # tui command
                     # solver.tui.define.boundary_conditions.zone_type(
                     #    inletName, "mass-flow-inlet"
                     # )
-                    inBC = solver.setup.boundary_conditions.mass_flow_inlet[inletName]
+                    inBC = solver.settings.setup.boundary_conditions.mass_flow_inlet[inletName]
                     inBC.momentum.mass_flow_specification = "Mass Flow Rate"
                     inBC.momentum.mass_flow_rate = (
                         "BC_IN_VolumeFlow*BC_IN_VolumeFlowDensity"
@@ -496,14 +499,14 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
 
                 elif data["expressions"].get("BC_IN_pt") is not None:
                     # settings api command
-                    solver.setup.boundary_conditions.set_zone_type(
+                    solver.settings.setup.boundary_conditions.set_zone_type(
                         zone_list=[inletName], new_type="pressure-inlet"
                     )
                     # tui command
                     # solver.tui.define.boundary_conditions.zone_type(
                     #    inletName, "pressure-inlet"
                     # )
-                    inBC = solver.setup.boundary_conditions.pressure_inlet[inletName]
+                    inBC = solver.settings.setup.boundary_conditions.pressure_inlet[inletName]
                     if useProfileData:
                         # check profile naming convention:
                         # profile_name: "inlet-bc"
@@ -569,7 +572,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     ):
                         if (
                             inBC.name()
-                            in solver.setup.boundary_conditions.mass_flow_inlet.keys()
+                            in solver.settings.setup.boundary_conditions.mass_flow_inlet.keys()
                         ):
                             inBC.momentum.direction_specification = "Direction Vector"
                         else:
@@ -591,7 +594,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     ):
                         if (
                             inBC.name()
-                            in solver.setup.boundary_conditions.mass_flow_inlet.keys()
+                            in solver.settings.setup.boundary_conditions.mass_flow_inlet.keys()
                         ):
                             inBC.momentum.direction_specification = "Direction Vector"
                         else:
@@ -612,7 +615,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     if useProfileData:
                         if (
                             inBC.name()
-                            in solver.setup.boundary_conditions.mass_flow_inlet.keys()
+                            in solver.settings.setup.boundary_conditions.mass_flow_inlet.keys()
                         ):
                             inBC.momentum.direction_specification = "Direction Vector"
                         else:
@@ -649,7 +652,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                         f"Prescribing a Exit-Corrected Massflow-Outlet BC @{outletName}"
                     )
                     # settings api command
-                    solver.setup.boundary_conditions.set_zone_type(
+                    solver.settings.setup.boundary_conditions.set_zone_type(
                         zone_list=[outletName], new_type="mass-flow-outlet"
                     )
                     # tui command
@@ -657,7 +660,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     #    outletName, "mass-flow-outlet"
                     # )
 
-                    outBC = solver.setup.boundary_conditions.mass_flow_outlet[
+                    outBC = solver.settings.setup.boundary_conditions.mass_flow_outlet[
                         outletName
                     ]
                     outBC.momentum.mass_flow_specification = (
@@ -678,14 +681,14 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                 elif data["expressions"].get("BC_OUT_MassFlow") is not None:
                     logger.info(f"Prescribing a Massflow-Outlet BC @{outletName}")
                     # settings api command
-                    solver.setup.boundary_conditions.set_zone_type(
+                    solver.settings.setup.boundary_conditions.set_zone_type(
                         zone_list=[outletName], new_type="mass-flow-outlet"
                     )
                     # tui command
                     # solver.tui.define.boundary_conditions.zone_type(
                     #    outletName, "mass-flow-outlet"
                     # )
-                    outBC = solver.setup.boundary_conditions.mass_flow_outlet[
+                    outBC = solver.settings.setup.boundary_conditions.mass_flow_outlet[
                         outletName
                     ]
                     outBC.momentum.mass_flow_specification = "Mass Flow Rate"
@@ -697,7 +700,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                 ):
                     logger.info(f"Prescribing a VolumeFlow-Outlet BC @{outletName}")
                     # settings api command
-                    solver.setup.boundary_conditions.set_zone_type(
+                    solver.settings.setup.boundary_conditions.set_zone_type(
                         zone_list=[outletName], new_type="mass-flow-outlet"
                     )
                     # tui command
@@ -705,7 +708,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     #    outletName, "mass-flow-outlet"
                     # )
 
-                    outBC = solver.setup.boundary_conditions.mass_flow_outlet[
+                    outBC = solver.settings.setup.boundary_conditions.mass_flow_outlet[
                         outletName
                     ]
                     outBC.momentum.mass_flow_specification = "Mass Flow Rate"
@@ -716,14 +719,14 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                 elif data["expressions"].get("BC_OUT_p") is not None:
                     logger.info(f"Prescribing a Pressure-Outlet BC @{outletName}")
                     # settings api command
-                    solver.setup.boundary_conditions.set_zone_type(
+                    solver.settings.setup.boundary_conditions.set_zone_type(
                         zone_list=[outletName], new_type="pressure-outlet"
                     )
                     # tui command
                     # solver.tui.define.boundary_conditions.zone_type(
                     #    outletName, "pressure-outlet"
                     # )
-                    outBC = solver.setup.boundary_conditions.pressure_outlet[outletName]
+                    outBC = solver.settings.setup.boundary_conditions.pressure_outlet[outletName]
                     # Check Profile data exists
                     profileName = data.get("profileName_Out")
                     useProfileData = (profileName is not None) and (profileName != "")
@@ -780,13 +783,13 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
 
             # Walls
         # elif key == "bz_walls_shroud_names":
-        #    solver.setup.boundary_conditions.wall[data["locations"][key]] = \
+        #    solver.settings.setup.boundary_conditions.wall[data["locations"][key]] = \
         # {"motion_bc": "Moving Wall","relative": False,"rotating": True}
         elif key == "bz_symmetry_names":
             keyEl = data["locations"].get(key)
             for key_symm in keyEl:
                 logger.info(f"Prescribing a symmetry boundary condition: {key_symm}")
-                solver.setup.boundary_conditions.set_zone_type(
+                solver.settings.setup.boundary_conditions.set_zone_type(
                     zone_list=[key_symm], new_type="symmetry"
                 )
         elif key == "bz_walls_counterrotating_names":
@@ -795,12 +798,12 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                 logger.info(f"Prescribing a counter-rotating wall: {key_cr}")
                 # Change BC-type
                 # settings api command
-                solver.setup.boundary_conditions.set_zone_type(
+                solver.settings.setup.boundary_conditions.set_zone_type(
                     zone_list=[key_cr], new_type="wall"
                 )
                 # tui command
                 # solver.tui.define.boundary_conditions.zone_type(key_cr, "wall")
-                solver.setup.boundary_conditions.wall[key_cr].momentum = {
+                solver.settings.setup.boundary_conditions.wall[key_cr].momentum = {
                     "motion_bc": "Moving Wall",
                     "relative": False,
                     "rotating": True,
@@ -814,12 +817,12 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                 logger.info(f"Prescribing a rotating wall: {key_r}")
                 # Change BC-type
                 # settings api command
-                solver.setup.boundary_conditions.set_zone_type(
+                solver.settings.setup.boundary_conditions.set_zone_type(
                     zone_list=[key_r], new_type="wall"
                 )
                 # tui command
                 # solver.tui.define.boundary_conditions.zone_type(key_r, "wall")
-                solver.setup.boundary_conditions.wall[key_r].momentum = {
+                solver.settings.setup.boundary_conditions.wall[key_r].momentum = {
                     "motion_bc": "Moving Wall",
                     "relative": False,
                     "rotating": True,
@@ -834,12 +837,12 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                 logger.info(f"Prescribing a free slip wall: {key_free}")
                 # Change BC-type
                 # settings api command
-                solver.setup.boundary_conditions.set_zone_type(
+                solver.settings.setup.boundary_conditions.set_zone_type(
                     zone_list=[key_free], new_type="wall"
                 )
                 # tui command
                 # solver.tui.define.boundary_conditions.zone_type(key_free, "wall")
-                solver.setup.boundary_conditions.wall[key_free].momentum = {
+                solver.settings.setup.boundary_conditions.wall[key_free].momentum = {
                     "shear_bc": "Specified Shear"
                 }
 
@@ -849,7 +852,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                 logger.info(f"Prescribing a wall: {key_wall}")
                 # Change BC-type
                 # settings api command
-                solver.setup.boundary_conditions.set_zone_type(
+                solver.settings.setup.boundary_conditions.set_zone_type(
                     zone_list=[key_wall], new_type="wall"
                 )
                 # tui command
@@ -865,7 +868,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                 side2 = keyEl[key_if].get("side2")
                 # Change BC-type
                 # settings api command
-                solver.setup.boundary_conditions.set_zone_type(
+                solver.settings.setup.boundary_conditions.set_zone_type(
                     zone_list=[side1, side2], new_type="interface"
                 )
                 # Create Interface
@@ -880,7 +883,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
             side2 = keyEl[key_if].get("side2")
             # Change BC-type
             # settings api command
-            solver.setup.boundary_conditions.set_zone_type(
+            solver.settings.setup.boundary_conditions.set_zone_type(
                 zone_list=[side1, side2], new_type="interface"
             )
             # tui command
@@ -903,7 +906,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
             side2 = keyEl[key_if].get("side2")
             # Change BC-type
             # settings api command
-            solver.setup.boundary_conditions.set_zone_type(
+            solver.settings.setup.boundary_conditions.set_zone_type(
                 zone_list=[side1, side2], new_type="interface"
             )
             # tui command
@@ -926,7 +929,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
             side2 = keyEl[key_if].get("side2")
             # Change BC-type
             # settings api command
-            solver.setup.boundary_conditions.set_zone_type(
+            solver.settings.setup.boundary_conditions.set_zone_type(
                 zone_list=[side1, side2], new_type="interface"
             )
             # tui command
@@ -1046,22 +1049,22 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
             reportName = report.replace("_", "-")
             reportName = "rep-" + reportName.lower()
             if Version(solver._version) < Version("241"):
-                solver.solution.report_definitions.single_val_expression[
+                solver.settings.solution.report_definitions.single_val_expression[
                     reportName
                 ] = {}
-                solver.solution.report_definitions.single_val_expression[reportName] = {
+                solver.settings.solution.report_definitions.single_val_expression[reportName] = {
                     "define": report
                 }
             else:
-                solver.solution.report_definitions.single_valued_expression[
+                solver.settings.solution.report_definitions.single_valued_expression[
                     reportName
                 ] = {}
-                solver.solution.report_definitions.single_valued_expression[
+                solver.settings.solution.report_definitions.single_valued_expression[
                     reportName
                 ] = {"definition": report}
             reportPlotName = reportName + "-plot"
-            solver.solution.monitor.report_plots[reportPlotName] = {}
-            solver.solution.monitor.report_plots[reportPlotName] = {
+            solver.settings.solution.monitor.report_plots[reportPlotName] = {}
+            solver.settings.solution.monitor.report_plots[reportPlotName] = {
                 "report_defs": [reportName]
             }
 
@@ -1084,14 +1087,14 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 surfaces = basicReportDict[report].get("zones")
                 variable = basicReportDict[report].get("variable")
                 type = basicReportDict[report].get("type")
-                solver.solution.report_definitions.surface[reportName] = {}
+                solver.settings.solution.report_definitions.surface[reportName] = {}
 
                 # define type
-                allowed_types = solver.solution.report_definitions.surface[
+                allowed_types = solver.settings.solution.report_definitions.surface[
                     reportName
                 ].report_type.allowed_values()
                 if type in allowed_types:
-                    solver.solution.report_definitions.surface[reportName] = {
+                    solver.settings.solution.report_definitions.surface[reportName] = {
                         "report_type": type
                     }
                 else:
@@ -1102,11 +1105,11 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # define surfaces
-                allowed_surfaces = solver.solution.report_definitions.surface[
+                allowed_surfaces = solver.settings.solution.report_definitions.surface[
                     reportName
                 ].surface_names.allowed_values()
                 if set(surfaces).issubset(allowed_surfaces):
-                    solver.solution.report_definitions.surface[reportName] = {
+                    solver.settings.solution.report_definitions.surface[reportName] = {
                         "surface_names": surfaces
                     }
                 else:
@@ -1117,11 +1120,11 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # define variable
-                allowed_variables = solver.solution.report_definitions.surface[
+                allowed_variables = solver.settings.solution.report_definitions.surface[
                     reportName
                 ].field.allowed_values()
                 if variable in allowed_variables:
-                    solver.solution.report_definitions.surface[reportName] = {
+                    solver.settings.solution.report_definitions.surface[reportName] = {
                         "field": variable
                     }
                 else:
@@ -1132,12 +1135,12 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # create output parameter
-                solver.solution.report_definitions.surface[
+                solver.settings.solution.report_definitions.surface[
                     reportName
                 ].create_output_parameter()
 
                 # set if per_zone should be used
-                solver.solution.report_definitions.surface[
+                solver.settings.solution.report_definitions.surface[
                     reportName
                 ].per_surface = basicReportDict[report].get("per_zone", False)
 
@@ -1145,14 +1148,14 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 cell_zones = basicReportDict[report].get("zones")
                 variable = basicReportDict[report].get("variable")
                 type = basicReportDict[report].get("type")
-                solver.solution.report_definitions.volume[reportName] = {}
+                solver.settings.solution.report_definitions.volume[reportName] = {}
 
                 # define type
-                allowed_types = solver.solution.report_definitions.volume[
+                allowed_types = solver.settings.solution.report_definitions.volume[
                     reportName
                 ].report_type.allowed_values()
                 if type in allowed_types:
-                    solver.solution.report_definitions.volume[reportName] = {
+                    solver.settings.solution.report_definitions.volume[reportName] = {
                         "report_type": type
                     }
                 else:
@@ -1163,11 +1166,11 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # define cell zones
-                allowed_zones = solver.solution.report_definitions.volume[
+                allowed_zones = solver.settings.solution.report_definitions.volume[
                     reportName
                 ].cell_zones.allowed_values()
                 if set(cell_zones).issubset(allowed_zones):
-                    solver.solution.report_definitions.volume[reportName] = {
+                    solver.settings.solution.report_definitions.volume[reportName] = {
                         "cell_zones": cell_zones
                     }
                 else:
@@ -1178,11 +1181,11 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # define variable
-                allowed_variables = solver.solution.report_definitions.volume[
+                allowed_variables = solver.settings.solution.report_definitions.volume[
                     reportName
                 ].field.allowed_values()
                 if variable in allowed_variables:
-                    solver.solution.report_definitions.volume[reportName] = {
+                    solver.settings.solution.report_definitions.volume[reportName] = {
                         "field": variable
                     }
                 else:
@@ -1193,26 +1196,26 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # create output parameter
-                solver.solution.report_definitions.volume[
+                solver.settings.solution.report_definitions.volume[
                     reportName
                 ].create_output_parameter()
 
                 # set if per_zone should be used
-                solver.solution.report_definitions.volume[
+                solver.settings.solution.report_definitions.volume[
                     reportName
                 ].per_zone = basicReportDict[report].get("per_zone", False)
 
             elif scope == "force":
                 zones = basicReportDict[report].get("zones")
                 force_vector = basicReportDict[report].get("force_vector")
-                solver.solution.report_definitions.force[reportName] = {}
+                solver.settings.solution.report_definitions.force[reportName] = {}
 
                 # define zones
-                allowed_zones = solver.solution.report_definitions.force[
+                allowed_zones = solver.settings.solution.report_definitions.force[
                     reportName
                 ].zones.allowed_values()
                 if set(zones).issubset(allowed_zones):
-                    solver.solution.report_definitions.force[reportName] = {
+                    solver.settings.solution.report_definitions.force[reportName] = {
                         "zones": zones
                     }
                 else:
@@ -1223,17 +1226,17 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # define force vector
-                solver.solution.report_definitions.force[reportName] = {
+                solver.settings.solution.report_definitions.force[reportName] = {
                     "force_vector": force_vector
                 }
 
                 # create output parameter
-                solver.solution.report_definitions.force[
+                solver.settings.solution.report_definitions.force[
                     reportName
                 ].create_output_parameter()
 
                 # set if per_zone should be used
-                solver.solution.report_definitions.force[
+                solver.settings.solution.report_definitions.force[
                     reportName
                 ].per_zone = basicReportDict[report].get("per_zone", False)
 
@@ -1241,14 +1244,14 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 zones = basicReportDict[report].get("zones")
                 force_vector = basicReportDict[report].get("force_vector")
                 report_output_type = basicReportDict[report].get("report_output_type")
-                solver.solution.report_definitions.drag[reportName] = {}
+                solver.settings.solution.report_definitions.drag[reportName] = {}
 
                 # define zones
-                allowed_zones = solver.solution.report_definitions.drag[
+                allowed_zones = solver.settings.solution.report_definitions.drag[
                     reportName
                 ].zones.allowed_values()
                 if set(zones).issubset(allowed_zones):
-                    solver.solution.report_definitions.drag[reportName] = {
+                    solver.settings.solution.report_definitions.drag[reportName] = {
                         "zones": zones
                     }
                 else:
@@ -1259,16 +1262,16 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # define force vector
-                solver.solution.report_definitions.drag[reportName] = {
+                solver.settings.solution.report_definitions.drag[reportName] = {
                     "force_vector": force_vector
                 }
 
                 # define report output type
-                allowed_report_output_types = solver.solution.report_definitions.drag[
+                allowed_report_output_types = solver.settings.solution.report_definitions.drag[
                     reportName
                 ].report_output_type.allowed_values()
                 if report_output_type in allowed_report_output_types:
-                    solver.solution.report_definitions.drag[reportName] = {
+                    solver.settings.solution.report_definitions.drag[reportName] = {
                         "report_output_type": report_output_type
                     }
                 else:
@@ -1279,12 +1282,12 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # create output parameter
-                solver.solution.report_definitions.drag[
+                solver.settings.solution.report_definitions.drag[
                     reportName
                 ].create_output_parameter()
 
                 # set if per_zone should be used
-                solver.solution.report_definitions.drag[
+                solver.settings.solution.report_definitions.drag[
                     reportName
                 ].per_zone = basicReportDict[report].get("per_zone", False)
 
@@ -1292,14 +1295,14 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 zones = basicReportDict[report].get("zones")
                 force_vector = basicReportDict[report].get("force_vector")
                 report_output_type = basicReportDict[report].get("report_output_type")
-                solver.solution.report_definitions.lift[reportName] = {}
+                solver.settings.solution.report_definitions.lift[reportName] = {}
 
                 # define zones
-                allowed_zones = solver.solution.report_definitions.lift[
+                allowed_zones = solver.settings.solution.report_definitions.lift[
                     reportName
                 ].zones.allowed_values()
                 if set(zones).issubset(allowed_zones):
-                    solver.solution.report_definitions.lift[reportName] = {
+                    solver.settings.solution.report_definitions.lift[reportName] = {
                         "zones": zones
                     }
                 else:
@@ -1310,16 +1313,16 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # define force vector
-                solver.solution.report_definitions.lift[reportName] = {
+                solver.settings.solution.report_definitions.lift[reportName] = {
                     "force_vector": force_vector
                 }
 
                 # define report output type
-                allowed_report_output_types = solver.solution.report_definitions.lift[
+                allowed_report_output_types = solver.settings.solution.report_definitions.lift[
                     reportName
                 ].report_output_type.allowed_values()
                 if report_output_type in allowed_report_output_types:
-                    solver.solution.report_definitions.lift[reportName] = {
+                    solver.settings.solution.report_definitions.lift[reportName] = {
                         "report_output_type": report_output_type
                     }
                 else:
@@ -1330,12 +1333,12 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # create output parameter
-                solver.solution.report_definitions.lift[
+                solver.settings.solution.report_definitions.lift[
                     reportName
                 ].create_output_parameter()
 
                 # set if per_zone should be used
-                solver.solution.report_definitions.lift[
+                solver.settings.solution.report_definitions.lift[
                     reportName
                 ].per_zone = basicReportDict[report].get("per_zone", False)
 
@@ -1344,14 +1347,14 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 mom_center = basicReportDict[report].get("mom_center")
                 mom_axis = basicReportDict[report].get("mom_axis")
                 report_output_type = basicReportDict[report].get("report_output_type")
-                solver.solution.report_definitions.moment[reportName] = {}
+                solver.settings.solution.report_definitions.moment[reportName] = {}
 
                 # define zones
-                allowed_zones = solver.solution.report_definitions.moment[
+                allowed_zones = solver.settings.solution.report_definitions.moment[
                     reportName
                 ].zones.allowed_values()
                 if set(zones).issubset(allowed_zones):
-                    solver.solution.report_definitions.moment[reportName] = {
+                    solver.settings.solution.report_definitions.moment[reportName] = {
                         "zones": zones
                     }
                 else:
@@ -1362,21 +1365,21 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # define moment center
-                solver.solution.report_definitions.moment[reportName] = {
+                solver.settings.solution.report_definitions.moment[reportName] = {
                     "mom_center": mom_center
                 }
 
                 # define moment axis
-                solver.solution.report_definitions.moment[reportName] = {
+                solver.settings.solution.report_definitions.moment[reportName] = {
                     "mom_axis": mom_axis
                 }
 
                 # define report output type
-                allowed_report_output_types = solver.solution.report_definitions.moment[
+                allowed_report_output_types = solver.settings.solution.report_definitions.moment[
                     reportName
                 ].report_output_type.allowed_values()
                 if report_output_type in allowed_report_output_types:
-                    solver.solution.report_definitions.moment[reportName] = {
+                    solver.settings.solution.report_definitions.moment[reportName] = {
                         "report_output_type": report_output_type
                     }
                 else:
@@ -1387,26 +1390,26 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # create output parameter
-                solver.solution.report_definitions.moment[
+                solver.settings.solution.report_definitions.moment[
                     reportName
                 ].create_output_parameter()
 
                 # set if per_zone should be used
-                solver.solution.report_definitions.moment[
+                solver.settings.solution.report_definitions.moment[
                     reportName
                 ].per_zone = basicReportDict[report].get("per_zone", False)
 
             elif scope == "flux":
                 type = basicReportDict[report].get("type")
                 boundaries = basicReportDict[report].get("zones")
-                solver.solution.report_definitions.flux[reportName] = {}
+                solver.settings.solution.report_definitions.flux[reportName] = {}
 
                 # define type
-                allowed_types = solver.solution.report_definitions.flux[
+                allowed_types = solver.settings.solution.report_definitions.flux[
                     reportName
                 ].report_type.allowed_values()
                 if type in allowed_types:
-                    solver.solution.report_definitions.flux[reportName] = {
+                    solver.settings.solution.report_definitions.flux[reportName] = {
                         "report_type": type
                     }
                 else:
@@ -1417,11 +1420,11 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # define boundaries
-                allowed_boundaries = solver.solution.report_definitions.flux[
+                allowed_boundaries = solver.settings.solution.report_definitions.flux[
                     reportName
                 ].boundaries.allowed_values()
                 if set(boundaries).issubset(allowed_boundaries):
-                    solver.solution.report_definitions.flux[reportName] = {
+                    solver.settings.solution.report_definitions.flux[reportName] = {
                         "boundaries": boundaries
                     }
                 else:
@@ -1432,12 +1435,12 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                     continue
 
                 # create output parameter
-                solver.solution.report_definitions.flux[
+                solver.settings.solution.report_definitions.flux[
                     reportName
                 ].create_output_parameter()
 
                 # set if per_zone should be used
-                solver.solution.report_definitions.flux[
+                solver.settings.solution.report_definitions.flux[
                     reportName
                 ].per_zone = basicReportDict[report].get("per_zone", False)
 
@@ -1450,13 +1453,13 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
             # create report plot and append to report file list
             reportList.append(report)
             reportPlotName = reportName + "-plot"
-            solver.solution.monitor.report_plots[reportPlotName] = {
+            solver.settings.solution.monitor.report_plots[reportPlotName] = {
                 "report_defs": reportName
             }
 
     # Report File
     if reportList is not None:
-        solver.solution.monitor.report_files["report-file"] = {}
+        solver.settings.solution.monitor.report_files["report-file"] = {}
         reportNameList = []
         for report in reportList:
             reportName = report.replace("_", "-")
@@ -1464,7 +1467,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
             reportNameList.append(reportName)
 
         reportFileName = os.path.join(caseOutPath, "report.out")
-        solver.solution.monitor.report_files["report-file"] = {
+        solver.settings.solution.monitor.report_files["report-file"] = {
             "file_name": reportFileName,
             "report_defs": reportNameList,
         }
@@ -1497,10 +1500,10 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
             reportName = solve_cov.replace("_", "-")
             reportName = "rep-" + reportName.lower()
             covName = reportName + "-cov"
-            solver.solution.monitor.convergence_conditions.convergence_reports[
+            solver.settings.solution.monitor.convergence_conditions.convergence_reports[
                 covName
             ] = {}
-            solver.solution.monitor.convergence_conditions = {
+            solver.settings.solution.monitor.convergence_conditions = {
                 "convergence_reports": {
                     covName: {
                         "report_defs": reportName,
@@ -1522,7 +1525,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
     # Set Convergence Conditions
 
     conv_check_freq = solutionDict.setdefault("conv_check_freq", 5)
-    solver.solution.monitor.convergence_conditions = {
+    solver.settings.solution.monitor.convergence_conditions = {
         # "condition": "any-condition-is-met",
         "condition": "all-conditions-are-met",
         "frequency": conv_check_freq,
@@ -1540,7 +1543,7 @@ def set_run_calculation(data, solver):
         return
 
     # check if pseudo-time-step method is activated in setup
-    if "pseudo_time_settings" in solver.solution.run_calculation().keys():
+    if "pseudo_time_settings" in solver.settings.solution.run_calculation().keys():
         # Set Basic Solver-Solution-Settings
         tsf = solutionDict.get("time_step_factor", 5)
         # Check for a pseudo-time-step-size
@@ -1550,10 +1553,10 @@ def set_run_calculation(data, solver):
             logger.info(
                 f"Direct Specification of pseudo timestep size from Configfile: {pseudo_timestep}"
             )
-            solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = (
+            solver.settings.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = (
                 "user-specified"
             )
-            solver.solution.run_calculation.pseudo_time_settings.time_step_method.pseudo_time_step_size = (
+            solver.settings.solution.run_calculation.pseudo_time_settings.time_step_method.pseudo_time_step_size = (
                 pseudo_timestep
             )
             # Update dict
@@ -1564,13 +1567,13 @@ def set_run_calculation(data, solver):
             logger.info(
                 f"Using 'conservative'-'automatic' timestep method with timescale-factor: {tsf}"
             )
-            solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = (
+            solver.settings.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_method = (
                 "automatic"
             )
-            solver.solution.run_calculation.pseudo_time_settings.time_step_method.length_scale_methods = (
+            solver.settings.solution.run_calculation.pseudo_time_settings.time_step_method.length_scale_methods = (
                 "conservative"
             )
-            solver.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_size_scale_factor = (
+            solver.settings.solution.run_calculation.pseudo_time_settings.time_step_method.time_step_size_scale_factor = (
                 tsf
             )
             # Update dict
@@ -1581,23 +1584,25 @@ def set_run_calculation(data, solver):
         )
 
     iter_count = solutionDict.setdefault("iter_count", 500)
-    solver.solution.run_calculation.iter_count = int(iter_count)
+    solver.settings.solution.run_calculation.iter_count = int(iter_count)
 
 def source_terms(data, solver):
     my_sources = data.get("source_terms")
     if my_sources is None:
-        logger.warning(
-            f"No source terms defined: Skipping 'source terms setting'!"
+        logger.info(
+            f"No 'source_terms' defined: Skipping 'source_terms' function!"
         )
         return
     list_fluid_zones = solver.settings.setup.cell_zone_conditions.fluid.get_object_names()
     for key in my_sources:
+        logger.info(f"Defining source-term: '{key}'")
         exp_name = key
         exp_definition = my_sources[key]["definition"]
         myvalue = fluent_utils.create_and_evaluate_expression(solver, exp_name=exp_name, definition=exp_definition, overwrite_definition=True, evaluate_value=False)
         if my_sources[key]["cell_zone"] in list_fluid_zones:
             solver.settings.setup.cell_zone_conditions.fluid[my_sources[key]["cell_zone"]] = {"sources": {"enable": True, "terms": {my_sources[key]["equation"]: [{'option': 'value', 'value': exp_name}]}}}
 
+    logger.info("Definition of source-terms completed")
 
 
 def blade_film_cooling(data, solver):
@@ -1631,10 +1636,10 @@ def blade_film_cooling(data, solver):
     bf_cooling = data.get("blade_film_cooling", {})
     cooling_zones = bf_cooling.get("cooling_zones", [])
     if not cooling_zones:
-        logger.warning("No blade film cooling zones defined — skipping cooling setup.")
+        logger.info(f"No 'cooling_zones' defined: Skipping 'blade_film_cooling' function!")
         return
     for zone in cooling_zones:
-        
+        logger.info(f"Defining blade film cooling for zone '{zone}'")
         profile_file = zone["profile_file"]
         geometry_name = zone["geometry_name"]
         interface_blade_zone = zone["interface_blade_zone"]
@@ -1642,7 +1647,7 @@ def blade_film_cooling(data, solver):
         #validate_injection_profile(profile_file) 
 
         #read cooling profile
-        solver.file.read_profile(file_name=profile_file)
+        solver.settings.file.read_profile(file_name=profile_file)
 
         #virtual boundary definition
         # solver.tui.define.virtual_boundary.hole_geometry(

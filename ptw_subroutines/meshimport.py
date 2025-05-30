@@ -12,10 +12,10 @@ def import_01(data, solver):
     if isinstance(meshFilename, str):
         logger.info(f"Importing mesh '{meshFilename}'")
         if meshFilename.endswith(".def"):
-            solver.file.import_.read(file_type="cfx-definition", file_name=meshFilename)
+            solver.settings.file.import_.read(file_type="cfx-definition", file_name=meshFilename)
             success = True
         elif meshFilename.endswith(".cgns"):
-            solver.file.import_.read(file_type="cgns-mesh", file_name=meshFilename)
+            solver.settings.file.import_.read(file_type="cgns-mesh", file_name=meshFilename)
             success = True
         elif meshFilename.endswith(".gtm"):
             if Version(solver._version) < Version("241"):
@@ -27,7 +27,7 @@ def import_01(data, solver):
                 multiple_mesh_import(solver=solver, meshname_list=meshnamelist)
                 success = True
         else:
-            solver.file.read(file_type="mesh", file_name=meshFilename)
+            solver.settings.file.read(file_type="mesh", file_name=meshFilename)
             success = True
     elif isinstance(meshFilename, list):
         logger.info(f"Importing multiple meshes...")
@@ -62,12 +62,12 @@ def import_01(data, solver):
     profileName = data.get("profileName_In")
     if profileName is not None and profileName != "":
         logger.info(f"Importing profile '{profileName}'")
-        solver.file.read_profile(file_name=profileName)
+        solver.settings.file.read_profile(file_name=profileName)
 
     profileName = data.get("profileName_Out")
     if profileName is not None and profileName != "":
         logger.info(f"Importing profile '{profileName}'")
-        solver.file.read_profile(file_name=profileName)
+        solver.settings.file.read_profile(file_name=profileName)
 
     return success
 
@@ -77,7 +77,7 @@ def multiple_mesh_read(solver, meshnamelist):
     for fileName in meshnamelist:
         if meshIndex == 0:
             logger.info(f"Importing mesh '{fileName}'")
-            solver.file.read(file_type="mesh", file_name=fileName)
+            solver.settings.file.read(file_type="mesh", file_name=fileName)
         else:
             logger.info(f"Appending mesh '{fileName}'")
             solver.tui.mesh.modify_zones.append_mesh(fileName)

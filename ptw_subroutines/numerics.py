@@ -62,7 +62,7 @@ def numerics_defaults(data, solver):
 
 
 def numerics_bp_tn_2305(data, solver):
-    solver.solution.methods.gradient_scheme = "green-gauss-node-based"
+    solver.settings.solution.methods.gradient_scheme = "green-gauss-node-based"
     logger.info(
         "Best Practice and turbo numerics with green-gauss-node-based will be used"
     )
@@ -77,7 +77,7 @@ def numerics_bp_tn_2305_lsq(data, solver):
     logger.info(
         "Best Practice and turbo numerics with least-sqaure-cell-based will be used"
     )
-    solver.solution.methods.gradient_scheme = "least-square-cell-based"
+    solver.settings.solution.methods.gradient_scheme = "least-square-cell-based"
     use_tsn = data["solution"].setdefault("tsn", True)
     if use_tsn:
         solver.tui.solve.set.advanced.turbomachinery_specific_numerics.enable("yes")
@@ -85,7 +85,7 @@ def numerics_bp_tn_2305_lsq(data, solver):
 
 
 def numerics_bp_all_2305(data, solver):
-    discDict = solver.solution.methods.discretization_scheme
+    discDict = solver.settings.solution.methods.discretization_scheme
     for discKey in discDict:
         if discKey == "pressure":
             discDict[discKey] = "second-order"
@@ -100,8 +100,8 @@ def numerics_defaults_pseudo_timestep(data, solver):
     logger.info(
         "Setting pv-coupling using pseudo-time-step method, all other settings are fluent defaults..."
     )
-    solver.solution.methods.p_v_coupling.flow_scheme = "Coupled"
-    solver.solution.methods.pseudo_time_method.formulation.coupled_solver = (
+    solver.settings.solution.methods.p_v_coupling.flow_scheme = "Coupled"
+    solver.settings.solution.methods.pseudo_time_method.formulation.coupled_solver = (
         "global-time-step"
     )
     return

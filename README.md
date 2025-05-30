@@ -21,7 +21,9 @@ The functionalities are displayed in the following Feature-Matrix:
 
 ## **Getting Started**
 ### **Fluent Installation**
-**The script has been developed for Ansys Fluent versions 2023R2 and latter versions**
+The script has been developed for Ansys Fluent versions 2024R1 and latter versions. 
+It can also be used running the Ansys GPU Solver (use '-gpu' flag in launching options), but not all features will be supported, though!
+
 ### **PyFluent Installation**
 
 Required libraries:
