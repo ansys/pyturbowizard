@@ -20,8 +20,7 @@ def launchFluent(launchEl: dict):
     serverfilename = launchEl.get("serverfilename")
     queueEl = launchEl.get("queue_slurm")
     get_launcher_defaults(launchEl=launchEl)
-    if version.parse(pyfluent.__version__) >= version.parse("0.29.0"):
-        adjust_settings_to_version(launchEl=launchEl)
+    adjust_settings_to_version(launchEl=launchEl)
 
     # open new session in queue
     if queueEl is not None:
@@ -246,20 +245,21 @@ def get_launcher_defaults(launchEl: dict):
 
 def adjust_settings_to_version(launchEl: dict):
     # method will convert old definitions to new
-    ui_mode = launchEl.get("show_gui")
-    if isinstance(ui_mode,bool):
-        if ui_mode:
-            launchEl["ui_mode"] = UIMode.GUI
-        else:
-            launchEl["ui_mode"] = UIMode.NO_GUI
-        #removing old definition
-        launchEl.pop("show_gui")
+    if version.parse(pyfluent.__version__) >= version.parse("0.29.0"):
+        ui_mode = launchEl.get("show_gui")
+        if isinstance(ui_mode,bool):
+            if ui_mode:
+                launchEl["ui_mode"] = UIMode.GUI
+            else:
+                launchEl["ui_mode"] = UIMode.NO_GUI
+            #removing old definition
+            launchEl.pop("show_gui")
 
-    dimension = launchEl.get("version")
-    if isinstance(dimension, str):
-        if dimension == "2d":
-            launchEl["dimension"] = Dimension.TWO
-        else:
-            launchEl["dimension"] = Dimension.THREE
-        # removing old definition
-        launchEl.pop("version")
+        dimension = launchEl.get("version")
+        if isinstance(dimension, str):
+            if dimension == "2d":
+                launchEl["dimension"] = Dimension.TWO
+            else:
+                launchEl["dimension"] = Dimension.THREE
+            # removing old definition
+            launchEl.pop("version")
