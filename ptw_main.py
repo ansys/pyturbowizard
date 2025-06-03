@@ -28,7 +28,7 @@ from ptw_subroutines.utils import (
 )
 
 
-ptw_version = "1.9.3"
+ptw_version = "1.9.4"
 
 # Set Logger
 logger = ptw_logger.init_logger()
@@ -469,7 +469,7 @@ def ptw_main():
     # Get script_path (needed to get template-dir)
     script_path = os.path.dirname(sys.argv[0])
     # If arguments are passed take first argument as fullpath to the json file
-    config_filename = r"honeywell_c2.json"
+    config_filename = r"ptw_config.json"
     if len(sys.argv) > 1:
         config_filename = sys.argv[1]
     config_filename = os.path.normpath(config_filename)
