@@ -33,13 +33,13 @@ def read_journals(
                         f"Changing specified journal-file '{journal_file}' to absolute path : {new_journal_file}"
                     )
                 adjusted_journal_list.append(new_journal_file)
-            solver.file.read_journal(file_name_list=adjusted_journal_list)
+            solver.settings.file.read_journal(file_name_list=adjusted_journal_list)
             # Change back working dir
             chdir_command = rf"""(chdir "{fluent_dir}")"""
             solver.execute_tui(chdir_command)
         else:
             # default procedure if no execution-folder has been specified
-            solver.file.read_journal(file_name_list=journal_list)
+            solver.settings.file.read_journal(file_name_list=journal_list)
 
     return
 
@@ -48,7 +48,7 @@ def getNumberOfEquations(solver):
     number_eqs = 0
     # Check active number of equations
     if Version(solver._version) < Version("241"):
-        equDict = solver.solution.controls.equations()
+        equDict = solver.settings.solution.controls.equations()
         for equ in equDict:
             if equ == "flow":
                 number_eqs += 4
@@ -57,21 +57,27 @@ def getNumberOfEquations(solver):
             if equ == "temperature":
                 number_eqs += 1
     else:
-        number_eqs = len(solver.solution.monitor.residual.equations.keys())
+        number_eqs = len(solver.settings.solution.monitor.residual.equations.keys())
     return number_eqs
 
 
 def addExecuteCommand(solver, command_name, command, pythonCommand: bool = False):
     # Add a command to execute after solving is finished
-    if pythonCommand:
-        solver.tui.solve.execute_commands.add_edit(
-            f"{command_name}", "yes", "yes", "yes", f'"{command}"'
-        )
+    if Version(solver._version) < Version("251"):
+        if pythonCommand:
+                solver.tui.solve.execute_commands.add_edit(
+                    f"{command_name}", "yes", "yes", "yes", f'"{command}"'
+                )
+        else:
+            solver.tui.solve.execute_commands.add_edit(
+                f"{command_name}", "yes", "yes", "no", f'"{command}"'
+            )
     else:
-        solver.tui.solve.execute_commands.add_edit(
-            f"{command_name}", "yes", "yes", "no", f'"{command}"'
-        )
-
+        solver.settings.solution.calculation_activity.execute_commands.create(name=command_name)
+        solver.settings.solution.calculation_activity.execute_commands[command_name].execution_command = command
+        solver.settings.solution.calculation_activity.execute_commands[command_name].enable = True
+        solver.settings.solution.calculation_activity.execute_commands[command_name].execution_type = 'execute-at-end'
+        solver.settings.solution.calculation_activity.execute_commands[command_name].python_cmd = pythonCommand
 
 def check_version(solver):
 

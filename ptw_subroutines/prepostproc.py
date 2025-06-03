@@ -40,7 +40,7 @@ def prepost_01(data, solver, launchEl):
 
     # Set output for time statistics in transcript
     command_name = "print-time-statistics"
-    command = "solver.tui.parallel.timer.usage()"
+    command = "solver.settings.results.report.system.print_time_statistics()"
     if not use_python_command:
         command = "/report/system/time-stats"
     fluent_utils.addExecuteCommand(
@@ -53,16 +53,16 @@ def prepost_01(data, solver, launchEl):
     # Save 3D file of the mesh and domain
 
     # Get walls of domain
-    surfaces = solver.field_info.get_surfaces_info()
+    surfaces = solver.fields.field_info.get_surfaces_info()
     wall_surfaces = [
         key for key, value in surfaces.items() if value.get("zone_type") == "wall"
     ]
 
-    solver.results.graphics.mesh["Mesh"] = {}
-    solver.results.graphics.mesh["Mesh"].surfaces_list = wall_surfaces
-    solver.results.graphics.mesh["Mesh"].options.edges = True
+    solver.settings.results.graphics.mesh["Mesh"] = {}
+    solver.settings.results.graphics.mesh["Mesh"].surfaces_list = wall_surfaces
+    solver.settings.results.graphics.mesh["Mesh"].options.edges = True
 
-    solver.results.graphics.mesh.display(object_name="Mesh")
+    solver.settings.results.graphics.mesh.display(object_name="Mesh")
     caseOutPath = misc_utils.ptw_output(
         fl_workingDir=fl_WorkingDir, case_name=data["caseFilename"]
     )
@@ -118,7 +118,7 @@ def spanPlots(data, solver, launchEl):
     # all_commands_str = setAVZ
 
     availableFieldDataNames = (
-        solver.field_data.get_scalar_field_data.field_name.allowed_values()
+        solver.fields.field_data.get_scalar_field_data.field_name.allowed_values()
     )
     for contVar in contVars:
         if contVar not in availableFieldDataNames:
@@ -129,20 +129,20 @@ def spanPlots(data, solver, launchEl):
     for spanVal in spansSurf:
         spanName = f"span-{int(spanVal*100)}"
         logger.info(f"Creating spanwise ISO-surface: {spanName}")
-        solver.results.surfaces.iso_surface[spanName] = {}
+        solver.settings.results.surfaces.iso_surface[spanName] = {}
 
         if Version(solver._version) >= Version("241"):
-            zones = solver.results.surfaces.iso_surface[spanName].zones.get_attr(
+            zones = solver.settings.results.surfaces.iso_surface[spanName].zones.get_attr(
                 "allowed-values"
             )
-            solver.results.surfaces.iso_surface[spanName](
+            solver.settings.results.surfaces.iso_surface[spanName](
                 field="spanwise-coordinate", zones=zones, iso_values=[spanVal]
             )
         else:
-            zones = solver.results.surfaces.iso_surface[spanName].zone.get_attr(
+            zones = solver.settings.results.surfaces.iso_surface[spanName].zone.get_attr(
                 "allowed-values"
             )
-            solver.results.surfaces.iso_surface[spanName](
+            solver.settings.results.surfaces.iso_surface[spanName](
                 field="spanwise-coordinate", zone=zones, iso_value=[spanVal]
             )
 
@@ -150,21 +150,21 @@ def spanPlots(data, solver, launchEl):
             if contVar in availableFieldDataNames:
                 contName = spanName + "-" + contVar
                 logger.info(f"Creating spanwise contour-plot: {contName}")
-                solver.results.graphics.contour[contName] = {}
-                solver.results.graphics.contour[contName](
+                solver.settings.results.graphics.contour[contName] = {}
+                solver.settings.results.graphics.contour[contName](
                     field=contVar,
                     contour_lines=True,
                     surfaces_list=spanName,
                 )
                 # set range to local range
-                solver.results.graphics.contour[
+                solver.settings.results.graphics.contour[
                     contName
                 ].range_option.auto_range_on.global_range = False
 
                 # Set color map to banded and reduce size
-                solver.results.graphics.contour[contName].color_map(size=20)
-                solver.results.graphics.contour[contName].coloring(option="banded")
-                solver.results.graphics.contour[contName].display()
+                solver.settings.results.graphics.contour[contName].color_map(size=20)
+                solver.settings.results.graphics.contour[contName].coloring(option="banded")
+                solver.settings.results.graphics.contour[contName].display()
 
                 fl_workingDir = launchEl.get("workingDir")
                 # Save contour plos as avz files
@@ -178,9 +178,9 @@ def spanPlots(data, solver, launchEl):
                 if use_python_command:
                     # Python commands
                     contour_display_command = (
-                        f"solver.results.graphics.contour['{contName}'].display()"
+                        f"solver.settings.results.graphics.contour['{contName}'].display()"
                     )
-                    contour_save_command = f"solver.results.graphics.picture.save_picture(file_name='{plot_filename}')"
+                    contour_save_command = f"solver.settings.results.graphics.picture.save_picture(file_name='{plot_filename}')"
                 else:
                     # TUI commands
                     contour_display_command = (
@@ -209,7 +209,7 @@ def oilflow_pathlines(data, solver, launchEl):
     oilflowPL_vars = data["results"].get("oilflow_pathlines_var")
 
     availableFieldDataNames = (
-        solver.field_data.get_scalar_field_data.field_name.allowed_values()
+        solver.fields.field_data.get_scalar_field_data.field_name.allowed_values()
     )
     for oilflowPL_var in oilflowPL_vars:
         if oilflowPL_var not in availableFieldDataNames:
@@ -225,23 +225,23 @@ def oilflow_pathlines(data, solver, launchEl):
     for oilflowPL_var in oilflowPL_vars:
         oilflowPL_name = f"oilflow-pathlines-{oilflowPL_var}"
         logger.info(f"Creating oil flow pathlines: {oilflowPL_name}")
-        solver.results.graphics.pathline[oilflowPL_name] = {}
-        solver.results.graphics.pathline[oilflowPL_name].options(oil_flow=True)
-        solver.results.graphics.pathline[oilflowPL_name](
+        solver.settings.results.graphics.pathline[oilflowPL_name] = {}
+        solver.settings.results.graphics.pathline[oilflowPL_name].options(oil_flow=True)
+        solver.settings.results.graphics.pathline[oilflowPL_name](
             onzone=oilflowPL_surfaces,
             release_from_surfaces=oilflowPL_surfaces,
             field=oilflowPL_var,
             step=3000,
             skip=15,
         )
-        solver.results.graphics.pathline[oilflowPL_name].color_map(size=20)
+        solver.settings.results.graphics.pathline[oilflowPL_name].color_map(size=20)
         oilflowPL_objects.append(oilflowPL_name)
 
     # Create mesh object with oil flow surfaces
     meshName = "oilflowPL-surfaces"
     logger.info(f"Creating mesh object: {meshName}")
-    solver.results.graphics.mesh[meshName] = {}
-    solver.results.graphics.mesh[meshName](surfaces_list=oilflowPL_surfaces)
+    solver.settings.results.graphics.mesh[meshName] = {}
+    solver.settings.results.graphics.mesh[meshName](surfaces_list=oilflowPL_surfaces)
 
     # Create scenes including the pathlines and the blade mesh object
     for oilflowPL_object in oilflowPL_objects:
@@ -249,8 +249,8 @@ def oilflow_pathlines(data, solver, launchEl):
         logger.info(f"Creating scene: {sceneName}")
         scene_inputs = [oilflowPL_object, meshName]
         for scene_input in scene_inputs:
-            solver.results.scene[sceneName] = {}
-            solver.results.scene[sceneName].graphics_objects[scene_input] = {
+            solver.settings.results.scene[sceneName] = {}
+            solver.settings.results.scene[sceneName].graphics_objects[scene_input] = {
                 "name": scene_input
             }
 
@@ -261,7 +261,7 @@ def pathlines(data, solver, launchEl):
     pathlineVars = data["results"].get("pathlines_var")
 
     availableFieldDataNames = (
-        solver.field_data.get_scalar_field_data.field_name.allowed_values()
+        solver.fields.field_data.get_scalar_field_data.field_name.allowed_values()
     )
     for pathlineVar in pathlineVars:
         if pathlineVar not in availableFieldDataNames:
@@ -276,10 +276,10 @@ def pathlines(data, solver, launchEl):
     for pathlineVar in pathlineVars:
         pathlineName = f"pathlines-{pathlineVar}"
         logger.info(f"Creating pathlines: {pathlineName}")
-        solver.results.graphics.pathline[pathlineName] = {}
-        solver.results.graphics.pathline[pathlineName](
+        solver.settings.results.graphics.pathline[pathlineName] = {}
+        solver.settings.results.graphics.pathline[pathlineName](
             release_from_surfaces=pathlinesRelSurf, field=pathlineVar, step=3000, skip=5
         )
-        solver.results.graphics.pathline[pathlineName].color_map(size=20)
+        solver.settings.results.graphics.pathline[pathlineName].color_map(size=20)
 
     return

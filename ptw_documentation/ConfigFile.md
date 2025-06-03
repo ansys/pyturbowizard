@@ -639,7 +639,7 @@ the input and output parameters.
 
 ```span_plot_var``` is used to define the variable names, for which the contour plots are created. You can use the
 command:
-```solver.field_data.get_scalar_field_data.field_name.allowed_values()``` in the Fluent python console to check for the
+```solver.fields.field_data.get_scalar_field_data.field_name.allowed_values()``` in the Fluent python console to check for the
 correct variable names.
 
 ```span_plot_height``` is used to specify the relative channel height, at which the different variable contour plots are

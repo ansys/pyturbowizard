@@ -24,7 +24,7 @@ There are two possible scenarios:
   "launching":
     {
       "workingDir": "<PathToFluentWorkingDirectory",
-      "fl_version": "23.2.0",
+      "fl_version": "25.1.0",
       "noCore": 8,
       "exitatend": false,
       "precision": "double",
@@ -35,7 +35,7 @@ There are two possible scenarios:
   ```
   "launching":
     {
-    "fl_version": "23.2.0",
+    "fl_version": "25.1.0",
     "noCore": 28,
     "precision": "double",
     "show_gui":  true,

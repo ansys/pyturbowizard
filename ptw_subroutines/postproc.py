@@ -1,7 +1,7 @@
 import os
 import matplotlib.pyplot as plt
 
-# Logger
+
 from ptw_subroutines.utils import (
     ptw_logger,
     postproc_utils,
@@ -10,6 +10,9 @@ from ptw_subroutines.utils import (
     misc_utils,
 )
 
+from ptw_subroutines import post_plots
+
+# Logger
 logger = ptw_logger.getLogger()
 
 
@@ -25,6 +28,8 @@ def post(data, solver, functionEl, launchEl, trn_name, gpu):
     logger.info(f"Running Postprocessing Function '{functionName}' ...")
     if functionName == "post_01":
         post_01(data, solver, launchEl, trn_name, gpu)
+    elif functionName == "post_fplot":
+        post_fplot(data, solver, launchEl, trn_name, gpu)
     else:
         logger.info(
             f"Prescribed Function '{functionName}' not known. Skipping Postprocessing!"
@@ -52,11 +57,11 @@ def post_01(data, solver, launchEl, trn_name, gpu):
     filename = os.path.join(
         caseOutPath, data["results"].setdefault("filename_summary", "report.sum")
     )
-    solver.results.report.summary(write_to_file=True, file_name=filename)
+    solver.settings.results.report.summary(write_to_file=True, file_name=filename)
 
     # Write out system time
-    solver.tui.report.system.time_stats()
-    # solver.report.system.time_statistics()
+    # solver.tui.report.system.time_stats()
+    solver.settings.results.report.system.print_time_statistics()
 
     # Save Residual Plot
     # plot_folder = os.path.join(caseOutPath, f"plots")
@@ -93,6 +98,12 @@ def post_01(data, solver, launchEl, trn_name, gpu):
 
     return
 
+def post_fplot(data, solver, launchEl, trn_name, gpu):
+    # Do standard postprocessing
+    post_01(data, solver, launchEl, trn_name, gpu)
+    # Plots for Post Processing (Airfoil Loading, Radial Profiles, Integral Values)
+    post_plots.Fplot(solver=solver, file_name=data["caseFilename"], work_dir=launchEl.get("workingDir"),
+                                         case_dict=data)
 
 def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
     try:
@@ -165,7 +176,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
 
     if (not cov_df.empty) and (not gpu):
         # Get CoV information
-        covDict = solver.solution.monitor.convergence_conditions.convergence_reports()
+        covDict = solver.settings.solution.monitor.convergence_conditions.convergence_reports()
         if covDict is not None:
             filtCovDict = {
                 key: value
