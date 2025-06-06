@@ -240,8 +240,8 @@ def get_launcher_defaults(launchEl: dict):
         launchEl.setdefault("version", "3d")
         launchEl.setdefault("show_gui", True)
     else:
-        launchEl.setdefault("dimension", Dimension.THREE)
-        launchEl.setdefault("ui_mode", UIMode.GUI)
+        launchEl.setdefault("dimension", Dimension.THREE.value)
+        launchEl.setdefault("ui_mode", UIMode.GUI.value)
 
 def adjust_settings_to_version(launchEl: dict):
     # method will convert old definitions to new
@@ -249,9 +249,9 @@ def adjust_settings_to_version(launchEl: dict):
         ui_mode = launchEl.get("show_gui")
         if isinstance(ui_mode,bool):
             if ui_mode:
-                launchEl["ui_mode"] = UIMode.GUI
+                launchEl["ui_mode"] = UIMode.GUI.value
             else:
-                launchEl["ui_mode"] = UIMode.NO_GUI
+                launchEl["ui_mode"] = UIMode.NO_GUI.value
             logger.info(f"Updating launcher options: 'show_gui':{launchEl.get("show_gui")} -> 'ui_mode':{launchEl.get("ui_mode")}")
             #removing old definition
             launchEl.pop("show_gui")
@@ -260,9 +260,9 @@ def adjust_settings_to_version(launchEl: dict):
         dimension = launchEl.get("version")
         if isinstance(dimension, str):
             if dimension == "2d":
-                launchEl["dimension"] = Dimension.TWO
+                launchEl["dimension"] = Dimension.TWO.value
             else:
-                launchEl["dimension"] = Dimension.THREE
+                launchEl["dimension"] = Dimension.THREE.value
             logger.info(f"Updating launcher options: 'version':{launchEl.get("version")} -> 'dimension':{launchEl.get("dimension")}")
             # removing old definition
             launchEl.pop("version")
