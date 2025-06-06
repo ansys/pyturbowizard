@@ -63,7 +63,7 @@ def getNumberOfEquations(solver):
 
 def addExecuteCommand(solver, command_name, command, pythonCommand: bool = False):
     # Add a command to execute after solving is finished
-    if Version(solver._version) < Version("251"):
+    if Version(solver._version) < Version("252"):
         if pythonCommand:
                 solver.tui.solve.execute_commands.add_edit(
                     f"{command_name}", "yes", "yes", "yes", f'"{command}"'
