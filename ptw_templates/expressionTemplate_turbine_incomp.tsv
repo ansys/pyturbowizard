@@ -44,4 +44,4 @@ name	definition	description	input-parameter	output-parameter
 "MP_EP1_massFlowAve_ptEuler"	"(BC_omega / 1[rad]) * MassFlowAve(Density * RadialCoordinate * TangentialVelocity, {bz_ep1_Euler})"	""	#f	#f
 "MP_EP2_massFlowAve_ptEuler"	"(BC_omega / 1[rad]) * MassFlowAve(Density * RadialCoordinate * TangentialVelocity, {bz_ep2_Euler})"	""	#f	#f
 "MP_Efficiency_Euler"	"(MP_EP1_massFlowAve_ptEuler - MP_EP2_massFlowAve_ptEuler) / (MP_IN_massFlowAve_pt - MP_OUT_massFlowAve_pt)"	""	#f	#t
-"MP_delta_pt"   "MP_IN_massFlowAve_pt - MP_OUT_massFlowAve_pt"	""	#f	#t
+"MP_delta_pt"	"MP_IN_massFlowAve_pt - MP_OUT_massFlowAve_pt"	""	#f	#t
