@@ -872,7 +872,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     zone_list=[side1, side2], new_type="interface"
                 )
                 # Create Interface
-                if Version(solver._version) < Version("252"):
+                if Version(solver._version) < Version("251"):
                     if not gpu:
                         solver.tui.define.turbo_model.turbo_create(
                             key_if, side1, "()", side2, "()", "3"
