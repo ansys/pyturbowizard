@@ -75,7 +75,7 @@ def numerics_bp_tn_2305(data, solver):
 
 def numerics_bp_tn_2305_lsq(data, solver):
     logger.info(
-        "Best Practice and turbo numerics with least-sqaure-cell-based will be used"
+        "Best Practice and turbo numerics with least-square-cell-based will be used"
     )
     solver.settings.solution.methods.gradient_scheme = "least-square-cell-based"
     use_tsn = data["solution"].setdefault("tsn", True)

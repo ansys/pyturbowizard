@@ -66,8 +66,11 @@ def prepost_01(data, solver, launchEl):
     caseOutPath = misc_utils.ptw_output(
         fl_workingDir=fl_WorkingDir, case_name=data["caseFilename"]
     )
-    MeshPicFilename = os.path.join(caseOutPath, "Mesh.avz")
-    solver.tui.display.save_picture(f"{MeshPicFilename}")
+    meshPicFilename = os.path.join(caseOutPath, "Mesh.avz")
+    if Version(solver._version) < Version("251"):
+        solver.tui.display.save_picture(f"{meshPicFilename}")
+    else:
+        solver.settings.results.graphics.picture.save_picture(file_name = meshPicFilename)
 
     # Create Spanwise Plots if specified by user
     if data["locations"].get("tz_turbo_topology_names") is not None:
