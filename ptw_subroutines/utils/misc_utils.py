@@ -1,7 +1,7 @@
-import os.path
 import glob
-import shutil
 import ntpath
+import os.path
+import shutil
 import subprocess
 import time
 
