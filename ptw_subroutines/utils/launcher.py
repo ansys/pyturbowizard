@@ -251,7 +251,7 @@ def adjust_settings_to_version(launchEl: dict):
             if ui_mode:
                 launchEl["ui_mode"] = UIMode.GUI.value
             else:
-                launchEl["ui_mode"] = UIMode.NO_GUI.value
+                launchEl["ui_mode"] = None
             logger.info(f"Updating launcher options: 'show_gui':{launchEl.get('show_gui')} -> 'ui_mode':{launchEl.get('ui_mode')}")
             #removing old definition
             launchEl.pop("show_gui")

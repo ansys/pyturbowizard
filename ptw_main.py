@@ -28,7 +28,7 @@ from ptw_subroutines.utils import (
 )
 
 
-ptw_version = "1.9.6"
+ptw_version = "1.9.7"
 
 # Set Logger
 logger = ptw_logger.init_logger()
@@ -302,9 +302,9 @@ class PTW_Run:
                 logger.info(f"Writing settings-file: {settingsFilename}")
                 solver.tui.file.write_settings(settingsFilename)
                 # Writing additional setup info: extsch file
-                if caseEl.setdefault("run_extsch", False):
+                if caseEl.setdefault("extsch_script", ""):
                     misc_utils.run_extsch_script(
-                        scriptPath=self.script_path,
+                        path_to_script=caseEl.get("extsch_script"),
                         workingDir=fl_workingDir,
                         caseEl=caseEl,
                     )

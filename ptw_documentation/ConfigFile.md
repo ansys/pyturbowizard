@@ -201,8 +201,8 @@ Optional objects are:
 - ```isentropic_efficiency_ratio```: Calculation of Isentropic Efficiency (supported arguments: "TotalToTotal", "
   TotalToStatic", "StaticToStatic")
 - ```skip_execution```: Skips the execution of the case, default: ```false```
-- ```run_extsch```: Run extsch-script: extracts all rp-variables of the case-file as ascii-file (linux-platforms
-  only!) , default: ```false```
+- ```extsch_script```: Run extsch-script: need to supply path to script which will extract all rp-variables of the case-file as ascii-file (linux-platforms
+  only!) , default: ```''```
 - You can hook additional journal files to the setup/solution procedure, using following keywords the case-dictionary:
     - ```post_meshimport_journal_filenames```: Run a journal files after mesh has been imported (for example defining
       not-supported BCs), expects a list,

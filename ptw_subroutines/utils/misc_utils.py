@@ -1,7 +1,7 @@
-import os.path
 import glob
-import shutil
 import ntpath
+import os.path
+import shutil
 import subprocess
 import time
 
@@ -47,16 +47,20 @@ def get_free_filename_maxIndex(dirname, base_filename):
     return filename
 
 
-def run_extsch_script(scriptPath: str, workingDir: str, caseEl: dict):
-    import platform
+def run_extsch_script(path_to_script: str, workingDir: str, caseEl: dict):
+    import platform    
 
     if platform.system() == "Linux":
         logger.info(f"Running 'extsch' script...")
+        # Check if the script exists
+        if not os.path.exists(path_to_script):
+            logger.warning(f"Script 'extsch' not found at: {path_to_script}. Skipping function!")
+            return        
+        
         caseFilename = caseEl.get("caseFilename")
         output_filename = f"{caseFilename}.extsch"
         commandlist = list()
-        exec_path = os.path.join(scriptPath, "ptw_misc", "extsch_script", "extsch")
-        commandlist.append(exec_path)
+        commandlist.append(path_to_script)
         commandlist.append(f"{caseFilename}.cas.h5")
         commandlist.append("| uniq")
         commandlist.append(f"> {output_filename}")

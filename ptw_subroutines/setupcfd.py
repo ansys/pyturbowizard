@@ -1033,6 +1033,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
 
 
 def set_reports(data, solver, launchEl, gpu: bool = False):
+    logger.info("Running set_reports()...")
     # Get Solution-Dict
     solutionDict = data.get("solution")
     # Get PTW Output folder path
@@ -1060,6 +1061,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
             basicReportDict.update(data.get("basic_reports"))
 
     if reportList is not None:
+        logger.info("Setting up Report Definitions...")
         for report in reportList:
             reportName = report.replace("_", "-")
             reportName = "rep-" + reportName.lower()
@@ -1089,6 +1091,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
             )
 
     if basicReportDict is not None:
+        logger.info("Setting up Basic Report Definitions...")
         if reportList is None:
             reportList = []
         for report in basicReportDict:
@@ -1473,6 +1476,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
             }
 
     # Report File
+    logger.info("Setting up Report File...")
     if reportList is not None:
         solver.settings.solution.monitor.report_files["report-file"] = {}
         reportNameList = []
@@ -1492,22 +1496,38 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
         )
 
     # Set Residuals
-    # solver.tui.preferences.simulation.local_residual_scaling("yes")
-    solver.tui.solve.monitors.residual.scale_by_coefficient("yes", "yes", "yes")
+    logger.info("Setting up Residuals...")
+    if Version(solver._version) < Version("252"):
+        # solver.tui.preferences.simulation.local_residual_scaling("yes")
+        solver.tui.solve.monitors.residual.scale_by_coefficient("yes", "yes", "yes")
 
-    # Raise the limit of residual points to save and to plot to avoid data resampling/loss
-    solver.tui.solve.monitors.residual.n_display(500000)
-    solver.tui.solve.monitors.residual.n_save(500000)
+        # Raise the limit of residual points to save and to plot to avoid data resampling/loss
+        solver.tui.solve.monitors.residual.n_display(500000)
+        solver.tui.solve.monitors.residual.n_save(500000)
 
-    # Check active number of equations
-    number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
+        # Check active number of equations
+        number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
 
-    resCrit = solutionDict.setdefault("res_crit", 1.0e-4)
-    resCritList = [resCrit] * number_eqs
-    if len(resCritList) > 0:
-        solver.tui.solve.monitors.residual.convergence_criteria(*resCritList)
+        resCrit = solutionDict.setdefault("res_crit", 1.0e-4)
+        resCritList = [resCrit] * number_eqs
+        if len(resCritList) > 0:
+            solver.tui.solve.monitors.residual.convergence_criteria(*resCritList)
+    else:
+        # Settings some display settings
+        solver.settings.solution.monitor.residual.options.n_display = 500000
+        solver.settings.solution.monitor.residual.options.n_save = 500000
+        # Settings local residuals
+        solver.settings.solution.monitor.residual.options.residual_values.scale_residuals = True
+        solver.settings.solution.monitor.residual.options.residual_values.compute_local_scale = True
+        solver.settings.solution.monitor.residual.options.residual_values.reporting_option = "local"
+
+        # Setting residual criteria
+        resCrit = solutionDict.setdefault("res_crit", 1.0e-4)
+        for equation_key in solver.settings.solution.monitor.residual.equations.keys():
+            solver.settings.solution.monitor.residual.equations[equation_key].absolute_criteria = resCrit
 
     # Set CoVs
+    logger.info("Setting up CoVs...")
     cov_list = solutionDict.get("cov_list")
     if (cov_list is not None) and (not gpu):
         stop_criterion = solutionDict.setdefault("cov_crit", 1.0e-4)
@@ -1538,13 +1558,16 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
         )
 
     # Set Convergence Conditions
-
+    logger.info("Setting up Convergence Conditions...")
     conv_check_freq = solutionDict.setdefault("conv_check_freq", 5)
     solver.settings.solution.monitor.convergence_conditions = {
         # "condition": "any-condition-is-met",
         "condition": "all-conditions-are-met",
         "frequency": conv_check_freq,
     }
+
+    logger.info("Running set_reports()... done.")
+    return   
 
 
 def set_run_calculation(data, solver):
@@ -1556,7 +1579,8 @@ def set_run_calculation(data, solver):
             f"No Solution-Dict specified in Case: 'solution'. Skipping 'set_run_calculation'!"
         )
         return
-
+    
+    logger.info("Setting up Run Calculation settings...")
     # check if pseudo-time-step method is activated in setup
     if "pseudo_time_settings" in solver.settings.solution.run_calculation().keys():
         # Set Basic Solver-Solution-Settings
