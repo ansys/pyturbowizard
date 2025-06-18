@@ -3,7 +3,10 @@
 
 ## **Open-Source Software Disclaimer**
 This deliverable depends on Open-Source Software (OSS), which are subject to their own terms & conditions and may contain vulnerabilities. 
-Ansys is not responsible for such Third-Party Software.  
+Ansys is not responsible for such Third-Party Software. 
+
+Please check the LegalNotice-file: [LegalNotice.txt](ptw_documentation/LegalNotice)
+
 It is recommended to consult your company’s Software Security department before installing any software on company hardware.
 
 ## **Overview**
