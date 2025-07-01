@@ -356,8 +356,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                         #     new_direction=False,
                         #     auto_offset=False,
                         #     rotation_angle=rotation_angle,
-                        #     nonconformal_create_periodic=True,
-                        # )
+                        #     nonconformal_create_periodic=True)
                     elif peri_if_El[key_if].get("translational") is not None:
                         # setting a translational interface
                         trans_offset = peri_if_El[key_if].get("translational")
@@ -408,8 +407,8 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                         #     new_axis=False,
                         #     new_direction=False,
                         #     auto_offset=True,
-                        #     nonconformal_create_periodic=True,
-                        # )
+                        #     nonconformal_create_periodic=True)
+
                 except Exception as e:
                     # if auto-detection of periodic angle does not work,
                     # it gets calculated from input value for number of rot passages

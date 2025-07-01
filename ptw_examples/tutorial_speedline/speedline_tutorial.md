@@ -1,5 +1,5 @@
 # Speedline Simulation Setup Tutorial for PyTurboWizard
-This tutorial aims to showcase how to efficiently setup a speedline simulation for turbomachinery cases using PyTurboWizard.
+This tutorial aims to showcase how to efficiently set up a speedline simulation for turbomachinery cases using PyTurboWizard.
 
 The steps will be explained using the axial turbine tutorial example.
 
@@ -53,11 +53,11 @@ When using the ```"baseDP"``` initialization method, the base case result is alw
 
 When using the ```"prevDP"``` initialization method, the previous Design Point is used for initialization. When utilizing this approach, it is recommended to initiate the process from one end of the speedline, such as surge or choke, and ensure a consistent and monotonic progression in the adjustment of boundary conditions while traversing the speedlines.
 
-When using the ```"base_ini"``` initialization method, each Design Point is initialized with the initialization method of the base case (**does not work for FMG**). Therefore the study initialization is independent of the base case convergence or boundary conditions.
+When using the ```"base_ini"``` initialization method, each Design Point is initialized with the initialization method of the base case (**does not work for FMG**). Therefore, the study initialization is independent of the base case convergence or boundary conditions.
 
 In the axial turbine example, the ``"prevDP"``` initialization is used and the boundary conditions of the setup are picked accordingly to start from the choke limit of the turbine.
 
-Also the ```"solution"``` argument "```"runSolver": false``` ensures that only the initialization is carried out in the base case, so that solution data is available in the study.
+The ```"solution"``` argument "```"runSolver": false``` ensures that only the initialization is carried out in the base case, so that solution data is available in the study.
 ### Study Setup
 ```
 {

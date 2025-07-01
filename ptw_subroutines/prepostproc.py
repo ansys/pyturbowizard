@@ -117,7 +117,7 @@ def spanPlots(data, solver, launchEl):
     # Set picture format for output to AVZ (Python and TUI)
     # solver.tui.display.set.picture.driver.avz
     # AVZvar = '"AVZ"'
-    # setAVZ = f'/preferences/graphics/hardcopy-settings/hardcopy-driver {AVZvar}'
+    # setAVZ = f"/preferences/graphics/hardcopy-settings/hardcopy-driver {AVZvar}"
     # all_commands_str = setAVZ
 
     availableFieldDataNames = (

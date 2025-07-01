@@ -43,7 +43,7 @@ For running Fluent on Linux or a Cluster, there are two options:
   (e.g. ```"-scheduler_ppn=4 -scheduler_gpn=4"```).
   Other options identical to usual launching options
 - Hook on to an existing Fluent session ([How to Run on Linux](/README.md#linux--cluster-1)): For this a server file
-  name has to be specified under ``` serverfilename ```. When hooking onto a existing Fluent session
+  name has to be specified under ``` serverfilename ```. When hooking onto an existing Fluent session
   the ``` launching ``` options are not used, except for ```workingDir```.
 
 ```
@@ -63,7 +63,7 @@ found [here](/ptw_examples/ConfigFileTemplates/launcherConfig_examples.json).
 
 ## Functions
 
-Under the section ``` functions ```, different subroutines for the numerical setup, post processing or the parametric
+Under the section ``` functions ```, different subroutines for the numerical setup, postprocessing or the parametric
 studies can be specified:
 
 ```
@@ -112,14 +112,14 @@ The following functions and corresponding options are available:
         - "init_fmg_03": FMG initialization, using standard "init_hybrid_01" for pre-initialization
 
 - ```postproc```:
-    - Specify postproc function
+    - Specify postprocessing function
     - Available functions:
         - **"post_01" (default):** standard postprocessing
         -
 - ```parametricstudy```:
-    - Specify parametricstudy function
+    - Specify parametric-study function
     - Available functions:
-        - **"study_01" (default):** standard parametricstudy
+        - **"study_01" (default):** standard parametric-study
 
 - ```parametricstudy_post```:
     - Specifies the function which is used to evaluate the parametric study results.
@@ -300,7 +300,7 @@ Available Boundary Conditions Include:
     - ```BC_omega``` Rotational Velocity
 - Inlet
     - ```BC_IN_p_gauge``` Initial gauge pressure
-    - ```BC_IN_TuIn``` Turbulent intensity (from 0 - 1)
+    - ```BC_IN_TuIn``` Turbulent intensity (from 0 to 1)
     - ```BC_IN_TuVR``` Turbulent viscosity ratio
     - ```BC_IN_Tt``` Total temperature
     - ```BC_IN_MassFlow``` Mass flow inlet boundary condition
@@ -387,7 +387,7 @@ specified for:
   on the Euler turbine equation
 - periodic interfaces have to be conformal for the turbo-toplogy setup to function properly
 
-In the ```locations``` section a turbo topolgy for post processing in Fluent can be defined. For different mesh
+In the ```locations``` section a turbo topolgy for postprocessing in Fluent can be defined. For different mesh
 regions (e.g. rotors and stators), separate topologies have to be created.
 
 ```

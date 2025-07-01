@@ -41,7 +41,7 @@ Required libraries:
 - Install matplotlib in command shell analogous to PyFluent: ```~/.virtualenvs/pyansys/bin/pip install matplotlib```
 #### Windows
 - Install via the [Ansys Python Manager](https://github.com/ansys/python-installer-qt-gui/releases)
-- Install directly from the [PyFluent Github Repository](https://github.com/ansys/pyfluent)
+- Install directly from the [PyFluent GitHub Repository](https://github.com/ansys/pyfluent)
 
 ### **How to Run**
 #### Linux / Cluster

@@ -251,7 +251,7 @@ def study01(data, solver, gpu):
         logger.info(f"Running Study '{studyName}' finished!")
         # break
 
-        # Extract CoV information and store in temporary file for post processing (CoV not available with GPU solver at the moment)
+        # Extract CoV information and store in temporary file for postprocessing (CoV not available with GPU solver at the moment)
         if gpu:
             tempDataDict = {"num_eqs": 0}
         else:

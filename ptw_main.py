@@ -35,7 +35,7 @@ logger = ptw_logger.init_logger()
 
 
 class PTW_Run:
-    """Object to setup & run the PyTurboWizard"""
+    """Object to set up & run the PyTurboWizard"""
 
     # Set Debug-Level
     debug_level = 1
