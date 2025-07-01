@@ -9,9 +9,10 @@ ENV*/
 .vscode
 .idea
 
-# json & yaml files
+# general file types
 *.json
 *.yaml
+*.log
 
 # Fluent files
 *.trn
