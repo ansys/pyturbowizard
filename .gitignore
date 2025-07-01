@@ -6,8 +6,8 @@ venv*/
 ENV*/
 
 # IDE stuff
-.vscode
-.idea
+.vscode/
+.idea/
 
 # general file types
 *.json
