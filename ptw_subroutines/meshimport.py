@@ -12,10 +12,14 @@ def import_01(data, solver):
     if isinstance(meshFilename, str):
         logger.info(f"Importing mesh '{meshFilename}'")
         if meshFilename.endswith(".def"):
-            solver.settings.file.import_.read(file_type="cfx-definition", file_name=meshFilename)
+            solver.settings.file.import_.read(
+                file_type="cfx-definition", file_name=meshFilename
+            )
             success = True
         elif meshFilename.endswith(".cgns"):
-            solver.settings.file.import_.read(file_type="cgns-mesh", file_name=meshFilename)
+            solver.settings.file.import_.read(
+                file_type="cgns-mesh", file_name=meshFilename
+            )
             success = True
         elif meshFilename.endswith(".gtm"):
             if Version(solver._version) < Version("241"):
@@ -84,7 +88,7 @@ def multiple_mesh_read(solver, meshnamelist):
         meshIndex += 1
 
 
-def multiple_mesh_import(solver, meshname_list:list):
+def multiple_mesh_import(solver, meshname_list: list):
     # using turbo-workflow to import multiple meshes
     solver.tui.turbo_workflow.workflow.enable()
     solver.workflow.InitializeWorkflow(WorkflowType=r"Turbo Workflow")

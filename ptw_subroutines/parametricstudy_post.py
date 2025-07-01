@@ -17,12 +17,13 @@ def study_post(data, solver, functionEl, gpu):
         defaultName="study_post_01",
     )
 
-    
     if (functionName == "study_post_01") and (not gpu):
-        logger.info(f"Running ParametricStudy-Postprocessing Function '{functionName}' ...")
+        logger.info(
+            f"Running ParametricStudy-Postprocessing Function '{functionName}' ..."
+        )
         study_post_01(data=data, solver=solver)
         logger.info(
-        f"Running ParametricStudy-Postprocessing Function '{functionName}'...  finished!"
+            f"Running ParametricStudy-Postprocessing Function '{functionName}'...  finished!"
         )
     elif gpu:
         logger.info(
@@ -32,8 +33,6 @@ def study_post(data, solver, functionEl, gpu):
         logger.info(
             f"Prescribed Function '{functionName}' not known. Skipping ParametricStudy-Postprocessing Function!"
         )
-
-    
 
 
 def study_post_01(data, solver):
@@ -258,10 +257,12 @@ def study_post_01(data, solver):
 
             # Check for full convergence and assign results to the 'convergence' column
             result_df["convergence"] = result_df.apply(
-                lambda row: "converged"
-                if row["cov_convergence"] == "good"
-                and row["res_convergence"] == "converged"
-                else "not converged",
+                lambda row: (
+                    "converged"
+                    if row["cov_convergence"] == "good"
+                    and row["res_convergence"] == "converged"
+                    else "not converged"
+                ),
                 axis=1,
             )
 
@@ -339,7 +340,12 @@ def study_post_01(data, solver):
                     # Create Plot with volume flow
                     plt.figure()
                     figure_plot = postproc_utils.plot_figure(
-                        MP_VolumeFlow, y_values, "volume flow", column, colors, cov_criterion
+                        MP_VolumeFlow,
+                        y_values,
+                        "volume flow",
+                        column,
+                        colors,
+                        cov_criterion,
                     )
 
                     plot_filename = os.path.join(

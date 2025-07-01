@@ -48,15 +48,17 @@ def get_free_filename_maxIndex(dirname, base_filename):
 
 
 def run_extsch_script(path_to_script: str, workingDir: str, caseEl: dict):
-    import platform    
+    import platform
 
     if platform.system() == "Linux":
         logger.info(f"Running 'extsch' script...")
         # Check if the script exists
         if not os.path.exists(path_to_script):
-            logger.warning(f"Script 'extsch' not found at: {path_to_script}. Skipping function!")
-            return        
-        
+            logger.warning(
+                f"Script 'extsch' not found at: {path_to_script}. Skipping function!"
+            )
+            return
+
         caseFilename = caseEl.get("caseFilename")
         output_filename = f"{caseFilename}.extsch"
         commandlist = list()
@@ -64,7 +66,9 @@ def run_extsch_script(path_to_script: str, workingDir: str, caseEl: dict):
         commandlist.append(f"{caseFilename}.cas.h5")
         commandlist.append("| uniq")
         commandlist.append(f"> {output_filename}")
-        process_files = subprocess.Popen(commandlist, cwd=workingDir, stdout=subprocess.DEVNULL)
+        process_files = subprocess.Popen(
+            commandlist, cwd=workingDir, stdout=subprocess.DEVNULL
+        )
         logger.info(f"'extsch' output written to: {output_filename}")
     else:
         logger.info(
@@ -107,11 +111,15 @@ def can_convert_to_number(value):
         return False
 
 
-def move_files(source_dir: str, target_dir: str, filename_wildcard: str, overwrite: bool = True):
+def move_files(
+    source_dir: str, target_dir: str, filename_wildcard: str, overwrite: bool = True
+):
     filenames = glob.glob(os.path.join(source_dir, filename_wildcard))
     for source_file in filenames:
         target_file = ntpath.basename(source_file)
-        logger.info(f"Moving file '{target_file}' from '{source_dir}' to '{target_dir}'")
+        logger.info(
+            f"Moving file '{target_file}' from '{source_dir}' to '{target_dir}'"
+        )
         target_file = os.path.join(target_dir, target_file)
         if overwrite:
             shutil.move(source_file, target_file)
@@ -152,4 +160,3 @@ def fluent_cleanup(working_dir: str, cleanup_data):
         logger.info("Doing user-adjusted clean-up...")
         remove_files(working_dir=working_dir, filename_wildcard=cleanup_data)
         logger.info("Doing user-adjusted clean-up...  finished!")
-

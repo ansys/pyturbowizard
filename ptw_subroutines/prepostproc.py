@@ -70,7 +70,7 @@ def prepost_01(data, solver, launchEl):
     if Version(solver._version) < Version("251"):
         solver.tui.display.save_picture(f"{meshPicFilename}")
     else:
-        solver.settings.results.graphics.picture.save_picture(file_name = meshPicFilename)
+        solver.settings.results.graphics.picture.save_picture(file_name=meshPicFilename)
 
     # Create Spanwise Plots if specified by user
     if data["locations"].get("tz_turbo_topology_names") is not None:
@@ -135,16 +135,16 @@ def spanPlots(data, solver, launchEl):
         solver.settings.results.surfaces.iso_surface[spanName] = {}
 
         if Version(solver._version) >= Version("241"):
-            zones = solver.settings.results.surfaces.iso_surface[spanName].zones.get_attr(
-                "allowed-values"
-            )
+            zones = solver.settings.results.surfaces.iso_surface[
+                spanName
+            ].zones.get_attr("allowed-values")
             solver.settings.results.surfaces.iso_surface[spanName](
                 field="spanwise-coordinate", zones=zones, iso_values=[spanVal]
             )
         else:
-            zones = solver.settings.results.surfaces.iso_surface[spanName].zone.get_attr(
-                "allowed-values"
-            )
+            zones = solver.settings.results.surfaces.iso_surface[
+                spanName
+            ].zone.get_attr("allowed-values")
             solver.settings.results.surfaces.iso_surface[spanName](
                 field="spanwise-coordinate", zone=zones, iso_value=[spanVal]
             )
@@ -166,7 +166,9 @@ def spanPlots(data, solver, launchEl):
 
                 # Set color map to banded and reduce size
                 solver.settings.results.graphics.contour[contName].color_map(size=20)
-                solver.settings.results.graphics.contour[contName].coloring(option="banded")
+                solver.settings.results.graphics.contour[contName].coloring(
+                    option="banded"
+                )
                 solver.settings.results.graphics.contour[contName].display()
 
                 fl_workingDir = launchEl.get("workingDir")
@@ -180,9 +182,7 @@ def spanPlots(data, solver, launchEl):
                 plot_filename = "./" + f"{contName}_plot"
                 if use_python_command:
                     # Python commands
-                    contour_display_command = (
-                        f"solver.settings.results.graphics.contour['{contName}'].display()"
-                    )
+                    contour_display_command = f"solver.settings.results.graphics.contour['{contName}'].display()"
                     contour_save_command = f"solver.settings.results.graphics.picture.save_picture(file_name='{plot_filename}')"
                 else:
                     # TUI commands

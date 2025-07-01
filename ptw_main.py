@@ -1,4 +1,4 @@
-#©2025 ANSYS, Inc. Unauthorized use, distribution, or duplication is prohibited.
+# ©2025 ANSYS, Inc. Unauthorized use, distribution, or duplication is prohibited.
 
 import os
 import json
@@ -330,7 +330,9 @@ class PTW_Run:
                 if caseEl["solution"].setdefault("runSolver", False):
                     solve.solve_01(caseEl, solver)
                     filename = f"{caseFilename}_fin"
-                    solver.settings.file.write(file_type="case-data", file_name=filename)
+                    solver.settings.file.write(
+                        file_type="case-data", file_name=filename
+                    )
 
                 # Postprocessing
                 if solver.fields.field_data.is_data_valid():

@@ -180,19 +180,26 @@ def add_material_property(material_object, fl_prop_name: str, fl_prop_data):
 
 def set_physics(data, solver, solve_energy: bool = True, gpu: bool = False):
     if solve_energy:
-        solver.settings.setup.models.energy = {"enabled": True, "viscous_dissipation": True}
+        solver.settings.setup.models.energy = {
+            "enabled": True,
+            "viscous_dissipation": True,
+        }
 
     gravityVector = data.get("gravity_vector")
     if isinstance(gravityVector, list) and (len(gravityVector) == 3):
         logger.info(f"Specification of Gravity-Vector: {gravityVector}")
         solver.settings.setup.general.operating_conditions.gravity.enable = True
-        solver.settings.setup.general.operating_conditions.gravity.components = gravityVector
+        solver.settings.setup.general.operating_conditions.gravity.components = (
+            gravityVector
+        )
 
     # Set turbulence model
     # if not set or in supported list, sst
     default_turb_model = "sst"
     turb_model = data["setup"].setdefault("turbulence_model", default_turb_model)
-    supported_kw_models = solver.settings.setup.models.viscous.k_omega_model.allowed_values()
+    supported_kw_models = (
+        solver.settings.setup.models.viscous.k_omega_model.allowed_values()
+    )
     # filtering specifically for transition models not available
     supported_transition_models = [
         "transition-sst",
@@ -225,7 +232,9 @@ def set_physics(data, solver, solve_energy: bool = True, gpu: bool = False):
         elif turb_model == "transition-gamma":
             solver.settings.setup.models.viscous.model = "k-omega"
             solver.settings.setup.models.viscous.k_omega_model = "sst"
-            solver.settings.setup.models.viscous.transition_module = "gamma-transport-eqn"
+            solver.settings.setup.models.viscous.transition_module = (
+                "gamma-transport-eqn"
+            )
         elif turb_model == "transition-algebraic":
             solver.settings.setup.models.viscous.model = "k-omega"
             solver.settings.setup.models.viscous.k_omega_model = "sst"
@@ -253,6 +262,7 @@ def set_physics(data, solver, solve_energy: bool = True, gpu: bool = False):
 
     return
 
+
 def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
     # Set operating-pressure
     solver.settings.setup.general.operating_conditions.operating_pressure = "BC_pref"
@@ -274,7 +284,9 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
         # Check if it´s a rotating cell-zone
         if (cz_rot_list is not None) and (cz_name in cz_rot_list):
             logger.info(f"Prescribing rotating cell zone: {cz_name}")
-            solver.settings.setup.cell_zone_conditions.fluid[cz_name].reference_frame = {
+            solver.settings.setup.cell_zone_conditions.fluid[
+                cz_name
+            ].reference_frame = {
                 "reference_frame_axis_origin": rot_ax_orig,
                 "reference_frame_axis_direction": rot_ax_dir,
                 "frame_motion": True,
@@ -283,7 +295,9 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
         # otherwise its stationary
         else:
             logger.info(f"Prescribing stationary cell zone: {cz_name}")
-            solver.settings.setup.cell_zone_conditions.fluid[cz_name].reference_frame = {
+            solver.settings.setup.cell_zone_conditions.fluid[
+                cz_name
+            ].reference_frame = {
                 "reference_frame_axis_origin": rot_ax_orig,
                 "reference_frame_axis_direction": rot_ax_dir,
             }
@@ -430,8 +444,12 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                             )
 
                 # check for non-conformal periodics (fluent creates normal interfaces if non-conformal)
-                intf_check_side1 = solver.settings.setup.boundary_conditions.interface.get(side1)
-                intf_check_side2 = solver.settings.setup.boundary_conditions.interface.get(side2)
+                intf_check_side1 = (
+                    solver.settings.setup.boundary_conditions.interface.get(side1)
+                )
+                intf_check_side2 = (
+                    solver.settings.setup.boundary_conditions.interface.get(side2)
+                )
 
                 if intf_check_side1 is not None and intf_check_side2 is not None:
                     logger.info(
@@ -463,7 +481,9 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     # solver.tui.define.boundary_conditions.zone_type(
                     #    inletName, "mass-flow-inlet"
                     # )
-                    inBC = solver.settings.setup.boundary_conditions.mass_flow_inlet[inletName]
+                    inBC = solver.settings.setup.boundary_conditions.mass_flow_inlet[
+                        inletName
+                    ]
                     inBC.momentum.mass_flow_specification = "Mass Flow Rate"
                     inBC.momentum.mass_flow_rate = "BC_IN_MassFlow"
                     inBC.momentum.supersonic_gauge_pressure = "BC_IN_p_gauge"
@@ -484,7 +504,9 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     # solver.tui.define.boundary_conditions.zone_type(
                     #    inletName, "mass-flow-inlet"
                     # )
-                    inBC = solver.settings.setup.boundary_conditions.mass_flow_inlet[inletName]
+                    inBC = solver.settings.setup.boundary_conditions.mass_flow_inlet[
+                        inletName
+                    ]
                     inBC.momentum.mass_flow_specification = "Mass Flow Rate"
                     inBC.momentum.mass_flow_rate = (
                         "BC_IN_VolumeFlow*BC_IN_VolumeFlowDensity"
@@ -506,7 +528,9 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     # solver.tui.define.boundary_conditions.zone_type(
                     #    inletName, "pressure-inlet"
                     # )
-                    inBC = solver.settings.setup.boundary_conditions.pressure_inlet[inletName]
+                    inBC = solver.settings.setup.boundary_conditions.pressure_inlet[
+                        inletName
+                    ]
                     if useProfileData:
                         # check profile naming convention:
                         # profile_name: "inlet-bc"
@@ -726,7 +750,9 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     # solver.tui.define.boundary_conditions.zone_type(
                     #    outletName, "pressure-outlet"
                     # )
-                    outBC = solver.settings.setup.boundary_conditions.pressure_outlet[outletName]
+                    outBC = solver.settings.setup.boundary_conditions.pressure_outlet[
+                        outletName
+                    ]
                     # Check Profile data exists
                     profileName = data.get("profileName_Out")
                     useProfileData = (profileName is not None) and (profileName != "")
@@ -885,9 +911,13 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                             )
                         else:
                             key_if = key_if.replace("-", "_")
-                            solver.tui.define.mesh_interfaces.create(key_if, side1, side2)
+                            solver.tui.define.mesh_interfaces.create(
+                                key_if, side1, side2
+                            )
                 else:
-                    solver.settings.setup.mesh_interfaces.interface.create(name=key_if,zone1_list=[side1],zone2_list=[side2])
+                    solver.settings.setup.mesh_interfaces.interface.create(
+                        name=key_if, zone1_list=[side1], zone2_list=[side2]
+                    )
 
     # Setup turbo-interfaces at end
     keyEl = data["locations"].get("bz_interfaces_mixingplane_names")
@@ -1069,9 +1099,9 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 solver.settings.solution.report_definitions.single_val_expression[
                     reportName
                 ] = {}
-                solver.settings.solution.report_definitions.single_val_expression[reportName] = {
-                    "define": report
-                }
+                solver.settings.solution.report_definitions.single_val_expression[
+                    reportName
+                ] = {"define": report}
             else:
                 solver.settings.solution.report_definitions.single_valued_expression[
                     reportName
@@ -1285,9 +1315,11 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 }
 
                 # define report output type
-                allowed_report_output_types = solver.settings.solution.report_definitions.drag[
-                    reportName
-                ].report_output_type.allowed_values()
+                allowed_report_output_types = (
+                    solver.settings.solution.report_definitions.drag[
+                        reportName
+                    ].report_output_type.allowed_values()
+                )
                 if report_output_type in allowed_report_output_types:
                     solver.settings.solution.report_definitions.drag[reportName] = {
                         "report_output_type": report_output_type
@@ -1336,9 +1368,11 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 }
 
                 # define report output type
-                allowed_report_output_types = solver.settings.solution.report_definitions.lift[
-                    reportName
-                ].report_output_type.allowed_values()
+                allowed_report_output_types = (
+                    solver.settings.solution.report_definitions.lift[
+                        reportName
+                    ].report_output_type.allowed_values()
+                )
                 if report_output_type in allowed_report_output_types:
                     solver.settings.solution.report_definitions.lift[reportName] = {
                         "report_output_type": report_output_type
@@ -1393,9 +1427,11 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
                 }
 
                 # define report output type
-                allowed_report_output_types = solver.settings.solution.report_definitions.moment[
-                    reportName
-                ].report_output_type.allowed_values()
+                allowed_report_output_types = (
+                    solver.settings.solution.report_definitions.moment[
+                        reportName
+                    ].report_output_type.allowed_values()
+                )
                 if report_output_type in allowed_report_output_types:
                     solver.settings.solution.report_definitions.moment[reportName] = {
                         "report_output_type": report_output_type
@@ -1517,14 +1553,22 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
         solver.settings.solution.monitor.residual.options.n_display = 500000
         solver.settings.solution.monitor.residual.options.n_save = 500000
         # Settings local residuals
-        solver.settings.solution.monitor.residual.options.residual_values.scale_residuals = True
-        solver.settings.solution.monitor.residual.options.residual_values.compute_local_scale = True
-        solver.settings.solution.monitor.residual.options.residual_values.reporting_option = "local"
+        solver.settings.solution.monitor.residual.options.residual_values.scale_residuals = (
+            True
+        )
+        solver.settings.solution.monitor.residual.options.residual_values.compute_local_scale = (
+            True
+        )
+        solver.settings.solution.monitor.residual.options.residual_values.reporting_option = (
+            "local"
+        )
 
         # Setting residual criteria
         resCrit = solutionDict.setdefault("res_crit", 1.0e-4)
         for equation_key in solver.settings.solution.monitor.residual.equations.keys():
-            solver.settings.solution.monitor.residual.equations[equation_key].absolute_criteria = resCrit
+            solver.settings.solution.monitor.residual.equations[
+                equation_key
+            ].absolute_criteria = resCrit
 
     # Set CoVs
     logger.info("Setting up CoVs...")
@@ -1567,7 +1611,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
     }
 
     logger.info("Running set_reports()... done.")
-    return   
+    return
 
 
 def set_run_calculation(data, solver):
@@ -1579,7 +1623,7 @@ def set_run_calculation(data, solver):
             f"No Solution-Dict specified in Case: 'solution'. Skipping 'set_run_calculation'!"
         )
         return
-    
+
     logger.info("Setting up Run Calculation settings...")
     # check if pseudo-time-step method is activated in setup
     if "pseudo_time_settings" in solver.settings.solution.run_calculation().keys():
@@ -1625,21 +1669,39 @@ def set_run_calculation(data, solver):
     iter_count = solutionDict.setdefault("iter_count", 500)
     solver.settings.solution.run_calculation.iter_count = int(iter_count)
 
+
 def source_terms(data, solver):
     my_sources = data.get("source_terms")
     if my_sources is None:
-        logger.info(
-            f"No 'source_terms' defined: Skipping 'source_terms' function!"
-        )
+        logger.info(f"No 'source_terms' defined: Skipping 'source_terms' function!")
         return
-    list_fluid_zones = solver.settings.setup.cell_zone_conditions.fluid.get_object_names()
+    list_fluid_zones = (
+        solver.settings.setup.cell_zone_conditions.fluid.get_object_names()
+    )
     for key in my_sources:
         logger.info(f"Defining source-term: '{key}'")
         exp_name = key
         exp_definition = my_sources[key]["definition"]
-        myvalue = fluent_utils.create_and_evaluate_expression(solver, exp_name=exp_name, definition=exp_definition, overwrite_definition=True, evaluate_value=False)
+        myvalue = fluent_utils.create_and_evaluate_expression(
+            solver,
+            exp_name=exp_name,
+            definition=exp_definition,
+            overwrite_definition=True,
+            evaluate_value=False,
+        )
         if my_sources[key]["cell_zone"] in list_fluid_zones:
-            solver.settings.setup.cell_zone_conditions.fluid[my_sources[key]["cell_zone"]] = {"sources": {"enable": True, "terms": {my_sources[key]["equation"]: [{'option': 'value', 'value': exp_name}]}}}
+            solver.settings.setup.cell_zone_conditions.fluid[
+                my_sources[key]["cell_zone"]
+            ] = {
+                "sources": {
+                    "enable": True,
+                    "terms": {
+                        my_sources[key]["equation"]: [
+                            {"option": "value", "value": exp_name}
+                        ]
+                    },
+                }
+            }
 
     logger.info("Definition of source-terms completed")
 
@@ -1649,13 +1711,19 @@ def blade_film_cooling(data, solver):
     def validate_injection_profile(csv_path, required_headers=None):
         if required_headers is None:
             required_headers = [
-                "x [in]", "y [in]", "z [in]",
-                "dia [in]", "flowlbm [lbm s^-1]", "Temp [K]",
-                "x_dir[]", "y_dir[]", "z_dir[]"
+                "x [in]",
+                "y [in]",
+                "z [in]",
+                "dia [in]",
+                "flowlbm [lbm s^-1]",
+                "Temp [K]",
+                "x_dir[]",
+                "y_dir[]",
+                "z_dir[]",
             ]
-        
-        with open(csv_path, newline='') as csvfile:
-            reader = csv.reader(csvfile, delimiter='\t')
+
+        with open(csv_path, newline="") as csvfile:
+            reader = csv.reader(csvfile, delimiter="\t")
             for row in reader:
                 # Find header line
                 if row and any(h in row[0] for h in required_headers):
@@ -1668,14 +1736,18 @@ def blade_film_cooling(data, solver):
         if missing:
             raise ValueError(f"{csv_path} is missing required headers: {missing}")
 
-    solver.scheme_eval.scheme_eval("(rpsetvar 'virtualboundary/diag-level 1)") 
-    solver.scheme_eval.scheme_eval("(rpsetvar 'virtualboundary/bnd-ext-fac 1)") 
-    solver.scheme_eval.scheme_eval("(rpsetvar 'virtualboundary/intersect-searchrad-fac 3)") 
+    solver.scheme_eval.scheme_eval("(rpsetvar 'virtualboundary/diag-level 1)")
+    solver.scheme_eval.scheme_eval("(rpsetvar 'virtualboundary/bnd-ext-fac 1)")
+    solver.scheme_eval.scheme_eval(
+        "(rpsetvar 'virtualboundary/intersect-searchrad-fac 3)"
+    )
 
     bf_cooling = data.get("blade_film_cooling", {})
     cooling_zones = bf_cooling.get("cooling_zones", [])
     if not cooling_zones:
-        logger.info(f"No 'cooling_zones' defined: Skipping 'blade_film_cooling' function!")
+        logger.info(
+            f"No 'cooling_zones' defined: Skipping 'blade_film_cooling' function!"
+        )
         return
     for zone in cooling_zones:
         logger.info(f"Defining blade film cooling for zone '{zone}'")
@@ -1683,12 +1755,12 @@ def blade_film_cooling(data, solver):
         geometry_name = zone["geometry_name"]
         interface_blade_zone = zone["interface_blade_zone"]
         vb_name = zone["virtual_boundary_name"]
-        #validate_injection_profile(profile_file) 
+        # validate_injection_profile(profile_file)
 
-        #read cooling profile
+        # read cooling profile
         solver.settings.file.read_profile(file_name=profile_file)
 
-        #virtual boundary definition
+        # virtual boundary definition
         # solver.tui.define.virtual_boundary.hole_geometry(
         #     'add', vb_name, 'coordinates', geometry_name,
         #     'direction', 'cartesian',
@@ -1708,36 +1780,60 @@ def blade_film_cooling(data, solver):
         #     'preview', 'quit', 'quit', 'quit'
         # )
         solver.tui.define.virtual_boundary.hole_geometry(
-        'add', vb_name,
-        'coordinates', geometry_name,
-        'type', 'mass-flow-inlet',
-        'direction', 'normal-to-boundary',
-        'flowdir', 'cartesian',
-        'x-dir', 'profile', 'x_dir',
-        'y-dir', 'profile', 'y_dir',
-        'z-dir', 'profile', 'z_dir',
-        'quit',  # Exits from flowdir block
-        'shape', 'cylindrical',
-        'diameter', 'profile', 'dia',
-        'quit',  # Exits from shape block
-        'flowvars', 'massflow', 'profile', 'flowlbm',
-        'temperature', 'profile', 'temp',
-        'quit',  # Exits from flowvars block
-        'quit',  # Exits from the main block
-        'quit',
-        'quit',
-        'quit')
-
-
-
+            "add",
+            vb_name,
+            "coordinates",
+            geometry_name,
+            "type",
+            "mass-flow-inlet",
+            "direction",
+            "normal-to-boundary",
+            "flowdir",
+            "cartesian",
+            "x-dir",
+            "profile",
+            "x_dir",
+            "y-dir",
+            "profile",
+            "y_dir",
+            "z-dir",
+            "profile",
+            "z_dir",
+            "quit",  # Exits from flowdir block
+            "shape",
+            "cylindrical",
+            "diameter",
+            "profile",
+            "dia",
+            "quit",  # Exits from shape block
+            "flowvars",
+            "massflow",
+            "profile",
+            "flowlbm",
+            "temperature",
+            "profile",
+            "temp",
+            "quit",  # Exits from flowvars block
+            "quit",  # Exits from the main block
+            "quit",
+            "quit",
+            "quit",
+        )
 
         # Connect boundary interface
         solver.tui.define.virtual_boundary.boundary_interface(
-            'add', f'{vb_name}-interface',
-            'boundaries', interface_blade_zone, '()',
-            'geometry',f'"{vb_name}"', '()',
-            'quit', 'quit', 'quit', 'quit'
+            "add",
+            f"{vb_name}-interface",
+            "boundaries",
+            interface_blade_zone,
+            "()",
+            "geometry",
+            f'"{vb_name}"',
+            "()",
+            "quit",
+            "quit",
+            "quit",
+            "quit",
         )
-
 
     logger.info("Blade film cooling setup complete.")

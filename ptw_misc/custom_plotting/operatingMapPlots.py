@@ -8,7 +8,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def create_operating_map_plots(csv_legend_pairs, svg_filename=None, full_convergence=False):
+def create_operating_map_plots(
+    csv_legend_pairs, svg_filename=None, full_convergence=False
+):
     if full_convergence:
         color_map = {"converged": "green", "not converged": "red"}
     else:
@@ -31,9 +33,15 @@ def create_operating_map_plots(csv_legend_pairs, svg_filename=None, full_converg
             ]
         else:
             legend_colors = [
-                mpatches.Patch(color="green", label=f'CoV < {"{:.0e}".format(cov_criterion)}'),
-                mpatches.Patch(color="orange", label=f'CoV < {"{:.0e}".format(5*cov_criterion)}'),
-                mpatches.Patch(color="red", label=f'CoV > {"{:.0e}".format(5*cov_criterion)}'),
+                mpatches.Patch(
+                    color="green", label=f'CoV < {"{:.0e}".format(cov_criterion)}'
+                ),
+                mpatches.Patch(
+                    color="orange", label=f'CoV < {"{:.0e}".format(5*cov_criterion)}'
+                ),
+                mpatches.Patch(
+                    color="red", label=f'CoV > {"{:.0e}".format(5*cov_criterion)}'
+                ),
             ]
         legend_handles.extend(legend_colors)
 
@@ -63,7 +71,11 @@ def create_operating_map_plots(csv_legend_pairs, svg_filename=None, full_converg
                     if cov_col in data.columns:
                         cov_data = data[cov_col]
                         colors = [
-                            color_map[convergence] if convergence in color_map else color_map["not converged"]
+                            (
+                                color_map[convergence]
+                                if convergence in color_map
+                                else color_map["not converged"]
+                            )
                             for convergence in data["convergence"]
                         ]
                         scatter_color = colors
@@ -77,9 +89,11 @@ def create_operating_map_plots(csv_legend_pairs, svg_filename=None, full_converg
                             (
                                 color_map["good"]
                                 if cov < 1.01 * cov_criterion
-                                else color_map["ok"]
-                                if cov < 5 * cov_criterion
-                                else color_map["poor"]
+                                else (
+                                    color_map["ok"]
+                                    if cov < 5 * cov_criterion
+                                    else color_map["poor"]
+                                )
                             )
                             for cov in cov_data
                         ]
@@ -89,7 +103,14 @@ def create_operating_map_plots(csv_legend_pairs, svg_filename=None, full_converg
 
                 color = colormap(csv_legend_pairs.index((csv_file, legend_label)))
 
-                axs.plot(x_data, y_data, linestyle="-", color=color, label=legend_label, linewidth=2)
+                axs.plot(
+                    x_data,
+                    y_data,
+                    linestyle="-",
+                    color=color,
+                    label=legend_label,
+                    linewidth=2,
+                )
                 axs.scatter(
                     x_data,
                     y_data,
@@ -104,9 +125,13 @@ def create_operating_map_plots(csv_legend_pairs, svg_filename=None, full_converg
                 y_min = min(y_min, min(y_data))
                 y_max = max(y_max, max(y_data))
 
-                legend_handles.append(Line2D([0], [0], linestyle="-", color=color, label=legend_label))
+                legend_handles.append(
+                    Line2D([0], [0], linestyle="-", color=color, label=legend_label)
+                )
 
-        leg = axs.legend(handles=legend_handles, loc="upper left", bbox_to_anchor=(1, 1), fontsize=13)
+        leg = axs.legend(
+            handles=legend_handles, loc="upper left", bbox_to_anchor=(1, 1), fontsize=13
+        )
         for line in leg.get_lines():
             line.set_linewidth(2)
         plt.tight_layout()
@@ -114,13 +139,19 @@ def create_operating_map_plots(csv_legend_pairs, svg_filename=None, full_converg
         # axs.set_xlim(0.99 * x_min, 1.01 * x_max)
         # axs.set_ylim(0.99 * y_min, 1.01 * y_max)
         axs.grid()
-        axs.set_xlabel(input_data["x_label"][0] if "x_label" in input_data else x_col, fontsize=15)
-        axs.set_ylabel(y_label if y_label else y_col, fontsize=15)  # Use specified y_label or default to y_col name
+        axs.set_xlabel(
+            input_data["x_label"][0] if "x_label" in input_data else x_col, fontsize=15
+        )
+        axs.set_ylabel(
+            y_label if y_label else y_col, fontsize=15
+        )  # Use specified y_label or default to y_col name
         axs.tick_params(axis="x", labelsize=13)
         axs.tick_params(axis="y", labelsize=13)
 
         if svg_filename:
-            plot_svg_filename = svg_filename.replace(".svg", f'_{y_col.replace(" ", "_")}.svg')
+            plot_svg_filename = svg_filename.replace(
+                ".svg", f'_{y_col.replace(" ", "_")}.svg'
+            )
             plt.savefig(plot_svg_filename, format="svg", bbox_inches="tight")
             print(f"Plot saved as {plot_svg_filename}")
         else:
@@ -168,7 +199,10 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 # Convert input data into pairs
-csv_legend_pairs = [(data["csv_file"], legend_label) for legend_label, data in input_data["input_csv_data"].items()]
+csv_legend_pairs = [
+    (data["csv_file"], legend_label)
+    for legend_label, data in input_data["input_csv_data"].items()
+]
 
 # Call the plot function
 create_operating_map_plots(

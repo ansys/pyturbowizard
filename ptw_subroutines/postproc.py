@@ -98,12 +98,18 @@ def post_01(data, solver, launchEl, trn_name, gpu):
 
     return
 
+
 def post_fplot(data, solver, launchEl, trn_name, gpu):
     # Do standard postprocessing
     post_01(data, solver, launchEl, trn_name, gpu)
     # Plots for Post Processing (Airfoil Loading, Radial Profiles, Integral Values)
-    post_plots.Fplot(solver=solver, file_name=data["caseFilename"], work_dir=launchEl.get("workingDir"),
-                                         case_dict=data)
+    post_plots.Fplot(
+        solver=solver,
+        file_name=data["caseFilename"],
+        work_dir=launchEl.get("workingDir"),
+        case_dict=data,
+    )
+
 
 def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
     try:
@@ -176,7 +182,9 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
 
     if (not cov_df.empty) and (not gpu):
         # Get CoV information
-        covDict = solver.settings.solution.monitor.convergence_conditions.convergence_reports()
+        covDict = (
+            solver.settings.solution.monitor.convergence_conditions.convergence_reports()
+        )
         if covDict is not None:
             filtCovDict = {
                 key: value

@@ -1,4 +1,5 @@
 from packaging.version import Version
+
 # Logger
 from ptw_subroutines.utils import ptw_logger, dict_utils, fluent_utils
 
@@ -25,10 +26,7 @@ def init(data, solver, functionEl, gpu):
         logger.info("Reordering domain to reduce bandwidth according to the setup")
         solver.settings.mesh.reorder.reorder_domain()
 
-    supported_ini_gpu = [
-        "init_standard_01",
-        "init_hybrid_01"
-    ]
+    supported_ini_gpu = ["init_standard_01", "init_hybrid_01"]
 
     supported_ini = [
         "init_standard_01",
@@ -36,22 +34,22 @@ def init(data, solver, functionEl, gpu):
         "init_hybrid_01",
         "init_fmg_01",
         "init_fmg_02",
-        "init_fmg_03"
+        "init_fmg_03",
     ]
 
     if gpu:
         if (functionName not in supported_ini_gpu) and (functionName in supported_ini):
             logger.warning(
                 f"Prescribed Initialization Function '{functionName}' not supported in GPU solver. Using 'init_standard_01' instead!"
-                )
+            )
             functionName = "init_standard_01"
-        elif (functionName not in supported_ini_gpu) and (functionName not in supported_ini):
+        elif (functionName not in supported_ini_gpu) and (
+            functionName not in supported_ini
+        ):
             logger.warning(
                 f"Prescribed Function '{functionName}' not known. Using 'init_standard_01' instead!"
-                )
+            )
             functionName = "init_standard_01"
-
-
 
     logger.info(f"Running Initialization Function '{functionName}'")
     if functionName == "init_standard_01":

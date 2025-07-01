@@ -85,7 +85,9 @@ def study01(data, solver, gpu):
 
             # Initialize a new parametric study
             projectFilename = os.path.join(flworking_Dir, studyName)
-            solver.settings.parametric_studies.initialize(project_filename=projectFilename)
+            solver.settings.parametric_studies.initialize(
+                project_filename=projectFilename
+            )
             psname = refCase + "-Solve"
             fluent_study = solver.settings.parametric_studies[psname]
 
@@ -251,11 +253,11 @@ def study01(data, solver, gpu):
 
         # Extract CoV information and store in temporary file for post processing (CoV not available with GPU solver at the moment)
         if gpu:
-            tempDataDict = {"num_eqs":0}
+            tempDataDict = {"num_eqs": 0}
         else:
             tempDataDict = (
                 solver.settings.solution.monitor.convergence_conditions.convergence_reports()
-            )       
+            )
         number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
         tempDataDict["num_eqs"] = number_eqs
 

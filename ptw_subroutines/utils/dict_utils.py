@@ -8,7 +8,9 @@ from ptw_subroutines.utils import ptw_logger
 logger = ptw_logger.getLogger()
 
 
-def get_funcname_and_upd_funcdict(parentDict: dict, functionDict: dict, funcDictName: str, defaultName: str):
+def get_funcname_and_upd_funcdict(
+    parentDict: dict, functionDict: dict, funcDictName: str, defaultName: str
+):
     functionName = None
     if functionDict is not None:
         functionName = functionDict.get(funcDictName)
@@ -42,7 +44,9 @@ def merge_data_with_refDict(caseDict: dict, allCasesDict: dict):
     refCaseName = caseDict.get("refCase")
     refDict = allCasesDict.get(refCaseName)
     if refDict is None:
-        logger.info(f"Specified Reference Case {refCaseName} not found in Config-File! --> Skipping CopyFunction...")
+        logger.info(
+            f"Specified Reference Case {refCaseName} not found in Config-File! --> Skipping CopyFunction..."
+        )
         return caseDict
     helpCaseDict = copy.deepcopy(refDict)
     helpCaseDict.update(caseDict)
@@ -77,7 +81,9 @@ def detect_unused_keywords(refDict: dict, compareDict: dict, path="root"):
             compareEl = compareDict.get(item)
             if isinstance(refEl, dict) and isinstance(compareEl, dict):
                 newpath = f"{path} / {item}"
-                detect_unused_keywords(refDict=refEl, compareDict=compareEl, path=newpath)
+                detect_unused_keywords(
+                    refDict=refEl, compareDict=compareEl, path=newpath
+                )
 
 
 def check_keys(case_dict: dict, case_name: str):
