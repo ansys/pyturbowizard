@@ -10,8 +10,6 @@ ENV*/
 .idea/
 
 # general file types
-*.json
-*.yaml
 *.log
 
 # Fluent files
