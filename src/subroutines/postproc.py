@@ -1,7 +1,34 @@
+# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import os
 import matplotlib.pyplot as plt
 
-from src.subroutines.utils import ptw_logger, dict_utils, postproc_utils, misc_utils
+from src.subroutines.utils import (
+    ptw_logger,
+    dict_utils,
+    postproc_utils,
+    misc_utils,
+)
 
 from src.subroutines import post_plots
 
@@ -39,18 +66,25 @@ def post_01(data, solver, launchEl, trn_name, gpu):
     )
     filename = os.path.join(
         caseOutPath,
-        data["results"].setdefault("filename_outputParameter", "outParameters.out"),
+        data["results"].setdefault(
+            "filename_outputParameter", "outParameters.out"
+        ),
     )
 
     # solver.tui.define.parameters.output_parameters.write_all_to_file('filename')
     tuicommand = (
-        'define parameters output-parameters write-all-to-file "' + filename + '"'
+        'define parameters output-parameters write-all-to-file "'
+        + filename
+        + '"'
     )
     solver.execute_tui(tuicommand)
     filename = os.path.join(
-        caseOutPath, data["results"].setdefault("filename_summary", "report.sum")
+        caseOutPath,
+        data["results"].setdefault("filename_summary", "report.sum"),
     )
-    solver.settings.results.report.summary(write_to_file=True, file_name=filename)
+    solver.settings.results.report.summary(
+        write_to_file=True, file_name=filename
+    )
 
     # Write out system time
     # solver.tui.report.system.time_stats()
@@ -141,7 +175,9 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
             key=lambda x: [int(num) for num in x.split("_") if num.isdigit()],
         )
         report_file = os.path.join(caseOutPath, report_file)
-        report_values, cov_df, mp_df = postproc_utils.calcCov(reportOut=report_file)
+        report_values, cov_df, mp_df = postproc_utils.calcCov(
+            reportOut=report_file
+        )
         logger.info(f"Using: {report_file} for Evaluation.")
 
     else:
@@ -149,7 +185,9 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
 
     # Write CoV and MP Plot
     plot_folder = os.path.join(caseOutPath, f"plots")
-    os.makedirs(plot_folder, exist_ok=True)  # Create the folder if it doesn't exist
+    os.makedirs(
+        plot_folder, exist_ok=True
+    )  # Create the folder if it doesn't exist
     if not mp_df.empty:
         mp_df.reset_index(inplace=True)
 
@@ -216,7 +254,9 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
         else:
             logger.info("No CoVs have been specified: CoV Plot not created")
     elif (not cov_df.empty) and gpu:
-        logger.info("CoVs are not supported in GPU solver: CoV Plot not created")
+        logger.info(
+            "CoVs are not supported in GPU solver: CoV Plot not created"
+        )
     else:
         logger.info("Missing Report File data: CoV Plot not created")
 
@@ -240,7 +280,11 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
 
     # Concatenate DataFrames
     result_table = pd.concat(
-        [columns_before_report_values, report_values, columns_after_report_values],
+        [
+            columns_before_report_values,
+            report_values,
+            columns_after_report_values,
+        ],
         axis=1,
     )
 
@@ -309,13 +353,17 @@ def mergeReportTables(turboData, solver):
                 caseOutPath = misc_utils.ptw_output(
                     fl_workingDir=fl_workingDir, case_name=caseFilename
                 )
-                reportTableFilePath = os.path.join(caseOutPath, reportTableName)
+                reportTableFilePath = os.path.join(
+                    caseOutPath, reportTableName
+                )
                 if os.path.isfile(reportTableFilePath):
                     reportFiles.append(reportTableFilePath)
 
         if len(reportFiles) > 1:
             df = pd.concat((pd.read_csv(f, header=0) for f in reportFiles))
-            merged_file_name = os.path.join(ptwOutPath, "merged_reporttable.csv")
+            merged_file_name = os.path.join(
+                ptwOutPath, "merged_reporttable.csv"
+            )
             logger.info(f"Writing merged report-file: {merged_file_name}")
             df.to_csv(merged_file_name)
         else:

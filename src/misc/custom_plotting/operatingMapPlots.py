@@ -1,3 +1,25 @@
+# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import json
 import sys
 
@@ -19,7 +41,9 @@ def create_operating_map_plots(
     modified_colormap = plt.cm.tab10
     colors = list(modified_colormap.colors)
     colors[2] = (0, 0, 0, 1)
-    modified_colors = [color for i, color in enumerate(colors) if i not in [1, 3]]
+    modified_colors = [
+        color for i, color in enumerate(colors) if i not in [1, 3]
+    ]
     colormap = mcolors.ListedColormap(modified_colors)
 
     for y_col, y_label in zip(input_data["y_data"], input_data["y_labels"]):
@@ -34,13 +58,16 @@ def create_operating_map_plots(
         else:
             legend_colors = [
                 mpatches.Patch(
-                    color="green", label=f'CoV < {"{:.0e}".format(cov_criterion)}'
+                    color="green",
+                    label=f'CoV < {"{:.0e}".format(cov_criterion)}',
                 ),
                 mpatches.Patch(
-                    color="orange", label=f'CoV < {"{:.0e}".format(5*cov_criterion)}'
+                    color="orange",
+                    label=f'CoV < {"{:.0e}".format(5*cov_criterion)}',
                 ),
                 mpatches.Patch(
-                    color="red", label=f'CoV > {"{:.0e}".format(5*cov_criterion)}'
+                    color="red",
+                    label=f'CoV > {"{:.0e}".format(5*cov_criterion)}',
                 ),
             ]
         legend_handles.extend(legend_colors)
@@ -55,7 +82,9 @@ def create_operating_map_plots(
             if y_col in data.columns:
                 x_data = data[x_col]
                 y_data = data[y_col]
-                cov_col = input_data["cov_data"][input_data["y_data"].index(y_col)]
+                cov_col = input_data["cov_data"][
+                    input_data["y_data"].index(y_col)
+                ]
 
                 # Check if the column represents "rep-mp-isentropic-efficiency"
                 if y_col == "rep-mp-isentropic-efficiency":
@@ -101,7 +130,9 @@ def create_operating_map_plots(
                     else:
                         cov_data = None
 
-                color = colormap(csv_legend_pairs.index((csv_file, legend_label)))
+                color = colormap(
+                    csv_legend_pairs.index((csv_file, legend_label))
+                )
 
                 axs.plot(
                     x_data,
@@ -126,11 +157,20 @@ def create_operating_map_plots(
                 y_max = max(y_max, max(y_data))
 
                 legend_handles.append(
-                    Line2D([0], [0], linestyle="-", color=color, label=legend_label)
+                    Line2D(
+                        [0],
+                        [0],
+                        linestyle="-",
+                        color=color,
+                        label=legend_label,
+                    )
                 )
 
         leg = axs.legend(
-            handles=legend_handles, loc="upper left", bbox_to_anchor=(1, 1), fontsize=13
+            handles=legend_handles,
+            loc="upper left",
+            bbox_to_anchor=(1, 1),
+            fontsize=13,
         )
         for line in leg.get_lines():
             line.set_linewidth(2)
@@ -140,7 +180,8 @@ def create_operating_map_plots(
         # axs.set_ylim(0.99 * y_min, 1.01 * y_max)
         axs.grid()
         axs.set_xlabel(
-            input_data["x_label"][0] if "x_label" in input_data else x_col, fontsize=15
+            input_data["x_label"][0] if "x_label" in input_data else x_col,
+            fontsize=15,
         )
         axs.set_ylabel(
             y_label if y_label else y_col, fontsize=15

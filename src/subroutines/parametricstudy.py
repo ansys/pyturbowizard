@@ -1,10 +1,37 @@
+# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import os
 import json
 from packaging.version import Version
 
 # Logger
 
-from src.subroutines.utils import fluent_utils, ptw_logger, dict_utils, misc_utils
+from src.subroutines.utils import (
+    fluent_utils,
+    ptw_logger,
+    dict_utils,
+    misc_utils,
+)
 
 logger = ptw_logger.getLogger()
 
@@ -26,7 +53,9 @@ def study(data, solver, functionEl, gpu):
             f"Prescribed Function '{functionName}' not known. Skipping Parametric Study!"
         )
 
-    logger.info(f"Running ParametricStudy-Function '{functionName}'...  finished!")
+    logger.info(
+        f"Running ParametricStudy-Function '{functionName}'...  finished!"
+    )
 
 
 def study01(data, solver, gpu):
@@ -78,7 +107,9 @@ def study01(data, solver, gpu):
                 solver.settings.file.read_case_data(file_name=refCaseFilePath)
             else:
                 if studyIndex == 0:
-                    solver.settings.file.read_case_data(file_name=refCaseFilePath)
+                    solver.settings.file.read_case_data(
+                        file_name=refCaseFilePath
+                    )
                 else:
                     tuicommand = 'file/rcd "' + refCaseFilePath + '" yes'
                     solver.execute_tui(tuicommand)
@@ -111,7 +142,9 @@ def study01(data, solver, gpu):
                 valueListArray = studyDef.get("valueList")
                 numDPs = len(valueListArray[0])
                 for dpIndex in range(numDPs):
-                    fluent_study.design_points.duplicate(design_point="Base DP")
+                    fluent_study.design_points.duplicate(
+                        design_point="Base DP"
+                    )
                     designPointName = list(fluent_study.design_points)[-1]
                     new_dp = fluent_study.design_points[designPointName]
                     for ipIndex in range(numIPs):
@@ -126,18 +159,24 @@ def study01(data, solver, gpu):
                             modValue = refValue * modValue
 
                         new_dp.input_parameters = {ipName: modValue}
-                        new_dp.write_data = studyEl.setdefault("write_data", False)
+                        new_dp.write_data = studyEl.setdefault(
+                            "write_data", False
+                        )
                         simulation_report_flag = studyEl.setdefault(
                             "simulation_report", False
                         )
-                        new_dp.capture_simulation_report_data = simulation_report_flag
+                        new_dp.capture_simulation_report_data = (
+                            simulation_report_flag
+                        )
 
                     designPointCounter = designPointCounter + 1
 
             # Set Initialization Method
             # convert oldkeyword definition (pre v1.4.7)
             updateFromBaseDP = studyEl.get("updateFromBaseDP")
-            if (studyEl.get("initMethod") is None) and (updateFromBaseDP is not None):
+            if (studyEl.get("initMethod") is None) and (
+                updateFromBaseDP is not None
+            ):
                 if updateFromBaseDP:
                     studyEl["initMethod"] = "baseDP"
                 else:
@@ -151,7 +190,9 @@ def study01(data, solver, gpu):
                 solver.tui.parametric_study.study.use_base_data("yes")
             elif initMethod == "prevDP":
                 logger.info("Using previous updated data for Initialization")
-                solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
+                solver.tui.parametric_study.study.use_data_of_previous_dp(
+                    "yes"
+                )
 
             if Version(solver._version) >= Version("241"):
                 if not studyEl.setdefault("reread_case", False):
@@ -173,7 +214,9 @@ def study01(data, solver, gpu):
                 fl_workingDir=flworking_Dir, study_name=studyName
             )
 
-            design_point_table_filepath = os.path.join(studyOutPath, "dp_table.csv")
+            design_point_table_filepath = os.path.join(
+                studyOutPath, "dp_table.csv"
+            )
             solver.settings.parametric_studies.export_design_table(
                 filepath=design_point_table_filepath
             )
@@ -191,14 +234,18 @@ def study01(data, solver, gpu):
         else:
             # Load Existing Project
             flworking_Dir = data.get("launching")["workingDir"]
-            solver.settings.file.parametric_project.open(project_filename=studyFileName)
+            solver.settings.file.parametric_project.open(
+                project_filename=studyFileName
+            )
             psname = refCase + "-Solve"
             fluent_study = solver.settings.parametric_studies[psname]
 
             # Set Initialization Method
             # convert oldkeyword definition (pre v1.4.7)
             updateFromBaseDP = studyEl.get("updateFromBaseDP")
-            if (studyEl.get("initMethod") is None) and (updateFromBaseDP is not None):
+            if (studyEl.get("initMethod") is None) and (
+                updateFromBaseDP is not None
+            ):
                 if updateFromBaseDP:
                     studyEl["initMethod"] = "baseDP"
                 else:
@@ -212,7 +259,9 @@ def study01(data, solver, gpu):
                 solver.tui.parametric_study.study.use_base_data("yes")
             elif initMethod == "prevDP":
                 logger.info("Using previous updated data for Initialization")
-                solver.tui.parametric_study.study.use_data_of_previous_dp("yes")
+                solver.tui.parametric_study.study.use_data_of_previous_dp(
+                    "yes"
+                )
 
             if Version(solver._version) >= Version("241"):
                 if not studyEl.setdefault("reread_case", False):
@@ -233,7 +282,9 @@ def study01(data, solver, gpu):
                 fl_workingDir=flworking_Dir, study_name=studyName
             )
 
-            design_point_table_filepath = os.path.join(studyOutPath, "dp_table.csv")
+            design_point_table_filepath = os.path.join(
+                studyOutPath, "dp_table.csv"
+            )
             solver.settings.parametric_studies.export_design_table(
                 filepath=design_point_table_filepath
             )

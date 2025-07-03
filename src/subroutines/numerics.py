@@ -1,3 +1,25 @@
+# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 # Logger
 from src.subroutines.utils import ptw_logger, dict_utils
 
@@ -69,7 +91,9 @@ def numerics_bp_tn_2305(data, solver):
 
     use_tsn = data["solution"].setdefault("tsn", True)
     if use_tsn:
-        solver.tui.solve.set.advanced.turbomachinery_specific_numerics.enable("yes")
+        solver.tui.solve.set.advanced.turbomachinery_specific_numerics.enable(
+            "yes"
+        )
     return
 
 
@@ -77,10 +101,14 @@ def numerics_bp_tn_2305_lsq(data, solver):
     logger.info(
         "Best Practice and turbo numerics with least-square-cell-based will be used"
     )
-    solver.settings.solution.methods.gradient_scheme = "least-square-cell-based"
+    solver.settings.solution.methods.gradient_scheme = (
+        "least-square-cell-based"
+    )
     use_tsn = data["solution"].setdefault("tsn", True)
     if use_tsn:
-        solver.tui.solve.set.advanced.turbomachinery_specific_numerics.enable("yes")
+        solver.tui.solve.set.advanced.turbomachinery_specific_numerics.enable(
+            "yes"
+        )
     return
 
 

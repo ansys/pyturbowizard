@@ -1,3 +1,25 @@
+# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import os
 import subprocess
 import time
@@ -98,9 +120,12 @@ def launch_queuing_session(launchEl: dict):
     additional_args = launchEl.get("additional_args", [])
     maxtime = float(launchEl.setdefault("queue_waiting_time", 600.0))
 
-    logger.info("Trying to launching new Fluent Session on queue '" + queueEl + "'")
     logger.info(
-        "Max waiting time (launching-key: 'queue_waiting_time') set to: " + str(maxtime)
+        "Trying to launching new Fluent Session on queue '" + queueEl + "'"
+    )
+    logger.info(
+        "Max waiting time (launching-key: 'queue_waiting_time') set to: "
+        + str(maxtime)
     )
     if version.parse(pyfluent.__version__) < version.parse("0.19.0"):
         # Get a free server-filename
@@ -114,7 +139,9 @@ def launch_queuing_session(launchEl: dict):
         commandlist = list()
 
         # Get Fluent Executable
-        fluent_path = get_fluent_exe_path(product_version=launchEl["fl_version"])
+        fluent_path = get_fluent_exe_path(
+            product_version=launchEl["fl_version"]
+        )
         if version.parse(pyfluent.__version__) < version.parse("0.19.0"):
             fluent_path = pyfluent.launcher.launcher.get_fluent_exe_path(
                 product_version=launchEl["fl_version"]
@@ -208,7 +235,9 @@ def get_fluent_exe_path(product_version: str):
 
     fluent_path = None
     product_version_split = product_version.split(".")
-    root_env_name = "AWP_ROOT" + product_version_split[0] + product_version_split[1]
+    root_env_name = (
+        "AWP_ROOT" + product_version_split[0] + product_version_split[1]
+    )
     ansys_root_path = os.getenv(root_env_name)
     if ansys_root_path is None:
         logger.error(f"Environment '{root_env_name}' not found on system")

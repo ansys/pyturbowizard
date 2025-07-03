@@ -1,3 +1,25 @@
+# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 # -*- coding: utf-8 -*-
 """
 Script for Post-processing Turbomachinery Cases
@@ -55,13 +77,17 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
         ]
         if span:
             # Update Span Location
-            solver.settings.results.surfaces.iso_surface[surf].iso_values = [span]
+            solver.settings.results.surfaces.iso_surface[surf].iso_values = [
+                span
+            ]
         field_data = solver.fields.field_data
         loading_data = dict()
         loading_data["surf"] = surf
         loading_data["pct_span"] = span
         for ff in fields:
-            data = field_data.get_scalar_field_data(field_name=ff, surfaces=[surf])
+            data = field_data.get_scalar_field_data(
+                field_name=ff, surfaces=[surf]
+            )
             # loading_data[ff] = [d.scalar_data for d in data]
             loading_data[ff] = data[surf]
 
@@ -143,12 +169,16 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
         f.write(",".join(field_names))
         f.write("\n")
         for i in range(0, len(data[field_names[0]])):
-            f.write(",".join([r"{:1.10f}".format(data[k][i]) for k in field_names]))
+            f.write(
+                ",".join([r"{:1.10f}".format(data[k][i]) for k in field_names])
+            )
             f.write("\n")
         f.write('#-- End of profile --"\n\n')
         f.close()
 
-    def plot_row_radial_profile(prof, SaveFig=False, fig_dir="Radial_Profile_Figures"):
+    def plot_row_radial_profile(
+        prof, SaveFig=False, fig_dir="Radial_Profile_Figures"
+    ):
         if SaveFig and not os.path.exists(fig_dir):
             os.makedirs(fig_dir)
         for af in list(prof.keys()):
@@ -157,7 +187,9 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
                 for vv in list(prof[af][zone].keys())[1:]:
                     fig, ax = plt.subplots()
 
-                    ax.plot(data["Hub to Shroud Distance"], data[vv], color="r")
+                    ax.plot(
+                        data["Hub to Shroud Distance"], data[vv], color="r"
+                    )
                     clean_af = af.split("-", 1)[1].replace("-", "")
                     title = (
                         clean_af.title()
@@ -233,7 +265,9 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
 
     def airfoil_loading_analysis(solver, work_dir, case_dict):
 
-        if not case_dict.get("airfoil_zones") or not case_dict.get("loading_span_cuts"):
+        if not case_dict.get("airfoil_zones") or not case_dict.get(
+            "loading_span_cuts"
+        ):
             logger.warning(
                 "[airfoil_loading_analysis] No airfoil zones or span cuts defined — skipping airfoil loading plot creation."
             )
@@ -258,7 +292,9 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
                 if clip_name not in list(
                     solver.settings.results.surfaces.iso_surface.keys()
                 ):
-                    solver.settings.results.surfaces.iso_surface.create(clip_name)
+                    solver.settings.results.surfaces.iso_surface.create(
+                        clip_name
+                    )
 
                 solver.settings.results.surfaces.iso_surface[clip_name] = {
                     "surfaces": wall_list,
@@ -268,11 +304,11 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
                 }
 
                 loading_data = get_loading_data(clip_name, span=pct_span)
-                plot_loading(loading_data, plot_types, SaveFig=True, w_dir=work_dir)
-
-                output_filename = (
-                    f"{clip_name.title()}_{int(pct_span * 100)}Pct_Span_loading.csv"
+                plot_loading(
+                    loading_data, plot_types, SaveFig=True, w_dir=work_dir
                 )
+
+                output_filename = f"{clip_name.title()}_{int(pct_span * 100)}Pct_Span_loading.csv"
                 csv_folder = os.path.join(work_dir, "Airfoil_Loading_CSVs")
                 os.makedirs(csv_folder, exist_ok=True)
                 write_loading_csv(
@@ -297,7 +333,9 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
         target_bc_types = [
             bc
             for bc in bc_types
-            if any(key in bc.lower() for key in ["interface", "inlet", "outlet"])
+            if any(
+                key in bc.lower() for key in ["interface", "inlet", "outlet"]
+            )
         ]
         faces = []
         for bc_type in target_bc_types:
@@ -307,10 +345,16 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
                 .keys()
             )
 
-        surface = [s for s in faces if "inflow" in s.lower() or "outflow" in s.lower()]
+        surface = [
+            s for s in faces if "inflow" in s.lower() or "outflow" in s.lower()
+        ]
 
-        mass_avg_filename = os.path.join(work_dir, f"Mass_Ave_Integrals_{basename}.txt")
-        mass_flow_filename = os.path.join(work_dir, f"Mass_flow_{basename}.txt")
+        mass_avg_filename = os.path.join(
+            work_dir, f"Mass_Ave_Integrals_{basename}.txt"
+        )
+        mass_flow_filename = os.path.join(
+            work_dir, f"Mass_flow_{basename}.txt"
+        )
 
         for field in fields:
             solver.settings.results.report.surface_integrals.mass_weighted_avg(
@@ -321,13 +365,17 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
             )
 
         solver.settings.results.report.surface_integrals.mass_flow_rate(
-            surface_names=surface, write_to_file=True, file_name=mass_flow_filename
+            surface_names=surface,
+            write_to_file=True,
+            file_name=mass_flow_filename,
         )
 
         df_mass_avg = parse_mass_avg_report(mass_avg_filename)
         df_mass_flow = parse_mass_avg_report(mass_flow_filename)
 
-        df_mass_avg.to_csv(os.path.join(work_dir, f"Mass_Ave_Processed_{basename}.csv"))
+        df_mass_avg.to_csv(
+            os.path.join(work_dir, f"Mass_Ave_Processed_{basename}.csv")
+        )
         df_mass_flow.to_csv(
             os.path.join(work_dir, f"Mass_flow_Processed_{basename}.csv")
         )
@@ -385,8 +433,12 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
                     f'"{fname_outlet}"',
                 )
 
-                prof_data[row_name]["Inlet"].update(Read_Fluent_xy(fname_inlet))
-                prof_data[row_name]["Outlet"].update(Read_Fluent_xy(fname_outlet))
+                prof_data[row_name]["Inlet"].update(
+                    Read_Fluent_xy(fname_inlet)
+                )
+                prof_data[row_name]["Outlet"].update(
+                    Read_Fluent_xy(fname_outlet)
+                )
 
         # Save plots
         plot_row_radial_profile(
@@ -404,7 +456,8 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
         '"swirl-angle"', '"atan(tangential_velocity/axial_velocity)"'
     )
     solver.tui.define.custom_field_functions.define(
-        '"rel-swirl-angle"', '"atan(rel_tangential_velocity/rel_axial_velocity)"'
+        '"rel-swirl-angle"',
+        '"atan(rel_tangential_velocity/rel_axial_velocity)"',
     )
 
     airfoil_cfg = post_cfg.get("airfoil_loading")
@@ -425,7 +478,9 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
         logger.info("[Fplot] Starting radial profile post-processing...")
         generate_radial_profiles(solver, work_dir, radial_cfg)
     else:
-        logger.info("[Fplot] No 'radial_profiles' config found. Skipping radial plots.")
+        logger.info(
+            "[Fplot] No 'radial_profiles' config found. Skipping radial plots."
+        )
 
     if integral_cfg:
         logger.info("[Fplot] Starting integral value post-processing...")

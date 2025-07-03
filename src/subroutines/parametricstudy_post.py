@@ -1,9 +1,36 @@
+# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import os
 import matplotlib.pyplot as plt
 import json
 
 # Logger
-from src.subroutines.utils import ptw_logger, dict_utils, postproc_utils, misc_utils
+from src.subroutines.utils import (
+    ptw_logger,
+    dict_utils,
+    postproc_utils,
+    misc_utils,
+)
 
 logger = ptw_logger.getLogger()
 
@@ -72,7 +99,9 @@ def study_post_01(data, solver):
                     and value.get("cov", False)
                 }
             else:
-                logger.info("No base case information for CoVs has been found!")
+                logger.info(
+                    "No base case information for CoVs has been found!"
+                )
                 cov_data_exists = False
 
             # Define a Folder to store plots
@@ -101,7 +130,9 @@ def study_post_01(data, solver):
             if result_df.empty:
                 continue
             # Get the list of columns ending with '-cov'
-            cov_columns = [col for col in result_df.columns if col.endswith("-cov")]
+            cov_columns = [
+                col for col in result_df.columns if col.endswith("-cov")
+            ]
 
             # Initialize a list to store convergence results
             cov_convergence_results = []
@@ -114,7 +145,9 @@ def study_post_01(data, solver):
                     cov_column = filtCovDict.get(
                         col
                     )  # Get the corresponding dictionary if it exists
-                    if cov_column is not None:  # Check if the column is CoV set
+                    if (
+                        cov_column is not None
+                    ):  # Check if the column is CoV set
                         cov_criterion = cov_column.get("stop_criterion")
                         if cov_criterion is not None:
                             if row[col] > 5 * cov_criterion:
@@ -145,7 +178,9 @@ def study_post_01(data, solver):
                         filtered_y_columns = [
                             col
                             for col in y_columns
-                            if any(col.startswith(key[:-4]) for key in filtCovDict)
+                            if any(
+                                col.startswith(key[:-4]) for key in filtCovDict
+                            )
                         ]
                     else:
                         filtered_y_columns = y_columns
@@ -167,7 +202,9 @@ def study_post_01(data, solver):
                         dpdirectory_path, f"cov_plot_{dp_name}.png"
                     )
                     plt.tight_layout()
-                    logger.info(f"Writing CoV Plot to Directory: {plot_filename}")
+                    logger.info(
+                        f"Writing CoV Plot to Directory: {plot_filename}"
+                    )
                     plt.savefig(plot_filename)
                     plt.close()  # Close the figure to release memory
 
@@ -205,7 +242,8 @@ def study_post_01(data, solver):
                         residual_df = residual_df.iloc[-length_residual_df:]
 
                     residual_df["Iterations"] = (
-                        residual_df["Iterations"] - residual_df["Iterations"].iloc[0]
+                        residual_df["Iterations"]
+                        - residual_df["Iterations"].iloc[0]
                     )
 
                     # Check for res convergence and assign results to the 'res_convergence' column
@@ -225,7 +263,11 @@ def study_post_01(data, solver):
                     plt.figure(figsize=(10, 6))
                     # Plot each column separately on the same plot
                     for col in y_columns:
-                        plt.plot(residual_df["Iterations"], residual_df[col], label=col)
+                        plt.plot(
+                            residual_df["Iterations"],
+                            residual_df[col],
+                            label=col,
+                        )
 
                     plt.xlabel("Iteration")
                     plt.ylabel("")
@@ -239,7 +281,9 @@ def study_post_01(data, solver):
                         dpdirectory_path, f"residual_plot_{dp_name}.png"
                     )
                     plt.tight_layout()
-                    logger.info(f"Writing Residual Plot to Directory: {plot_filename}")
+                    logger.info(
+                        f"Writing Residual Plot to Directory: {plot_filename}"
+                    )
                     plt.savefig(plot_filename)
                     plt.close()  # Close the figure to release memory
 

@@ -1,3 +1,25 @@
+# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import os, csv
 from packaging.version import Version
 
@@ -33,7 +55,9 @@ def read_journals(
                         f"Changing specified journal-file '{journal_file}' to absolute path : {new_journal_file}"
                     )
                 adjusted_journal_list.append(new_journal_file)
-            solver.settings.file.read_journal(file_name_list=adjusted_journal_list)
+            solver.settings.file.read_journal(
+                file_name_list=adjusted_journal_list
+            )
             # Change back working dir
             chdir_command = rf"""(chdir "{fluent_dir}")"""
             solver.execute_tui(chdir_command)
@@ -57,11 +81,15 @@ def getNumberOfEquations(solver):
             if equ == "temperature":
                 number_eqs += 1
     else:
-        number_eqs = len(solver.settings.solution.monitor.residual.equations.keys())
+        number_eqs = len(
+            solver.settings.solution.monitor.residual.equations.keys()
+        )
     return number_eqs
 
 
-def addExecuteCommand(solver, command_name, command, pythonCommand: bool = False):
+def addExecuteCommand(
+    solver, command_name, command, pythonCommand: bool = False
+):
     # Add a command to execute after solving is finished
     if Version(solver._version) < Version("252"):
         if pythonCommand:
@@ -107,13 +135,18 @@ def create_iso_surface(
     zones: list = None,
     surfaces: list = None,
 ):
-    if name not in solver.settings.results.surfaces.iso_surface.get_object_names():
+    if (
+        name
+        not in solver.settings.results.surfaces.iso_surface.get_object_names()
+    ):
         solver.settings.results.surfaces.iso_surface.create(name=name)
 
     if zones is None:
         zones = []
         if surfaces is None:
-            zones = solver.settings.setup.cell_zone_conditions.get_active_child_names()
+            zones = (
+                solver.settings.setup.cell_zone_conditions.get_active_child_names()
+            )
 
     if surfaces is None:
         surfaces = []
@@ -134,7 +167,10 @@ def create_iso_clip(
     max_value: float,
     surfaces: list = None,
 ):
-    if name not in solver.settings.results.surfaces.iso_clip.get_object_names():
+    if (
+        name
+        not in solver.settings.results.surfaces.iso_clip.get_object_names()
+    ):
         solver.settings.results.surfaces.iso_clip.create(name=name)
 
     if surfaces is None:
@@ -147,8 +183,13 @@ def create_iso_clip(
     }
 
 
-def create_point_surface(solver, name: str, point: list, snap_method: str = "nearest"):
-    if name not in solver.settings.results.surfaces.point_surface.get_object_names():
+def create_point_surface(
+    solver, name: str, point: list, snap_method: str = "nearest"
+):
+    if (
+        name
+        not in solver.settings.results.surfaces.point_surface.get_object_names()
+    ):
         solver.settings.results.surfaces.point_surface.create(name=name)
     allowed_values = solver.settings.results.surfaces.point_surface[
         name
@@ -164,8 +205,13 @@ def create_point_surface(solver, name: str, point: list, snap_method: str = "nea
         )
 
 
-def create_plane_surface(solver, name: str, value: float, method: str = "xy-plane"):
-    if name not in solver.settings.results.surfaces.plane_surface.get_object_names():
+def create_plane_surface(
+    solver, name: str, value: float, method: str = "xy-plane"
+):
+    if (
+        name
+        not in solver.settings.results.surfaces.plane_surface.get_object_names()
+    ):
         solver.settings.results.surfaces.plane_surface.create(name=name)
 
     if method == "xy-plane":
@@ -195,7 +241,9 @@ def create_plane_surface(solver, name: str, value: float, method: str = "xy-plan
 def export_solver_monitor(
     solver, filepath: str = "residual.csv", monitor_set_name: str = "residual"
 ):
-    mp = solver.monitors.get_monitor_set_data(monitor_set_name=monitor_set_name)
+    mp = solver.monitors.get_monitor_set_data(
+        monitor_set_name=monitor_set_name
+    )
     indices = mp[0]
     data_dict = mp[1]
     with open(filepath, "w", newline="") as file:
@@ -216,11 +264,18 @@ def create_and_evaluate_expression(
     overwrite_definition=True,
     evaluate_value=False,
 ):
-    if exp_name not in solver.settings.setup.named_expressions.get_object_names():
+    if (
+        exp_name
+        not in solver.settings.setup.named_expressions.get_object_names()
+    ):
         solver.settings.setup.named_expressions.create(name=exp_name)
-        solver.settings.setup.named_expressions[exp_name] = {"definition": definition}
+        solver.settings.setup.named_expressions[exp_name] = {
+            "definition": definition
+        }
     if overwrite_definition:
-        solver.settings.setup.named_expressions[exp_name] = {"definition": definition}
+        solver.settings.setup.named_expressions[exp_name] = {
+            "definition": definition
+        }
     value = None
     if evaluate_value:
         value = solver.settings.setup.named_expressions[exp_name].get_value()

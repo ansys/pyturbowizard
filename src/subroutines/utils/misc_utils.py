@@ -1,3 +1,25 @@
+# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import glob
 import ntpath
 import os.path
@@ -112,7 +134,10 @@ def can_convert_to_number(value):
 
 
 def move_files(
-    source_dir: str, target_dir: str, filename_wildcard: str, overwrite: bool = True
+    source_dir: str,
+    target_dir: str,
+    filename_wildcard: str,
+    overwrite: bool = True,
 ):
     filenames = glob.glob(os.path.join(source_dir, filename_wildcard))
     for source_file in filenames:
@@ -127,7 +152,9 @@ def move_files(
             try:
                 shutil.move(source_file, target_dir)
             except shutil.Error as e:
-                logger.exception(f"Moving file '{source_file}' failed: {str(e)}")
+                logger.exception(
+                    f"Moving file '{source_file}' failed: {str(e)}"
+                )
 
 
 def remove_files(working_dir: str, filename_wildcard):

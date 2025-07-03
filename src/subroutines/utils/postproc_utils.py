@@ -1,3 +1,25 @@
+# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
@@ -29,9 +51,9 @@ def calcCov(reportOut, window_size=50, write_mean=True):
 
     # calculate the Coefficient of Variation over the window size
     cov_df = mp_df.copy()
-    cov_df.iloc[:, 1:] = mp_df.iloc[:, 1:].rolling(window=window_size).std() / abs(
-        mp_df.iloc[:, 1:].rolling(window=window_size).mean()
-    )
+    cov_df.iloc[:, 1:] = mp_df.iloc[:, 1:].rolling(
+        window=window_size
+    ).std() / abs(mp_df.iloc[:, 1:].rolling(window=window_size).mean())
 
     mean_values = mp_df.iloc[:, 1:].rolling(window=window_size).mean().iloc[-1]
     cov_values = cov_df.iloc[-1]
@@ -84,7 +106,9 @@ def getStudyReports(pathtostudy, tempData=None):
         folder_path = os.path.join(pathtostudy, dpname)
 
         # Check if the folder_path contains a .out file
-        out_files = [file for file in os.listdir(folder_path) if file.endswith(".out")]
+        out_files = [
+            file for file in os.listdir(folder_path) if file.endswith(".out")
+        ]
 
         if out_files:
             # Take the first .out file as the file_path
@@ -95,7 +119,9 @@ def getStudyReports(pathtostudy, tempData=None):
             continue
 
         # Check if the folder_path contains a .trn file
-        trn_files = [file for file in os.listdir(folder_path) if file.endswith(".trn")]
+        trn_files = [
+            file for file in os.listdir(folder_path) if file.endswith(".trn")
+        ]
         if trn_files:
             # Take the first .trn file as the csv_file_path
             trn_file_path = os.path.join(folder_path, trn_files[0])
@@ -149,11 +175,15 @@ def plot_figure(x_values, y_values, x_label, y_label, colors, criterion):
 
         # Create legend handles for color coding
         legend_colors = [
-            mpatches.Patch(color="green", label=f'CoV < {"{:.0e}".format(criterion)}'),
+            mpatches.Patch(
+                color="green", label=f'CoV < {"{:.0e}".format(criterion)}'
+            ),
             mpatches.Patch(
                 color="orange", label=f'CoV < {"{:.0e}".format(5*criterion)}'
             ),
-            mpatches.Patch(color="red", label=f'CoV > {"{:.0e}".format(5*criterion)}'),
+            mpatches.Patch(
+                color="red", label=f'CoV > {"{:.0e}".format(5*criterion)}'
+            ),
         ]
         ax.legend(handles=legend_colors, loc="best")
     return fig
@@ -193,7 +223,9 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
             if "Total wall-clock time" in line:
                 wall_clock_tot = line.split(":")[1].strip()
                 wall_clock_tot = wall_clock_tot.split(" ")[0].strip()
-                logger.info(f"Detected Total Wall Clock Time: {wall_clock_tot}")
+                logger.info(
+                    f"Detected Total Wall Clock Time: {wall_clock_tot}"
+                )
             elif "Mesh Size" in line:
                 if "Level    Cells" in lines[line_nr + 2]:
                     mesh_info_line = lines[line_nr + 3]
@@ -218,7 +250,9 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
                     and all_convertible
                 ):
                     filtered_values = values[: number_eqs + 1]
-                    filtered_values = [float(value) for value in filtered_values]
+                    filtered_values = [
+                        float(value) for value in filtered_values
+                    ]
                     # Append filtered_values to the list
                     filtered_values_list.append(filtered_values)
                     solver_trn_data_valid = True
@@ -234,7 +268,8 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
                             for value in values[: number_eqs + 1]
                         )
                         table_started = (
-                            len(values[: number_eqs + 1]) == len(filtered_headers)
+                            len(values[: number_eqs + 1])
+                            == len(filtered_headers)
                             and all_convertible
                         )
 
@@ -246,7 +281,9 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
 
     if solver is not None:
         # get pseudo time step value
-        time_step = solver.scheme_eval.string_eval("(rpgetvar 'pseudo-auto-time-step)")
+        time_step = solver.scheme_eval.string_eval(
+            "(rpgetvar 'pseudo-auto-time-step)"
+        )
 
         # check if energy is solved
         solveEnergy = solver.settings.setup.models.energy.enabled()
@@ -293,7 +330,8 @@ def check_lines(line_list, number_eqs, filtered_headers):
             for value in values[: number_eqs + 1]
         )
         valid_data = (
-            len(values[: number_eqs + 1]) == len(filtered_headers) and all_convertible
+            len(values[: number_eqs + 1]) == len(filtered_headers)
+            and all_convertible
         )
         if valid_data:
             return valid_data

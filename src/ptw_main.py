@@ -1,3 +1,25 @@
+# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 # ©2025 ANSYS, Inc. Unauthorized use, distribution, or duplication is prohibited.
 
 import os
@@ -8,9 +30,24 @@ import ansys.fluent.core as pyfluent
 from packaging.version import Version
 
 # Load Script Modules
-from src.subroutines import solve, setupcfd, prepostproc, parametricstudy, meshimport, numerics, \
-    parametricstudy_post, postproc
-from src.subroutines.utils import fluent_utils, ptw_logger, dict_utils, launcher, expressions_utils, misc_utils
+from src.subroutines import (
+    solve,
+    setupcfd,
+    prepostproc,
+    parametricstudy,
+    meshimport,
+    numerics,
+    parametricstudy_post,
+    postproc,
+)
+from src.subroutines.utils import (
+    fluent_utils,
+    ptw_logger,
+    dict_utils,
+    launcher,
+    expressions_utils,
+    misc_utils,
+)
 
 ptw_version = "1.9.8"
 
@@ -59,7 +96,9 @@ class PTW_Run:
         # Set Version to turboData
         self.turbo_data["ptw_version"] = ptw_version
         # Get or Set-Default Debug-Level
-        self.debug_level = self.turbo_data.setdefault("debug_level", self.debug_level)
+        self.debug_level = self.turbo_data.setdefault(
+            "debug_level", self.debug_level
+        )
 
         # Get important Elements from json file
         self.launch_data = self.turbo_data.get("launching")
@@ -75,7 +114,9 @@ class PTW_Run:
         self.fl_workingDir = fl_workingDir
         logger.info(f"Used Fluent Working-Directory: {self.fl_workingDir}")
 
-        logger.info(f"Reading ConfigFile: {os.path.abspath(config_filename)}... done!")
+        logger.info(
+            f"Reading ConfigFile: {os.path.abspath(config_filename)}... done!"
+        )
 
     def launch_fluent(self, solver=None):
         if solver is None:
@@ -201,7 +242,9 @@ class PTW_Run:
                 logger.info("Expression Definition... starting")
                 # Write ExpressionFile with specified Template
                 expressions_utils.write_expression_file(
-                    data=caseEl, script_dir=self.script_path, working_dir=fl_workingDir
+                    data=caseEl,
+                    script_dir=self.script_path,
+                    working_dir=fl_workingDir,
                 )
                 # Reading ExpressionFile into Fluent
                 caseOutPath = misc_utils.ptw_output(
@@ -210,9 +253,13 @@ class PTW_Run:
                 expressionFilename = os.path.join(
                     caseOutPath, caseEl["expressionFilename"]
                 )
-                solver.tui.define.named_expressions.import_from_tsv(expressionFilename)
+                solver.tui.define.named_expressions.import_from_tsv(
+                    expressionFilename
+                )
                 # Check if all inputParameters are valid
-                expressions_utils.check_input_parameter_expressions(solver=solver)
+                expressions_utils.check_input_parameter_expressions(
+                    solver=solver
+                )
                 # Check if all outputParameters are set
                 expressions_utils.check_output_parameter_expressions(
                     caseEl=caseEl, solver=solver
@@ -222,7 +269,9 @@ class PTW_Run:
                 # Remove exp-file & write final expressions-file
                 if os.path.exists(expressionFilename):
                     os.remove(expressionFilename)
-                solver.tui.define.named_expressions.export_to_tsv(expressionFilename)
+                solver.tui.define.named_expressions.export_to_tsv(
+                    expressionFilename
+                )
                 logger.info("Expression Definition... done!")
                 ### Expression Definition... done!
 
@@ -234,7 +283,10 @@ class PTW_Run:
 
                 # Case Setup
                 setupcfd.setup(
-                    data=caseEl, solver=solver, functionEl=caseFunctionEl, gpu=gpu
+                    data=caseEl,
+                    solver=solver,
+                    functionEl=caseFunctionEl,
+                    gpu=gpu,
                 )
                 setupcfd.source_terms(data=caseEl, solver=solver)
 
@@ -245,7 +297,10 @@ class PTW_Run:
                 # Solution
                 # Set Solver Settings
                 numerics.numerics(
-                    data=caseEl, solver=solver, functionEl=caseFunctionEl, gpu=gpu
+                    data=caseEl,
+                    solver=solver,
+                    functionEl=caseFunctionEl,
+                    gpu=gpu,
                 )
 
                 # Set "Run Calculation" properties
@@ -262,7 +317,10 @@ class PTW_Run:
 
                 # Initialization
                 solve.init(
-                    data=caseEl, solver=solver, functionEl=caseFunctionEl, gpu=gpu
+                    data=caseEl,
+                    solver=solver,
+                    functionEl=caseFunctionEl,
+                    gpu=gpu,
                 )
 
                 # Setup for Post Processing
@@ -275,7 +333,9 @@ class PTW_Run:
 
                 # Write case and ini-data & settings file
                 logger.info("Writing initial case & settings file")
-                solver.settings.file.write(file_type="case", file_name=caseFilename)
+                solver.settings.file.write(
+                    file_type="case", file_name=caseFilename
+                )
                 settingsFilename = os.path.join(caseOutPath, "settings.set")
                 # Removing file manually, as batch options seem not to work
                 if os.path.exists(settingsFilename):
@@ -295,7 +355,9 @@ class PTW_Run:
 
                 if solver.fields.field_data.is_data_valid():
                     logger.info("Writing initial dat file")
-                    solver.settings.file.write(file_type="data", file_name=caseFilename)
+                    solver.settings.file.write(
+                        file_type="data", file_name=caseFilename
+                    )
                 else:
                     logger.info(
                         "Skipping Writing of Initial Solution Data: No Solution Data available"
@@ -332,7 +394,9 @@ class PTW_Run:
                     # filename = caseFilename + "_fin"
                     # solver.settings.file.write(file_type="case-data", file_name=filename)
                 else:
-                    logger.info("Skipping Postprocessing: No Solution Data available")
+                    logger.info(
+                        "Skipping Postprocessing: No Solution Data available"
+                    )
 
                 # Read Additional Journals, if specified
                 fluent_utils.read_journals(
@@ -344,7 +408,10 @@ class PTW_Run:
                 )
 
                 # Finalize
-                if "stop_transcript" in solver.settings.file.get_active_command_names():
+                if (
+                    "stop_transcript"
+                    in solver.settings.file.get_active_command_names()
+                ):
                     solver.settings.file.stop_transcript()
                 # End of Case-Loop
 
@@ -377,11 +444,17 @@ class PTW_Run:
         # Do Studies
         if studyDict is not None:
             parametricstudy.study(
-                data=turbo_data, solver=solver, functionEl=gl_function_data, gpu=gpu
+                data=turbo_data,
+                solver=solver,
+                functionEl=gl_function_data,
+                gpu=gpu,
             )
             # Post Process Studies
             parametricstudy_post.study_post(
-                data=turbo_data, solver=solver, functionEl=gl_function_data, gpu=gpu
+                data=turbo_data,
+                solver=solver,
+                functionEl=gl_function_data,
+                gpu=gpu,
             )
 
         logger.info("Running Parametric Study... done!")
@@ -414,7 +487,9 @@ class PTW_Run:
         # Write out Debug info
         if self.debug_level > 0:
             # Compare turboData: final data vs file data --> check if some keywords have not been used
-            logger.info("Searching for unused keywords in input-config-file...")
+            logger.info(
+                "Searching for unused keywords in input-config-file..."
+            )
             dict_utils.detect_unused_keywords(
                 refDict=self.turbo_data, compareDict=self.turbo_data_from_file
             )
@@ -424,11 +499,13 @@ class PTW_Run:
 
             import ntpath
 
-            config_basename = os.path.splitext(ntpath.basename(self.config_file_name))[
-                0
-            ]
+            config_basename = os.path.splitext(
+                ntpath.basename(self.config_file_name)
+            )[0]
             debug_filename = f"ptw_{config_basename}.json"
-            ptwOutPath = misc_utils.ptw_output(fl_workingDir=self.fl_workingDir)
+            ptwOutPath = misc_utils.ptw_output(
+                fl_workingDir=self.fl_workingDir
+            )
             debug_file_path = os.path.join(ptwOutPath, debug_filename)
             jsonString = json.dumps(self.turbo_data, indent=4, sort_keys=True)
             with open(debug_file_path, "w") as jsonFile:
@@ -440,7 +517,9 @@ class PTW_Run:
     def do_full_run(self, script_path, config_filename, solver):
         logger.info(f"*** Starting PyTurboWizard (Version {ptw_version}) ***")
         # Start ptw_run
-        self.load_config_file(script_path=script_path, config_filename=config_filename)
+        self.load_config_file(
+            script_path=script_path, config_filename=config_filename
+        )
         self.launch_fluent(solver=solver)
         self.ini_fluent_settings()
         self.do_case_study()
@@ -465,7 +544,9 @@ def ptw_main():
     if "solver" in globals():
         solver_session = globals()["solver"]
     ptw_run.do_full_run(
-        script_path=script_path, config_filename=config_filename, solver=solver_session
+        script_path=script_path,
+        config_filename=config_filename,
+        solver=solver_session,
     )
 
 

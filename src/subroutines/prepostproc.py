@@ -1,7 +1,34 @@
+# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import os
 from packaging.version import Version
 
-from src.subroutines.utils import fluent_utils, ptw_logger, dict_utils, misc_utils
+from src.subroutines.utils import (
+    fluent_utils,
+    ptw_logger,
+    dict_utils,
+    misc_utils,
+)
 
 # Logger
 logger = ptw_logger.getLogger()
@@ -49,7 +76,9 @@ def prepost_01(data, solver, launchEl):
     # Get walls of domain
     surfaces = solver.fields.field_info.get_surfaces_info()
     wall_surfaces = [
-        key for key, value in surfaces.items() if value.get("zone_type") == "wall"
+        key
+        for key, value in surfaces.items()
+        if value.get("zone_type") == "wall"
     ]
 
     solver.settings.results.graphics.mesh["Mesh"] = {}
@@ -64,7 +93,9 @@ def prepost_01(data, solver, launchEl):
     if Version(solver._version) < Version("251"):
         solver.tui.display.save_picture(f"{meshPicFilename}")
     else:
-        solver.settings.results.graphics.picture.save_picture(file_name=meshPicFilename)
+        solver.settings.results.graphics.picture.save_picture(
+            file_name=meshPicFilename
+        )
 
     # Create Spanwise Plots if specified by user
     if data["locations"].get("tz_turbo_topology_names") is not None:
@@ -119,8 +150,12 @@ def spanPlots(data, solver, launchEl):
     )
     for contVar in contVars:
         if contVar not in availableFieldDataNames:
-            logger.info(f"FieldVariable: '{contVar}' not available in Solution-Data!")
-            logger.info(f"Available Scalar Values are: '{availableFieldDataNames}'")
+            logger.info(
+                f"FieldVariable: '{contVar}' not available in Solution-Data!"
+            )
+            logger.info(
+                f"Available Scalar Values are: '{availableFieldDataNames}'"
+            )
 
     # Create Contour Plots for every surface
     for spanVal in spansSurf:
@@ -159,7 +194,9 @@ def spanPlots(data, solver, launchEl):
                 ].range_option.auto_range_on.global_range = False
 
                 # Set color map to banded and reduce size
-                solver.settings.results.graphics.contour[contName].color_map(size=20)
+                solver.settings.results.graphics.contour[contName].color_map(
+                    size=20
+                )
                 solver.settings.results.graphics.contour[contName].coloring(
                     option="banded"
                 )
@@ -183,10 +220,15 @@ def spanPlots(data, solver, launchEl):
                     contour_display_command = (
                         f"/results/graphics/contour/display {contName}"
                     )
-                    contour_save_command = f"/display/save-picture {plot_filename} ok"
+                    contour_save_command = (
+                        f"/display/save-picture {plot_filename} ok"
+                    )
 
                 command_str = (
-                    contour_display_command + "\n" + contour_save_command + "\n"
+                    contour_display_command
+                    + "\n"
+                    + contour_save_command
+                    + "\n"
                 )
                 all_commands_str += command_str
 
@@ -213,7 +255,9 @@ def oilflow_pathlines(data, solver, launchEl):
             logger.info(
                 f"FieldVariable: '{oilflowPL_var}' not available in Solution-Data!"
             )
-            logger.info(f"Available Scalar Values are: '{availableFieldDataNames}'")
+            logger.info(
+                f"Available Scalar Values are: '{availableFieldDataNames}'"
+            )
 
     oilflowPL_surfaces = data["results"]["oilflow_pathlines_surfaces"]
 
@@ -223,7 +267,9 @@ def oilflow_pathlines(data, solver, launchEl):
         oilflowPL_name = f"oilflow-pathlines-{oilflowPL_var}"
         logger.info(f"Creating oil flow pathlines: {oilflowPL_name}")
         solver.settings.results.graphics.pathline[oilflowPL_name] = {}
-        solver.settings.results.graphics.pathline[oilflowPL_name].options(oil_flow=True)
+        solver.settings.results.graphics.pathline[oilflowPL_name].options(
+            oil_flow=True
+        )
         solver.settings.results.graphics.pathline[oilflowPL_name](
             onzone=oilflowPL_surfaces,
             release_from_surfaces=oilflowPL_surfaces,
@@ -231,14 +277,18 @@ def oilflow_pathlines(data, solver, launchEl):
             step=3000,
             skip=15,
         )
-        solver.settings.results.graphics.pathline[oilflowPL_name].color_map(size=20)
+        solver.settings.results.graphics.pathline[oilflowPL_name].color_map(
+            size=20
+        )
         oilflowPL_objects.append(oilflowPL_name)
 
     # Create mesh object with oil flow surfaces
     meshName = "oilflowPL-surfaces"
     logger.info(f"Creating mesh object: {meshName}")
     solver.settings.results.graphics.mesh[meshName] = {}
-    solver.settings.results.graphics.mesh[meshName](surfaces_list=oilflowPL_surfaces)
+    solver.settings.results.graphics.mesh[meshName](
+        surfaces_list=oilflowPL_surfaces
+    )
 
     # Create scenes including the pathlines and the blade mesh object
     for oilflowPL_object in oilflowPL_objects:
@@ -247,9 +297,9 @@ def oilflow_pathlines(data, solver, launchEl):
         scene_inputs = [oilflowPL_object, meshName]
         for scene_input in scene_inputs:
             solver.settings.results.scene[sceneName] = {}
-            solver.settings.results.scene[sceneName].graphics_objects[scene_input] = {
-                "name": scene_input
-            }
+            solver.settings.results.scene[sceneName].graphics_objects[
+                scene_input
+            ] = {"name": scene_input}
 
     return
 
@@ -265,7 +315,9 @@ def pathlines(data, solver, launchEl):
             logger.info(
                 f"FieldVariable: '{pathlineVar}' not available in Solution-Data!"
             )
-            logger.info(f"Available Scalar Values are: '{availableFieldDataNames}'")
+            logger.info(
+                f"Available Scalar Values are: '{availableFieldDataNames}'"
+            )
 
     pathlinesRelSurf = data["results"]["pathlines_releaseSurfaces"]
 
@@ -275,8 +327,13 @@ def pathlines(data, solver, launchEl):
         logger.info(f"Creating pathlines: {pathlineName}")
         solver.settings.results.graphics.pathline[pathlineName] = {}
         solver.settings.results.graphics.pathline[pathlineName](
-            release_from_surfaces=pathlinesRelSurf, field=pathlineVar, step=3000, skip=5
+            release_from_surfaces=pathlinesRelSurf,
+            field=pathlineVar,
+            step=3000,
+            skip=5,
         )
-        solver.settings.results.graphics.pathline[pathlineName].color_map(size=20)
+        solver.settings.results.graphics.pathline[pathlineName].color_map(
+            size=20
+        )
 
     return
