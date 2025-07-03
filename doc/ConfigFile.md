@@ -715,7 +715,7 @@ new element!
 ## Parametric Study
 
 The Configuration file for a parametric study can be found in the [examples-section](/doc/examples),
-e.g. [Speedline Tutorial](/doc/examples/tutorial_speedline/turboConfig_axial_turbine.json).
+e.g. [Speedline Tutorial](/doc/examples/Speedline%20Tutorial/turboConfig_axial_turbine.json).
 
 To run a Parametric Study the Configuration-File needs to contain a ``` launching ``` object to start a Fluent session,
 see [Launching Options](#launching-options)
