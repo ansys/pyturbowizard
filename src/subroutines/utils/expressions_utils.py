@@ -201,6 +201,7 @@ def check_expression_versions(solver):
 
 
 def create_and_evaluate_expression(
+    solver,
     exp_name: str,
     definition: str,
     overwrite_definition=True,
