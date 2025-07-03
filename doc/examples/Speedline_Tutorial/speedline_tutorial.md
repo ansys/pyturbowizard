@@ -4,7 +4,7 @@ This tutorial aims to showcase how to efficiently set up a speedline simulation 
 The steps will be explained using the axial turbine tutorial example.
 
 ## Preparing the Mesh file
-The mesh file can be downloaded from sharepoint: [axial_turbine_mesh.def](https://ansys.sharepoint.com/:f:/r/sites/TurbomachineryAFT/Shared%20Documents/Standard%20PyFluent%20Turbo%20Setup/3_Tutorials/0_Speedline_Setup?csf=1&web=1&e=TOXI88)
+The mesh file can be downloaded from sharepoint: [axial_turbine_mesh.def](https://github.com/ansys/example-data/tree/main/pyfluent/axial_turbine_tutorial/axial_turbine_mesh.def)
 
 Copy the mesh file to your Fluent working directory.
 ## Setting up the Config File
