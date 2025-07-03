@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# ©2025 ANSYS, Inc. Unauthorized use, distribution, or duplication is prohibited.
-
 import os
 import json
 import sys

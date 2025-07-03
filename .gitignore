@@ -5,9 +5,10 @@ env*/
 venv*/
 ENV*/
 
-# IDE stuff
+# Folders
 .vscode/
 .idea/
+.reuse/
 
 # general file types
 *.log
@@ -16,3 +17,4 @@ ENV*/
 *.trn
 cleanup-fluent-*-*.*
 serverinfo-*.txt
+
