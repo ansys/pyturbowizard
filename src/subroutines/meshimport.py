@@ -20,10 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from packaging.version import Version
+
 # Logger
 from src.subroutines.utils import ptw_logger
-
-from packaging.version import Version
 
 logger = ptw_logger.getLogger()
 
@@ -34,20 +34,14 @@ def import_01(data, solver):
     if isinstance(meshFilename, str):
         logger.info(f"Importing mesh '{meshFilename}'")
         if meshFilename.endswith(".def"):
-            solver.settings.file.import_.read(
-                file_type="cfx-definition", file_name=meshFilename
-            )
+            solver.settings.file.import_.read(file_type="cfx-definition", file_name=meshFilename)
             success = True
         elif meshFilename.endswith(".cgns"):
-            solver.settings.file.import_.read(
-                file_type="cgns-mesh", file_name=meshFilename
-            )
+            solver.settings.file.import_.read(file_type="cgns-mesh", file_name=meshFilename)
             success = True
         elif meshFilename.endswith(".gtm"):
             if Version(solver._version) < Version("241"):
-                logger.error(
-                    f"Import of multiple meshes only supported by version v241 or later"
-                )
+                logger.error("Import of multiple meshes only supported by version v241 or later")
             else:
                 meshnamelist = [meshFilename]
                 multiple_mesh_import(solver=solver, meshname_list=meshnamelist)
@@ -56,22 +50,16 @@ def import_01(data, solver):
             solver.settings.file.read(file_type="mesh", file_name=meshFilename)
             success = True
     elif isinstance(meshFilename, list):
-        logger.info(f"Importing multiple meshes...")
+        logger.info("Importing multiple meshes...")
         supported_import_mesh_type = False
         for fileName in meshFilename:
-            if (
-                fileName.endswith(".def")
-                or fileName.endswith(".gtm")
-                or fileName.endswith(".cgns")
-            ):
+            if fileName.endswith(".def") or fileName.endswith(".gtm") or fileName.endswith(".cgns"):
                 supported_import_mesh_type = True
                 break
 
         if supported_import_mesh_type:
             if Version(solver._version) < Version("241"):
-                logger.error(
-                    f"Import of multiple meshes only supported by version v241 or later"
-                )
+                logger.error("Import of multiple meshes only supported by version v241 or later")
                 return success
             else:
                 logger.info(f"Importing multiple meshes '{meshFilename}'")
@@ -82,7 +70,7 @@ def import_01(data, solver):
         success = True
 
     if not success:
-        logger.error(f"No mesh file has been imported!")
+        logger.error("No mesh file has been imported!")
 
     # BC Profiles
     profileName = data.get("profileName_In")

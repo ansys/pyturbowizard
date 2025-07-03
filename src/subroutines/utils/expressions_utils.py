@@ -22,17 +22,19 @@
 
 import os
 import re
+
 from packaging.version import Version
 
 # Logger
-from src.subroutines.utils import ptw_logger, misc_utils
+from src.subroutines.utils import misc_utils, ptw_logger
 
 logger = ptw_logger.getLogger()
 
 
 def write_expression_file(data: dict, script_dir: str, working_dir: str):
     fileName = data.get("expressionFilename")
-    # if nothing is set for "expressionFilename" a default value ("expressions.tsv") is set and dict will be updated
+    # if nothing is set for "expressionFilename" a default value ("expressions.tsv")
+    # is set and dict will be updated
     if fileName is None or fileName == "":
         fileName = "expressions.tsv"
         data["expressionFilename"] = fileName
@@ -46,9 +48,7 @@ def write_expression_file(data: dict, script_dir: str, working_dir: str):
         os.remove(fileName)
     # Write new file
     with open(fileName, "w") as sf:
-        expressionTemplatePath = os.path.join(
-            script_dir, "templates", data["expressionTemplate"]
-        )
+        expressionTemplatePath = os.path.join(script_dir, "templates", data["expressionTemplate"])
         with open(expressionTemplatePath, "r") as templateFile:
             tempData = templateFile.read()
             templateFile.close()
@@ -64,12 +64,8 @@ def write_expression_file(data: dict, script_dir: str, working_dir: str):
             data.setdefault("rotation_axis_origin", [0.0, 0.0, 0.0])
         )
         # add efficiency definition
-        helperDict["efficiency_ratio"] = data.setdefault(
-            "efficiency_ratio", "TotalToTotal"
-        )
-        tempData = cleanup_input_expressions(
-            availableKeyEl=helperDict, fileData=tempData
-        )
+        helperDict["efficiency_ratio"] = data.setdefault("efficiency_ratio", "TotalToTotal")
+        tempData = cleanup_input_expressions(availableKeyEl=helperDict, fileData=tempData)
         for line in tempData.splitlines():
             try:
                 sf.write(line.format(**helperDict))
@@ -117,8 +113,7 @@ def cleanup_input_expressions(availableKeyEl: dict, fileData: str):
 
         elif "Euler" in line:
             if (
-                availableKeyEl.get("bz_ep1_Euler")
-                and availableKeyEl.get("bz_ep2_Euler")
+                availableKeyEl.get("bz_ep1_Euler") and availableKeyEl.get("bz_ep2_Euler")
             ) is not None:
                 cleanfiledata = cleanfiledata + "\n" + line
             else:
@@ -185,14 +180,9 @@ def check_expression_versions(solver):
 
     if Version(solver._version) < Version("241"):
         for expName in solver.settings.setup.named_expressions():
-            if (
-                expName == "MP_Isentropic_Efficiency"
-                or expName == "MP_Polytropic_Efficiency"
-            ):
+            if expName == "MP_Isentropic_Efficiency" or expName == "MP_Polytropic_Efficiency":
                 exp = solver.settings.setup.named_expressions.get(expName)
-                logger.info(
-                    f"Checking & updating expression '{expName}' to latest version"
-                )
+                logger.info(f"Checking & updating expression '{expName}' to latest version")
                 definition = exp.get_state()["definition"]
                 definition_new = re.sub(r",Process='\w+'", "", definition)
                 exp.set_state({"definition": definition_new})
@@ -207,18 +197,11 @@ def create_and_evaluate_expression(
     overwrite_definition=True,
     evaluate_value=True,
 ):
-    if (
-        exp_name
-        not in solver.settings.setup.named_expressions.get_object_names()
-    ):
+    if exp_name not in solver.settings.setup.named_expressions.get_object_names():
         solver.settings.setup.named_expressions.create(name=exp_name)
-        solver.settings.setup.named_expressions[exp_name] = {
-            "definition": definition
-        }
+        solver.settings.setup.named_expressions[exp_name] = {"definition": definition}
     if overwrite_definition:
-        solver.settings.setup.named_expressions[exp_name] = {
-            "definition": definition
-        }
+        solver.settings.setup.named_expressions[exp_name] = {"definition": definition}
     value = None
     if evaluate_value:
         value = solver.settings.setup.named_expressions[exp_name].get_value()

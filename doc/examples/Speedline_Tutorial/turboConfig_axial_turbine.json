@@ -9,7 +9,7 @@
     "exitatend": false,
     "queue_slurm": "ottc01",
     "queue_waiting_time":  3600
-    },    
+    },
   "launching":
     {
       "workingDir": "<PathToFluentWorkingDirectory",

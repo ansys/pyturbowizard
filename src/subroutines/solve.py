@@ -23,7 +23,7 @@
 from packaging.version import Version
 
 # Logger
-from src.subroutines.utils import ptw_logger, dict_utils
+from src.subroutines.utils import dict_utils, ptw_logger
 
 logger = ptw_logger.getLogger()
 
@@ -45,9 +45,7 @@ def init(data, solver, functionEl, gpu):
     # Can have influence on convergence, but can lead to freeze on some cases
     reorder = data["solution"].setdefault("reorder_domain", True)
     if reorder:
-        logger.info(
-            "Reordering domain to reduce bandwidth according to the setup"
-        )
+        logger.info("Reordering domain to reduce bandwidth according to the setup")
         solver.settings.mesh.reorder.reorder_domain()
 
     supported_ini_gpu = ["init_standard_01", "init_hybrid_01"]
@@ -62,16 +60,13 @@ def init(data, solver, functionEl, gpu):
     ]
 
     if gpu:
-        if (functionName not in supported_ini_gpu) and (
-            functionName in supported_ini
-        ):
+        if (functionName not in supported_ini_gpu) and (functionName in supported_ini):
             logger.warning(
-                f"Prescribed Initialization Function '{functionName}' not supported in GPU solver. Using 'init_standard_01' instead!"
+                f"Prescribed Initialization Function '{functionName}' not supported in GPU solver. "
+                f"Using 'init_standard_01' instead!"
             )
             functionName = "init_standard_01"
-        elif (functionName not in supported_ini_gpu) and (
-            functionName not in supported_ini
-        ):
+        elif (functionName not in supported_ini_gpu) and (functionName not in supported_ini):
             logger.warning(
                 f"Prescribed Function '{functionName}' not known. Using 'init_standard_01' instead!"
             )
@@ -91,17 +86,13 @@ def init(data, solver, functionEl, gpu):
     elif functionName == "init_fmg_03":
         init_fmg_03(data, solver)
     else:
-        logger.info(
-            f"'Prescribed Function '{functionName}' not known. Skipping Initialization!"
-        )
+        logger.info(f"'Prescribed Function '{functionName}' not known. Skipping Initialization!")
 
     logger.info("Initialization Function... finished.")
 
 
 def init_standard_01(data, solver):
-    logger.info(
-        f'Using {data["locations"]["bz_inlet_names"][0]} pressure for initialization'
-    )
+    logger.info(f'Using {data["locations"]["bz_inlet_names"][0]} pressure for initialization')
     solver.settings.solution.initialization.reference_frame = "absolute"
 
     # if the boundary condition needs information from flow field
@@ -141,14 +132,10 @@ def init_standard_02(data, solver):
     solver.settings.solution.initialization.reference_frame = "relative"
     if "BC_IN_Tt" in data["expressions"]:
         myTemp = float(data["expressions"]["BC_IN_Tt"].split(" ")[0])
-        solver.settings.solution.initialization.defaults = {
-            "temperature": myTemp
-        }
+        solver.settings.solution.initialization.defaults = {"temperature": myTemp}
     if "BC_IN_p_gauge" in data["expressions"]:
         myPress = float(data["expressions"]["BC_IN_p_gauge"].split(" ")[0])
-        solver.settings.solution.initialization.defaults = {
-            "pressure": myPress
-        }
+        solver.settings.solution.initialization.defaults = {"pressure": myPress}
     solver.settings.solution.initialization.defaults = {"k": 0.01}
     solver.settings.solution.initialization.defaults = {"omega": 0.01}
     solver.settings.solution.initialization.defaults = {"x-velocity": 0}
@@ -190,13 +177,13 @@ def init_hybrid_basic(data, solver):
         solver.settings.solution.initialization.initialization_type = "hybrid"
         solver.settings.solution.initialization.reference_frame = "absolute"
     else:
-        solver.settings.solution.initialization.hybrid_init_options.general_settings.reference_frame = (
-            "absolute"
-        )
+        (
+            solver.settings.solution.initialization.hybrid_init_options.general_settings
+        ).reference_frame = "absolute"
 
-    solver.settings.solution.initialization.hybrid_init_options.general_settings.initial_pressure = (
-        True
-    )
+    (
+        solver.settings.solution.initialization.hybrid_init_options.general_settings
+    ).initial_pressure = True
     logger.info("Performing a hybrid initialization")
     solver.settings.solution.initialization.hybrid_initialize()
 
@@ -204,7 +191,8 @@ def init_hybrid_basic(data, solver):
 def init_fmg_basic(data, solver):
     logger.info("Performing a FMG initialization")
     if Version(solver._version) < Version("241"):
-        # setting rp variable which is needed for version v232 when using gtis, may be obsolete in future versions
+        # setting rp variable which is needed for version v232 when using gtis,
+        # may be obsolete in future versions
         solver.execute_tui(r"""(rpsetvar 'fmg-init/enable-with-gti? #t)""")
         solver.settings.solution.initialization.fmg_initialize()
     else:

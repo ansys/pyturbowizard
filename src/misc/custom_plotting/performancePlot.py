@@ -20,10 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import pandas as pd
-import matplotlib.pyplot as plt
 import json
 import sys
+
+import matplotlib.pyplot as plt
+import pandas as pd
 
 
 def plot_csv_data(
@@ -47,9 +48,7 @@ def plot_csv_data(
         plt.scatter(data[x_column], data[y_column], label=label)
 
     if max_iterations is not None:
-        plt.axhline(
-            y=max_iterations, color="g", linestyle="--", label="Max Iterations"
-        )
+        plt.axhline(y=max_iterations, color="g", linestyle="--", label="Max Iterations")
 
     plt.xlabel(x_label)
     plt.ylabel(y_label)

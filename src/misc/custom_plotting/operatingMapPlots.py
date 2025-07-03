@@ -30,9 +30,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def create_operating_map_plots(
-    csv_legend_pairs, svg_filename=None, full_convergence=False
-):
+def create_operating_map_plots(csv_legend_pairs, svg_filename=None, full_convergence=False):
     if full_convergence:
         color_map = {"converged": "green", "not converged": "red"}
     else:
@@ -41,9 +39,7 @@ def create_operating_map_plots(
     modified_colormap = plt.cm.tab10
     colors = list(modified_colormap.colors)
     colors[2] = (0, 0, 0, 1)
-    modified_colors = [
-        color for i, color in enumerate(colors) if i not in [1, 3]
-    ]
+    modified_colors = [color for i, color in enumerate(colors) if i not in [1, 3]]
     colormap = mcolors.ListedColormap(modified_colors)
 
     for y_col, y_label in zip(input_data["y_data"], input_data["y_labels"]):
@@ -52,8 +48,8 @@ def create_operating_map_plots(
         legend_handles = []
         if full_convergence:
             legend_colors = [
-                mpatches.Patch(color="green", label=f"converged"),
-                mpatches.Patch(color="red", label=f"not converged"),
+                mpatches.Patch(color="green", label="converged"),
+                mpatches.Patch(color="red", label="not converged"),
             ]
         else:
             legend_colors = [
@@ -82,16 +78,16 @@ def create_operating_map_plots(
             if y_col in data.columns:
                 x_data = data[x_col]
                 y_data = data[y_col]
-                cov_col = input_data["cov_data"][
-                    input_data["y_data"].index(y_col)
-                ]
+                cov_col = input_data["cov_data"][input_data["y_data"].index(y_col)]
 
                 # Check if the column represents "rep-mp-isentropic-efficiency"
                 if y_col == "rep-mp-isentropic-efficiency":
-                    # Apply the inverse operation to values greater than 1 (Used because of FLuent Efficiency bug)
+                    # Apply the inverse operation to values greater than 1
+                    # (Used because of FLuent Efficiency bug)
                     y_data = y_data.apply(lambda x: 1 / x if x > 1 else x)
 
-                # Check if efficiency shall be plotted --> multiply values by 100 to plot efficiency in %
+                # Check if efficiency shall be plotted
+                # --> multiply values by 100 to plot efficiency in %
                 if "efficiency" in y_col:
                     y_data = y_data * 100
 
@@ -130,9 +126,7 @@ def create_operating_map_plots(
                     else:
                         cov_data = None
 
-                color = colormap(
-                    csv_legend_pairs.index((csv_file, legend_label))
-                )
+                color = colormap(csv_legend_pairs.index((csv_file, legend_label)))
 
                 axs.plot(
                     x_data,
@@ -190,9 +184,7 @@ def create_operating_map_plots(
         axs.tick_params(axis="y", labelsize=13)
 
         if svg_filename:
-            plot_svg_filename = svg_filename.replace(
-                ".svg", f'_{y_col.replace(" ", "_")}.svg'
-            )
+            plot_svg_filename = svg_filename.replace(".svg", f'_{y_col.replace(" ", "_")}.svg')
             plt.savefig(plot_svg_filename, format="svg", bbox_inches="tight")
             print(f"Plot saved as {plot_svg_filename}")
         else:
@@ -241,8 +233,7 @@ if len(sys.argv) < 2:
 
 # Convert input data into pairs
 csv_legend_pairs = [
-    (data["csv_file"], legend_label)
-    for legend_label, data in input_data["input_csv_data"].items()
+    (data["csv_file"], legend_label) for legend_label, data in input_data["input_csv_data"].items()
 ]
 
 # Call the plot function

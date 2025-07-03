@@ -25,11 +25,11 @@ import subprocess
 import time
 
 import ansys.fluent.core as pyfluent
-from ansys.fluent.core import UIMode, Dimension
+from ansys.fluent.core import Dimension, UIMode
 from packaging import version
 
 # Logger
-from src.subroutines.utils import ptw_logger, misc_utils
+from src.subroutines.utils import misc_utils, ptw_logger
 
 logger = ptw_logger.getLogger()
 
@@ -85,9 +85,7 @@ def launchFluent(launchEl: dict):
     return solver
 
 
-def hook_to_existing_session(
-    fl_workingDir: str, serverfilename: str, cleanup_on_exit: bool
-):
+def hook_to_existing_session(fl_workingDir: str, serverfilename: str, cleanup_on_exit: bool):
     import ansys.fluent.core as pyfluent
 
     fullpath_to_sf = os.path.join(fl_workingDir, serverfilename)
@@ -120,13 +118,8 @@ def launch_queuing_session(launchEl: dict):
     additional_args = launchEl.get("additional_args", [])
     maxtime = float(launchEl.setdefault("queue_waiting_time", 600.0))
 
-    logger.info(
-        "Trying to launching new Fluent Session on queue '" + queueEl + "'"
-    )
-    logger.info(
-        "Max waiting time (launching-key: 'queue_waiting_time') set to: "
-        + str(maxtime)
-    )
+    logger.info("Trying to launching new Fluent Session on queue '" + queueEl + "'")
+    logger.info("Max waiting time (launching-key: 'queue_waiting_time') set to: " + str(maxtime))
     if version.parse(pyfluent.__version__) < version.parse("0.19.0"):
         # Get a free server-filename
         serverfilename = launchEl.get("serverfilename", "server-info.txt")
@@ -139,9 +132,7 @@ def launch_queuing_session(launchEl: dict):
         commandlist = list()
 
         # Get Fluent Executable
-        fluent_path = get_fluent_exe_path(
-            product_version=launchEl["fl_version"]
-        )
+        fluent_path = get_fluent_exe_path(product_version=launchEl["fl_version"])
         if version.parse(pyfluent.__version__) < version.parse("0.19.0"):
             fluent_path = pyfluent.launcher.launcher.get_fluent_exe_path(
                 product_version=launchEl["fl_version"]
@@ -165,9 +156,7 @@ def launch_queuing_session(launchEl: dict):
             batch_arguments.extend(["-gu", "-driver dx11"])
         batch_arguments.extend(additional_args)
         commandlist.extend(batch_arguments)
-        process_files = subprocess.Popen(
-            commandlist, cwd=fl_workingDir, stdout=subprocess.DEVNULL
-        )
+        subprocess.Popen(commandlist, cwd=fl_workingDir, stdout=subprocess.DEVNULL)
         # Check if Fluent started
         fullpath_to_sf = os.path.join(fl_workingDir, serverfilename)
         current_time = 0
@@ -182,9 +171,7 @@ def launch_queuing_session(launchEl: dict):
                 current_time += 5
         if current_time > maxtime:
             raise TimeoutError(
-                "Maximum waiting time reached ("
-                + str(maxtime)
-                + "sec). Aborting script..."
+                "Maximum waiting time reached (" + str(maxtime) + "sec). Aborting script..."
             )
         # Start Session via hook
         solver = hook_to_existing_session(
@@ -235,22 +222,16 @@ def get_fluent_exe_path(product_version: str):
 
     fluent_path = None
     product_version_split = product_version.split(".")
-    root_env_name = (
-        "AWP_ROOT" + product_version_split[0] + product_version_split[1]
-    )
+    root_env_name = "AWP_ROOT" + product_version_split[0] + product_version_split[1]
     ansys_root_path = os.getenv(root_env_name)
     if ansys_root_path is None:
         logger.error(f"Environment '{root_env_name}' not found on system")
         return fluent_path
 
     if platform.system() == "Windows":
-        fluent_path = os.path.join(
-            ansys_root_path, "fluent", "ntbin", "win64", "fluent.exe"
-        )
+        fluent_path = os.path.join(ansys_root_path, "fluent", "ntbin", "win64", "fluent.exe")
         if platform.architecture()[0] == "32bit":
-            fluent_path = os.path.join(
-                ansys_root_path, "fluent", "ntbin", "win32", "fluent.exe"
-            )
+            fluent_path = os.path.join(ansys_root_path, "fluent", "ntbin", "win32", "fluent.exe")
     elif platform.system() == "Linux":
         fluent_path = os.path.join(ansys_root_path, "fluent", "bin", "fluent")
     else:
@@ -283,7 +264,8 @@ def adjust_settings_to_version(launchEl: dict):
             else:
                 launchEl["ui_mode"] = None
             logger.info(
-                f"Updating launcher options: 'show_gui':{launchEl.get('show_gui')} -> 'ui_mode':{launchEl.get('ui_mode')}"
+                f"Updating launcher options: 'show_gui':{launchEl.get('show_gui')} "
+                f"-> 'ui_mode':{launchEl.get('ui_mode')}"
             )
             # removing old definition
             launchEl.pop("show_gui")
@@ -295,7 +277,8 @@ def adjust_settings_to_version(launchEl: dict):
             else:
                 launchEl["dimension"] = Dimension.THREE.value
             logger.info(
-                f"Updating launcher options: 'version':{launchEl.get('version')} -> 'dimension':{launchEl.get('dimension')}"
+                f"Updating launcher options: 'version':{launchEl.get('version')} "
+                f"-> 'dimension':{launchEl.get('dimension')}"
             )
             # removing old definition
             launchEl.pop("version")

@@ -1,8 +1,8 @@
 # **PyTurboWizard**
 
 ## **Open-Source Software Disclaimer**
-This deliverable depends on Open-Source Software (OSS), which are subject to their own terms & conditions and may contain vulnerabilities. 
-Ansys is not responsible for such Third-Party Software. 
+This deliverable depends on Open-Source Software (OSS), which are subject to their own terms & conditions and may contain vulnerabilities.
+Ansys is not responsible for such Third-Party Software.
 
 Please check the [LICENSE-file](LICENSE).
 
@@ -23,7 +23,7 @@ The functionalities are displayed in the following Feature-Matrix:
 
 ## **Getting Started**
 ### **Fluent Installation**
-The script has been developed for Ansys Fluent versions 2024R1 and latter versions. 
+The script has been developed for Ansys Fluent versions 2024R1 and latter versions.
 It can also be used running the Ansys GPU Solver (use '-gpu' flag in launching options), but not all features will be supported, though!
 
 ### **PyFluent Installation**
@@ -52,12 +52,12 @@ Required libraries:
   - Copy all files from GitHub to a specific folder
   - Start a Fluent job on cluster with additional arguments: ```-py -sifile=<name>.txt ```
   - Open terminal in Fluent data folder
-  - Execute script 
+  - Execute script
     - Basic command: ```pyfluent ptw_main.py <PathToConfigurationFile.json/yaml>```
     - More advanced
       - Set an alias in your shell config-file, e.g.  ```alias ptw 'pyfluent /path_to_ptw/ptw_main.py'```
       - Command: ```ptw <PathToConfigurationFile.json/yaml>```
-      
+
 #### Windows
 - Prepare data in you working directory
   - Copy Fluent data into the folder, e.g. mesh data, profiles
@@ -66,7 +66,7 @@ Required libraries:
 - Get latest Version From GitHub: [main branch](https://github.com/ansys-internal/pyturbowizard/tree/main)
   - Copy complete file structure from GitHub to a specific folder
   - Open a Console / Windows Powershell & activate your PyFluent virtual environment, e.g. via [Ansys Python Manager](https://github.com/ansys/python-installer-qt-gui/releases)
-  - Change the console working directory to your Fluent data folder  
+  - Change the console working directory to your Fluent data folder
   - Execute script via: ```python <PathToPTWMain.py> <PathToConfigurationFile.json/yaml>```
 
 ## Useful Documents

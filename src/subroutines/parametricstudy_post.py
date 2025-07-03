@@ -20,17 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import os
-import matplotlib.pyplot as plt
 import json
+import os
+
+import matplotlib.pyplot as plt
 
 # Logger
-from src.subroutines.utils import (
-    ptw_logger,
-    dict_utils,
-    postproc_utils,
-    misc_utils,
-)
+from src.subroutines.utils import dict_utils, misc_utils, postproc_utils, ptw_logger
 
 logger = ptw_logger.getLogger()
 
@@ -45,20 +41,21 @@ def study_post(data, solver, functionEl, gpu):
     )
 
     if (functionName == "study_post_01") and (not gpu):
-        logger.info(
-            f"Running ParametricStudy-Postprocessing Function '{functionName}' ..."
-        )
+        logger.info(f"Running ParametricStudy-Postprocessing Function '{functionName}' ...")
         study_post_01(data=data, solver=solver)
         logger.info(
             f"Running ParametricStudy-Postprocessing Function '{functionName}'...  finished!"
         )
     elif gpu:
         logger.info(
-            f"As with GPU solver, there is no CoV data available, prescribed Function '{functionName}' cannot be run. Skipping ParametricStudy-Postprocessing Function!"
+            f"As with GPU solver, there is no CoV data available, "
+            f"prescribed Function '{functionName}' cannot be run. "
+            f"Skipping ParametricStudy-Postprocessing Function!"
         )
     else:
         logger.info(
-            f"Prescribed Function '{functionName}' not known. Skipping ParametricStudy-Postprocessing Function!"
+            f"Prescribed Function '{functionName}' not known. "
+            f"Skipping ParametricStudy-Postprocessing Function!"
         )
 
 
@@ -66,9 +63,11 @@ def study_post_01(data, solver):
     # Only working in external mode
     try:
         import pandas as pd
+
+        pd.DataFrame()
     except ImportError as e:
         logger.info(f"ImportError! Could not import lib: {str(e)}")
-        logger.info(f"Skipping studyPlot function!")
+        logger.info("Skipping studyPlot function!")
         return
 
     logger.info("Running Function StudyPlot ...")
@@ -80,9 +79,7 @@ def study_post_01(data, solver):
         if runPostProc:
             fl_workingDir = data.get("launching")["workingDir"]
             baseCaseName = studyData.get("refCaseFilename")
-            pathtostudy = os.path.join(
-                fl_workingDir, f"{studyName}.cffdb", f"{baseCaseName}-Solve"
-            )
+            pathtostudy = os.path.join(fl_workingDir, f"{studyName}.cffdb", f"{baseCaseName}-Solve")
 
             # Extract CoV information for traffic light notation
             tempData = None
@@ -99,19 +96,13 @@ def study_post_01(data, solver):
                     and value.get("cov", False)
                 }
             else:
-                logger.info(
-                    "No base case information for CoVs has been found!"
-                )
+                logger.info("No base case information for CoVs has been found!")
                 cov_data_exists = False
 
             # Define a Folder to store plots
-            studyOutPath = misc_utils.ptw_output(
-                fl_workingDir=fl_workingDir, study_name=studyName
-            )
-            studyPlotFolder = os.path.join(studyOutPath, f"study_plots")
-            os.makedirs(
-                studyPlotFolder, exist_ok=True
-            )  # Create the folder if it doesn't exist
+            studyOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir, study_name=studyName)
+            studyPlotFolder = os.path.join(studyOutPath, "study_plots")
+            os.makedirs(studyPlotFolder, exist_ok=True)  # Create the folder if it doesn't exist
             logger.info(f"Writing Study Plots to Directory: {studyPlotFolder}")
             # Get the study result table
             (
@@ -130,9 +121,7 @@ def study_post_01(data, solver):
             if result_df.empty:
                 continue
             # Get the list of columns ending with '-cov'
-            cov_columns = [
-                col for col in result_df.columns if col.endswith("-cov")
-            ]
+            cov_columns = [col for col in result_df.columns if col.endswith("-cov")]
 
             # Initialize a list to store convergence results
             cov_convergence_results = []
@@ -145,9 +134,7 @@ def study_post_01(data, solver):
                     cov_column = filtCovDict.get(
                         col
                     )  # Get the corresponding dictionary if it exists
-                    if (
-                        cov_column is not None
-                    ):  # Check if the column is CoV set
+                    if cov_column is not None:  # Check if the column is CoV set
                         cov_criterion = cov_column.get("stop_criterion")
                         if cov_criterion is not None:
                             if row[col] > 5 * cov_criterion:
@@ -178,9 +165,7 @@ def study_post_01(data, solver):
                         filtered_y_columns = [
                             col
                             for col in y_columns
-                            if any(
-                                col.startswith(key[:-4]) for key in filtCovDict
-                            )
+                            if any(col.startswith(key[:-4]) for key in filtCovDict)
                         ]
                     else:
                         filtered_y_columns = y_columns
@@ -198,13 +183,9 @@ def study_post_01(data, solver):
                     plt.yscale("log")
 
                     # Save the plot in folder
-                    plot_filename = os.path.join(
-                        dpdirectory_path, f"cov_plot_{dp_name}.png"
-                    )
+                    plot_filename = os.path.join(dpdirectory_path, f"cov_plot_{dp_name}.png")
                     plt.tight_layout()
-                    logger.info(
-                        f"Writing CoV Plot to Directory: {plot_filename}"
-                    )
+                    logger.info(f"Writing CoV Plot to Directory: {plot_filename}")
                     plt.savefig(plot_filename)
                     plt.close()  # Close the figure to release memory
 
@@ -227,9 +208,7 @@ def study_post_01(data, solver):
                         plot_filename = os.path.join(
                             dpdirectory_path, f"mp_plot_{col}_{dp_name}.png"
                         )
-                        logger.info(
-                            f"Writing Monitor Plot to Directory: {plot_filename}"
-                        )
+                        logger.info(f"Writing Monitor Plot to Directory: {plot_filename}")
                         plt.savefig(plot_filename)
                         plt.close()  # Close the figure to release memory
 
@@ -242,8 +221,7 @@ def study_post_01(data, solver):
                         residual_df = residual_df.iloc[-length_residual_df:]
 
                     residual_df["Iterations"] = (
-                        residual_df["Iterations"]
-                        - residual_df["Iterations"].iloc[0]
+                        residual_df["Iterations"] - residual_df["Iterations"].iloc[0]
                     )
 
                     # Check for res convergence and assign results to the 'res_convergence' column
@@ -252,9 +230,7 @@ def study_post_01(data, solver):
                         -1, 2:
                     ]  # Select the last row, excluding the first column
                     res_convergence = (
-                        "converged"
-                        if (last_row_values < res_criterium).all()
-                        else "not converged"
+                        "converged" if (last_row_values < res_criterium).all() else "not converged"
                     )
                     res_convergence_results.append(res_convergence)
 
@@ -277,20 +253,14 @@ def study_post_01(data, solver):
                     plt.yscale("log")
 
                     # Save the plot in the folder
-                    plot_filename = os.path.join(
-                        dpdirectory_path, f"residual_plot_{dp_name}.png"
-                    )
+                    plot_filename = os.path.join(dpdirectory_path, f"residual_plot_{dp_name}.png")
                     plt.tight_layout()
-                    logger.info(
-                        f"Writing Residual Plot to Directory: {plot_filename}"
-                    )
+                    logger.info(f"Writing Residual Plot to Directory: {plot_filename}")
                     plt.savefig(plot_filename)
                     plt.close()  # Close the figure to release memory
 
             # Assign the wall clock time results to the 'wallclock_time' column
-            total_wall_clock_times = [
-                df["Total Wall Clock Time"].tolist()[0] for df in trn_df
-            ]
+            total_wall_clock_times = [df["Total Wall Clock Time"].tolist()[0] for df in trn_df]
             result_df["wallclock_time"] = total_wall_clock_times
 
             # Assign the cov convergence results to the 'convergence' column
@@ -303,8 +273,7 @@ def study_post_01(data, solver):
             result_df["convergence"] = result_df.apply(
                 lambda row: (
                     "converged"
-                    if row["cov_convergence"] == "good"
-                    and row["res_convergence"] == "converged"
+                    if row["cov_convergence"] == "good" and row["res_convergence"] == "converged"
                     else "not converged"
                 ),
                 axis=1,
@@ -331,9 +300,7 @@ def study_post_01(data, solver):
             sorted_df = None
             for column in fallback_columns:
                 if column in result_df.columns:
-                    sorted_df = result_df.sort_values(
-                        by=column, ascending=True, ignore_index=True
-                    )
+                    sorted_df = result_df.sort_values(by=column, ascending=True, ignore_index=True)
                     break
 
             MP_MassFlow = None
@@ -350,9 +317,7 @@ def study_post_01(data, solver):
             # Filter out the dataframe to plot monitor points
             plot_df = sorted_df.iloc[:, 1:-4].drop(
                 columns=[
-                    col
-                    for col in sorted_df.columns
-                    if "-cov" in col or col in fallback_columns
+                    col for col in sorted_df.columns if "-cov" in col or col in fallback_columns
                 ]
             )
             # Generate traffic light notation for convergence
@@ -373,12 +338,8 @@ def study_post_01(data, solver):
                         colors,
                         cov_criterion,
                     )
-                    plot_filename = os.path.join(
-                        studyPlotFolder + f"/plot_massflow_{column}.svg"
-                    )
-                    logger.info(
-                        f"Writing Operating Map Plot to Directory: {plot_filename}"
-                    )
+                    plot_filename = os.path.join(studyPlotFolder + f"/plot_massflow_{column}.svg")
+                    logger.info(f"Writing Operating Map Plot to Directory: {plot_filename}")
                     plt.savefig(plot_filename)
                     plt.close()
                     # Create Plot with volume flow
@@ -392,12 +353,8 @@ def study_post_01(data, solver):
                         cov_criterion,
                     )
 
-                    plot_filename = os.path.join(
-                        studyPlotFolder + f"/plot_volumeflow_{column}.svg"
-                    )
-                    logger.info(
-                        f"Writing Operating Map Plot to Directory: {plot_filename}"
-                    )
+                    plot_filename = os.path.join(studyPlotFolder + f"/plot_volumeflow_{column}.svg")
+                    logger.info(f"Writing Operating Map Plot to Directory: {plot_filename}")
                     plt.savefig(plot_filename)
                     plt.close()
             elif MP_MassFlow is not None and MP_VolumeFlow is None:
@@ -413,12 +370,8 @@ def study_post_01(data, solver):
                         colors,
                         cov_criterion,
                     )
-                    plot_filename = os.path.join(
-                        studyPlotFolder + f"/plot_massflow_{column}.svg"
-                    )
-                    logger.info(
-                        f"Writing Operating Map Plot to Directory: {plot_filename}"
-                    )
+                    plot_filename = os.path.join(studyPlotFolder + f"/plot_massflow_{column}.svg")
+                    logger.info(f"Writing Operating Map Plot to Directory: {plot_filename}")
                     plt.savefig(plot_filename)
                     plt.close()
             elif MP_VolumeFlow is not None and MP_MassFlow is None:
@@ -434,16 +387,10 @@ def study_post_01(data, solver):
                         colors,
                         cov_criterion,
                     )
-                    plot_filename = os.path.join(
-                        studyPlotFolder + f"/plot_volumeflow_{column}.svg"
-                    )
-                    logger.info(
-                        f"Writing Operating Map Plot to Directory: {plot_filename}"
-                    )
+                    plot_filename = os.path.join(studyPlotFolder + f"/plot_volumeflow_{column}.svg")
+                    logger.info(f"Writing Operating Map Plot to Directory: {plot_filename}")
                     plt.savefig(plot_filename)
                     plt.close()
-            sorted_df.to_csv(
-                studyPlotFolder + f"/plot_table_{studyName}.csv", index=None
-            )
+            sorted_df.to_csv(studyPlotFolder + f"/plot_table_{studyName}.csv", index=None)
 
     logger.info("Running Function StudyPlot finished!")

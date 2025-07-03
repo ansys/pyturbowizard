@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import os
 import logging
+import os
 
 logger = logging.getLogger("PyTurboWizard")
 
@@ -33,19 +33,17 @@ def init_logger(console_output: bool = True, file_output: bool = True):
         print(f"Logger-File-Handler: {pathtoFileHandler}")
     if console_output:
         add_streamhandler()
-    logger.info(f"Logger initialized")
+    logger.info("Logger initialized")
     return logger
 
 
 def add_streamhandler():
     handler = logging.StreamHandler()
-    formatter = logging.Formatter(
-        fmt="%(name)-12s: %(levelname)-8s - %(message)s"
-    )
+    formatter = logging.Formatter(fmt="%(name)-12s: %(levelname)-8s - %(message)s")
     handler.setFormatter(formatter)
     handler.setLevel(logging.INFO)
     logger.addHandler(handler)
-    logger.info(f"Logger-Stream-Handler added")
+    logger.info("Logger-Stream-Handler added")
 
 
 def add_filehandler():
@@ -62,9 +60,7 @@ def add_filehandler():
     handler.setFormatter(formatter)
     handler.setLevel(logging.DEBUG)
     logger.addHandler(handler)
-    logger.info(
-        f"Logger-File-Handler added: {os.path.abspath(logger_file_name)}"
-    )
+    logger.info(f"Logger-File-Handler added: {os.path.abspath(logger_file_name)}")
     return os.path.abspath(logger_file_name)
 
 
@@ -72,10 +68,10 @@ def remove_handlers(streamhandlers: bool = True, filehandlers: bool = True):
     # Loops over all Handlers & removes all stream- and/or file-handlers
     for handler in logger.handlers:
         if streamhandlers and (type(handler) is logging.StreamHandler):
-            logger.info(f"Removing StreamHandler from logger")
+            logger.info("Removing StreamHandler from logger")
             logger.removeHandler(handler)
         elif filehandlers and (type(handler) is logging.FileHandler):
-            logger.info(f"Removing FileHandler from logger")
+            logger.info("Removing FileHandler from logger")
             logger.removeHandler(handler)
 
 

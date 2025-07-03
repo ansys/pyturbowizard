@@ -20,31 +20,32 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import os
-import json
-import sys
 import copy
+import json
+import os
+import sys
+
 import ansys.fluent.core as pyfluent
 from packaging.version import Version
 
 # Load Script Modules
 from src.subroutines import (
-    solve,
-    setupcfd,
-    prepostproc,
-    parametricstudy,
     meshimport,
     numerics,
+    parametricstudy,
     parametricstudy_post,
     postproc,
+    prepostproc,
+    setupcfd,
+    solve,
 )
 from src.subroutines.utils import (
-    fluent_utils,
-    ptw_logger,
     dict_utils,
-    launcher,
     expressions_utils,
+    fluent_utils,
+    launcher,
     misc_utils,
+    ptw_logger,
 )
 
 ptw_version = "1.9.8"
@@ -94,9 +95,7 @@ class PTW_Run:
         # Set Version to turboData
         self.turbo_data["ptw_version"] = ptw_version
         # Get or Set-Default Debug-Level
-        self.debug_level = self.turbo_data.setdefault(
-            "debug_level", self.debug_level
-        )
+        self.debug_level = self.turbo_data.setdefault("debug_level", self.debug_level)
 
         # Get important Elements from json file
         self.launch_data = self.turbo_data.get("launching")
@@ -112,9 +111,7 @@ class PTW_Run:
         self.fl_workingDir = fl_workingDir
         logger.info(f"Used Fluent Working-Directory: {self.fl_workingDir}")
 
-        logger.info(
-            f"Reading ConfigFile: {os.path.abspath(config_filename)}... done!"
-        )
+        logger.info(f"Reading ConfigFile: {os.path.abspath(config_filename)}... done!")
 
     def launch_fluent(self, solver=None):
         if solver is None:
@@ -162,9 +159,7 @@ class PTW_Run:
             )
             return
         if self.turbo_data is None:
-            logger.warning(
-                "No Turbo-Dict loaded... Skipping PTW_Run-function 'do_case_study'!"
-            )
+            logger.warning("No Turbo-Dict loaded... Skipping PTW_Run-function 'do_case_study'!")
             return
 
         logger.info("Running Case Study")
@@ -186,9 +181,7 @@ class PTW_Run:
                 if ref_case is not None:
                     # Check if reference case is available
                     if caseDict.get(ref_case) is not None:
-                        dict_utils.merge_data_with_refDict(
-                            caseDict=caseEl, allCasesDict=caseDict
-                        )
+                        dict_utils.merge_data_with_refDict(caseDict=caseEl, allCasesDict=caseDict)
                     else:
                         logger.error(
                             f"Case '{casename}' is skipped: "
@@ -198,7 +191,8 @@ class PTW_Run:
                 # Check if case should be executed
                 if caseEl.setdefault("skip_execution", False):
                     logger.info(
-                        f"Case '{casename}' is skipped: 'skip_execution' is set to 'True' in Case-Definition"
+                        f"Case '{casename}' is skipped: "
+                        f"'skip_execution' is set to 'True' in Case-Definition"
                     )
                     continue
                 # Update initial case-function-dict
@@ -206,9 +200,7 @@ class PTW_Run:
                     caseDict=caseEl, glfunctionDict=gl_function_data
                 )
                 # Check if material from lib should be used
-                dict_utils.get_material_from_lib(
-                    caseDict=caseEl, scriptPath=self.script_path
-                )
+                dict_utils.get_material_from_lib(caseDict=caseEl, scriptPath=self.script_path)
                 # Check if all important keys are available to avoid errors
                 dict_utils.check_keys(case_dict=caseEl, case_name=casename)
                 # Basic Dict Stuff -> done
@@ -248,28 +240,18 @@ class PTW_Run:
                 caseOutPath = misc_utils.ptw_output(
                     fl_workingDir=fl_workingDir, case_name=caseFilename
                 )
-                expressionFilename = os.path.join(
-                    caseOutPath, caseEl["expressionFilename"]
-                )
-                solver.tui.define.named_expressions.import_from_tsv(
-                    expressionFilename
-                )
+                expressionFilename = os.path.join(caseOutPath, caseEl["expressionFilename"])
+                solver.tui.define.named_expressions.import_from_tsv(expressionFilename)
                 # Check if all inputParameters are valid
-                expressions_utils.check_input_parameter_expressions(
-                    solver=solver
-                )
+                expressions_utils.check_input_parameter_expressions(solver=solver)
                 # Check if all outputParameters are set
-                expressions_utils.check_output_parameter_expressions(
-                    caseEl=caseEl, solver=solver
-                )
+                expressions_utils.check_output_parameter_expressions(caseEl=caseEl, solver=solver)
                 # Check if all expressions are valid for specific solver version
                 expressions_utils.check_expression_versions(solver=solver)
                 # Remove exp-file & write final expressions-file
                 if os.path.exists(expressionFilename):
                     os.remove(expressionFilename)
-                solver.tui.define.named_expressions.export_to_tsv(
-                    expressionFilename
-                )
+                solver.tui.define.named_expressions.export_to_tsv(expressionFilename)
                 logger.info("Expression Definition... done!")
                 ### Expression Definition... done!
 
@@ -331,15 +313,11 @@ class PTW_Run:
 
                 # Write case and ini-data & settings file
                 logger.info("Writing initial case & settings file")
-                solver.settings.file.write(
-                    file_type="case", file_name=caseFilename
-                )
+                solver.settings.file.write(file_type="case", file_name=caseFilename)
                 settingsFilename = os.path.join(caseOutPath, "settings.set")
                 # Removing file manually, as batch options seem not to work
                 if os.path.exists(settingsFilename):
-                    logger.info(
-                        f"Removing old existing settings-file: {settingsFilename} "
-                    )
+                    logger.info(f"Removing old existing settings-file: {settingsFilename} ")
                     os.remove(settingsFilename)
                 logger.info(f"Writing settings-file: {settingsFilename}")
                 solver.tui.file.write_settings(settingsFilename)
@@ -353,9 +331,7 @@ class PTW_Run:
 
                 if solver.fields.field_data.is_data_valid():
                     logger.info("Writing initial dat file")
-                    solver.settings.file.write(
-                        file_type="data", file_name=caseFilename
-                    )
+                    solver.settings.file.write(file_type="data", file_name=caseFilename)
                 else:
                     logger.info(
                         "Skipping Writing of Initial Solution Data: No Solution Data available"
@@ -374,9 +350,7 @@ class PTW_Run:
                 if caseEl["solution"].setdefault("runSolver", False):
                     solve.solve_01(caseEl, solver)
                     filename = f"{caseFilename}_fin"
-                    solver.settings.file.write(
-                        file_type="case-data", file_name=filename
-                    )
+                    solver.settings.file.write(file_type="case-data", file_name=filename)
 
                 # Postprocessing
                 if solver.fields.field_data.is_data_valid():
@@ -388,13 +362,12 @@ class PTW_Run:
                         trn_name=trnFileName,
                         gpu=gpu,
                     )
-                    # version 1.5.3: no alteration of case/data done in post processing, removed additional saving
+                    # version 1.5.3: no alteration of case/data done in post processing
+                    # --> removed additional saving
                     # filename = caseFilename + "_fin"
                     # solver.settings.file.write(file_type="case-data", file_name=filename)
                 else:
-                    logger.info(
-                        "Skipping Postprocessing: No Solution Data available"
-                    )
+                    logger.info("Skipping Postprocessing: No Solution Data available")
 
                 # Read Additional Journals, if specified
                 fluent_utils.read_journals(
@@ -406,10 +379,7 @@ class PTW_Run:
                 )
 
                 # Finalize
-                if (
-                    "stop_transcript"
-                    in solver.settings.file.get_active_command_names()
-                ):
+                if "stop_transcript" in solver.settings.file.get_active_command_names():
                     solver.settings.file.stop_transcript()
                 # End of Case-Loop
 
@@ -466,9 +436,7 @@ class PTW_Run:
             )
             return
         if self.turbo_data is None:
-            logger.warning(
-                "No Turbo-Dict loaded... Skipping PTW_Run-function 'finalize_session'!"
-            )
+            logger.warning("No Turbo-Dict loaded... Skipping PTW_Run-function 'finalize_session'!")
             return
 
         logger.info("Finalizing Fluent-Session")
@@ -478,32 +446,23 @@ class PTW_Run:
 
         # Do clean-up
         cleanup_data = self.launch_data.setdefault("ptw_cleanup", False)
-        misc_utils.fluent_cleanup(
-            working_dir=self.fl_workingDir, cleanup_data=cleanup_data
-        )
+        misc_utils.fluent_cleanup(working_dir=self.fl_workingDir, cleanup_data=cleanup_data)
 
         # Write out Debug info
         if self.debug_level > 0:
-            # Compare turboData: final data vs file data --> check if some keywords have not been used
-            logger.info(
-                "Searching for unused keywords in input-config-file..."
-            )
+            # Compare turboData: final data vs file data
+            # --> check if some keywords have not been used
+            logger.info("Searching for unused keywords in input-config-file...")
             dict_utils.detect_unused_keywords(
                 refDict=self.turbo_data, compareDict=self.turbo_data_from_file
             )
-            logger.info(
-                "Searching for unused keywords in input-config-file... finished!"
-            )
+            logger.info("Searching for unused keywords in input-config-file... finished!")
 
             import ntpath
 
-            config_basename = os.path.splitext(
-                ntpath.basename(self.config_file_name)
-            )[0]
+            config_basename = os.path.splitext(ntpath.basename(self.config_file_name))[0]
             debug_filename = f"ptw_{config_basename}.json"
-            ptwOutPath = misc_utils.ptw_output(
-                fl_workingDir=self.fl_workingDir
-            )
+            ptwOutPath = misc_utils.ptw_output(fl_workingDir=self.fl_workingDir)
             debug_file_path = os.path.join(ptwOutPath, debug_filename)
             jsonString = json.dumps(self.turbo_data, indent=4, sort_keys=True)
             with open(debug_file_path, "w") as jsonFile:
@@ -515,9 +474,7 @@ class PTW_Run:
     def do_full_run(self, script_path, config_filename, solver):
         logger.info(f"*** Starting PyTurboWizard (Version {ptw_version}) ***")
         # Start ptw_run
-        self.load_config_file(
-            script_path=script_path, config_filename=config_filename
-        )
+        self.load_config_file(script_path=script_path, config_filename=config_filename)
         self.launch_fluent(solver=solver)
         self.ini_fluent_settings()
         self.do_case_study()

@@ -21,12 +21,13 @@
 # SOFTWARE.
 
 import os
-import matplotlib.pyplot as plt
+
 import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
 from packaging.version import Version
 
 # Logger
-from src.subroutines.utils import fluent_utils, ptw_logger, misc_utils
+from src.subroutines.utils import fluent_utils, misc_utils, ptw_logger
 
 logger = ptw_logger.getLogger()
 
@@ -36,7 +37,7 @@ def calcCov(reportOut, window_size=50, write_mean=True):
         import pandas as pd
     except ImportError as e:
         logger.info(f"ImportError! Could not import lib: {str(e)}")
-        logger.info(f"Skipping Function 'calcCov'!")
+        logger.info("Skipping Function 'calcCov'!")
         return
 
     mp_df = pd.read_csv(reportOut, skiprows=2, delim_whitespace=True)
@@ -51,9 +52,9 @@ def calcCov(reportOut, window_size=50, write_mean=True):
 
     # calculate the Coefficient of Variation over the window size
     cov_df = mp_df.copy()
-    cov_df.iloc[:, 1:] = mp_df.iloc[:, 1:].rolling(
-        window=window_size
-    ).std() / abs(mp_df.iloc[:, 1:].rolling(window=window_size).mean())
+    cov_df.iloc[:, 1:] = mp_df.iloc[:, 1:].rolling(window=window_size).std() / abs(
+        mp_df.iloc[:, 1:].rolling(window=window_size).mean()
+    )
 
     mean_values = mp_df.iloc[:, 1:].rolling(window=window_size).mean().iloc[-1]
     cov_values = cov_df.iloc[-1]
@@ -85,14 +86,12 @@ def getStudyReports(pathtostudy, tempData=None):
         import pandas as pd
     except ImportError as e:
         logger.info(f"ImportError! Could not import lib: {str(e)}")
-        logger.info(f"Skipping 'getStudyReports' function!")
+        logger.info("Skipping 'getStudyReports' function!")
         return
 
     # Filter the Design Points Subdirectories in the study folder
     subdirectories = [
-        name
-        for name in os.listdir(pathtostudy)
-        if os.path.isdir(os.path.join(pathtostudy, name))
+        name for name in os.listdir(pathtostudy) if os.path.isdir(os.path.join(pathtostudy, name))
     ]
 
     # Initialize the lists to store result DataFrames
@@ -106,9 +105,7 @@ def getStudyReports(pathtostudy, tempData=None):
         folder_path = os.path.join(pathtostudy, dpname)
 
         # Check if the folder_path contains a .out file
-        out_files = [
-            file for file in os.listdir(folder_path) if file.endswith(".out")
-        ]
+        out_files = [file for file in os.listdir(folder_path) if file.endswith(".out")]
 
         if out_files:
             # Take the first .out file as the file_path
@@ -119,9 +116,7 @@ def getStudyReports(pathtostudy, tempData=None):
             continue
 
         # Check if the folder_path contains a .trn file
-        trn_files = [
-            file for file in os.listdir(folder_path) if file.endswith(".trn")
-        ]
+        trn_files = [file for file in os.listdir(folder_path) if file.endswith(".trn")]
         if trn_files:
             # Take the first .trn file as the csv_file_path
             trn_file_path = os.path.join(folder_path, trn_files[0])
@@ -133,9 +128,7 @@ def getStudyReports(pathtostudy, tempData=None):
         )
 
         # Check if the file 'Auto-generated-residuals-data-static.csv' exists in the folder
-        csv_file_path = os.path.join(
-            folder_path, "Auto-generated-residuals-data-static.csv"
-        )
+        csv_file_path = os.path.join(folder_path, "Auto-generated-residuals-data-static.csv")
         if os.path.exists(csv_file_path):
             # If the file exists, read it into a pandas DataFrame
             residual_df = pd.read_csv(csv_file_path)
@@ -175,15 +168,9 @@ def plot_figure(x_values, y_values, x_label, y_label, colors, criterion):
 
         # Create legend handles for color coding
         legend_colors = [
-            mpatches.Patch(
-                color="green", label=f'CoV < {"{:.0e}".format(criterion)}'
-            ),
-            mpatches.Patch(
-                color="orange", label=f'CoV < {"{:.0e}".format(5*criterion)}'
-            ),
-            mpatches.Patch(
-                color="red", label=f'CoV > {"{:.0e}".format(5*criterion)}'
-            ),
+            mpatches.Patch(color="green", label=f'CoV < {"{:.0e}".format(criterion)}'),
+            mpatches.Patch(color="orange", label=f'CoV < {"{:.0e}".format(5*criterion)}'),
+            mpatches.Patch(color="red", label=f'CoV > {"{:.0e}".format(5*criterion)}'),
         ]
         ax.legend(handles=legend_colors, loc="best")
     return fig
@@ -223,9 +210,7 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
             if "Total wall-clock time" in line:
                 wall_clock_tot = line.split(":")[1].strip()
                 wall_clock_tot = wall_clock_tot.split(" ")[0].strip()
-                logger.info(
-                    f"Detected Total Wall Clock Time: {wall_clock_tot}"
-                )
+                logger.info(f"Detected Total Wall Clock Time: {wall_clock_tot}")
             elif "Mesh Size" in line:
                 if "Level    Cells" in lines[line_nr + 2]:
                     mesh_info_line = lines[line_nr + 3]
@@ -240,19 +225,13 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
             elif table_started:
                 values = line.split()
                 all_convertible = all(
-                    misc_utils.can_convert_to_number(value)
-                    for value in values[: number_eqs + 1]
+                    misc_utils.can_convert_to_number(value) for value in values[: number_eqs + 1]
                 )
                 if len(values) == 0:
                     table_started = False
-                elif (
-                    len(values[: number_eqs + 1]) == len(filtered_headers)
-                    and all_convertible
-                ):
+                elif len(values[: number_eqs + 1]) == len(filtered_headers) and all_convertible:
                     filtered_values = values[: number_eqs + 1]
-                    filtered_values = [
-                        float(value) for value in filtered_values
-                    ]
+                    filtered_values = [float(value) for value in filtered_values]
                     # Append filtered_values to the list
                     filtered_values_list.append(filtered_values)
                     solver_trn_data_valid = True
@@ -261,15 +240,15 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
                         values = int(values[0])
                     except ValueError:
                         # We will also check the next line,
-                        # as there might be a solver-output inbetween the iterations (limiter active etc...)
+                        # as there might be a solver-output inbetween the iterations
+                        # (limiter active etc...)
                         values = lines[line_nr + 1].split()
                         all_convertible = all(
                             misc_utils.can_convert_to_number(value)
                             for value in values[: number_eqs + 1]
                         )
                         table_started = (
-                            len(values[: number_eqs + 1])
-                            == len(filtered_headers)
+                            len(values[: number_eqs + 1]) == len(filtered_headers)
                             and all_convertible
                         )
 
@@ -277,13 +256,10 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
 
     else:
         logger.info("No trn-file found!: Skipping data")
-        solver_trn_data_valid = False
 
     if solver is not None:
         # get pseudo time step value
-        time_step = solver.scheme_eval.string_eval(
-            "(rpgetvar 'pseudo-auto-time-step)"
-        )
+        time_step = solver.scheme_eval.string_eval("(rpgetvar 'pseudo-auto-time-step)")
 
         # check if energy is solved
         solveEnergy = solver.settings.setup.models.energy.enabled()
@@ -301,7 +277,7 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
                 zones = fluxes.heat_transfer.zones.allowed_values()
                 heatBalance = fluxes.heat_transfer(zones=zones)
 
-    ## write report table
+    # write report table
     report_table = pd.DataFrame()
 
     if solver is not None:
@@ -326,13 +302,9 @@ def check_lines(line_list, number_eqs, filtered_headers):
     for line in line_list:
         values = line.split()
         all_convertible = all(
-            misc_utils.can_convert_to_number(value)
-            for value in values[: number_eqs + 1]
+            misc_utils.can_convert_to_number(value) for value in values[: number_eqs + 1]
         )
-        valid_data = (
-            len(values[: number_eqs + 1]) == len(filtered_headers)
-            and all_convertible
-        )
+        valid_data = len(values[: number_eqs + 1]) == len(filtered_headers) and all_convertible
         if valid_data:
             return valid_data
     return valid_data

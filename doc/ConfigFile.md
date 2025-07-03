@@ -71,7 +71,7 @@ studies can be specified:
     {
       "setup": "setup_compressible_01",
       "numerics": "numerics_bp_tn_2305",
-      "initialization": "init_hybrid_01",      
+      "initialization": "init_hybrid_01",
       "postproc": "post_01",
       "parametricstudy": "study_01"
     },
@@ -168,7 +168,7 @@ numerical settings etc.).
         "caseFilename": "Case_1",
         "meshFilename": "Case_1_mesh",
         "profileName_In": "InProfile.csv",
-        "profileName_Out": "",        
+        "profileName_Out": "",
         "expressionTemplate": "expressionTemplate_compressor_comp.tsv",
         "gravity_vector": [0.0, 0.0, -9.81],
         "rotation_axis_direction": [0.0, 0.0, 1.0],
@@ -375,7 +375,7 @@ specified for:
                   },
                   "bz_walls_torque": ["r1-blade","r1-shroud","r1-hub"],
                   "bz_ep1_Euler": ["b-stator-1-to-a-rotor-1-side-1"],
-                  "bz_ep2_Euler": ["c-stator-2-to-b-stator-1-side-1"],                     
+                  "bz_ep2_Euler": ["c-stator-2-to-b-stator-1-side-1"],
                   ...
 ```
 
@@ -472,7 +472,7 @@ report definitions from expressions are not supported yet.
 The keyword ``` per_zone ``` is optional (default: false). With this option you can select if the corresponding
 definition is separated for all selected surfaces.
 
-The keyword ``` per_zone ``` is optional (default: false). With this option you can select if the corresponding 
+The keyword ``` per_zone ``` is optional (default: false). With this option you can select if the corresponding
 definition is separated for all selected surfaces.
 
 ```
@@ -483,7 +483,7 @@ definition is separated for all selected surfaces.
                 "scope": "surface",
                 "type": "surface-massavg",
                 "zones": ["inblock-inflow"],
-                "variable": "total-pressure"                
+                "variable": "total-pressure"
               },
               "OUT_massflowave_pt": {
                 "scope": "surface",
@@ -532,7 +532,7 @@ definition is separated for all selected surfaces.
       ...
 ```
 
-#### Volume Source Terms Definition 
+#### Volume Source Terms Definition
 
 ```
 "source_terms" :{
@@ -540,26 +540,26 @@ definition is separated for all selected surfaces.
             "equation" : "mass",
             "cell_zone" : "passage-main_1",
             "definition" : "0.433[lbm *s^-1]/ (76 * Volume([\"passage-main_1\"]))"
-        }, 
+        },
         "source_e_1":{
             "equation" : "energy",
             "cell_zone" : "passage-main_1",
-            "definition" : "(0.433[lbm*s^-1])*SpecificHeatCapacity*((348.96[K]-298.15[K])/(76*Volume([\"passage-main_1\"])))"				
+            "definition" : "(0.433[lbm*s^-1])*SpecificHeatCapacity*((348.96[K]-298.15[K])/(76*Volume([\"passage-main_1\"])))"
         }
 },
 
 ```
-Equation defines the tpye of source term 
+Equation defines the tpye of source term
 Cell_zone the domain where the source term should be applied
-the definition should be an expression. The name of the expression is the sub-dict name.  
+the definition should be an expression. The name of the expression is the sub-dict name.
 
 ##### Basic Report Definitions
 
-It is optional to define basic report definitions with the keyword ``` basic_reports ``` in the ``` solution ``` section. 
-Basic refers to these report definitions being created as surface, volume, force, drag, lift, 
+It is optional to define basic report definitions with the keyword ``` basic_reports ``` in the ``` solution ``` section.
+Basic refers to these report definitions being created as surface, volume, force, drag, lift,
 moment or flux (only mass flux supported) reports.
-When using the GPU solver, this is currently the only option to monitor desired quantities for every iteration as 
-report definitions from expressions are not supported yet. 
+When using the GPU solver, this is currently the only option to monitor desired quantities for every iteration as
+report definitions from expressions are not supported yet.
 
 ```
  "Case_1": {
@@ -693,16 +693,16 @@ Here´s an example for a mesh study:
         "meshFilename": "myCaseFileName_coarse.def",
         "functions": {...},
         "expressions": {...},
-        "locations": {...},       
-        "solution": {...},     
-        "results": {...}                
-        },  
-        
+        "locations": {...},
+        "solution": {...},
+        "results": {...}
+        },
+
 "Case_FineMesh": {
          "refCase": "Case_CoarseMesh",
          "caseFilename": "myCaseFileName_fine",
-         "meshFilename": "myCaseFileName_fine.def",          
-        }   
+         "meshFilename": "myCaseFileName_fine.def",
+        }
 ```
 
 In the example "Case_CoarseMesh" includes all setup definitions, case "Case_FineMesh" just refers with ```refCase```

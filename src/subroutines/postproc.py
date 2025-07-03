@@ -21,16 +21,11 @@
 # SOFTWARE.
 
 import os
+
 import matplotlib.pyplot as plt
 
-from src.subroutines.utils import (
-    ptw_logger,
-    dict_utils,
-    postproc_utils,
-    misc_utils,
-)
-
 from src.subroutines import post_plots
+from src.subroutines.utils import dict_utils, misc_utils, postproc_utils, ptw_logger
 
 # Logger
 logger = ptw_logger.getLogger()
@@ -51,9 +46,7 @@ def post(data, solver, functionEl, launchEl, trn_name, gpu):
     elif functionName == "post_fplot":
         post_fplot(data, solver, launchEl, trn_name, gpu)
     else:
-        logger.info(
-            f"Prescribed Function '{functionName}' not known. Skipping Postprocessing!"
-        )
+        logger.info(f"Prescribed Function '{functionName}' not known. Skipping Postprocessing!")
 
     logger.info("Running Postprocessing Function... finished!")
 
@@ -61,30 +54,20 @@ def post(data, solver, functionEl, launchEl, trn_name, gpu):
 def post_01(data, solver, launchEl, trn_name, gpu):
     fl_workingDir = launchEl.get("workingDir")
     caseFilename = data["caseFilename"]
-    caseOutPath = misc_utils.ptw_output(
-        fl_workingDir=fl_workingDir, case_name=caseFilename
-    )
+    caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir, case_name=caseFilename)
     filename = os.path.join(
         caseOutPath,
-        data["results"].setdefault(
-            "filename_outputParameter", "outParameters.out"
-        ),
+        data["results"].setdefault("filename_outputParameter", "outParameters.out"),
     )
 
     # solver.tui.define.parameters.output_parameters.write_all_to_file('filename')
-    tuicommand = (
-        'define parameters output-parameters write-all-to-file "'
-        + filename
-        + '"'
-    )
+    tuicommand = 'define parameters output-parameters write-all-to-file "' + filename + '"'
     solver.execute_tui(tuicommand)
     filename = os.path.join(
         caseOutPath,
         data["results"].setdefault("filename_summary", "report.sum"),
     )
-    solver.settings.results.report.summary(
-        write_to_file=True, file_name=filename
-    )
+    solver.settings.results.report.summary(write_to_file=True, file_name=filename)
 
     # Write out system time
     # solver.tui.report.system.time_stats()
@@ -104,7 +87,7 @@ def post_01(data, solver, launchEl, trn_name, gpu):
     # solver.tui.display.save_picture(residualFileName,"ok")
     # solver.execute_tui("/display/set/picture/driver avz")
 
-    ## write report table
+    # write report table
     createReportTable(
         data=data,
         fl_workingDir=fl_workingDir,
@@ -113,7 +96,7 @@ def post_01(data, solver, launchEl, trn_name, gpu):
         gpu=gpu,
     )
 
-    ## move case span-plots to case output folder
+    # move case span-plots to case output folder
     spansSurf = data["results"].get("span_plot_height")
     contVars = data["results"].get("span_plot_var")
     if (spansSurf is not None) and (contVars is not None):
@@ -143,7 +126,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
         import pandas as pd
     except ImportError as e:
         logger.info(f"ImportError! Could not import lib: {str(e)}")
-        logger.info(f"Skipping writing custom reporttable!")
+        logger.info("Skipping writing custom reporttable!")
         return
     caseFilename = data["caseFilename"]
     logger.info(f"Creating a report table for {caseFilename}")
@@ -151,16 +134,12 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
     # read in table of report-mp and get last row
 
     # Filter for file names starting with "report"
-    caseOutPath = misc_utils.ptw_output(
-        fl_workingDir=fl_workingDir, case_name=caseFilename
-    )
+    caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir, case_name=caseFilename)
     reportFileName = "report"
     report_file = os.path.join(caseOutPath, "report.out")
     file_names = os.listdir(caseOutPath)
     filtered_files = [
-        file
-        for file in file_names
-        if file.startswith(reportFileName) and file.endswith(".out")
+        file for file in file_names if file.startswith(reportFileName) and file.endswith(".out")
     ]
     report_values = pd.DataFrame()
     cov_df = pd.DataFrame()
@@ -175,19 +154,15 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
             key=lambda x: [int(num) for num in x.split("_") if num.isdigit()],
         )
         report_file = os.path.join(caseOutPath, report_file)
-        report_values, cov_df, mp_df = postproc_utils.calcCov(
-            reportOut=report_file
-        )
+        report_values, cov_df, mp_df = postproc_utils.calcCov(reportOut=report_file)
         logger.info(f"Using: {report_file} for Evaluation.")
 
     else:
         logger.info("No Report File found: data not included in final report")
 
     # Write CoV and MP Plot
-    plot_folder = os.path.join(caseOutPath, f"plots")
-    os.makedirs(
-        plot_folder, exist_ok=True
-    )  # Create the folder if it doesn't exist
+    plot_folder = os.path.join(caseOutPath, "plots")
+    os.makedirs(plot_folder, exist_ok=True)  # Create the folder if it doesn't exist
     if not mp_df.empty:
         mp_df.reset_index(inplace=True)
 
@@ -213,9 +188,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
 
     if (not cov_df.empty) and (not gpu):
         # Get CoV information
-        covDict = (
-            solver.settings.solution.monitor.convergence_conditions.convergence_reports()
-        )
+        covDict = solver.settings.solution.monitor.convergence_conditions.convergence_reports()
         if covDict is not None:
             filtCovDict = {
                 key: value
@@ -228,9 +201,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
             # Get the list of columns excluding 'Iteration'
             y_columns = cov_df.columns[2:]
             filtered_y_columns = [
-                col
-                for col in y_columns
-                if any(col.startswith(key[:-4]) for key in filtCovDict)
+                col for col in y_columns if any(col.startswith(key[:-4]) for key in filtCovDict)
             ]
 
             plt.figure(figsize=(10, 6))
@@ -254,16 +225,12 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
         else:
             logger.info("No CoVs have been specified: CoV Plot not created")
     elif (not cov_df.empty) and gpu:
-        logger.info(
-            "CoVs are not supported in GPU solver: CoV Plot not created"
-        )
+        logger.info("CoVs are not supported in GPU solver: CoV Plot not created")
     else:
         logger.info("Missing Report File data: CoV Plot not created")
 
     # Read in transcript file
-    caseOutPath = misc_utils.ptw_output(
-        fl_workingDir=fl_workingDir, case_name=caseFilename
-    )
+    caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir, case_name=caseFilename)
     trnFilePath = os.path.join(caseOutPath, trn_filename)
     report_table, res_df = postproc_utils.evaluateTranscript(
         trnFilePath=trnFilePath, caseFilename=caseFilename, solver=solver
@@ -289,9 +256,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
     )
 
     # Report Table File-Name to csv
-    resultTableName = data["results"].setdefault(
-        "filename_reporttable", "reporttable.csv"
-    )
+    resultTableName = data["results"].setdefault("filename_reporttable", "reporttable.csv")
     reportTableFileName = os.path.join(caseOutPath, resultTableName)
     logger.info("Writing Report Table to: " + reportTableFileName)
     result_table.to_csv(reportTableFileName, index=None)
@@ -346,24 +311,18 @@ def mergeReportTables(turboData, solver):
             caseFilename = caseEl["caseFilename"]
             resultEl = caseEl.get("results")
             if resultEl is not None:
-                reportTableName = resultEl.setdefault(
-                    "filename_reporttable", "reporttable.csv"
-                )
+                reportTableName = resultEl.setdefault("filename_reporttable", "reporttable.csv")
                 # reportTableName = caseFilename + "_" + reportTableName
                 caseOutPath = misc_utils.ptw_output(
                     fl_workingDir=fl_workingDir, case_name=caseFilename
                 )
-                reportTableFilePath = os.path.join(
-                    caseOutPath, reportTableName
-                )
+                reportTableFilePath = os.path.join(caseOutPath, reportTableName)
                 if os.path.isfile(reportTableFilePath):
                     reportFiles.append(reportTableFilePath)
 
         if len(reportFiles) > 1:
             df = pd.concat((pd.read_csv(f, header=0) for f in reportFiles))
-            merged_file_name = os.path.join(
-                ptwOutPath, "merged_reporttable.csv"
-            )
+            merged_file_name = os.path.join(ptwOutPath, "merged_reporttable.csv")
             logger.info(f"Writing merged report-file: {merged_file_name}")
             df.to_csv(merged_file_name)
         else:

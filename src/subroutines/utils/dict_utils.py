@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import os
-import json
 import copy
+import json
+import os
 
 # Logger
 from src.subroutines.utils import ptw_logger
@@ -67,7 +67,8 @@ def merge_data_with_refDict(caseDict: dict, allCasesDict: dict):
     refDict = allCasesDict.get(refCaseName)
     if refDict is None:
         logger.info(
-            f"Specified Reference Case {refCaseName} not found in Config-File! --> Skipping CopyFunction..."
+            f"Specified Reference Case {refCaseName} not found in Config-File! "
+            f"--> Skipping CopyFunction..."
         )
         return caseDict
     helpCaseDict = copy.deepcopy(refDict)
@@ -79,9 +80,7 @@ def merge_data_with_refDict(caseDict: dict, allCasesDict: dict):
 def get_material_from_lib(caseDict: dict, scriptPath: str):
     if isinstance(caseDict.get("fluid_properties"), str):
         materialStr = caseDict.get("fluid_properties")
-        materialFileName = os.path.join(
-            scriptPath, "misc", "material_lib.json"
-        )
+        materialFileName = os.path.join(scriptPath, "misc", "material_lib.json")
         materialFile = open(materialFileName, "r")
         materialDict = json.load(materialFile)
         materialDict = materialDict.get(materialStr)
@@ -89,7 +88,8 @@ def get_material_from_lib(caseDict: dict, scriptPath: str):
             caseDict["fluid_properties"] = materialDict
         else:
             raise Exception(
-                f"Specified material '{materialStr}' in config-file not found in material-lib: {materialFileName}"
+                f"Specified material '{materialStr}' in config-file not "
+                f"found in material-lib: {materialFileName}"
             )
     return
 
@@ -98,16 +98,15 @@ def detect_unused_keywords(refDict: dict, compareDict: dict, path="root"):
     for item in compareDict:
         if item not in refDict:
             logger.warning(
-                f"Element found in Config-File that is not known or used! Check keyword: '{item}' in '{path}'"
+                f"Element found in Config-File that is not known or used! "
+                f"Check keyword: '{item}' in '{path}'"
             )
         else:
             refEl = refDict.get(item)
             compareEl = compareDict.get(item)
             if isinstance(refEl, dict) and isinstance(compareEl, dict):
                 newpath = f"{path} / {item}"
-                detect_unused_keywords(
-                    refDict=refEl, compareDict=compareEl, path=newpath
-                )
+                detect_unused_keywords(refDict=refEl, compareDict=compareEl, path=newpath)
 
 
 def check_keys(case_dict: dict, case_name: str):

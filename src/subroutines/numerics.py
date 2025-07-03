@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 # Logger
-from src.subroutines.utils import ptw_logger, dict_utils
+from src.subroutines.utils import dict_utils, ptw_logger
 
 logger = ptw_logger.getLogger()
 
@@ -46,7 +46,8 @@ def numerics(data, solver, functionEl, gpu):
         defaultName = "numerics_defaults_pseudo_timestep"
         if tsn:
             logger.warning(
-                "Turbomachinery specific numerics are not supported in GPU solver and will therefore not be used!"
+                "Turbomachinery specific numerics are not supported in GPU solver "
+                "and will therefore not be used!"
             )
             data.get("solution")["tsn"] = False
 
@@ -77,38 +78,26 @@ def numerics(data, solver, functionEl, gpu):
 
 
 def numerics_defaults(data, solver):
-    logger.info(
-        "No changes of numerics-settings are made. Fluent defaults-settings are used..."
-    )
+    logger.info("No changes of numerics-settings are made. Fluent defaults-settings are used...")
     return
 
 
 def numerics_bp_tn_2305(data, solver):
     solver.settings.solution.methods.gradient_scheme = "green-gauss-node-based"
-    logger.info(
-        "Best Practice and turbo numerics with green-gauss-node-based will be used"
-    )
+    logger.info("Best Practice and turbo numerics with green-gauss-node-based will be used")
 
     use_tsn = data["solution"].setdefault("tsn", True)
     if use_tsn:
-        solver.tui.solve.set.advanced.turbomachinery_specific_numerics.enable(
-            "yes"
-        )
+        solver.tui.solve.set.advanced.turbomachinery_specific_numerics.enable("yes")
     return
 
 
 def numerics_bp_tn_2305_lsq(data, solver):
-    logger.info(
-        "Best Practice and turbo numerics with least-square-cell-based will be used"
-    )
-    solver.settings.solution.methods.gradient_scheme = (
-        "least-square-cell-based"
-    )
+    logger.info("Best Practice and turbo numerics with least-square-cell-based will be used")
+    solver.settings.solution.methods.gradient_scheme = "least-square-cell-based"
     use_tsn = data["solution"].setdefault("tsn", True)
     if use_tsn:
-        solver.tui.solve.set.advanced.turbomachinery_specific_numerics.enable(
-            "yes"
-        )
+        solver.tui.solve.set.advanced.turbomachinery_specific_numerics.enable("yes")
     return
 
 
@@ -126,7 +115,8 @@ def numerics_bp_all_2305(data, solver):
 
 def numerics_defaults_pseudo_timestep(data, solver):
     logger.info(
-        "Setting pv-coupling using pseudo-time-step method, all other settings are fluent defaults..."
+        "Setting pv-coupling using pseudo-time-step method, "
+        "all other settings are fluent defaults..."
     )
     solver.settings.solution.methods.p_v_coupling.flow_scheme = "Coupled"
     solver.settings.solution.methods.pseudo_time_method.formulation.coupled_solver = (
