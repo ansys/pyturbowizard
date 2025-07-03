@@ -1,16 +1,9 @@
 import os
 import matplotlib.pyplot as plt
 
+from src.subroutines.utils import ptw_logger, dict_utils, postproc_utils, misc_utils
 
-from ptw_subroutines.utils import (
-    ptw_logger,
-    postproc_utils,
-    dict_utils,
-    fluent_utils,
-    misc_utils,
-)
-
-from ptw_subroutines import post_plots
+from src.subroutines import post_plots
 
 # Logger
 logger = ptw_logger.getLogger()

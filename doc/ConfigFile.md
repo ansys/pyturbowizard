@@ -59,7 +59,7 @@ For running Fluent on Linux or a Cluster, there are two options:
 ```
 
 Examples for the ``` launching ``` configurations can be
-found [here](/ptw_examples/ConfigFileTemplates/launcherConfig_examples.json).
+found [here](/doc/ptw_examplesples/ConfigFileTemplates/launcherConfig_examples.json).
 
 ## Functions
 
@@ -146,8 +146,8 @@ The following functions and corresponding options are available:
 
 ## Single Case Study
 
-The Configuration file for single case study can be found in the [ptw_examples section](/ptw_examples),
-e.g. [Darmstadt-Compressor Setup](/ptw_examples/TestCases/1_Darmstadt/turboSetupConfig.json).
+The Configuration file for single case study can be found in the [ptw_examples section](/doc/ptw_examplesples),
+e.g. [Darmstadt-Compressor Setup](/doc/ptw_examplesples/TestCases/1_Darmstadt/turboSetupConfig.json).
 
 When running the script from outside Fluent, you can also use the yaml-file format for the configuration file.
 
@@ -714,8 +714,8 @@ new element!
 
 ## Parametric Study
 
-The Configuration file for a parametric study can be found in the [ptw_examples section](/ptw_examples),
-e.g. [Darmstadt-Compressor Study](/ptw_examples/TestCases/1_Darmstadt/turboStudyConfig.json).
+The Configuration file for a parametric study can be found in the [ptw_examples section](/doc/ptw_examplesples),
+e.g. [Darmstadt-Compressor Study](/doc/ptw_examplesples/TestCases/1_Darmstadt/turboStudyConfig.json).
 
 To run a Parametric Study the Configuration-File needs to contain a ``` launching ``` object to start a Fluent session,
 see [Launching Options](#launching-options)

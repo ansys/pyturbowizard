@@ -7,7 +7,7 @@ from ansys.fluent.core import UIMode, Dimension
 from packaging import version
 
 # Logger
-from ptw_subroutines.utils import ptw_logger, misc_utils
+from src.subroutines.utils import ptw_logger, misc_utils
 
 logger = ptw_logger.getLogger()
 

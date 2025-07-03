@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import json
 
 # Logger
-from ptw_subroutines.utils import ptw_logger, dict_utils, postproc_utils, misc_utils
+from src.subroutines.utils import ptw_logger, dict_utils, postproc_utils, misc_utils
 
 logger = ptw_logger.getLogger()
 

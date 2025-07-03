@@ -5,7 +5,6 @@ Script for Post-processing Turbomachinery Cases
 @author: dpons/mkaimasi
 """
 
-import ansys.fluent.core as pyfluent
 import matplotlib
 
 matplotlib.use("Agg")
@@ -14,7 +13,7 @@ import os
 import numpy as np
 import pandas as pd
 import re
-from ptw_subroutines.utils import ptw_logger
+from src.subroutines.utils import ptw_logger
 
 # get logger
 logger = ptw_logger.getLogger()

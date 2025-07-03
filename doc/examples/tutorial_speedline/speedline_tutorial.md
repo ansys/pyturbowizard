@@ -8,7 +8,7 @@ The mesh file can be downloaded from sharepoint: [axial_turbine_mesh.def](https:
 
 Copy the mesh file to your Fluent working directory.
 ## Setting up the Config File
-The Config File for the axial turbine can be found under: [turboConfig_axial_turbine.json](/ptw_examples/tutorial_speedline/turboConfig_axial_turbine.json)
+The Config File for the axial turbine can be found under: [turboConfig_axial_turbine.json](/doc/ptw_examplesples/tutorial_speedline/turboConfig_axial_turbine.json)
 
 Copy the Config File to your Fluent working directory.
 
@@ -44,10 +44,10 @@ There are two possible scenarios:
     "queue_waiting_time":  36000
     }
    ```
-For a more comprehensive description of the different launch options see: [Configuration File Setup](/ptw_documentation/ConfigFile.md#Launch-Options)
+For a more comprehensive description of the different launch options see: [Configuration File Setup](/doc/ptw_documentationtion/ConfigFile.md#Launch-Options)
 
 ### Base Case Setup
-The Base Case serves as initial input case for your study. It carries all the information about the simulation setup, as well as the initial boundary conditions used. It can be very important, depending on the initialization method that is chosen for the study. A detailed description of all the available Settings can be found here: [Configuration File Setup](/ptw_documentation/ConfigFile.md)
+The Base Case serves as initial input case for your study. It carries all the information about the simulation setup, as well as the initial boundary conditions used. It can be very important, depending on the initialization method that is chosen for the study. A detailed description of all the available Settings can be found here: [Configuration File Setup](/doc/ptw_documentationtion/ConfigFile.md)
 
 When using the ```"baseDP"``` initialization method, the base case result is always used for initialization. It is advised to pick a well converged design point as base case to have a stable initialization for the remaining Design Points.
 

@@ -1,13 +1,7 @@
 import os
 from packaging.version import Version
 
-from ptw_subroutines.utils import (
-    ptw_logger,
-    postproc_utils,
-    dict_utils,
-    fluent_utils,
-    misc_utils,
-)
+from src.subroutines.utils import fluent_utils, ptw_logger, dict_utils, misc_utils
 
 # Logger
 logger = ptw_logger.getLogger()

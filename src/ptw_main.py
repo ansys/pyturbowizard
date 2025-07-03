@@ -8,25 +8,9 @@ import ansys.fluent.core as pyfluent
 from packaging.version import Version
 
 # Load Script Modules
-from ptw_subroutines import (
-    numerics,
-    parametricstudy,
-    solve,
-    meshimport,
-    setupcfd,
-    postproc,
-    parametricstudy_post,
-    prepostproc,
-)
-from ptw_subroutines.utils import (
-    ptw_logger,
-    launcher,
-    dict_utils,
-    expressions_utils,
-    fluent_utils,
-    misc_utils,
-)
-
+from src.subroutines import solve, setupcfd, prepostproc, parametricstudy, meshimport, numerics, \
+    parametricstudy_post, postproc
+from src.subroutines.utils import fluent_utils, ptw_logger, dict_utils, launcher, expressions_utils, misc_utils
 
 ptw_version = "1.9.8"
 

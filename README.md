@@ -5,7 +5,7 @@
 This deliverable depends on Open-Source Software (OSS), which are subject to their own terms & conditions and may contain vulnerabilities. 
 Ansys is not responsible for such Third-Party Software. 
 
-Please check the LegalNotice-file: [LegalNotice.txt](ptw_documentation/LegalNotice)
+Please check the LegalNotice-file: [LegalNotice.txt](doc/LegalNotice)
 
 It is recommended to consult your company’s Software Security department before installing any software on company hardware.
 
@@ -48,7 +48,7 @@ Required libraries:
 - Prepare data in your working directory
   - Copy Fluent data into the folder, e.g. mesh data, profiles
   - Copy a Configuration File (GitHub) to your Fluent working directory
-  - Adjust the Configuration File to your setup ([Configuration File Setup](ptw_documentation/ConfigFile.md))
+  - Adjust the Configuration File to your setup ([Configuration File Setup](doc/ConfigFile.md))
 - Get latest Version From GitHub: [main branch](https://github.com/ansys-internal/pyturbowizard/tree/main)
   - Copy all files from GitHub to a specific folder
   - Start a Fluent job on cluster with additional arguments: ```-py -sifile=<name>.txt ```
@@ -63,7 +63,7 @@ Required libraries:
 - Prepare data in you working directory
   - Copy Fluent data into the folder, e.g. mesh data, profiles
   - Copy a Configuration File (GitHub) to your Fluent working directory
-  - Adjust the Configuration File to your setup ([Configuration File Setup](ptw_documentation/ConfigFile.md))
+  - Adjust the Configuration File to your setup ([Configuration File Setup](doc/ConfigFile.md))
 - Get latest Version From GitHub: [main branch](https://github.com/ansys-internal/pyturbowizard/tree/main)
   - Copy complete file structure from GitHub to a specific folder
   - Open a Console / Windows Powershell & activate your PyFluent virtual environment, e.g. via [Ansys Python Manager](https://github.com/ansys/python-installer-qt-gui/releases)
@@ -71,5 +71,5 @@ Required libraries:
   - Execute script via: ```python <PathToPTWMain.py> <PathToConfigurationFile.json/yaml>```
 
 ## Useful Documents
-- [Configuration File Setup](ptw_documentation/ConfigFile.md)
-- [Tutorial: Speedline Simulation Setup](ptw_examples/tutorial_speedline/speedline_tutorial.md)
+- [Configuration File Setup](doc/ConfigFile.md)
+- [Tutorial: Speedline Simulation Setup](doc/examples/tutorial_speedline/speedline_tutorial.md)

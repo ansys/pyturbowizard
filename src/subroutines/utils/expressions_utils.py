@@ -3,7 +3,7 @@ import re
 from packaging.version import Version
 
 # Logger
-from ptw_subroutines.utils import ptw_logger, misc_utils, fluent_utils
+from src.subroutines.utils import ptw_logger, misc_utils
 
 logger = ptw_logger.getLogger()
 
@@ -25,7 +25,7 @@ def write_expression_file(data: dict, script_dir: str, working_dir: str):
     # Write new file
     with open(fileName, "w") as sf:
         expressionTemplatePath = os.path.join(
-            script_dir, "ptw_templates", data["expressionTemplate"]
+            script_dir, "templates", data["expressionTemplate"]
         )
         with open(expressionTemplatePath, "r") as templateFile:
             tempData = templateFile.read()

@@ -3,7 +3,7 @@ import json
 import copy
 
 # Logger
-from ptw_subroutines.utils import ptw_logger
+from src.subroutines.utils import ptw_logger
 
 logger = ptw_logger.getLogger()
 
@@ -57,7 +57,7 @@ def merge_data_with_refDict(caseDict: dict, allCasesDict: dict):
 def get_material_from_lib(caseDict: dict, scriptPath: str):
     if isinstance(caseDict.get("fluid_properties"), str):
         materialStr = caseDict.get("fluid_properties")
-        materialFileName = os.path.join(scriptPath, "ptw_misc", "material_lib.json")
+        materialFileName = os.path.join(scriptPath, "misc", "material_lib.json")
         materialFile = open(materialFileName, "r")
         materialDict = json.load(materialFile)
         materialDict = materialDict.get(materialStr)

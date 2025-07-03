@@ -2,11 +2,9 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from packaging.version import Version
-from matplotlib.lines import Line2D
-import matplotlib.colors as mcolors
 
 # Logger
-from ptw_subroutines.utils import ptw_logger, fluent_utils, misc_utils
+from src.subroutines.utils import fluent_utils, ptw_logger, misc_utils
 
 logger = ptw_logger.getLogger()
 

@@ -25,7 +25,7 @@ def add_streamhandler():
 
 
 def add_filehandler():
-    from ptw_subroutines.utils import misc_utils
+    from src.subroutines.utils import misc_utils
 
     logger_file_name = misc_utils.get_free_filename_maxIndex(
         dirname=".", base_filename="PyTurboWizard.log"
