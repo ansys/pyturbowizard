@@ -714,8 +714,8 @@ new element!
 
 ## Parametric Study
 
-The Configuration file for a parametric study can be found in the [ptw_examples section](/doc/ptw_examplesples),
-e.g. [Darmstadt-Compressor Study](/doc/ptw_examplesples/TestCases/1_Darmstadt/turboStudyConfig.json).
+The Configuration file for a parametric study can be found in the [examples-section](/doc/examples),
+e.g. [Speedline Tutorial](/doc/examples/tutorial_speedline/turboConfig_axial_turbine.json).
 
 To run a Parametric Study the Configuration-File needs to contain a ``` launching ``` object to start a Fluent session,
 see [Launching Options](#launching-options)
