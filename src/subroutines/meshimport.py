@@ -33,7 +33,7 @@ from packaging.version import Version
 # Logger
 from src.subroutines.utils import ptw_logger
 
-logger = ptw_logger.getLogger()
+logger = ptw_logger.get_logger()
 
 
 def import_01(data, solver):

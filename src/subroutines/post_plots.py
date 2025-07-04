@@ -42,10 +42,10 @@ import pandas as pd
 from src.subroutines.utils import ptw_logger
 
 # get logger
-logger = ptw_logger.getLogger()
+logger = ptw_logger.get_logger()
 
 
-def Fplot(solver, file_name, work_dir, case_dict=None):
+def fplot(solver, file_name, work_dir, case_dict=None):
     """Function to generate post-processing plots for turbo-machinery simulations."""
     if case_dict is None:
         import warnings

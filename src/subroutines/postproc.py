@@ -36,7 +36,7 @@ from src.subroutines import post_plots
 from src.subroutines.utils import dict_utils, misc_utils, postproc_utils, ptw_logger
 
 # Logger
-logger = ptw_logger.getLogger()
+logger = ptw_logger.get_logger()
 
 
 def post(data, solver, functionEl, launchEl, trn_name, gpu):
@@ -98,9 +98,9 @@ def post_01(data, solver, launchEl, trn_name, gpu):
     # solver.execute_tui("/display/set/picture/driver avz")
 
     # write report table
-    createReportTable(
+    create_report_table(
         data=data,
-        fl_workingDir=fl_workingDir,
+        fl_working_dir=fl_workingDir,
         solver=solver,
         trn_filename=trn_name,
         gpu=gpu,
@@ -124,7 +124,7 @@ def post_fplot(data, solver, launchEl, trn_name, gpu):
     # Do standard postprocessing
     post_01(data, solver, launchEl, trn_name, gpu)
     # Plots for Post Processing (Airfoil Loading, Radial Profiles, Integral Values)
-    post_plots.Fplot(
+    post_plots.fplot(
         solver=solver,
         file_name=data["caseFilename"],
         work_dir=launchEl.get("workingDir"),
@@ -132,7 +132,7 @@ def post_fplot(data, solver, launchEl, trn_name, gpu):
     )
 
 
-def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
+def create_report_table(data: dict, fl_working_dir, solver, trn_filename, gpu):
     try:
         import pandas as pd
     except ImportError as e:
@@ -145,7 +145,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
     # read in table of report-mp and get last row
 
     # Filter for file names starting with "report"
-    caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir, case_name=caseFilename)
+    caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_working_dir, case_name=caseFilename)
     reportFileName = "report"
     report_file = os.path.join(caseOutPath, "report.out")
     file_names = os.listdir(caseOutPath)
@@ -165,7 +165,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
             key=lambda x: [int(num) for num in x.split("_") if num.isdigit()],
         )
         report_file = os.path.join(caseOutPath, report_file)
-        report_values, cov_df, mp_df = postproc_utils.calcCov(reportOut=report_file)
+        report_values, cov_df, mp_df = postproc_utils.calc_cov(reportOut=report_file)
         logger.info(f"Using: {report_file} for Evaluation.")
 
     else:
@@ -241,9 +241,9 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
         logger.info("Missing Report File data: CoV Plot not created")
 
     # Read in transcript file
-    caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir, case_name=caseFilename)
+    caseOutPath = misc_utils.ptw_output(fl_workingDir=fl_working_dir, case_name=caseFilename)
     trnFilePath = os.path.join(caseOutPath, trn_filename)
-    report_table, res_df = postproc_utils.evaluateTranscript(
+    report_table, res_df = postproc_utils.evaluate_transcript(
         trnFilePath=trnFilePath, caseFilename=caseFilename, solver=solver
     )
     # we should test the MontiorsManager as more robust alternative:
@@ -301,7 +301,7 @@ def createReportTable(data: dict, fl_workingDir, solver, trn_filename, gpu):
     return
 
 
-def mergeReportTables(turboData, solver):
+def merge_report_tables(turbo_data, solver):
     # Only working with pandas lib
     try:
         import pandas as pd
@@ -312,13 +312,13 @@ def mergeReportTables(turboData, solver):
 
     logger.info("Merging Report-Tables of all defined cases")
 
-    fl_workingDir = turboData["launching"].get("workingDir")
-    caseDict = turboData.get("cases")
+    fl_workingDir = turbo_data["launching"].get("workingDir")
+    caseDict = turbo_data.get("cases")
     ptwOutPath = misc_utils.ptw_output(fl_workingDir=fl_workingDir)
     if caseDict is not None:
         reportFiles = []
         for casename in caseDict:
-            caseEl = turboData["cases"][casename]
+            caseEl = turbo_data["cases"][casename]
             caseFilename = caseEl["caseFilename"]
             resultEl = caseEl.get("results")
             if resultEl is not None:

@@ -60,7 +60,7 @@ def add_filehandler():
     """Add a file handler to the logger to output logs to a file."""
     from src.subroutines.utils import misc_utils
 
-    logger_file_name = misc_utils.get_free_filename_maxIndex(
+    logger_file_name = misc_utils.get_free_filename_max_index(
         dirname=".", base_filename="PyTurboWizard.log"
     )
     handler = logging.FileHandler(filename=logger_file_name, encoding="utf-8")
@@ -86,6 +86,6 @@ def remove_handlers(streamhandlers: bool = True, filehandlers: bool = True):
             logger.removeHandler(handler)
 
 
-def getLogger():
+def get_logger():
     """Get the logger instance."""
     return logger

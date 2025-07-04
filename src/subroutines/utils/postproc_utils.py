@@ -37,10 +37,10 @@ from packaging.version import Version
 # Logger
 from src.subroutines.utils import fluent_utils, misc_utils, ptw_logger
 
-logger = ptw_logger.getLogger()
+logger = ptw_logger.get_logger()
 
 
-def calcCov(reportOut, window_size=50, write_mean=True):
+def calc_cov(reportOut, window_size=50, write_mean=True):
     """Calculate the Coefficient of Variation (COV) from a report file."""
     try:
         import pandas as pd
@@ -90,7 +90,7 @@ def calcCov(reportOut, window_size=50, write_mean=True):
     return formatted_report_df, cov_df, mp_df
 
 
-def getStudyReports(pathtostudy, tempData=None):
+def get_study_reports(pathtostudy, tempData=None):
     """Get study reports from the specified study path."""
     try:
         import pandas as pd
@@ -120,7 +120,7 @@ def getStudyReports(pathtostudy, tempData=None):
         if out_files:
             # Take the first .out file as the file_path
             report_file_path = os.path.join(folder_path, out_files[0])
-            report_table, cov_df, mp_df = calcCov(reportOut=report_file_path)
+            report_table, cov_df, mp_df = calc_cov(reportOut=report_file_path)
             report_table.insert(0, "Design Point", dpname)
         else:
             continue
@@ -133,7 +133,7 @@ def getStudyReports(pathtostudy, tempData=None):
         else:
             continue
 
-        trn_data, _ = evaluateTranscript(
+        trn_data, _ = evaluate_transcript(
             trnFilePath=trn_file_path, caseFilename=dpname, tempData=tempData
         )
 
@@ -188,7 +188,7 @@ def plot_figure(x_values, y_values, x_label, y_label, colors, criterion):
     return fig
 
 
-def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
+def evaluate_transcript(trnFilePath, caseFilename, solver=None, tempData=None):
     """Evaluate the transcript file and extract relevant data."""
     try:
         import pandas as pd
@@ -215,7 +215,7 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
 
         # fix for incompressible
         if solver is not None:
-            number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
+            number_eqs = fluent_utils.get_number_of_equations(solver=solver)
         else:
             number_eqs = tempData.get("num_eqs", 6)
 

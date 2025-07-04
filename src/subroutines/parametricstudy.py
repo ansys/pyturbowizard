@@ -30,7 +30,7 @@ from src.subroutines.utils import dict_utils, fluent_utils, misc_utils, ptw_logg
 # Logger
 
 
-logger = ptw_logger.getLogger()
+logger = ptw_logger.get_logger()
 
 
 def study(data, solver, functionEl, gpu):
@@ -267,7 +267,7 @@ def study01(data, solver, gpu):
             tempDataDict = (
                 solver.settings.solution.monitor.convergence_conditions.convergence_reports()
             )
-        number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
+        number_eqs = fluent_utils.get_number_of_equations(solver=solver)
         tempDataDict["num_eqs"] = number_eqs
 
         baseCaseName = studyDict[studyName].get("refCaseFilename")

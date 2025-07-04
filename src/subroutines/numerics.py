@@ -29,7 +29,7 @@ This module is setting the numerical methods and utilities in the PyTurboWizard 
 # Logger
 from src.subroutines.utils import dict_utils, ptw_logger
 
-logger = ptw_logger.getLogger()
+logger = ptw_logger.get_logger()
 
 
 def numerics(data, solver, functionEl, gpu):

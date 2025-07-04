@@ -38,10 +38,10 @@ from packaging import version
 # Logger
 from src.subroutines.utils import misc_utils, ptw_logger
 
-logger = ptw_logger.getLogger()
+logger = ptw_logger.get_logger()
 
 
-def launchFluent(launchEl: dict):
+def launch_fluent(launchEl: dict):
     """Launch Fluent solver or connect to an existing session."""
     global solver
 

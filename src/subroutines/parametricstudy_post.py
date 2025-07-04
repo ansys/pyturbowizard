@@ -35,7 +35,7 @@ import matplotlib.pyplot as plt
 # Logger
 from src.subroutines.utils import dict_utils, misc_utils, postproc_utils, ptw_logger
 
-logger = ptw_logger.getLogger()
+logger = ptw_logger.get_logger()
 
 
 def study_post(data, solver, functionEl, gpu):
@@ -120,7 +120,7 @@ def study_post_01(data, solver):
                 residual_df_list,
                 mp_df_list,
                 trn_df,
-            ) = postproc_utils.getStudyReports(pathtostudy, tempData)
+            ) = postproc_utils.get_study_reports(pathtostudy, tempData)
 
             # check if study data is available
             if result_df.empty:

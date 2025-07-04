@@ -36,7 +36,7 @@ from packaging.version import Version
 from src.subroutines.utils import dict_utils, fluent_utils, misc_utils, ptw_logger
 
 # Logger
-logger = ptw_logger.getLogger()
+logger = ptw_logger.get_logger()
 
 
 def prepost(data, solver, functionEl, launchEl):
@@ -69,7 +69,7 @@ def prepost_01(data, solver, launchEl):
     command = "solver.settings.results.report.system.print_time_statistics()"
     if not use_python_command:
         command = "/report/system/time-stats"
-    fluent_utils.addExecuteCommand(
+    fluent_utils.add_execute_command(
         command_name=command_name,
         command=command,
         solver=solver,
@@ -97,7 +97,7 @@ def prepost_01(data, solver, launchEl):
     # Create Spanwise Plots if specified by user
     if data["locations"].get("tz_turbo_topology_names") is not None:
         try:
-            spanPlots(data, solver, launchEl)
+            span_plots(data, solver, launchEl)
         except Exception as e:
             logger.info(f"No span plots have been created: {e}")
 
@@ -108,7 +108,7 @@ def prepost_01(data, solver, launchEl):
         and data["results"].get("oilflow_pathlines_var") is not None
     ):
         try:
-            oilflow_pathlines(data, solver, launchEl)
+            create_oilflow_pathlines(data, solver, launchEl)
         except Exception as e:
             logger.info(f"No oil flow pathlines have been created: {e}")
 
@@ -119,12 +119,12 @@ def prepost_01(data, solver, launchEl):
         and data["results"].get("pathlines_var") is not None
     ):
         try:
-            pathlines(data, solver, launchEl)
+            create_pathlines(data, solver, launchEl)
         except Exception as e:
             logger.info(f"No pathlines have been created: {e}")
 
 
-def spanPlots(data, solver, launchEl):
+def span_plots(data, solver, launchEl):
     """Create spanwise contour plots based on the specified span heights and variables."""
     # Check version -> for version 24.1 use python command
     use_python_command = Version(solver._version) >= Version("241")
@@ -220,7 +220,7 @@ def spanPlots(data, solver, launchEl):
 
     command_name = "save-contour-plots"
     logger.info(f"Adding execute command: {command_name}")
-    fluent_utils.addExecuteCommand(
+    fluent_utils.add_execute_command(
         solver=solver,
         command_name=command_name,
         command=all_commands_str,
@@ -230,7 +230,8 @@ def spanPlots(data, solver, launchEl):
     return
 
 
-def oilflow_pathlines(data, solver, launchEl):
+def create_oilflow_pathlines(data, solver, launchEl):
+    """Create oilflow-pathlines based on the specified surfaces and variables."""
     oilflowPL_vars = data["results"].get("oilflow_pathlines_var")
 
     availableFieldDataNames = (
@@ -280,7 +281,8 @@ def oilflow_pathlines(data, solver, launchEl):
     return
 
 
-def pathlines(data, solver, launchEl):
+def create_pathlines(data, solver, launchEl):
+    """Create pathlines based on the specified surfaces and variables."""
     pathlineVars = data["results"].get("pathlines_var")
 
     availableFieldDataNames = (

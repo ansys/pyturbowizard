@@ -35,7 +35,7 @@ from packaging.version import Version
 # Logger
 from src.subroutines.utils import misc_utils, ptw_logger
 
-logger = ptw_logger.getLogger()
+logger = ptw_logger.get_logger()
 
 
 def write_expression_file(data: dict, script_dir: str, working_dir: str):

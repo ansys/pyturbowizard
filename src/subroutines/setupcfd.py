@@ -36,7 +36,7 @@ from packaging.version import Version
 # Logger
 from src.subroutines.utils import dict_utils, fluent_utils, misc_utils, ptw_logger
 
-logger = ptw_logger.getLogger()
+logger = ptw_logger.get_logger()
 
 
 def setup(data, solver, functionEl, gpu):
@@ -1537,7 +1537,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
         solver.tui.solve.monitors.residual.n_save(500000)
 
         # Check active number of equations
-        number_eqs = fluent_utils.getNumberOfEquations(solver=solver)
+        number_eqs = fluent_utils.get_number_of_equations(solver=solver)
 
         resCrit = solutionDict.setdefault("res_crit", 1.0e-4)
         resCritList = [resCrit] * number_eqs

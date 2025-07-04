@@ -32,7 +32,7 @@ from packaging.version import Version
 # Logger
 from src.subroutines.utils import dict_utils, ptw_logger
 
-logger = ptw_logger.getLogger()
+logger = ptw_logger.get_logger()
 
 
 def init(data, solver, functionEl, gpu):

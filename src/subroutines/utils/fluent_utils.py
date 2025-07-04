@@ -35,7 +35,7 @@ from packaging.version import Version
 # Logger
 from src.subroutines.utils import ptw_logger
 
-logger = ptw_logger.getLogger()
+logger = ptw_logger.get_logger()
 
 
 def read_journals(
@@ -78,7 +78,7 @@ def read_journals(
     return
 
 
-def getNumberOfEquations(solver):
+def get_number_of_equations(solver):
     """Get the number of equations in the solver."""
     number_eqs = 0
     # Check active number of equations
@@ -96,7 +96,7 @@ def getNumberOfEquations(solver):
     return number_eqs
 
 
-def addExecuteCommand(solver, command_name, command, pythonCommand: bool = False):
+def add_execute_command(solver, command_name, command, pythonCommand: bool = False):
     """Add a command to execute commands at the end of the iteration"""
     if Version(solver._version) < Version("252"):
         if pythonCommand:

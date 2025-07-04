@@ -125,7 +125,7 @@ class PTW_Run:
         """Launch Fluent with the specified settings."""
         if solver is None:
             logger.info("Launching Fluent...")
-            solver = launcher.launchFluent(self.launch_data)
+            solver = launcher.launch_fluent(self.launch_data)
 
         self.solver = solver
 
@@ -192,7 +192,7 @@ class PTW_Run:
                 if ref_case is not None:
                     # Check if reference case is available
                     if caseDict.get(ref_case) is not None:
-                        dict_utils.merge_data_with_refDict(caseDict=caseEl, allCasesDict=caseDict)
+                        dict_utils.merge_data_with_ref_dict(caseDict=caseEl, allCasesDict=caseDict)
                     else:
                         logger.error(
                             f"Case '{casename}' is skipped: "
@@ -207,7 +207,7 @@ class PTW_Run:
                     )
                     continue
                 # Update initial case-function-dict
-                caseFunctionEl = dict_utils.merge_functionDicts(
+                caseFunctionEl = dict_utils.merge_function_dicts(
                     caseDict=caseEl, glfunctionDict=gl_function_data
                 )
                 # Check if material from lib should be used
@@ -396,7 +396,7 @@ class PTW_Run:
 
             # Merge if multiple cases are defined
             if len(caseDict) > 1:
-                postproc.mergeReportTables(turboData=turbo_data, solver=solver)
+                postproc.merge_report_tables(turbo_data=turbo_data, solver=solver)
 
         logger.info("Running Case Study... done!")
 

@@ -37,7 +37,7 @@ import time
 # Logger
 from src.subroutines.utils import ptw_logger
 
-logger = ptw_logger.getLogger()
+logger = ptw_logger.get_logger()
 
 
 def get_free_filename(dirname, base_filename):
@@ -53,7 +53,7 @@ def get_free_filename(dirname, base_filename):
     return filename
 
 
-def get_free_filename_maxIndex(dirname, base_filename):
+def get_free_filename_max_index(dirname, base_filename):
     """Generate a unique filename in the specified directory by appending the maximum index found"""
     base_name, ext_name = os.path.splitext(base_filename)
     filename = base_filename

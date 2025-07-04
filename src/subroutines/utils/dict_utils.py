@@ -34,7 +34,7 @@ import os
 # Logger
 from src.subroutines.utils import ptw_logger
 
-logger = ptw_logger.getLogger()
+logger = ptw_logger.get_logger()
 
 
 def get_funcname_and_upd_funcdict(
@@ -70,7 +70,7 @@ def get_funcname_and_upd_funcdict(
     return functionName
 
 
-def merge_functionDicts(caseDict: dict, glfunctionDict: dict):
+def merge_function_dicts(caseDict: dict, glfunctionDict: dict):
     """merge function dictionaries"""
     # Merge function dicts
     caseFunctionDict = caseDict.get("functions")
@@ -83,7 +83,7 @@ def merge_functionDicts(caseDict: dict, glfunctionDict: dict):
     return caseFunctionDict
 
 
-def merge_data_with_refDict(caseDict: dict, allCasesDict: dict):
+def merge_data_with_ref_dict(caseDict: dict, allCasesDict: dict):
     """merge data with reference dictionary"""
     refCaseName = caseDict.get("refCase")
     refDict = allCasesDict.get(refCaseName)
