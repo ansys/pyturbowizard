@@ -767,7 +767,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                         # remove from dataset as we use new keywords
                         data["setup"].pop("BC_settings_pout")
 
-                    bc_settings = solver.tui.define.boundary_conditions.bc_settings
+                    bc_settings = solver.settings.setup.boundary_conditions.settings
                     if bin_count:
                         bc_settings.pressure_outlet.bin_count = bin_count
 
