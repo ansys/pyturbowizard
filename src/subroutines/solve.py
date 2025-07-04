@@ -20,6 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+Solve Module
+
+This module provides functionality for solving CFD simulations in the PyTurboWizard application.
+It includes utilities for managing solver interactions, monitoring progress, and handling results.
+"""
+
 from packaging.version import Version
 
 # Logger

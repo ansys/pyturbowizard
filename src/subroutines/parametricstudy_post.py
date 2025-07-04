@@ -20,6 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+Parametric Study Post-Processing Module
+
+This module provides functionality for post-processing results from parametric studies
+conducted in the PyTurboWizard application.
+"""
+
 import json
 import os
 

@@ -20,6 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+PyTurboWizard Logger Module
+
+This module provides logging functionality for the PyTurboWizard application.
+It sets up a centralized logger to track application events, errors, and debugging information.
+"""
+
+
 import logging
 import os
 

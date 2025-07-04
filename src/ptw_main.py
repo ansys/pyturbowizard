@@ -20,6 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+PTW Main Module
+
+This module serves as the entry point for the PyTurboWizard application. It provides
+functionality for interacting with ANSYS Fluent and other related tools.
+"""
+
 import copy
 import json
 import os
@@ -76,6 +83,7 @@ class PTW_Run:
     solver: pyfluent.session_solver.Solver = None
 
     def load_config_file(self, script_path: str, config_filename: str):
+        """Load the configuration file and initialize the PTW_Run object."""
         self.script_path = script_path
         self.config_file_name = config_filename
         logger.info(f"Reading ConfigFile: {os.path.abspath(config_filename)}")
@@ -114,6 +122,7 @@ class PTW_Run:
         logger.info(f"Reading ConfigFile: {os.path.abspath(config_filename)}... done!")
 
     def launch_fluent(self, solver=None):
+        """Launch Fluent with the specified settings."""
         if solver is None:
             logger.info("Launching Fluent...")
             solver = launcher.launchFluent(self.launch_data)
@@ -123,6 +132,7 @@ class PTW_Run:
         return solver
 
     def ini_fluent_settings(self):
+        """Initialize Fluent settings based on the configuration."""
         solver = self.solver
         if solver is None:
             logger.warning(
@@ -151,6 +161,7 @@ class PTW_Run:
         logger.info("Initializing Fluent settings... done!")
 
     def do_case_study(self):
+        """Run the case study based on the configuration."""
         # Get Data from Class
         solver = self.solver
         if solver is None:
@@ -390,6 +401,7 @@ class PTW_Run:
         logger.info("Running Case Study... done!")
 
     def do_parametric_study(self):
+        """Run the parametric study based on the configuration."""
         # Get Data from Class
         solver = self.solver
         if solver is None:
@@ -428,6 +440,7 @@ class PTW_Run:
         logger.info("Running Parametric Study... done!")
 
     def finalize_session(self):
+        """Finalize the Fluent session and clean up resources."""
         # Get Data from Class
         solver = self.solver
         if solver is None:
@@ -472,6 +485,7 @@ class PTW_Run:
         logger.info("Finalizing Fluent-Session... done!")
 
     def do_full_run(self, script_path, config_filename, solver):
+        """Run the complete PyTurboWizard workflow."""
         logger.info(f"*** Starting PyTurboWizard (Version {ptw_version}) ***")
         # Start ptw_run
         self.load_config_file(script_path=script_path, config_filename=config_filename)
@@ -485,6 +499,7 @@ class PTW_Run:
 
 
 def ptw_main():
+    """Main function to run the PyTurboWizard."""
     # Get data from arguments
     # Get script_path (needed to get template-dir)
     script_path = os.path.dirname(sys.argv[0])
@@ -506,4 +521,5 @@ def ptw_main():
 
 
 if __name__ == "__main__":
+    # Run the main function
     ptw_main()

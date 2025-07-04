@@ -20,6 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
+"""
+Post-Processing Utilities Module
+
+This module provides utility functions for post-processing simulation results in the PyTurboWizard
+application.
+"""
+
 import os
 
 import matplotlib.patches as mpatches

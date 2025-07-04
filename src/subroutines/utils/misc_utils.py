@@ -20,6 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+Miscellaneous Utilities Module
+
+This module provides various utility functions for file handling, subprocess management, and other
+general-purpose operations in the PyTurboWizard application.
+"""
+
 import glob
 import ntpath
 import os.path

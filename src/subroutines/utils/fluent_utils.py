@@ -20,6 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+Fluent Utilities Module
+
+This module provides utility functions for working with often used pyFluent functions
+in the PyTurboWizard application.
+"""
+
 import csv
 import os
 

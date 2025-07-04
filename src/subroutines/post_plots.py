@@ -21,10 +21,12 @@
 # SOFTWARE.
 
 # -*- coding: utf-8 -*-
-"""
-Script for Post-processing Turbomachinery Cases
 
-@author: dpons/mkaimasi
+"""
+Post Plots Module
+
+This module provides functionality for generating and customizing turbo-machinery specific
+plots for post-processing simulation results in the PyTurboWizard application.
 """
 
 import matplotlib

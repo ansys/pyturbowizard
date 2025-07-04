@@ -20,6 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+Expression Utilities Module
+
+This module provides utility functions for working with expressions in the PyTurboWizard
+application.
+"""
+
 import os
 import re
 

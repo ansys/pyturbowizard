@@ -20,6 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+Performance Plot Module
+
+This module provides functionality for generating performance plots in the PyTurboWizard
+application.
+"""
+
 import json
 import sys
 

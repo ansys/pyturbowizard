@@ -20,6 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+Setup CFD Module
+
+This module provides functionality for setting up CFD simulations in the PyTurboWizard application.
+It includes utilities for configuring boundary-conditions,simulation parameters,
+managing solver settings, and preparing input files.
+"""
+
 import csv
 import os
 

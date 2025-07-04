@@ -20,6 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+Pre-Post Processing Module
+
+This module provides functionality for pre-processing and post-processing tasks in the
+PyTurboWizard application.
+It includes utilities for preparing simulation inputs, managing solver interactions,
+and handling results.
+"""
+
 import os
 
 from packaging.version import Version
