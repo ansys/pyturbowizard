@@ -41,6 +41,7 @@ logger = ptw_logger.getLogger()
 
 
 def get_free_filename(dirname, base_filename):
+    """Generate a unique filename in the specified directory by appending a counter"""
     base_name, ext_name = os.path.splitext(base_filename)
     filename = base_filename
     filepath = os.path.join(dirname, filename)
@@ -53,6 +54,7 @@ def get_free_filename(dirname, base_filename):
 
 
 def get_free_filename_maxIndex(dirname, base_filename):
+    """Generate a unique filename in the specified directory by appending the maximum index found"""
     base_name, ext_name = os.path.splitext(base_filename)
     filename = base_filename
     file_list = os.listdir(dirname)
@@ -77,6 +79,7 @@ def get_free_filename_maxIndex(dirname, base_filename):
 
 
 def run_extsch_script(path_to_script: str, workingDir: str, caseEl: dict):
+    """Run the 'extsch' script to generate a debug file for Fluent cases."""
     import platform
 
     if platform.system() == "Linux":
@@ -103,7 +106,7 @@ def run_extsch_script(path_to_script: str, workingDir: str, caseEl: dict):
 
 
 def ptw_output(fl_workingDir, study_name=None, case_name=None):
-    # Define a PTW output folder in Fluent working directory
+    """Define a PTW output folder in the Fluent working directory."""
     ptw_output_path = ""
     if os.path.exists(fl_workingDir):
         ptw_output_path = os.path.join(fl_workingDir, "PTW_output")
@@ -130,6 +133,7 @@ def ptw_output(fl_workingDir, study_name=None, case_name=None):
 
 
 def can_convert_to_number(value):
+    """Check if a value can be converted to a float."""
     try:
         float(value)
         return True
@@ -143,6 +147,7 @@ def move_files(
     filename_wildcard: str,
     overwrite: bool = True,
 ):
+    """Move files from source_dir to target_dir based on a wildcard pattern."""
     filenames = glob.glob(os.path.join(source_dir, filename_wildcard))
     for source_file in filenames:
         target_file = ntpath.basename(source_file)
@@ -158,6 +163,7 @@ def move_files(
 
 
 def remove_files(working_dir: str, filename_wildcard):
+    """Remove files in the working directory based on a wildcard pattern."""
     import glob
 
     if isinstance(filename_wildcard, list):
@@ -174,6 +180,7 @@ def remove_files(working_dir: str, filename_wildcard):
 
 
 def fluent_cleanup(working_dir: str, cleanup_data):
+    """Perform clean-up operations after a Fluent session."""
     if cleanup_data:
         # Wait some time, till the fluent session is closed to avoid any file-locks
         time.sleep(5)

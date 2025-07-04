@@ -35,6 +35,7 @@ logger = logging.getLogger("PyTurboWizard")
 
 
 def init_logger(console_output: bool = True, file_output: bool = True):
+    """Initialize the logger for the PyTurboWizard application."""
     logger.setLevel(logging.INFO)
     if file_output:
         pathtoFileHandler = add_filehandler()
@@ -46,6 +47,7 @@ def init_logger(console_output: bool = True, file_output: bool = True):
 
 
 def add_streamhandler():
+    """Add a stream handler to the logger to output logs to the console."""
     handler = logging.StreamHandler()
     formatter = logging.Formatter(fmt="%(name)-12s: %(levelname)-8s - %(message)s")
     handler.setFormatter(formatter)
@@ -55,6 +57,7 @@ def add_streamhandler():
 
 
 def add_filehandler():
+    """Add a file handler to the logger to output logs to a file."""
     from src.subroutines.utils import misc_utils
 
     logger_file_name = misc_utils.get_free_filename_maxIndex(
@@ -73,7 +76,7 @@ def add_filehandler():
 
 
 def remove_handlers(streamhandlers: bool = True, filehandlers: bool = True):
-    # Loops over all Handlers & removes all stream- and/or file-handlers
+    """Remove handlers from the logger."""
     for handler in logger.handlers:
         if streamhandlers and (type(handler) is logging.StreamHandler):
             logger.info("Removing StreamHandler from logger")
@@ -84,4 +87,5 @@ def remove_handlers(streamhandlers: bool = True, filehandlers: bool = True):
 
 
 def getLogger():
+    """Get the logger instance."""
     return logger

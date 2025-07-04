@@ -36,6 +36,7 @@ logger = ptw_logger.getLogger()
 
 
 def init(data, solver, functionEl, gpu):
+    """Initialize the solver based on the provided data and function element."""
     # Get FunctionName & Update FunctionEl
     defaultName = "init_fmg_01"
     if gpu:
@@ -99,6 +100,7 @@ def init(data, solver, functionEl, gpu):
 
 
 def init_standard_01(data, solver):
+    """Standard Initialization Function for Fluent solver, v1.0"""
     logger.info(f'Using {data["locations"]["bz_inlet_names"][0]} pressure for initialization')
     solver.settings.solution.initialization.reference_frame = "absolute"
 
@@ -128,6 +130,7 @@ def init_standard_01(data, solver):
 
 
 def init_standard_02(data, solver):
+    """ "Standard Initialization Function for Fluent solver, v2.0"""
     # if the boundary condition needs information from flow field
     # (e.g. density to convert volume-rate to massflow-rate),
     # we need to initialize first so that we have field data available
@@ -153,25 +156,30 @@ def init_standard_02(data, solver):
 
 
 def init_hybrid_01(data, solver):
+    """Hybrid Initialization Function for Fluent solver, v1.0"""
     init_hybrid_basic(data=data, solver=solver)
 
 
 def init_fmg_01(data, solver):
+    """FMG Initialization Function for Fluent solver, v1.0"""
     init_standard_01(data=data, solver=solver)
     init_fmg_basic(data=data, solver=solver)
 
 
 def init_fmg_02(data, solver):
+    """FMG Initialization Function for Fluent solver, v2.0"""
     init_standard_02(data=data, solver=solver)
     init_fmg_basic(data=data, solver=solver)
 
 
 def init_fmg_03(data, solver):
+    """FMG Initialization Function for Fluent solver, v3.0"""
     init_hybrid_01(data=data, solver=solver)
     init_fmg_basic(data=data, solver=solver)
 
 
 def init_hybrid_basic(data, solver):
+    """Basic Hybrid Initialization Function for Fluent solver"""
     # if the boundary condition needs information from flow field
     # (e.g. density to convert volume-rate to massflow-rate),
     # we need to initialize first so that we have field data available
@@ -196,6 +204,7 @@ def init_hybrid_basic(data, solver):
 
 
 def init_fmg_basic(data, solver):
+    """Basic FMG Initialization Function for Fluent solver"""
     logger.info("Performing a FMG initialization")
     if Version(solver._version) < Version("241"):
         # setting rp variable which is needed for version v232 when using gtis,
@@ -207,6 +216,7 @@ def init_fmg_basic(data, solver):
 
 
 def solve_01(data, solver):
+    """Solve Function for Fluent solver, v1.0"""
     iter_count = data["solution"].setdefault("iter_count", 500)
     logger.info(f"Solving max. {iter_count} iterations")
     solver.settings.solution.run_calculation.iterate(iter_count=iter_count)

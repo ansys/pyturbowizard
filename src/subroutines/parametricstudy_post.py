@@ -39,6 +39,7 @@ logger = ptw_logger.getLogger()
 
 
 def study_post(data, solver, functionEl, gpu):
+    """Run the post-processing function for parametric studies."""
     # Get FunctionName & Update FunctionEl
     functionName = dict_utils.get_funcname_and_upd_funcdict(
         parentDict=data,
@@ -67,6 +68,7 @@ def study_post(data, solver, functionEl, gpu):
 
 
 def study_post_01(data, solver):
+    """Post-process the results of a parametric study, version 01."""
     # Only working in external mode
     try:
         import pandas as pd

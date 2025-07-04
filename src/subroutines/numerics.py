@@ -20,6 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+Numerics Module
+
+This module is setting the numerical methods and utilities in the PyTurboWizard application.
+"""
+
 # Logger
 from src.subroutines.utils import dict_utils, ptw_logger
 
@@ -27,6 +33,7 @@ logger = ptw_logger.getLogger()
 
 
 def numerics(data, solver, functionEl, gpu):
+    """Set numerics for the solver based on the provided data and function element."""
     # Get FunctionName & Update FunctionEl
     if "tsn" not in data.get("solution"):
         tsn = False
@@ -78,11 +85,13 @@ def numerics(data, solver, functionEl, gpu):
 
 
 def numerics_defaults(data, solver):
+    """Set numerics to default values."""
     logger.info("No changes of numerics-settings are made. Fluent defaults-settings are used...")
     return
 
 
 def numerics_bp_tn_2305(data, solver):
+    """Set numerics to Best Practice and turbo numerics with green-gauss-node-based scheme."""
     solver.settings.solution.methods.gradient_scheme = "green-gauss-node-based"
     logger.info("Best Practice and turbo numerics with green-gauss-node-based will be used")
 
@@ -93,6 +102,7 @@ def numerics_bp_tn_2305(data, solver):
 
 
 def numerics_bp_tn_2305_lsq(data, solver):
+    """Set numerics to Best Practice and turbo numerics with least-square-cell-based scheme."""
     logger.info("Best Practice and turbo numerics with least-square-cell-based will be used")
     solver.settings.solution.methods.gradient_scheme = "least-square-cell-based"
     use_tsn = data["solution"].setdefault("tsn", True)
@@ -102,6 +112,7 @@ def numerics_bp_tn_2305_lsq(data, solver):
 
 
 def numerics_bp_all_2305(data, solver):
+    """Set numerics to Best Practice and turbo numerics with second-order upwind scheme."""
     discDict = solver.settings.solution.methods.discretization_scheme
     for discKey in discDict:
         if discKey == "pressure":
@@ -114,6 +125,7 @@ def numerics_bp_all_2305(data, solver):
 
 
 def numerics_defaults_pseudo_timestep(data, solver):
+    """Set numerics to pseudo-time-step method."""
     logger.info(
         "Setting pv-coupling using pseudo-time-step method, "
         "all other settings are fluent defaults..."

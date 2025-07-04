@@ -46,7 +46,7 @@ logger = ptw_logger.getLogger()
 
 
 def Fplot(solver, file_name, work_dir, case_dict=None):
-
+    """Function to generate post-processing plots for turbo-machinery simulations."""
     if case_dict is None:
         import warnings
 
@@ -66,7 +66,7 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
     ref_cfg = case_dict.get("locations", {})
 
     def get_loading_data(surf, span=None):
-        # Subroutine to extract loading data
+        """Subroutine to extract loading data"""
         fields = [
             "x-coordinate",
             "pressure",
@@ -95,7 +95,7 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
         return loading_data
 
     def plot_loading(data, fields, SaveFig=True, w_dir=None):
-
+        """Subroutine to plot loading data"""
         axial_coord = data["axial-coordinate"]
         bx = (axial_coord - np.min(axial_coord)) / (
             np.max(axial_coord) - np.min(axial_coord)
@@ -146,6 +146,7 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
                 plt.close(fig)
 
     def write_loading_csv(data, filename):
+        """Subroutine to write loading data to a CSV file"""
         f = open(filename, "w")
 
         f.write("## Ansys Fluent Profile\n")
@@ -172,6 +173,7 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
         f.close()
 
     def plot_row_radial_profile(prof, SaveFig=False, fig_dir="Radial_Profile_Figures"):
+        """Subroutine to plot radial profiles for each row"""
         if SaveFig and not os.path.exists(fig_dir):
             os.makedirs(fig_dir)
         for af in list(prof.keys()):
@@ -200,7 +202,8 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
                         fig.savefig(fig_path, dpi=400)
                         plt.close(fig)
 
-    def Read_Fluent_xy(file):
+    def read_fluent_xy(file):
+        """Subroutine to read Fluent .xy files and return data as a dictionary"""
         with open(file, "r") as f:
             lines = f.readlines()
         Title = re.findall('"([^"]*)"', lines[0])[0]
@@ -217,6 +220,7 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
         return var
 
     def parse_mass_avg_report(filepath):
+        """Parse the mass-weighted average report file and return a DataFrame."""
         with open(filepath, "r") as f:
             lines = f.readlines()
 
@@ -253,7 +257,7 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
     #####################
 
     def airfoil_loading_analysis(solver, work_dir, case_dict):
-
+        """Subroutine to perform airfoil loading analysis."""
         if not case_dict.get("airfoil_zones") or not case_dict.get("loading_span_cuts"):
             logger.warning(
                 "[airfoil_loading_analysis] No airfoil zones or span cuts defined — "
@@ -300,6 +304,7 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
     ####################
 
     def generate_integral_values(solver, work_dir, config, basename):
+        """Subroutine to generate integral values for mass-weighted averages and mass flow rates."""
         fields = config.get("fields", [])
         if not fields:
             logger.warning("[Integral Values] No fields defined — nothing will be calculated.")
@@ -349,6 +354,7 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
     # ###############################
 
     def generate_radial_profiles(solver, work_dir, config):
+        """Subroutine to generate radial profiles for each row in the turbo-machinery simulation."""
         variables = config.get("variables", [])
         rows = config.get("rows", {})
 
@@ -393,8 +399,8 @@ def Fplot(solver, file_name, work_dir, case_dict=None):
                     f'"{fname_outlet}"',
                 )
 
-                prof_data[row_name]["Inlet"].update(Read_Fluent_xy(fname_inlet))
-                prof_data[row_name]["Outlet"].update(Read_Fluent_xy(fname_outlet))
+                prof_data[row_name]["Inlet"].update(read_fluent_xy(fname_inlet))
+                prof_data[row_name]["Outlet"].update(read_fluent_xy(fname_outlet))
 
         # Save plots
         plot_row_radial_profile(

@@ -45,6 +45,7 @@ def read_journals(
     fluent_dir: str = "",
     execution_dir: str = "",
 ):
+    """Read journal files specified in the case_data dictionary."""
     journal_list = case_data.get(element_name)
     if journal_list is not None and len(journal_list) > 0:
         logger.info(
@@ -78,6 +79,7 @@ def read_journals(
 
 
 def getNumberOfEquations(solver):
+    """Get the number of equations in the solver."""
     number_eqs = 0
     # Check active number of equations
     if Version(solver._version) < Version("241"):
@@ -95,7 +97,7 @@ def getNumberOfEquations(solver):
 
 
 def addExecuteCommand(solver, command_name, command, pythonCommand: bool = False):
-    # Add a command to execute after solving is finished
+    """Add a command to execute commands at the end of the iteration"""
     if Version(solver._version) < Version("252"):
         if pythonCommand:
             solver.tui.solve.execute_commands.add_edit(
@@ -120,7 +122,7 @@ def addExecuteCommand(solver, command_name, command, pythonCommand: bool = False
 
 
 def check_version(solver):
-
+    """Check the Fluent version and return it as a string."""
     fluent_version = solver.get_fluent_version()
     if isinstance(fluent_version, str):
         return fluent_version
@@ -136,6 +138,7 @@ def create_iso_surface(
     zones: list = None,
     surfaces: list = None,
 ):
+    """Create an iso-surface"""
     if name not in solver.settings.results.surfaces.iso_surface.get_object_names():
         solver.settings.results.surfaces.iso_surface.create(name=name)
 
@@ -163,6 +166,7 @@ def create_iso_clip(
     max_value: float,
     surfaces: list = None,
 ):
+    """Create an iso-clip surface"""
     if name not in solver.settings.results.surfaces.iso_clip.get_object_names():
         solver.settings.results.surfaces.iso_clip.create(name=name)
 
@@ -177,6 +181,7 @@ def create_iso_clip(
 
 
 def create_point_surface(solver, name: str, point: list, snap_method: str = "nearest"):
+    """Create a point surface"""
     if name not in solver.settings.results.surfaces.point_surface.get_object_names():
         solver.settings.results.surfaces.point_surface.create(name=name)
     allowed_values = solver.settings.results.surfaces.point_surface[
@@ -195,6 +200,7 @@ def create_point_surface(solver, name: str, point: list, snap_method: str = "nea
 
 
 def create_plane_surface(solver, name: str, value: float, method: str = "xy-plane"):
+    """Create a plane surface"""
     if name not in solver.settings.results.surfaces.plane_surface.get_object_names():
         solver.settings.results.surfaces.plane_surface.create(name=name)
 
@@ -226,6 +232,7 @@ def create_plane_surface(solver, name: str, value: float, method: str = "xy-plan
 def export_solver_monitor(
     solver, filepath: str = "residual.csv", monitor_set_name: str = "residual"
 ):
+    """Export the solver monitor data to a CSV file."""
     mp = solver.monitors.get_monitor_set_data(monitor_set_name=monitor_set_name)
     indices = mp[0]
     data_dict = mp[1]
@@ -247,6 +254,7 @@ def create_and_evaluate_expression(
     overwrite_definition=True,
     evaluate_value=False,
 ):
+    """Create and evaluate a named expression"""
     if exp_name not in solver.settings.setup.named_expressions.get_object_names():
         solver.settings.setup.named_expressions.create(name=exp_name)
         solver.settings.setup.named_expressions[exp_name] = {"definition": definition}

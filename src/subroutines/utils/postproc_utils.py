@@ -41,6 +41,7 @@ logger = ptw_logger.getLogger()
 
 
 def calcCov(reportOut, window_size=50, write_mean=True):
+    """Calculate the Coefficient of Variation (COV) from a report file."""
     try:
         import pandas as pd
     except ImportError as e:
@@ -90,6 +91,7 @@ def calcCov(reportOut, window_size=50, write_mean=True):
 
 
 def getStudyReports(pathtostudy, tempData=None):
+    """Get study reports from the specified study path."""
     try:
         import pandas as pd
     except ImportError as e:
@@ -160,6 +162,8 @@ def getStudyReports(pathtostudy, tempData=None):
 
 
 def plot_figure(x_values, y_values, x_label, y_label, colors, criterion):
+    """Create a figure with a scatter plot of x_values vs y_values,
+    color-coded by convergence criteria."""
     # Create the figure and axis
     fig, ax = plt.subplots()
 
@@ -185,6 +189,7 @@ def plot_figure(x_values, y_values, x_label, y_label, colors, criterion):
 
 
 def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
+    """Evaluate the transcript file and extract relevant data."""
     try:
         import pandas as pd
     except ImportError as e:
@@ -306,6 +311,7 @@ def evaluateTranscript(trnFilePath, caseFilename, solver=None, tempData=None):
 
 
 def check_lines(line_list, number_eqs, filtered_headers):
+    """Check if the lines in the list are valid based on the number of equations and headers."""
     valid_data = False
     for line in line_list:
         values = line.split()

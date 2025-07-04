@@ -20,6 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+Launcher Module
+
+This module provides functionality for launching and managing ANSYS Fluent instances in the
+PyTurboWizard application.
+"""
+
 import os
 import subprocess
 import time
@@ -35,7 +42,7 @@ logger = ptw_logger.getLogger()
 
 
 def launchFluent(launchEl: dict):
-
+    """Launch Fluent solver or connect to an existing session."""
     global solver
 
     fl_workingDir = launchEl["workingDir"]
@@ -86,6 +93,7 @@ def launchFluent(launchEl: dict):
 
 
 def hook_to_existing_session(fl_workingDir: str, serverfilename: str, cleanup_on_exit: bool):
+    """Hook to an existing Fluent session using the server info file."""
     import ansys.fluent.core as pyfluent
 
     fullpath_to_sf = os.path.join(fl_workingDir, serverfilename)
@@ -112,6 +120,7 @@ def hook_to_existing_session(fl_workingDir: str, serverfilename: str, cleanup_on
 
 
 def launch_queuing_session(launchEl: dict):
+    """Launch Fluent solver in a queuing system (e.g., SLURM)."""
     solver = None
     queueEl = launchEl.get("queue_slurm")
     fl_workingDir = launchEl["workingDir"]
@@ -218,6 +227,7 @@ def launch_queuing_session(launchEl: dict):
 
 
 def get_fluent_exe_path(product_version: str):
+    """Get the path to the Fluent executable based on the product version."""
     import platform
 
     fluent_path = None
@@ -241,6 +251,7 @@ def get_fluent_exe_path(product_version: str):
 
 
 def get_launcher_defaults(launchEl: dict):
+    """Set default values for the launcher options."""
     # Set defaults
     launchEl.setdefault("exitatend", True)
     launchEl.setdefault("precision", True)
@@ -255,7 +266,7 @@ def get_launcher_defaults(launchEl: dict):
 
 
 def adjust_settings_to_version(launchEl: dict):
-    # method will convert old definitions to new
+    """Adjust launcher settings based on the version of PyFluent."""
     if version.parse(pyfluent.__version__) >= version.parse("0.29.0"):
         ui_mode = launchEl.get("show_gui")
         if isinstance(ui_mode, bool):

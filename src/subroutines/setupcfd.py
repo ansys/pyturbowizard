@@ -40,6 +40,7 @@ logger = ptw_logger.getLogger()
 
 
 def setup(data, solver, functionEl, gpu):
+    """Set up the CFD simulation based on the provided data and function element."""
     # Get FunctionName & Update FunctionEl
     functionName = dict_utils.get_funcname_and_upd_funcdict(
         parentDict=data,
@@ -63,11 +64,13 @@ def setup(data, solver, functionEl, gpu):
 
 
 def setup_compressible_01(data, solver, gpu, bcs):
+    """Set up the compressible CFD simulation based on the provided data and solver, v01"""
     setup_01(data=data, solver=solver, solve_energy=True, bcs=bcs, gpu=gpu)
     return
 
 
 def setup_incompressible_01(data, solver, gpu, bcs):
+    """Set up the incompressible CFD simulation based on the provided data and solver, v01"""
     setup_01(data=data, solver=solver, solve_energy=False, bcs=bcs, gpu=gpu)
     return
 
@@ -81,6 +84,7 @@ def setup_01(
     material: bool = True,
     physics: bool = True,
 ):
+    """Set up the CFD simulation based on the provided data and solver, v01"""
     # Set physics
     if physics:
         set_physics(data=data, solver=solver, solve_energy=solve_energy, gpu=gpu)
@@ -100,6 +104,7 @@ def setup_01(
 
 
 def set_material(data, solver, solve_energy: bool = True):
+    """Set the material properties for the CFD simulation based on the provided data and solver."""
     fl_prop_el = data["fluid_properties"]
     fl_name = fl_prop_el.get("fl_name")
     if fl_name is None:
@@ -157,6 +162,7 @@ def set_material(data, solver, solve_energy: bool = True):
 
 
 def add_material_property(material_object, fl_prop_name: str, fl_prop_data):
+    """Add a material property to the material object."""
     logger.info(f"Setting property '{fl_prop_name}'...")
     material_prop = getattr(material_object, fl_prop_name)
     if material_prop is not None:
@@ -214,6 +220,7 @@ def add_material_property(material_object, fl_prop_name: str, fl_prop_data):
 
 
 def set_physics(data, solver, solve_energy: bool = True, gpu: bool = False):
+    """Set the physics models for the CFD simulation based on the provided data and solver."""
     if solve_energy:
         solver.settings.setup.models.energy = {
             "enabled": True,
@@ -291,6 +298,7 @@ def set_physics(data, solver, solve_energy: bool = True, gpu: bool = False):
 
 
 def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
+    """Set the boundary conditions for the CFD simulation based on the provided data and solver."""
     # Set operating-pressure
     solver.settings.setup.general.operating_conditions.operating_pressure = "BC_pref"
 
@@ -1036,6 +1044,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
 
 
 def set_reports(data, solver, launchEl, gpu: bool = False):
+    """Set up report definitions in the solver based on the provided data."""
     logger.info("Running set_reports()...")
     # Get Solution-Dict
     solutionDict = data.get("solution")
@@ -1593,6 +1602,7 @@ def set_reports(data, solver, launchEl, gpu: bool = False):
 
 
 def set_run_calculation(data, solver):
+    """Set up run calculation settings in the solver based on the provided data."""
     # Get Solution-Dict
     solutionDict = data.get("solution")
 
@@ -1647,6 +1657,7 @@ def set_run_calculation(data, solver):
 
 
 def source_terms(data, solver):
+    """Define source terms in the solver based on the provided data."""
     my_sources = data.get("source_terms")
     if my_sources is None:
         logger.info("No 'source_terms' defined: Skipping 'source_terms' function!")
@@ -1677,8 +1688,10 @@ def source_terms(data, solver):
 
 
 def blade_film_cooling(data, solver):
+    """Define blade film cooling in the solver based on the provided data."""
 
     def validate_injection_profile(csv_path, required_headers=None):
+        """Validate the injection profile CSV file."""
         if required_headers is None:
             required_headers = [
                 "x [in]",

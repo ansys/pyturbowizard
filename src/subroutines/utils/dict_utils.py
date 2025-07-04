@@ -20,6 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+Dictionary Utilities Module
+
+This module provides utility functions for working with dictionaries in the PyTurboWizard
+application.
+"""
+
 import copy
 import json
 import os
@@ -33,6 +40,19 @@ logger = ptw_logger.getLogger()
 def get_funcname_and_upd_funcdict(
     parentDict: dict, functionDict: dict, funcDictName: str, defaultName: str
 ):
+    """
+    Retrieve a function name from a dictionary and update the dictionary
+    with a default value if necessary.
+
+    Parameters:
+        parentDict (dict): The parent dictionary containing function-related data.
+        functionDict (dict): The dictionary to retrieve and update the function name.
+        funcDictName (str): The key to look for in the function dictionary.
+        defaultName (str): The default function name to use if the key is not found.
+
+    Returns:
+        str: The retrieved or default function name.
+    """
     functionName = None
     if functionDict is not None:
         functionName = functionDict.get(funcDictName)
@@ -51,6 +71,7 @@ def get_funcname_and_upd_funcdict(
 
 
 def merge_functionDicts(caseDict: dict, glfunctionDict: dict):
+    """merge function dictionaries"""
     # Merge function dicts
     caseFunctionDict = caseDict.get("functions")
     if glfunctionDict is not None and caseFunctionDict is not None:
@@ -63,6 +84,7 @@ def merge_functionDicts(caseDict: dict, glfunctionDict: dict):
 
 
 def merge_data_with_refDict(caseDict: dict, allCasesDict: dict):
+    """merge data with reference dictionary"""
     refCaseName = caseDict.get("refCase")
     refDict = allCasesDict.get(refCaseName)
     if refDict is None:
@@ -78,6 +100,7 @@ def merge_data_with_refDict(caseDict: dict, allCasesDict: dict):
 
 
 def get_material_from_lib(caseDict: dict, scriptPath: str):
+    """get material from ptw-library"""
     if isinstance(caseDict.get("fluid_properties"), str):
         materialStr = caseDict.get("fluid_properties")
         materialFileName = os.path.join(scriptPath, "misc", "material_lib.json")
@@ -95,6 +118,7 @@ def get_material_from_lib(caseDict: dict, scriptPath: str):
 
 
 def detect_unused_keywords(refDict: dict, compareDict: dict, path="root"):
+    """detect unused keywords"""
     for item in compareDict:
         if item not in refDict:
             logger.warning(
@@ -110,7 +134,7 @@ def detect_unused_keywords(refDict: dict, compareDict: dict, path="root"):
 
 
 def check_keys(case_dict: dict, case_name: str):
-    # check if all basic elements exist
+    """check if all basic elements exist"""
     check_list = [
         "expressions",
         "locations",

@@ -40,6 +40,7 @@ logger = ptw_logger.getLogger()
 
 
 def prepost(data, solver, functionEl, launchEl):
+    """Run pre-postprocessing functions based on the provided data and function element."""
     # Get FunctionName & Update FunctionEl
     functionName = dict_utils.get_funcname_and_upd_funcdict(
         parentDict=data,
@@ -58,6 +59,7 @@ def prepost(data, solver, functionEl, launchEl):
 
 
 def prepost_01(data, solver, launchEl):
+    """Pre-Postprocessing Function 01"""
     fl_WorkingDir = launchEl.get("workingDir")
     # Check version -> for version 24.1 use python command
     use_python_command = Version(solver._version) >= Version("241")
@@ -123,6 +125,7 @@ def prepost_01(data, solver, launchEl):
 
 
 def spanPlots(data, solver, launchEl):
+    """Create spanwise contour plots based on the specified span heights and variables."""
     # Check version -> for version 24.1 use python command
     use_python_command = Version(solver._version) >= Version("241")
 

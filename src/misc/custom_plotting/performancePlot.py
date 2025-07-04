@@ -43,6 +43,7 @@ def plot_csv_data(
     max_iterations=None,
     filename=None,
 ):
+    """Plot data from multiple CSV files with specified x and y columns."""
     # Read CSV files and store data in a dictionary
     data_dict = {}
     for csv_file, label in csv_legend_pairs:

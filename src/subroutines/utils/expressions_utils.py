@@ -39,6 +39,7 @@ logger = ptw_logger.getLogger()
 
 
 def write_expression_file(data: dict, script_dir: str, working_dir: str):
+    """write expression file from template"""
     fileName = data.get("expressionFilename")
     # if nothing is set for "expressionFilename" a default value ("expressions.tsv")
     # is set and dict will be updated
@@ -84,6 +85,7 @@ def write_expression_file(data: dict, script_dir: str, working_dir: str):
 
 
 def cleanup_input_expressions(availableKeyEl: dict, fileData: str):
+    """clean up input expressions file data"""
     cleanfiledata = ""
 
     for line in fileData.splitlines():
@@ -132,6 +134,7 @@ def cleanup_input_expressions(availableKeyEl: dict, fileData: str):
 
 
 def check_input_parameter_expressions(solver):
+    """Check input parameter expressions for validity and update their state."""
     for exp_name in solver.settings.setup.named_expressions():
         exp = solver.settings.setup.named_expressions.get(exp_name)
         if exp_name.startswith("BC_"):
@@ -164,6 +167,8 @@ def check_input_parameter_expressions(solver):
 
 
 def check_output_parameter_expressions(caseEl: dict, solver):
+    """Check output parameter expressions in the case element
+    and set them as output parameters if found in the report list."""
     solutionDict = caseEl.get("solution")
     if solutionDict is None:
         return
@@ -183,6 +188,7 @@ def check_output_parameter_expressions(caseEl: dict, solver):
 
 
 def check_expression_versions(solver):
+    """Check and update expressions to the latest version if necessary."""
     import re
 
     if Version(solver._version) < Version("241"):
@@ -204,6 +210,7 @@ def create_and_evaluate_expression(
     overwrite_definition=True,
     evaluate_value=True,
 ):
+    """Create and evaluate a named expression in the solver settings"""
     if exp_name not in solver.settings.setup.named_expressions.get_object_names():
         solver.settings.setup.named_expressions.create(name=exp_name)
         solver.settings.setup.named_expressions[exp_name] = {"definition": definition}
