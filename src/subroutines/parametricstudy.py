@@ -52,14 +52,14 @@ def study(data, solver, functionEl, gpu):
 
     logger.info(f"Running ParametricStudy-Function '{functionName}' ...")
     if functionName == "study_01":
-        study01(data, solver, gpu)
+        study_01(data, solver, gpu)
     else:
         logger.info(f"Prescribed Function '{functionName}' not known. Skipping Parametric Study!")
 
     logger.info(f"Running ParametricStudy-Function '{functionName}'...  finished!")
 
 
-def study01(data, solver, gpu):
+def study_01(data, solver, gpu):
     """Run a parametric study based on the provided data and solver, version 1.0."""
     studyDict = data.get("studies")
     flworking_Dir = data.get("launching")["workingDir"]

@@ -32,8 +32,7 @@ import os
 
 import matplotlib.pyplot as plt
 
-from src.subroutines import post_plots
-from src.subroutines.utils import dict_utils, misc_utils, postproc_utils, ptw_logger
+from src.subroutines.utils import dict_utils, misc_utils, post_plots, postproc_utils, ptw_logger
 
 # Logger
 logger = ptw_logger.get_logger()
