@@ -20,6 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+Parametric Study Module
+
+This module provides functionality setting and running parametric studies
+conducted in the PyTurboWizard application.
+"""
+
 import json
 import os
 
@@ -34,6 +41,7 @@ logger = ptw_logger.get_logger()
 
 
 def study(data, solver, functionEl, gpu):
+    """Run a parametric study based on the provided data and function element."""
     # Get FunctionName & Update FunctionEl
     functionName = dict_utils.get_funcname_and_upd_funcdict(
         parentDict=data,
@@ -52,6 +60,7 @@ def study(data, solver, functionEl, gpu):
 
 
 def study01(data, solver, gpu):
+    """Run a parametric study based on the provided data and solver, version 1.0."""
     studyDict = data.get("studies")
     flworking_Dir = data.get("launching")["workingDir"]
 

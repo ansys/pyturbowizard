@@ -120,7 +120,7 @@ def post_01(data, solver, launchEl, trn_name, gpu):
 
 
 def post_fplot(data, solver, launchEl, trn_name, gpu):
-    """Run post-processing for the solver with Fplot functionality."""
+    """Run post-processing for the solver with fplot functionality."""
     # Do standard postprocessing
     post_01(data, solver, launchEl, trn_name, gpu)
     # Plots for Post Processing (Airfoil Loading, Radial Profiles, Integral Values)
@@ -133,6 +133,7 @@ def post_fplot(data, solver, launchEl, trn_name, gpu):
 
 
 def create_report_table(data: dict, fl_working_dir, solver, trn_filename, gpu):
+    """Create a report table based on the provided data and solver."""
     try:
         import pandas as pd
     except ImportError as e:
@@ -302,6 +303,7 @@ def create_report_table(data: dict, fl_working_dir, solver, trn_filename, gpu):
 
 
 def merge_report_tables(turbo_data, solver):
+    """Merge Report-Tables of all defined cases into one file."""
     # Only working with pandas lib
     try:
         import pandas as pd
