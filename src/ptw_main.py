@@ -486,7 +486,7 @@ class PTW_Run:
 
     def do_full_run(self, script_path, config_filename, solver):
         """Run the complete PyTurboWizard workflow."""
-        logger.info(f"*** Starting PyTurboWizard (Version {ptw_version}) ***")
+        logger.info(f"*** Starting PyTurboWizard (version {ptw_version}) ***")
         # Start ptw_run
         self.load_config_file(script_path=script_path, config_filename=config_filename)
         self.launch_fluent(solver=solver)
