@@ -1,11 +1,10 @@
 # **PyTurboWizard**
-©2025 ANSYS, Inc. Unauthorized use, distribution, or duplication is prohibited.
 
 ## **Open-Source Software Disclaimer**
-This deliverable depends on Open-Source Software (OSS), which are subject to their own terms & conditions and may contain vulnerabilities. 
-Ansys is not responsible for such Third-Party Software. 
+This deliverable depends on Open-Source Software (OSS), which are subject to their own terms & conditions and may contain vulnerabilities.
+Ansys is not responsible for such Third-Party Software.
 
-Please check the LegalNotice-file: [LegalNotice.txt](ptw_documentation/LegalNotice)
+Please check the [LICENSE-file](LICENSE).
 
 It is recommended to consult your company’s Software Security department before installing any software on company hardware.
 
@@ -24,7 +23,7 @@ The functionalities are displayed in the following Feature-Matrix:
 
 ## **Getting Started**
 ### **Fluent Installation**
-The script has been developed for Ansys Fluent versions 2024R1 and latter versions. 
+The script has been developed for Ansys Fluent versions 2024R1 and latter versions.
 It can also be used running the Ansys GPU Solver (use '-gpu' flag in launching options), but not all features will be supported, though!
 
 ### **PyFluent Installation**
@@ -41,35 +40,35 @@ Required libraries:
 - Install matplotlib in command shell analogous to PyFluent: ```~/.virtualenvs/pyansys/bin/pip install matplotlib```
 #### Windows
 - Install via the [Ansys Python Manager](https://github.com/ansys/python-installer-qt-gui/releases)
-- Install directly from the [PyFluent Github Repository](https://github.com/ansys/pyfluent)
+- Install directly from the [PyFluent GitHub Repository](https://github.com/ansys/pyfluent)
 
 ### **How to Run**
 #### Linux / Cluster
 - Prepare data in your working directory
   - Copy Fluent data into the folder, e.g. mesh data, profiles
   - Copy a Configuration File (GitHub) to your Fluent working directory
-  - Adjust the Configuration File to your setup ([Configuration File Setup](ptw_documentation/ConfigFile.md))
+  - Adjust the Configuration File to your setup ([Configuration File Setup](doc/ConfigFile.md))
 - Get latest Version From GitHub: [main branch](https://github.com/ansys-internal/pyturbowizard/tree/main)
   - Copy all files from GitHub to a specific folder
   - Start a Fluent job on cluster with additional arguments: ```-py -sifile=<name>.txt ```
   - Open terminal in Fluent data folder
-  - Execute script 
+  - Execute script
     - Basic command: ```pyfluent ptw_main.py <PathToConfigurationFile.json/yaml>```
     - More advanced
       - Set an alias in your shell config-file, e.g.  ```alias ptw 'pyfluent /path_to_ptw/ptw_main.py'```
       - Command: ```ptw <PathToConfigurationFile.json/yaml>```
-      
+
 #### Windows
 - Prepare data in you working directory
   - Copy Fluent data into the folder, e.g. mesh data, profiles
   - Copy a Configuration File (GitHub) to your Fluent working directory
-  - Adjust the Configuration File to your setup ([Configuration File Setup](ptw_documentation/ConfigFile.md))
+  - Adjust the Configuration File to your setup ([Configuration File Setup](doc/ConfigFile.md))
 - Get latest Version From GitHub: [main branch](https://github.com/ansys-internal/pyturbowizard/tree/main)
   - Copy complete file structure from GitHub to a specific folder
   - Open a Console / Windows Powershell & activate your PyFluent virtual environment, e.g. via [Ansys Python Manager](https://github.com/ansys/python-installer-qt-gui/releases)
-  - Change the console working directory to your Fluent data folder  
+  - Change the console working directory to your Fluent data folder
   - Execute script via: ```python <PathToPTWMain.py> <PathToConfigurationFile.json/yaml>```
 
 ## Useful Documents
-- [Configuration File Setup](ptw_documentation/ConfigFile.md)
-- [Tutorial: Speedline Simulation Setup](ptw_examples/tutorial_speedline/speedline_tutorial.md)
+- [Configuration File Setup](doc/ConfigFile.md)
+- [Tutorial: Speedline Simulation Setup](doc/examples/Speedline_Tutorial/speedline_tutorial.md)

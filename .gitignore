@@ -1,1 +1,20 @@
-.vscode/launch.json
+# Environments
+.env
+.venv
+env*/
+venv*/
+ENV*/
+
+# Folders
+.vscode/
+.idea/
+.reuse/
+
+# general file types
+*.log
+
+# Fluent files
+*.trn
+cleanup-fluent-*-*.*
+serverinfo-*.txt
+
