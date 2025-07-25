@@ -37,20 +37,22 @@ from packaging.version import Version
 
 # Load Script Modules
 from src.ansys.ptw.subroutines import (
-    dict_utils,
-    expressions_utils,
-    fluent_utils,
-    launcher,
     meshimport,
-    misc_utils,
     numerics,
     parametricstudy,
     parametricstudy_post,
     postproc,
     prepostproc,
-    ptw_logger,
     setupcfd,
     solve,
+)
+from src.ansys.ptw.subroutines.utils import (
+    dict_utils,
+    expressions_utils,
+    fluent_utils,
+    launcher,
+    misc_utils,
+    ptw_logger,
 )
 
 ptw_version = "1.9.9"

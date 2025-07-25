@@ -21,13 +21,12 @@
 # SOFTWARE.
 
 # Load Script Modules
-from src.ansys.ptw.subroutines.utils import (
-    dict_utils,
-    expressions_utils,
-    fluent_utils,
-    launcher,
-    misc_utils,
-    post_plots,
-    postproc_utils,
-    ptw_logger,
+from src.ansys.ptw.subroutines import (
+    meshimport,
+    numerics,
+    parametricstudy,
+    parametricstudy_post,
+    postproc,
+    prepostproc,
+    setupcfd,
 )

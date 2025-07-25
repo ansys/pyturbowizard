@@ -37,12 +37,16 @@ logger = logging.getLogger("PyTurboWizard")
 def init_logger(console_output: bool = True, file_output: bool = True):
     """Initialize the logger for the PyTurboWizard application."""
     logger.setLevel(logging.INFO)
-    if file_output:
-        pathtoFileHandler = add_filehandler()
-        print(f"Logger-File-Handler: {pathtoFileHandler}")
-    if console_output:
-        add_streamhandler()
-    logger.info("Logger initialized")
+    if not logger.handlers:
+        if file_output:
+            pathtoFileHandler = add_filehandler()
+            print(f"Logger-File-Handler: {pathtoFileHandler}")
+        if console_output:
+            add_streamhandler()
+        logger.info("Logger initialized")
+    else:
+        logger.info("Logger already initialized with handlers")
+
     return logger
 
 

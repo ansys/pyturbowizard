@@ -29,5 +29,4 @@ from src.ansys.ptw.subroutines.utils import (
     misc_utils,
     post_plots,
     postproc_utils,
-    ptw_logger,
 )
