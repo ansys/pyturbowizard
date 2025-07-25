@@ -31,8 +31,8 @@ import copy
 import json
 import os
 
-# Logger
-from src.subroutines.utils import ptw_logger
+# Load Script Modules
+from src.ansys.ptw.subroutines.utils import ptw_logger
 
 logger = ptw_logger.get_logger()
 

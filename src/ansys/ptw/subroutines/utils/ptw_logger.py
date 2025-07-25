@@ -58,7 +58,7 @@ def add_streamhandler():
 
 def add_filehandler():
     """Add a file handler to the logger to output logs to a file."""
-    from src.subroutines.utils import misc_utils
+    from src.ansys.ptw.subroutines.utils import misc_utils
 
     logger_file_name = misc_utils.get_free_filename_max_index(
         dirname=".", base_filename="PyTurboWizard.log"

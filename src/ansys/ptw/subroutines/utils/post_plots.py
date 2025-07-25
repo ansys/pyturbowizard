@@ -39,7 +39,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from src.subroutines.utils import ptw_logger
+# Load Script Modules
+from src.ansys.ptw.subroutines.utils import ptw_logger
 
 # get logger
 logger = ptw_logger.get_logger()

@@ -35,8 +35,8 @@ import ansys.fluent.core as pyfluent
 from ansys.fluent.core import Dimension, UIMode
 from packaging import version
 
-# Logger
-from src.subroutines.utils import misc_utils, ptw_logger
+# Load Script Modules
+from src.ansys.ptw.subroutines.utils import misc_utils, ptw_logger
 
 logger = ptw_logger.get_logger()
 
