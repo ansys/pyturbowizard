@@ -215,7 +215,7 @@ def init_fmg_basic(data, solver):
         solver.settings.solution.initialization.fmg.fmg_initialize()
 
 
-def solve_01(data, solver):
+def run_solver(data, solver):
     """Solve Function for Fluent solver, v1.0"""
     iter_count = data["solution"].setdefault("iter_count", 500)
     logger.info(f"Solving max. {iter_count} iterations")

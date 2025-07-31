@@ -20,5 +20,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Load Script Modules
-import ptw_main
+# Load Script Functions
+from src.ansys.ptw.subroutines.meshimport import import_mesh
+from src.ansys.ptw.subroutines.numerics import numerics
+from src.ansys.ptw.subroutines.parametricstudy import study
+from src.ansys.ptw.subroutines.parametricstudy_post import study_post
+from src.ansys.ptw.subroutines.postproc import merge_report_tables, post
+from src.ansys.ptw.subroutines.prepostproc import prepost
+from src.ansys.ptw.subroutines.setupcfd import (
+    blade_film_cooling,
+    set_reports,
+    set_run_calculation,
+    setup,
+    source_terms,
+)
+from src.ansys.ptw.subroutines.solve import init, run_solver
