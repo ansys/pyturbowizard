@@ -20,7 +20,22 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.ptw.subroutines.utils import (
+# Load Script Functions
+from .subroutines.meshimport import import_mesh
+from .subroutines.numerics import set_numerics
+from .subroutines.parametricstudy import run_parametric_study
+from .subroutines.parametricstudy_post import run_study_post
+from .subroutines.postproc import merge_report_tables, run_postprocessing
+from .subroutines.prepostproc import set_prepost
+from .subroutines.setupcfd import (
+    set_blade_film_cooling,
+    set_reports,
+    set_run_calculation,
+    set_source_terms,
+    setup_cfd,
+)
+from .subroutines.solve import initialize_run, run_solver
+from .subroutines.utils import (
     dict_utils,
     expressions_utils,
     fluent_utils,
@@ -28,19 +43,3 @@ from ansys.ptw.subroutines.utils import (
     misc_utils,
     ptw_logger,
 )
-
-# Load Script Functions
-from src.ansys.ptw.subroutines.meshimport import import_mesh
-from src.ansys.ptw.subroutines.numerics import set_numerics
-from src.ansys.ptw.subroutines.parametricstudy import run_parametric_study
-from src.ansys.ptw.subroutines.parametricstudy_post import run_study_post
-from src.ansys.ptw.subroutines.postproc import merge_report_tables, run_postprocessing
-from src.ansys.ptw.subroutines.prepostproc import set_prepost
-from src.ansys.ptw.subroutines.setupcfd import (
-    set_blade_film_cooling,
-    set_reports,
-    set_run_calculation,
-    set_source_terms,
-    setup_cfd,
-)
-from src.ansys.ptw.subroutines.solve import initialize_run, run_solver

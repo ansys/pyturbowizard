@@ -33,7 +33,7 @@ import os
 import matplotlib.pyplot as plt
 
 # Load Script Modules
-from src.ansys.ptw.subroutines.utils import dict_utils, misc_utils, postproc_utils, ptw_logger
+from .utils import dict_utils, misc_utils, postproc_utils, ptw_logger
 
 logger = ptw_logger.get_logger()
 

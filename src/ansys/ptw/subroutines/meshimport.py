@@ -31,7 +31,7 @@ It includes utilities for logging and version management.
 from packaging.version import Version
 
 # Load Script Modules
-from src.ansys.ptw.subroutines.utils import ptw_logger
+from .utils import ptw_logger
 
 logger = ptw_logger.get_logger()
 

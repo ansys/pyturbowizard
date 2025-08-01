@@ -27,7 +27,7 @@ This module is setting the numerical methods and utilities in the PyTurboWizard 
 """
 
 # Load Script Modules
-from src.ansys.ptw.subroutines.utils import dict_utils, ptw_logger
+from .utils import dict_utils, ptw_logger
 
 logger = ptw_logger.get_logger()
 

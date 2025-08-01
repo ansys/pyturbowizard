@@ -33,7 +33,7 @@ import os
 import matplotlib.pyplot as plt
 
 # Load Script Modules
-from src.ansys.ptw.subroutines.utils import (
+from .utils import (
     dict_utils,
     misc_utils,
     post_plots,

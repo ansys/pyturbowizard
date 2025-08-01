@@ -33,7 +33,7 @@ import re
 from packaging.version import Version
 
 # Load Script Modules
-from src.ansys.ptw.subroutines.utils import misc_utils, ptw_logger
+from . import misc_utils, ptw_logger
 
 logger = ptw_logger.get_logger()
 

@@ -35,7 +35,7 @@ import matplotlib.pyplot as plt
 from packaging.version import Version
 
 # Load Script Modules
-from src.ansys.ptw.subroutines.utils import fluent_utils, misc_utils, ptw_logger
+from . import fluent_utils, misc_utils, ptw_logger
 
 logger = ptw_logger.get_logger()
 

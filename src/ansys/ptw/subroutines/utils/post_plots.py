@@ -40,7 +40,7 @@ import numpy as np
 import pandas as pd
 
 # Load Script Modules
-from src.ansys.ptw.subroutines.utils import ptw_logger
+from . import ptw_logger
 
 # get logger
 logger = ptw_logger.get_logger()
