@@ -45,7 +45,7 @@ from src.ansys.ptw.subroutines.utils import (
 logger = ptw_logger.get_logger()
 
 
-def post(data, solver, functionEl, launchEl, trn_name, gpu):
+def run_postprocessing(data, solver, functionEl, launchEl, trn_name, gpu):
     """Run post-processing functions based on the provided data and function element."""
     # Get FunctionName & Update FunctionEl
     functionName = dict_utils.get_funcname_and_upd_funcdict(

@@ -56,3 +56,6 @@ statistics = true
 name = "ansys.ptw"
 
 src_paths = ["doc", "src"]
+
+[project.scripts]
+ansys-ptw = "ansys.ptw.core.main:ptw_main"

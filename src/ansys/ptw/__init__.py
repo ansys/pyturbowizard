@@ -32,15 +32,15 @@ from ansys.ptw.subroutines.utils import (
 # Load Script Functions
 from src.ansys.ptw.subroutines.meshimport import import_mesh
 from src.ansys.ptw.subroutines.numerics import set_numerics
-from src.ansys.ptw.subroutines.parametricstudy import study
-from src.ansys.ptw.subroutines.parametricstudy_post import study_post
-from src.ansys.ptw.subroutines.postproc import merge_report_tables, post
-from src.ansys.ptw.subroutines.prepostproc import prepost
+from src.ansys.ptw.subroutines.parametricstudy import run_parametric_study
+from src.ansys.ptw.subroutines.parametricstudy_post import run_study_post
+from src.ansys.ptw.subroutines.postproc import merge_report_tables, run_postprocessing
+from src.ansys.ptw.subroutines.prepostproc import set_prepost
 from src.ansys.ptw.subroutines.setupcfd import (
-    blade_film_cooling,
+    set_blade_film_cooling,
     set_reports,
     set_run_calculation,
-    setup,
-    source_terms,
+    set_source_terms,
+    setup_cfd,
 )
 from src.ansys.ptw.subroutines.solve import initialize_run, run_solver

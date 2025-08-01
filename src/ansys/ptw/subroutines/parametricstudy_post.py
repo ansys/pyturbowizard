@@ -38,7 +38,7 @@ from src.ansys.ptw.subroutines.utils import dict_utils, misc_utils, postproc_uti
 logger = ptw_logger.get_logger()
 
 
-def study_post(data, solver, functionEl, gpu):
+def run_study_post(data, solver, functionEl, gpu):
     """Run the post-processing function for parametric studies."""
     # Get FunctionName & Update FunctionEl
     functionName = dict_utils.get_funcname_and_upd_funcdict(

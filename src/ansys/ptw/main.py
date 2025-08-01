@@ -38,7 +38,6 @@ from packaging.version import Version
 # Load Script Utility-Modules
 # Load Script Functions
 from ansys.ptw import (
-    blade_film_cooling,
     dict_utils,
     expressions_utils,
     fluent_utils,
@@ -47,17 +46,18 @@ from ansys.ptw import (
     launcher,
     merge_report_tables,
     misc_utils,
-    post,
-    prepost,
     ptw_logger,
+    run_parametric_study,
+    run_postprocessing,
     run_solver,
+    run_study_post,
+    set_blade_film_cooling,
     set_numerics,
+    set_prepost,
     set_reports,
     set_run_calculation,
-    setup,
-    source_terms,
-    study,
-    study_post,
+    set_source_terms,
+    setup_cfd,
 )
 
 ptw_version = "1.9.9"
@@ -278,15 +278,15 @@ class PTW_Run:
                     solver.settings.file.beta_settings(enable=True)
 
                 # Case Setup
-                setup(
+                setup_cfd(
                     data=caseEl,
                     solver=solver,
                     functionEl=caseFunctionEl,
                     gpu=gpu,
                 )
-                source_terms(data=caseEl, solver=solver)
+                set_source_terms(data=caseEl, solver=solver)
 
-                blade_film_cooling(data=caseEl, solver=solver)
+                set_blade_film_cooling(data=caseEl, solver=solver)
 
                 set_reports(caseEl, solver, launchEl, gpu=gpu)
 
@@ -320,7 +320,7 @@ class PTW_Run:
                 )
 
                 # Setup for Post Processing
-                prepost(
+                set_prepost(
                     data=caseEl,
                     solver=solver,
                     functionEl=caseFunctionEl,
@@ -370,7 +370,7 @@ class PTW_Run:
 
                 # Postprocessing
                 if solver.fields.field_data.is_data_valid():
-                    post(
+                    run_postprocessing(
                         data=caseEl,
                         solver=solver,
                         functionEl=caseFunctionEl,
@@ -428,14 +428,14 @@ class PTW_Run:
         studyDict = turbo_data.get("studies")
         # Do Studies
         if studyDict is not None:
-            study(
+            run_parametric_study(
                 data=turbo_data,
                 solver=solver,
                 functionEl=gl_function_data,
                 gpu=gpu,
             )
             # Post Process Studies
-            study_post(
+            run_study_post(
                 data=turbo_data,
                 solver=solver,
                 functionEl=gl_function_data,

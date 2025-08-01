@@ -41,7 +41,7 @@ from src.ansys.ptw.subroutines.utils import dict_utils, fluent_utils, misc_utils
 logger = ptw_logger.get_logger()
 
 
-def study(data, solver, functionEl, gpu):
+def run_parametric_study(data, solver, functionEl, gpu):
     """Run a parametric study based on the provided data and function element."""
     # Get FunctionName & Update FunctionEl
     functionName = dict_utils.get_funcname_and_upd_funcdict(
