@@ -30,6 +30,7 @@ general-purpose operations in the PyTurboWizard application.
 import glob
 import ntpath
 import os.path
+import platform
 import shutil
 import subprocess
 import time
@@ -80,7 +81,6 @@ def get_free_filename_max_index(dirname, base_filename):
 
 def run_extsch_script(path_to_script: str, workingDir: str, caseEl: dict):
     """Run the 'extsch' script to generate a debug file for Fluent cases."""
-    import platform
 
     if platform.system() == "Linux":
         logger.info("Running 'extsch' script...")
@@ -164,7 +164,6 @@ def move_files(
 
 def remove_files(working_dir: str, filename_wildcard):
     """Remove files in the working directory based on a wildcard pattern."""
-    import glob
 
     if isinstance(filename_wildcard, list):
         for wc in filename_wildcard:
