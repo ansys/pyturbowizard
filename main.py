@@ -35,14 +35,21 @@ import sys
 import ansys.fluent.core as pyfluent
 from packaging.version import Version
 
+# Load Script Utility-Modules
 # Load Script Functions
-from ansys.ptw.subroutines import (
+from ansys.ptw import (
     blade_film_cooling,
+    dict_utils,
+    expressions_utils,
+    fluent_utils,
     import_mesh,
     initialize_run,
+    launcher,
     merge_report_tables,
+    misc_utils,
     post,
     prepost,
+    ptw_logger,
     run_solver,
     set_numerics,
     set_reports,
@@ -51,16 +58,6 @@ from ansys.ptw.subroutines import (
     source_terms,
     study,
     study_post,
-)
-
-# Load Script Utility-Modules
-from ansys.ptw.subroutines.utils import (
-    dict_utils,
-    expressions_utils,
-    fluent_utils,
-    launcher,
-    misc_utils,
-    ptw_logger,
 )
 
 ptw_version = "1.9.9"
