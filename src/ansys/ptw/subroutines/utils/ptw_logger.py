@@ -31,8 +31,6 @@ It sets up a centralized logger to track application events, errors, and debuggi
 import logging
 import os
 
-from . import misc_utils
-
 logger = logging.getLogger("PyTurboWizard")
 
 
@@ -64,6 +62,7 @@ def add_streamhandler():
 
 def add_filehandler():
     """Add a file handler to the logger to output logs to a file."""
+    from . import misc_utils
 
     logger_file_name = misc_utils.get_free_filename_max_index(
         dirname=".", base_filename="PyTurboWizard.log"
