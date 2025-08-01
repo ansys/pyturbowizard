@@ -32,7 +32,7 @@ from src.ansys.ptw.subroutines.utils import dict_utils, ptw_logger
 logger = ptw_logger.get_logger()
 
 
-def numerics(data, solver, functionEl, gpu):
+def set_numerics(data, solver, functionEl, gpu):
     """Set numerics for the solver based on the provided data and function element."""
     # Get FunctionName & Update FunctionEl
     if "tsn" not in data.get("solution"):

@@ -22,7 +22,7 @@
 
 # Load Script Functions
 from src.ansys.ptw.subroutines.meshimport import import_mesh
-from src.ansys.ptw.subroutines.numerics import numerics
+from src.ansys.ptw.subroutines.numerics import set_numerics
 from src.ansys.ptw.subroutines.parametricstudy import study
 from src.ansys.ptw.subroutines.parametricstudy_post import study_post
 from src.ansys.ptw.subroutines.postproc import merge_report_tables, post
@@ -34,4 +34,4 @@ from src.ansys.ptw.subroutines.setupcfd import (
     setup,
     source_terms,
 )
-from src.ansys.ptw.subroutines.solve import init, run_solver
+from src.ansys.ptw.subroutines.solve import initialize_run, run_solver

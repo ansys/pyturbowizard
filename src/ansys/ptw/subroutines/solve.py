@@ -35,7 +35,7 @@ from src.ansys.ptw.subroutines.utils import dict_utils, ptw_logger
 logger = ptw_logger.get_logger()
 
 
-def init(data, solver, functionEl, gpu):
+def initialize_run(data, solver, functionEl, gpu):
     """Initialize the solver based on the provided data and function element."""
     # Get FunctionName & Update FunctionEl
     defaultName = "init_fmg_01"

@@ -35,16 +35,16 @@ import sys
 import ansys.fluent.core as pyfluent
 from packaging.version import Version
 
-# Load Script Modules
+# Load Script Functions
 from ansys.ptw.subroutines import (
     blade_film_cooling,
     import_mesh,
-    init,
+    initialize_run,
     merge_report_tables,
-    numerics,
     post,
     prepost,
     run_solver,
+    set_numerics,
     set_reports,
     set_run_calculation,
     setup,
@@ -53,17 +53,8 @@ from ansys.ptw.subroutines import (
     study_post,
 )
 
-# from src.ansys.ptw.subroutines import (
-#     meshimport,
-#     numerics,
-#     parametricstudy,
-#     parametricstudy_post,
-#     postproc,
-#     prepostproc,
-#     setupcfd,
-#     solve,
-# )
-from src.ansys.ptw.subroutines.utils import (
+# Load Script Utility-Modules
+from ansys.ptw.subroutines.utils import (
     dict_utils,
     expressions_utils,
     fluent_utils,
@@ -304,7 +295,7 @@ class PTW_Run:
 
                 # Solution
                 # Set Solver Settings
-                numerics.numerics(
+                set_numerics(
                     data=caseEl,
                     solver=solver,
                     functionEl=caseFunctionEl,
@@ -324,7 +315,7 @@ class PTW_Run:
                 )
 
                 # Initialization
-                init(
+                initialize_run(
                     data=caseEl,
                     solver=solver,
                     functionEl=caseFunctionEl,
