@@ -1,0 +1,324 @@
+# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
+"""
+Post-Processing Utilities Module
+
+This module provides utility functions for post-processing simulation results in the PyTurboWizard
+application.
+"""
+
+import os
+
+import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
+from packaging.version import Version
+
+# Logger
+from src.subroutines.utils import fluent_utils, misc_utils, ptw_logger
+
+logger = ptw_logger.get_logger()
+
+
+def calc_cov(reportOut, window_size=50, write_mean=True):
+    """Calculate the Coefficient of Variation (COV) from a report file."""
+    try:
+        import pandas as pd
+    except ImportError as e:
+        logger.info(f"ImportError! Could not import lib: {str(e)}")
+        logger.info("Skipping Function 'calcCov'!")
+        return
+
+    mp_df = pd.read_csv(reportOut, skiprows=2, delim_whitespace=True)
+    mp_df.columns = mp_df.columns.str.strip('()"')
+
+    # Subtract the first entry in the 'Iteration' column from all other entries
+    mp_df["Iteration"] = mp_df["Iteration"] - mp_df["Iteration"].iloc[0] + 1
+
+    # Initialize lists to store mean and COV values
+    mean_values = []
+    cov_values = []
+
+    # calculate the Coefficient of Variation over the window size
+    cov_df = mp_df.copy()
+    cov_df.iloc[:, 1:] = mp_df.iloc[:, 1:].rolling(window=window_size).std() / abs(
+        mp_df.iloc[:, 1:].rolling(window=window_size).mean()
+    )
+
+    mean_values = mp_df.iloc[:, 1:].rolling(window=window_size).mean().iloc[-1]
+    cov_values = cov_df.iloc[-1]
+
+    formatted_report_df = pd.DataFrame(
+        {mp_df.columns[0]: [mp_df[mp_df.columns[0]].iloc[-1]]}, index=[0]
+    )  # format the headers of the dataframe
+
+    # Add last/latest value to the DataFrame
+    for column in mp_df.columns[1:]:
+        formatted_report_df[column] = mp_df[column].iloc[-1]
+
+    # Add mean values to the DataFrame
+    if write_mean:
+        for column in mp_df.columns[1:]:
+            col_name = column + "-mean"
+            formatted_report_df[col_name] = mean_values[column]
+
+    # Add COV values to the DataFrame with modified column headers
+    for column in mp_df.columns[1:]:
+        col_name_cov = column + "-cov"
+        formatted_report_df[col_name_cov] = cov_values[column]
+
+    return formatted_report_df, cov_df, mp_df
+
+
+def get_study_reports(pathtostudy, tempData=None):
+    """Get study reports from the specified study path."""
+    try:
+        import pandas as pd
+    except ImportError as e:
+        logger.info(f"ImportError! Could not import lib: {str(e)}")
+        logger.info("Skipping 'getStudyReports' function!")
+        return
+
+    # Filter the Design Points Subdirectories in the study folder
+    subdirectories = [
+        name for name in os.listdir(pathtostudy) if os.path.isdir(os.path.join(pathtostudy, name))
+    ]
+
+    # Initialize the lists to store result DataFrames
+    repot_df = []  # List to store report_table DataFrames
+    trn_df = []
+    cov_df_list = []  # List to store cov_df DataFrames
+    mp_df_list = []  # List to store mp_df DataFrames
+    residual_df_list = []  # List to store residual_df DataFrames
+
+    for dpname in subdirectories:
+        folder_path = os.path.join(pathtostudy, dpname)
+
+        # Check if the folder_path contains a .out file
+        out_files = [file for file in os.listdir(folder_path) if file.endswith(".out")]
+
+        if out_files:
+            # Take the first .out file as the file_path
+            report_file_path = os.path.join(folder_path, out_files[0])
+            report_table, cov_df, mp_df = calc_cov(reportOut=report_file_path)
+            report_table.insert(0, "Design Point", dpname)
+        else:
+            continue
+
+        # Check if the folder_path contains a .trn file
+        trn_files = [file for file in os.listdir(folder_path) if file.endswith(".trn")]
+        if trn_files:
+            # Take the first .trn file as the csv_file_path
+            trn_file_path = os.path.join(folder_path, trn_files[0])
+        else:
+            continue
+
+        trn_data, _ = evaluate_transcript(
+            trnFilePath=trn_file_path, caseFilename=dpname, tempData=tempData
+        )
+
+        # Check if the file 'Auto-generated-residuals-data-static.csv' exists in the folder
+        csv_file_path = os.path.join(folder_path, "Auto-generated-residuals-data-static.csv")
+        if os.path.exists(csv_file_path):
+            # If the file exists, read it into a pandas DataFrame
+            residual_df = pd.read_csv(csv_file_path)
+        else:
+            continue
+
+        # Append the DataFrames to their respective lists
+        trn_df.append(trn_data)
+        repot_df.append(report_table)
+        cov_df_list.append(cov_df)
+        mp_df_list.append(mp_df)
+        residual_df_list.append(residual_df)
+
+    # Concatenate the list of designpoints into a single DataFrame
+    result_df = pd.DataFrame
+    if len(repot_df) > 0:
+        result_df = pd.concat(repot_df, ignore_index=True)
+
+    # Return dataframes of operating map, residuals
+    return result_df, cov_df_list, residual_df_list, mp_df_list, trn_df
+
+
+def plot_figure(x_values, y_values, x_label, y_label, colors, criterion):
+    """Create a figure with a scatter plot of x_values vs y_values,
+    color-coded by convergence criteria."""
+    # Create the figure and axis
+    fig, ax = plt.subplots()
+
+    if (len(x_values) > 0) and (len(y_values) > 0):
+        ax.set_xlim([x_values.min() * 0.95, x_values.max() * 1.05])
+        ax.set_ylim([y_values.min() * 0.95, y_values.max() * 1.05])
+        ax.grid()
+        ax.set_xlabel(x_label)  # Set x-axis label dynamically
+        ax.set_ylabel(y_label)  # Set y-axis label as DataFrame column header
+
+        # plot values
+        ax.plot(x_values, y_values)
+        ax.scatter(x_values, y_values, marker="o", c=colors, edgecolor="black")
+
+        # Create legend handles for color coding
+        legend_colors = [
+            mpatches.Patch(color="green", label=f'CoV < {"{:.0e}".format(criterion)}'),
+            mpatches.Patch(color="orange", label=f'CoV < {"{:.0e}".format(5*criterion)}'),
+            mpatches.Patch(color="red", label=f'CoV > {"{:.0e}".format(5*criterion)}'),
+        ]
+        ax.legend(handles=legend_colors, loc="best")
+    return fig
+
+
+def evaluate_transcript(trnFilePath, caseFilename, solver=None, tempData=None):
+    """Evaluate the transcript file and extract relevant data."""
+    try:
+        import pandas as pd
+    except ImportError as e:
+        logger.info(f"ImportError! Could not import lib: {str(e)}")
+        logger.info(f"Skipping Function 'evaluateTranscript'!")
+        return
+
+    wall_clock_tot = 0
+    nodes = 0
+    cell_size = None
+    filtered_values = []
+    filtered_headers = []
+    res_df = None
+
+    if os.path.isfile(trnFilePath):
+        with open(trnFilePath, "r") as file:
+            transcript = file.read()
+
+        solver_trn_data_valid = False
+        table_started = False
+        lines = transcript.split("\n")
+        filtered_values_list = []
+
+        # fix for incompressible
+        if solver is not None:
+            number_eqs = fluent_utils.get_number_of_equations(solver=solver)
+        else:
+            number_eqs = tempData.get("num_eqs", 6)
+
+        for line_nr, line in enumerate(lines):
+            if "Total wall-clock time" in line:
+                wall_clock_tot = line.split(":")[1].strip()
+                wall_clock_tot = wall_clock_tot.split(" ")[0].strip()
+                logger.info(f"Detected Total Wall Clock Time: {wall_clock_tot}")
+            elif "Mesh Size" in line:
+                if "Level    Cells" in lines[line_nr + 2]:
+                    mesh_info_line = lines[line_nr + 3]
+                    cell_size = mesh_info_line.split()[1]
+            elif "compute nodes" in line:
+                nodes = line.split(" ")[6].strip()
+                logger.info(f"Detected Number of Nodes: {nodes}")
+            elif "iter  continuity  x-velocity" in line:
+                headers = line.split()
+                filtered_headers = headers[: number_eqs + 1]
+                table_started = True
+            elif table_started:
+                values = line.split()
+                all_convertible = all(
+                    misc_utils.can_convert_to_number(value) for value in values[: number_eqs + 1]
+                )
+                if len(values) == 0:
+                    table_started = False
+                elif len(values[: number_eqs + 1]) == len(filtered_headers) and all_convertible:
+                    filtered_values = values[: number_eqs + 1]
+                    filtered_values = [float(value) for value in filtered_values]
+                    # Append filtered_values to the list
+                    filtered_values_list.append(filtered_values)
+                    solver_trn_data_valid = True
+                else:
+                    try:
+                        values = int(values[0])
+                    except ValueError:
+                        # We will also check the next line,
+                        # as there might be a solver-output inbetween the iterations
+                        # (limiter active etc...)
+                        values = lines[line_nr + 1].split()
+                        all_convertible = all(
+                            misc_utils.can_convert_to_number(value)
+                            for value in values[: number_eqs + 1]
+                        )
+                        table_started = (
+                            len(values[: number_eqs + 1]) == len(filtered_headers)
+                            and all_convertible
+                        )
+
+        res_df = pd.DataFrame(filtered_values_list, columns=filtered_headers)
+
+    else:
+        logger.info("No trn-file found!: Skipping data")
+
+    if solver is not None:
+        # get pseudo time step value
+        time_step = solver.scheme_eval.string_eval("(rpgetvar 'pseudo-auto-time-step)")
+
+        # check if energy is solved
+        solveEnergy = solver.settings.setup.models.energy.enabled()
+
+        # write out flux reports
+        if Version(solver._version) < Version("241"):
+            massBalance = solver.report.fluxes.mass_flow()
+            if solveEnergy:
+                heatBalance = solver.report.fluxes.heat_transfer()
+        else:
+            fluxes = solver.settings.results.report.fluxes
+            zones = fluxes.mass_flow.zones.allowed_values()
+            massBalance = fluxes.mass_flow(zones=zones)
+            if solveEnergy:
+                zones = fluxes.heat_transfer.zones.allowed_values()
+                heatBalance = fluxes.heat_transfer(zones=zones)
+
+    # write report table
+    report_table = pd.DataFrame()
+
+    if solver is not None:
+        report_table.loc[0, "Mass Balance [kg/s]"] = massBalance
+        if solveEnergy:
+            report_table["Heat Balance [W]"] = heatBalance
+
+    report_table.loc[0, "Total Wall Clock Time"] = wall_clock_tot
+    report_table.loc[0, "Compute Nodes"] = nodes
+    if cell_size is not None:
+        report_table.loc[0, "Number Cells"] = cell_size
+    report_table.insert(0, "Case Name", caseFilename)
+
+    if solver is not None:
+        report_table.insert(1, "Pseudo Time Step [s]", time_step)
+
+    return report_table, res_df
+
+
+def check_lines(line_list, number_eqs, filtered_headers):
+    """Check if the lines in the list are valid based on the number of equations and headers."""
+    valid_data = False
+    for line in line_list:
+        values = line.split()
+        all_convertible = all(
+            misc_utils.can_convert_to_number(value) for value in values[: number_eqs + 1]
+        )
+        valid_data = len(values[: number_eqs + 1]) == len(filtered_headers) and all_convertible
+        if valid_data:
+            return valid_data
+    return valid_data
