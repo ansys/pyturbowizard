@@ -29,13 +29,13 @@ It includes utilities for managing solver interactions, monitoring progress, and
 
 from packaging.version import Version
 
-# Logger
-from src.subroutines.utils import dict_utils, ptw_logger
+# Load Script Modules
+from .utils import dict_utils, ptw_logger
 
 logger = ptw_logger.get_logger()
 
 
-def init(data, solver, functionEl, gpu):
+def initialize_run(data, solver, functionEl, gpu):
     """Initialize the solver based on the provided data and function element."""
     # Get FunctionName & Update FunctionEl
     defaultName = "init_fmg_01"
@@ -215,7 +215,7 @@ def init_fmg_basic(data, solver):
         solver.settings.solution.initialization.fmg.fmg_initialize()
 
 
-def solve_01(data, solver):
+def run_solver(data, solver):
     """Solve Function for Fluent solver, v1.0"""
     iter_count = data["solution"].setdefault("iter_count", 500)
     logger.info(f"Solving max. {iter_count} iterations")

@@ -34,8 +34,8 @@ import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 from packaging.version import Version
 
-# Logger
-from src.subroutines.utils import fluent_utils, misc_utils, ptw_logger
+# Load Script Modules
+from . import fluent_utils, misc_utils, ptw_logger
 
 logger = ptw_logger.get_logger()
 
@@ -49,7 +49,7 @@ def calc_cov(reportOut, window_size=50, write_mean=True):
         logger.info("Skipping Function 'calcCov'!")
         return
 
-    mp_df = pd.read_csv(reportOut, skiprows=2, delim_whitespace=True)
+    mp_df = pd.read_csv(reportOut, skiprows=2, sep="\s+")
     mp_df.columns = mp_df.columns.str.strip('()"')
 
     # Subtract the first entry in the 'Iteration' column from all other entries

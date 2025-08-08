@@ -26,13 +26,13 @@ Numerics Module
 This module is setting the numerical methods and utilities in the PyTurboWizard application.
 """
 
-# Logger
-from src.subroutines.utils import dict_utils, ptw_logger
+# Load Script Modules
+from .utils import dict_utils, ptw_logger
 
 logger = ptw_logger.get_logger()
 
 
-def numerics(data, solver, functionEl, gpu):
+def set_numerics(data, solver, functionEl, gpu):
     """Set numerics for the solver based on the provided data and function element."""
     # Get FunctionName & Update FunctionEl
     if "tsn" not in data.get("solution"):

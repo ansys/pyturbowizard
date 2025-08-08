@@ -30,13 +30,13 @@ It includes utilities for logging and version management.
 
 from packaging.version import Version
 
-# Logger
-from src.subroutines.utils import ptw_logger
+# Load Script Modules
+from .utils import ptw_logger
 
 logger = ptw_logger.get_logger()
 
 
-def import_01(data, solver):
+def import_mesh(data, solver):
     """Import mesh files"""
     success = False
     meshFilename = data.get("meshFilename")

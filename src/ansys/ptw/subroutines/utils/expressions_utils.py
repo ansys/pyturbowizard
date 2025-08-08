@@ -32,8 +32,8 @@ import re
 
 from packaging.version import Version
 
-# Logger
-from src.subroutines.utils import misc_utils, ptw_logger
+# Load Script Modules
+from . import misc_utils, ptw_logger
 
 logger = ptw_logger.get_logger()
 
@@ -189,8 +189,6 @@ def check_output_parameter_expressions(caseEl: dict, solver):
 
 def check_expression_versions(solver):
     """Check and update expressions to the latest version if necessary."""
-    import re
-
     if Version(solver._version) < Version("241"):
         for expName in solver.settings.setup.named_expressions():
             if expName == "MP_Isentropic_Efficiency" or expName == "MP_Polytropic_Efficiency":

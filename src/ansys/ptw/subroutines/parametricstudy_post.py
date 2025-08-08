@@ -32,13 +32,13 @@ import os
 
 import matplotlib.pyplot as plt
 
-# Logger
-from src.subroutines.utils import dict_utils, misc_utils, postproc_utils, ptw_logger
+# Load Script Modules
+from .utils import dict_utils, misc_utils, postproc_utils, ptw_logger
 
 logger = ptw_logger.get_logger()
 
 
-def study_post(data, solver, functionEl, gpu):
+def run_study_post(data, solver, functionEl, gpu):
     """Run the post-processing function for parametric studies."""
     # Get FunctionName & Update FunctionEl
     functionName = dict_utils.get_funcname_and_upd_funcdict(

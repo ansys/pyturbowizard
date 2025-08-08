@@ -28,6 +28,7 @@ PyTurboWizard application.
 """
 
 import os
+import platform
 import subprocess
 import time
 
@@ -35,8 +36,8 @@ import ansys.fluent.core as pyfluent
 from ansys.fluent.core import Dimension, UIMode
 from packaging import version
 
-# Logger
-from src.subroutines.utils import misc_utils, ptw_logger
+# Load Script Modules
+from . import misc_utils, ptw_logger
 
 logger = ptw_logger.get_logger()
 
@@ -94,7 +95,6 @@ def launch_fluent(launchEl: dict):
 
 def hook_to_existing_session(fl_workingDir: str, serverfilename: str, cleanup_on_exit: bool):
     """Hook to an existing Fluent session using the server info file."""
-    import ansys.fluent.core as pyfluent
 
     fullpath_to_sf = os.path.join(fl_workingDir, serverfilename)
     logger.info("Connecting to Fluent Session...")
@@ -228,7 +228,6 @@ def launch_queuing_session(launchEl: dict):
 
 def get_fluent_exe_path(product_version: str):
     """Get the path to the Fluent executable based on the product version."""
-    import platform
 
     fluent_path = None
     product_version_split = product_version.split(".")

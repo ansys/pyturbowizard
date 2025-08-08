@@ -35,27 +35,32 @@ import sys
 import ansys.fluent.core as pyfluent
 from packaging.version import Version
 
-# Load Script Modules
-from src.subroutines import (
-    meshimport,
-    numerics,
-    parametricstudy,
-    parametricstudy_post,
-    postproc,
-    prepostproc,
-    setupcfd,
-    solve,
-)
-from src.subroutines.utils import (
+# Load Script Utility-Modules
+# Load Script Functions
+from ansys.ptw import (
     dict_utils,
     expressions_utils,
     fluent_utils,
+    import_mesh,
+    initialize_run,
     launcher,
+    merge_report_tables,
     misc_utils,
     ptw_logger,
+    run_parametric_study,
+    run_postprocessing,
+    run_solver,
+    run_study_post,
+    set_blade_film_cooling,
+    set_numerics,
+    set_prepost,
+    set_reports,
+    set_run_calculation,
+    set_source_terms,
+    setup_cfd,
 )
 
-ptw_version = "1.9.8"
+ptw_version = "1.9.9"
 
 # Set Logger
 logger = ptw_logger.init_logger()
@@ -228,7 +233,7 @@ class PTW_Run:
                 solver.settings.file.start_transcript(file_name=trnFileName)
 
                 # Mesh import, expressions, profiles
-                meshimport.import_01(caseEl, solver)
+                import_mesh(caseEl, solver)
 
                 # Read Additional Journals, if specified
                 fluent_utils.read_journals(
@@ -273,21 +278,21 @@ class PTW_Run:
                     solver.settings.file.beta_settings(enable=True)
 
                 # Case Setup
-                setupcfd.setup(
+                setup_cfd(
                     data=caseEl,
                     solver=solver,
                     functionEl=caseFunctionEl,
                     gpu=gpu,
                 )
-                setupcfd.source_terms(data=caseEl, solver=solver)
+                set_source_terms(data=caseEl, solver=solver)
 
-                setupcfd.blade_film_cooling(data=caseEl, solver=solver)
+                set_blade_film_cooling(data=caseEl, solver=solver)
 
-                setupcfd.set_reports(caseEl, solver, launchEl, gpu=gpu)
+                set_reports(caseEl, solver, launchEl, gpu=gpu)
 
                 # Solution
                 # Set Solver Settings
-                numerics.numerics(
+                set_numerics(
                     data=caseEl,
                     solver=solver,
                     functionEl=caseFunctionEl,
@@ -295,7 +300,7 @@ class PTW_Run:
                 )
 
                 # Set "Run Calculation" properties
-                setupcfd.set_run_calculation(caseEl, solver)
+                set_run_calculation(caseEl, solver)
 
                 # Read Additional Journals, if specified
                 fluent_utils.read_journals(
@@ -307,7 +312,7 @@ class PTW_Run:
                 )
 
                 # Initialization
-                solve.init(
+                initialize_run(
                     data=caseEl,
                     solver=solver,
                     functionEl=caseFunctionEl,
@@ -315,7 +320,7 @@ class PTW_Run:
                 )
 
                 # Setup for Post Processing
-                prepostproc.prepost(
+                set_prepost(
                     data=caseEl,
                     solver=solver,
                     functionEl=caseFunctionEl,
@@ -359,13 +364,13 @@ class PTW_Run:
 
                 # Solve
                 if caseEl["solution"].setdefault("runSolver", False):
-                    solve.solve_01(caseEl, solver)
+                    run_solver(caseEl, solver)
                     filename = f"{caseFilename}_fin"
                     solver.settings.file.write(file_type="case-data", file_name=filename)
 
                 # Postprocessing
                 if solver.fields.field_data.is_data_valid():
-                    postproc.post(
+                    run_postprocessing(
                         data=caseEl,
                         solver=solver,
                         functionEl=caseFunctionEl,
@@ -396,7 +401,7 @@ class PTW_Run:
 
             # Merge if multiple cases are defined
             if len(caseDict) > 1:
-                postproc.merge_report_tables(turbo_data=turbo_data, solver=solver)
+                merge_report_tables(turbo_data=turbo_data, solver=solver)
 
         logger.info("Running Case Study... done!")
 
@@ -423,14 +428,14 @@ class PTW_Run:
         studyDict = turbo_data.get("studies")
         # Do Studies
         if studyDict is not None:
-            parametricstudy.study(
+            run_parametric_study(
                 data=turbo_data,
                 solver=solver,
                 functionEl=gl_function_data,
                 gpu=gpu,
             )
             # Post Process Studies
-            parametricstudy_post.study_post(
+            run_study_post(
                 data=turbo_data,
                 solver=solver,
                 functionEl=gl_function_data,

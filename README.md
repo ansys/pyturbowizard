@@ -4,7 +4,7 @@
 This deliverable depends on Open-Source Software (OSS), which are subject to their own terms & conditions and may contain vulnerabilities.
 Ansys is not responsible for such Third-Party Software.
 
-Please check the [LICENSE-file](LICENSE).
+Please check the [LICENSE-file](./LICENSE).
 
 It is recommended to consult your company’s Software Security department before installing any software on company hardware.
 
@@ -29,18 +29,15 @@ It can also be used running the Ansys GPU Solver (use '-gpu' flag in launching o
 ### **PyFluent Installation**
 
 Required libraries:
-- PyFluent (supporting version 0.19.2, latter versions may introduce changes)
+- PyFluent (supporting version 0.20.0, latter versions may introduce changes)
 - Matplotlib (included in PyFluent)
 - NumPy (included in PyFluent)
 - Pandas (included in PyFluent)
 
-
-#### Linux / Cluster
-- Follow instructions on [PyFluent (sharepoint.com)](https://ansys.sharepoint.com/sites/HPC/SitePages/PyFluent.aspx?source=https%3A%2F%2Fansys.sharepoint.com%2Fsites%2FHPC%2FSitePages%2FForms%2FByAuthor.aspx&CT=1684318712517&OR=OWA-NT&CID=5df1de12-cff9-ba33-d913-507d444faf10)
-- Install matplotlib in command shell analogous to PyFluent: ```~/.virtualenvs/pyansys/bin/pip install matplotlib```
-#### Windows
-- Install via the [Ansys Python Manager](https://github.com/ansys/python-installer-qt-gui/releases)
-- Install directly from the [PyFluent GitHub Repository](https://github.com/ansys/pyfluent)
+#### Creation of a PyFluent Virtual Environment
+- Use the [Ansys Python Manager](https://github.com/ansys/python-installer-qt-gui/releases)
+- Or manually create a virtual python environment:
+  - Follow installation procedure of [PyFluent GitHub Repository](https://github.com/ansys/pyfluent)
 
 ### **How to Run**
 #### Linux / Cluster

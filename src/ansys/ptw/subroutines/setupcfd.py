@@ -33,13 +33,13 @@ import os
 
 from packaging.version import Version
 
-# Logger
-from src.subroutines.utils import dict_utils, fluent_utils, misc_utils, ptw_logger
+# Load Script Modules
+from .utils import dict_utils, fluent_utils, misc_utils, ptw_logger
 
 logger = ptw_logger.get_logger()
 
 
-def setup(data, solver, functionEl, gpu):
+def setup_cfd(data, solver, functionEl, gpu):
     """Set up the CFD simulation based on the provided data and function element."""
     # Get FunctionName & Update FunctionEl
     functionName = dict_utils.get_funcname_and_upd_funcdict(
@@ -1656,7 +1656,7 @@ def set_run_calculation(data, solver):
     solver.settings.solution.run_calculation.iter_count = int(iter_count)
 
 
-def source_terms(data, solver):
+def set_source_terms(data, solver):
     """Define source terms in the solver based on the provided data."""
     my_sources = data.get("source_terms")
     if my_sources is None:
@@ -1687,7 +1687,7 @@ def source_terms(data, solver):
     logger.info("Definition of source-terms completed")
 
 
-def blade_film_cooling(data, solver):
+def set_blade_film_cooling(data, solver):
     """Define blade film cooling in the solver based on the provided data."""
 
     def validate_injection_profile(csv_path, required_headers=None):
