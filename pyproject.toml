@@ -27,7 +27,6 @@ dependencies = [
     "matplotlib>=3.10.0",
 ]
 
-
 [tool.black]
 line-length = 100
 
@@ -50,6 +49,7 @@ select = [
 count = true
 max-complexity = 10
 max-line-length = 100
+
 statistics = true
 
 [tool.flit.module]
