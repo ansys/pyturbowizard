@@ -1,3 +1,32 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+
+[project]
+# Check https://flit.readthedocs.io/en/latest/pyproject_toml.html for all available sections
+name = "ansys-ptw"
+version = "0.1.dev0"
+description = "PyTurboWizard (PTW) provides Pythonic way to setup & run a turbomachinery simulation with Ansys Fluent."
+readme = "README.md"
+requires-python = ">=3.10,<3.14"
+license = {file = "LICENSE"}
+authors = [{ name = "ANSYS, Inc.", email = "pyansys.core@ansys.com" }]
+maintainers = [{ name = "ANSYS, Inc.", email = "pyansys.core@ansys.com" }]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "ansys-fluent-core>=0.20.0",
+    "numpy>=1.14.0,<3.0.0",
+    "pandas>=1.1.0,<3.0.0",
+    "pyyaml>=6.0",
+    "matplotlib>=3.10.0",
+]
+
 [tool.black]
 line-length = 100
 
@@ -20,4 +49,13 @@ select = [
 count = true
 max-complexity = 10
 max-line-length = 100
+
 statistics = true
+
+[tool.flit.module]
+name = "ansys.ptw"
+
+src_paths = ["doc", "src"]
+
+[project.scripts]
+ansys-ptw = "ansys.ptw.main:ptw_main"
