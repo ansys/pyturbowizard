@@ -3,7 +3,6 @@ ci:
     autoupdate_commit_msg: 'chore: pre-commit automatic update'
     autoupdate_schedule: weekly
 
-exclude: '^tests/embedding/assets/.*$|^tests/parts/.*$'
 
 repos:
 
