@@ -18,7 +18,7 @@ In the ```"launching"``` section, specify Fluent launching options, such as the 
 - ```"noCore"```: Number of cores/processes for the Fluent session.
 - ```"precision"```: Whether to use a double-precision solver. The default is ```true```. If ```false```, a single-precision solver is used.
 - ```"show_gui"```: Whether to show a GUI during simulation. The default is ```true```.
-- ```"py"```: Whether to enable the Python console. The default is ```false``.`
+- ```"py"```: Whether to enable the Python console. The default is ```false```.
 - ```"gpu"```: Whether to enable the GPU solver to check current model limitations. The default is ```false```.
 - ```"exitatend"```: Whether to close the Fluent session after the script finishes. The default is ```true```.
 - ```"ptw_cleanup"```: Whether to remove files from the Fluent working directory after exiting the Fluent session. The default is ```false```. If ```true```,
@@ -27,7 +27,7 @@ these files are removed: ```fluent\*.trn``` and ```\*slurm\*```. If you define
 
 To run Fluent on Linux or a cluster, you have two options:
 
-- Submit your job to a Slurm queue (```"queue_slurm"```) such as ```"ottc01"``` with a maximum waiting time in seconds (```"queue_waiting_time"```). The default is ```"600sec"```. Use ```"additional_args"``` for extra launching options, such as ```"-scheduler_ppn=4 -scheduler_gpn=4"```. Other options are identical to the usual launching options.
+- Submit your job to a Slurm queue, such as ```"queue_slurm": "ottc01"```, with a maximum waiting time in seconds, such as ```"queue_waiting_time": 36000```. The default waiting time is ```600``` seconds. Use ```"additional_args"``` for extra launching options, such as ```"-scheduler_ppn=4 -scheduler_gpn=4"```. Other options are identical to the usual launching options.
 - Hook onto an existing Fluent session. See the **Linux/Cluster** section in the repository's [README.md](https://github.com/ansys-internal/pyturbowizard/blob/main/README.md#how-to-run). Use ```"serverfilename"``` to specify a server file name. When hooking onto an existing Fluent session, only the ```"workingDir"``` launching option is used.
 
 ```
@@ -119,7 +119,7 @@ The following functions and corresponding options are available:
 
 ## Single case study
 
-You can find the [Darmstadt-Compressor Setup](../doc/examples/TestCases/1_Darmstadt/turboSetupConfig.json) configuration file for a single case study in the repository's ```examples``` folder.
+You can find the [turboSetupConfig.json](../doc/examples/TestCases/1_Darmstadt/turboSetupConfig.json) configuration file for a single case study in the repository's ```examples``` folder.
 
 When running the script from outside Fluent, you can use the YAML file format for the configuration file.
 
@@ -685,7 +685,7 @@ Here´s an example for a mesh study:
         }
 ```
 
-The first case (```"Case_CoarseMesh"```) includes all setup definitions. The second case (```"Case_FineMesh"```) uses the ```"refCase"``` keyword to refer to the first case. This means that all objects are copied from ```"Case_CoarseMesh"``` except the elements defined in the second case itself, which are ```"caseFilename"``` and ```"meshFilename"```.
+The first case (```"Case_CoarseMesh"```) includes all setup definitions. The second case (```"Case_FineMesh"```) uses the ```"refCase"``` keyword to refer to the first case. This means that all objects are copied from ```"Case_CoarseMesh"``` except the elements defined in the second case itself: ```"caseFilename"``` and ```"meshFilename"```.
 
 **Note:** If you specify a new element with subelements (in other words, a new dictionary), all subelements must be specified in the new element.
 
