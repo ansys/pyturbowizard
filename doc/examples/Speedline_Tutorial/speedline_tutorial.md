@@ -1,25 +1,28 @@
-# Speedline Simulation Setup Tutorial for PyTurboWizard
-This tutorial aims to showcase how to efficiently set up a speedline simulation for turbomachinery cases using PyTurboWizard.
+# Speedline simulation setup example
+This example shows how to efficiently set up a speedline simulation for turbomachinery cases using PyTurboWizard.
 
-The steps will be explained using the axial turbine tutorial example.
+All steps are explained using the axial turbine example.
 
-## Preparing the Mesh file
-The mesh file can be downloaded from sharepoint: [axial_turbine_mesh.def](https://github.com/ansys/example-data/tree/main/pyfluent/tutorials/axial_turbine/axial_turbine_mesh.def)
+## Prepare the mesh file
 
-Copy the mesh file to your Fluent working directory.
-## Setting up the Config File
-The Config File for the axial turbine can be found under: [turboConfig_axial_turbine.json](/doc/ptw_examplesples/tutorial_speedline/turboConfig_axial_turbine.json)
+1. Download the [axial_turbine_mesh.def](https://github.com/ansys/example-data/tree/main/pyfluent/tutorials/axial_turbine/axial_turbine_mesh.def) file from the Ansys ``example-data`` repository.
 
-Copy the Config File to your Fluent working directory.
+2. Copy this mesh file to your Fluent working directory.
 
-The Config File can be split in three parts:
-- setting up the Fluent launch options
-- the setup of the base case
-- the simulation of the speedline with a parametric study
+## Set up the configuration file
 
-### Setting up Fluent launch options
-There are two possible scenarios:
-- Running Fluent on a local machine
+1. Copy the [turboConfig_axial_turbine.json](turboConfig_axial_turbine.json) configuration file to your Fluent working directory.
+
+2. Make changes to this configuration file as indicated in these subsections:
+
+    - [Set up Fluent launching options](#set-up-fluent-launching-options)
+    - [Set up the base case](#set-up-the-base-case)
+    - [Set up the study](#set-up-the-study)
+
+### Set up Fluent launching options
+You can launch Fluent in one of two ways:
+
+- Launch Fluent on a local machine:
   ```
   "launching":
     {
@@ -31,7 +34,8 @@ There are two possible scenarios:
       "show_gui":  true
     }
    ```
-- Running Fluent on linux/cluster ([How to Run on Linux](/README.md#linux--cluster-1))
+- Launch Fluent on a Linux cluster:
+
   ```
   "launching":
     {
@@ -44,21 +48,32 @@ There are two possible scenarios:
     "queue_waiting_time":  36000
     }
    ```
-For a more comprehensive description of the different launch options see: [Configuration File Setup](/doc/ptw_documentationtion/ConfigFile.md#Launch-Options)
+  
+For more information, in the repository's ```README.md``` file, see the **Linux/Cluster** information in [How to run](https://github.com/ansys-internal/pyturbowizard/blob/main/README.md#how-to-run).
 
-### Base Case Setup
-The Base Case serves as initial input case for your study. It carries all the information about the simulation setup, as well as the initial boundary conditions used. It can be very important, depending on the initialization method that is chosen for the study. A detailed description of all the available Settings can be found here: [Configuration File Setup](/doc/ptw_documentationtion/ConfigFile.md)
+For descriptions of launching options, see [Launching options](../../ConfigFile.md#launching-options) in the ```ConfigFile.md``` file.
 
-When using the ```"baseDP"``` initialization method, the base case result is always used for initialization. It is advised to pick a well converged design point as base case to have a stable initialization for the remaining Design Points.
+### Set up the base case
+The base case serves as initial input case for your study. It provides all information about the simulation setup and initial boundary conditions.
 
-When using the ```"prevDP"``` initialization method, the previous Design Point is used for initialization. When utilizing this approach, it is recommended to initiate the process from one end of the speedline, such as surge or choke, and ensure a consistent and monotonic progression in the adjustment of boundary conditions while traversing the speedlines.
+Depending on the initialization method that is chosen for the study, the base case can be very important. For descriptions of all study settings, see [Study configuration](../../ConfigFile.md#study-configuration) in the ```ConfigFile.md``` file.
 
-When using the ```"base_ini"``` initialization method, each Design Point is initialized with the initialization method of the base case (**does not work for FMG**). Therefore, the study initialization is independent of the base case convergence or boundary conditions.
+- When using the ```"baseDP"``` initialization method, the base case result is always used for initialization. You should pick a well converged design point as the base case to have a stable initialization for the remaining design points.
 
-In the axial turbine example, the ``"prevDP"``` initialization is used and the boundary conditions of the setup are picked accordingly to start from the choke limit of the turbine.
+- When using the ```"prevDP"``` initialization method, the previous design point is used for initialization. Thus, you should initiate the process from one end of the speedline, such as the surge or choke, to ensure a consistent and monotonic progression in the adjustment of boundary conditions while traversing the speedlines.
 
-The ```"solution"``` argument "```"runSolver": false``` ensures that only the initialization is carried out in the base case, so that solution data is available in the study.
-### Study Setup
+- When using the ```"base_ini"``` initialization method, each design point is initialized with the initialization method of the base case. Therefore, the study initialization is independent of the base case convergence or boundary conditions.
+
+  **Note:** The ```"base_ini"``` initialization  method does not work for FMG.
+
+This axial turbine example uses the ```"prevDP"``` initialization method. The boundary conditions of the setup are picked accordingly to start from the choke limit of the turbine.
+
+The ```"solution"``` argument "```"runSolver": false``` ensures that only the initialization is carried out in the base case so that solution data is available in the study.
+
+### Set up the study
+
+Set up the simulation of the speedline with a parametric study:
+
 ```
 {
   "launching": {...},
@@ -92,8 +107,8 @@ The ```"solution"``` argument "```"runSolver": false``` ensures that only the in
       }
 }
 ```
-The Study Setup consists of the settings ```"overwriteExisting": true``` and ```"runExistingProject": false```, which ensures that a fresh study is created and any existing study with that name gets overwritten.
+The study setup consists of the settings ```"overwriteExisting": true``` and ```"runExistingProject": false```, which ensure that a fresh study is created and any existing study with that name gets overwritten.
 
-```"updateAllDPs": true``` and ```"write_data": true"``` are set to capture all .dat files for the study and to run the whole speedline.
+The ```"updateAllDPs": true``` and ```"write_data": true"``` settings are defined so that all DAT files for the study are captured while running the entire speedline.
 
-The ```"definition"``` section is used to define the parameters to be varied. In this case the static outlet pressure is varied with explicit values (no scale factor used).
+The ```"definition"``` section defines the parameters to vary. In this example, the static outlet pressure is varied with explicit values. (No scale factor is used.)
