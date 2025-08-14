@@ -25,8 +25,7 @@ version, number of processes, and the use of a single- or double-precision solve
 - ```"exitatend"```: Whether to close the Fluent session after the script finishes. The default is ```true```.
 - ```"ptw_cleanup"```: Whether to remove files from the Fluent working directory after exiting the Fluent session. The default is ```false```. If ```true```,
 these files are removed: ```fluent\*.trn``` and ```\*slurm\*```. If you define
-  ```"ptw_cleanup"``` as a list of strings, the defined files are removed. For example,
-  ```"ptw_cleanup": ["myFile.txt","*.log"]```.
+  ```"ptw_cleanup"``` as a list of strings, the defined files are removed. For example, ```"ptw_cleanup": ["myFile.txt","*.log"]```.
 
 For running Fluent on Linux or a cluster, you have two options:
 
@@ -128,7 +127,7 @@ The following functions and corresponding options are available:
 
 ## Single case study
 
-You can find the [Darmstadt-Compressor Setup](../doc/examples/TestCases/1_Darmstadt/turboSetupConfig.json) configuration file for a single case study in the repository's [examples](../doc/examples) folder.
+You can find the [Darmstadt-Compressor Setup](../doc/examples/TestCases/1_Darmstadt/turboSetupConfig.json) configuration file for a single case study in the repository's ```examples``` folder.
 
 When running the script from outside Fluent, you can use the YAML file format for the configuration file.
 
@@ -658,7 +657,7 @@ The first case (```"Case_CoarseMesh"```) includes all setup definitions. The sec
 ## Parametric studies
 
 You can find the [Speedline Tutorial](../doc/examples/Speedline_Tutorial/turboConfig_axial_turbine.json)
-configuration file for a parametric study in the [examples](../doc/examples) folder.
+configuration file for a parametric study in the repository's ```examples``` folder.
 
 To run a parametric study, the configuration file must contain a ```launching``` object for startinga Fluent session. For more information, see [Launching options](#launching-options).
 
