@@ -128,7 +128,7 @@ The following functions and corresponding options are available:
 
 ## Single case study
 
-You can find the [Darmstadt-Compressor Setup](../doc/examples/TestCases/1_Darmstadt/turboSetupConfig.json) configuration file for a single case study in the repository's [examples](/doc/examples) folder.
+You can find the [Darmstadt-Compressor Setup](../doc/examples/TestCases/1_Darmstadt/turboSetupConfig.json) configuration file for a single case study in the repository's [examples](../doc/examples) folder.
 
 When running the script from outside Fluent, you can use the YAML file format for the configuration file.
 
