@@ -50,7 +50,7 @@ Launch Fluent using one of these methods:
     }
   ```
 
-For more information, see the **Linux/Cluster** section in the repository's [README.md](https://github.com/ansys-internal/pyturbowizard/blob/main/README.md#how-to-run).
+For more information, see **Linux/Cluster** in section in the [How to Run](https://github.com/ansys-internal/pyturbowizard/blob/main/README.md#how-to-run) section of the repository's ```README.md``` file.
 
 For descriptions of launching options, see [Launching options](../../ConfigFile.md#launching-options) in the `ConfigFile.md` file.
 
@@ -62,7 +62,7 @@ The initialization method that you choose for the study determines the importanc
 
 - When using the ```"baseDP"``` initialization method, the base case result is always used for initialization. Select a well-converged design point as the base case to ensure stable initialization for the remaining design points.
 
-- When using the ```"prevDP"```` initialization method, the previous design point is used for initialization. Start the process from one end of the speedline, such as the surge or choke, to ensure consistent and monotonic progression in boundary condition adjustments while traversing the speedlines.
+- When using the ```"prevDP"``` initialization method, the previous design point is used for initialization. Start the process from one end of the speedline, such as the surge or choke, to ensure consistent and monotonic progression in boundary condition adjustments while traversing the speedlines.
 
 - When using the ```"base_ini"``` initialization method, each design point is initialized with the initialization method of the base case. This makes the study initialization independent of the base case convergence or boundary conditions.
 
