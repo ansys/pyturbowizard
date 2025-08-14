@@ -1,9 +1,8 @@
 # Set up the configuration file
 
-This document explains how to adjust the configuration file for a single case
-study or for parametric studies.
+This document explains how to adjust the configuration file for a single case study or parametric studies.
 
-The configuration file contains the following sections:
+The configuration file includes the following sections:
 
 - ```"launching"```: Launching options for the Fluent session. See [Launching options](#launching-options).
 - ```"functions"```: Subroutines for numerical setup, postprocessing, and parametric studies. See [Functions](#functions).
@@ -12,8 +11,7 @@ The configuration file contains the following sections:
 
 ## Launching options
 
-In the ```"launching"``` section, you specify Fluent launching options, such as the
-version, number of processes, and the use of a single- or double-precision solver.
+In the ```"launching"``` section, specify Fluent launching options, such as the version, number of processes, and whether to use a single- or double-precision solver.
 
 - ```"workingDir"```: Fluent working directory. If this option is not set, the script uses the directory of the configuration file as the Fluent working directory.
 - ```"fl_version"```: Fluent version. Supported versions are ```"23.2.0"``` and ```"24.1.0"```.
@@ -27,13 +25,10 @@ version, number of processes, and the use of a single- or double-precision solve
 these files are removed: ```fluent\*.trn``` and ```\*slurm\*```. If you define
   ```"ptw_cleanup"``` as a list of strings, the defined files are removed. For example, ```"ptw_cleanup": ["myFile.txt","*.log"]```.
 
-For running Fluent on Linux or a cluster, you have two options:
+To run Fluent on Linux or a cluster, you have two options:
 
-- Submit your job to a Slurm queue (```"queue_slurm"```) such as ```"ottc01"``` with a maximum
-  waiting time in seconds (```"queue_waiting_time"```). The default is ```"600sec"```. If you need additional launching options, such as launching the Fluent session in a GPU queue, you can use ```"additional_args"``` such as ```"-scheduler_ppn=4 -scheduler_gpn=4"```.
-  Other options are identical to the usual launching options.
-- Hook on to an existing Fluent session. In the repository's ```README.md``` file, see the **Linux/Cluster** information in
-  [How to run](https://github.com/ansys-internal/pyturbowizard/blob/main/README.md#how-to-run). You must use ```"serverfilename"``` to specify a server file name. When hooking on to an existing Fluent session, ```"workingDir"``` is the only launching option used.
+- Submit your job to a Slurm queue (```"queue_slurm"```) such as ```"ottc01"``` with a maximum waiting time in seconds (```"queue_waiting_time"```). The default is ```"600sec"```. Use ```"additional_args"``` for extra launching options, such as ```"-scheduler_ppn=4 -scheduler_gpn=4"```. Other options are identical to the usual launching options.
+- Hook onto an existing Fluent session. See the **Linux/Cluster** section in the repository's [README.md](https://github.com/ansys-internal/pyturbowizard/blob/main/README.md#how-to-run). Use ```"serverfilename"``` to specify a server file name. When hooking onto an existing Fluent session, only the ```"workingDir"``` launching option is used.
 
 ```
 "launching":
@@ -51,8 +46,7 @@ For examples of launching configurations, see the [launcherConfig_examples.json]
 
 ## Functions
 
-In the ```"functions"``` section, you can specify different subroutines for numerical setup,
-postprocessing, and parametric studies:
+In the ```"functions"``` section, specify subroutines for numerical setup, postprocessing, and parametric studies:
 
 ```
 "functions":
@@ -78,8 +72,8 @@ The following functions and corresponding options are available:
   - Specify the numeric settings.
   - Available functions:
     - ```"numerics_defaults"```: Fluent default settings.
-    - ```"numerics_bp_tn_2305"```: Turbo best practice settings from May 2023 in combination with Fluent default discretization schemes and Green-Gauss node-based gradient discretization scheme. This is the default.
-    - ```"numerics_bp_tn_2305_lsq"```: Turbo best practice settings from May 2023 with the LSQ gradient   discretization scheme.
+    - ```"numerics_bp_tn_2305"```: Turbo best practice settings from May 2023 with Fluent default discretization schemes and Green-Gauss node-based gradient discretization scheme. This is the default.
+    - ```"numerics_bp_tn_2305_lsq"```: Turbo best practice settings from May 2023 with the LSQ gradient discretization scheme.
     - ```"numerics_bp_all_2305"```: Turbo best practice settings from May 2023 with all discretization schemes explicitly set to second order.
     - ```"numerics_defaults_pseudo_timestep"```: Default numerics with pseudo-transient vp-coupling.
 
@@ -87,8 +81,7 @@ The following functions and corresponding options are available:
   - Specify the initialization settings.
   - Available functions:
     - ```"init_standard_01"```: Standard initialization using inlet data as reference.
-    - ```"init_standard_02"```: Standard initialization using 0 velocity, 0.01 TKE, 0.01 Omega, inlet temperature,
-    and initial gauge pressure.
+    - ```"init_standard_02"```: Standard initialization using 0 velocity, 0.01 TKE, 0.01 Omega, inlet temperature, and initial gauge pressure.
     - ```"init_hybrid_01"```: Hybrid initialization using initial gauge pressure.
     - ```"init_fmg_01"```: FMG initialization using standard ```"init_standard_01"``` for pre-initialization. This is the default.
     - ```"init_fmg_02"```: FMG initialization using standard ```"init_standard_02"``` for pre-initialization.
@@ -100,7 +93,7 @@ The following functions and corresponding options are available:
     - ```"post_01"```: Standard postprocessing. This is the default.
 
 - ```parametricstudy```:
-  - Specify the parametric study function
+  - Specify the parametric study function.
   - Available functions:
     - ```"study_01"```: Standard parametric study. This is the default.
 
@@ -108,11 +101,10 @@ The following functions and corresponding options are available:
   - Specify the function for evaluating the parametric study results.
   - Available functions:
     - ```"study_post_01"```: Operating point maps for each monitor point (value over mass/volume flow). This is the default. For each design point, these actions are taken:
-      - Properties are plotted against iteration number. (Each design point is treated as beginning from
-      iteration 0.)
-      - CoV-Plot is generated for monitored properties of each design point (beginning from iteration 50).
-      - Residual-Plot is generated of residual values for each design point.
-      - Monitor Points plot is generated of monitor point values for each design point.
+      - Plot properties against iteration number. (Each design point starts from iteration 0.)
+      - Generate CoV-Plot for monitored properties of each design point (starting from iteration 50).
+      - Generate Residual-Plot of residual values for each design point.
+      - Generate Monitor Points plot of monitor point values for each design point.
 
       Examples of plots follow.
 
@@ -122,7 +114,7 @@ The following functions and corresponding options are available:
 
 **Notes:**
 
-- If the ```"functions"``` section is not defined, the default functions are used. Therefore, the definition of this section is required only if you want to use non-default functions.
+- If the ```"functions"``` section is not defined, the script uses the default functions. Define this section only if you want to use non-default functions.
 - You can also specify a ```"function"``` section in the definition of each case. For more information, see [Cases](#cases).
 
 ## Single case study
@@ -131,13 +123,13 @@ You can find the [Darmstadt-Compressor Setup](../doc/examples/TestCases/1_Darmst
 
 When running the script from outside Fluent, you can use the YAML file format for the configuration file.
 
-The configuration file serves as the input file for the boundary conditions and provides the the numeric and simulation setups needed to run the main script. Explanations follow of the configuration file's different sections.
+The configuration file serves as the input file for the boundary conditions and provides the numeric and simulation setups needed to run the main script. Explanations follow of the configuration file's different sections.
 
 To run a single case study, the configuration file must contain a ```"launching"``` object to start a Fluent session. For more information, see [Launching options](#launching-options).
 
 ### Cases
 
-In the ```"cases"``` section, you can specify different case setups for the script to run. For example, you can specify different meshes and numerical settings.
+In the ```"cases"``` section, specify different case setups for the script to run. For example, you can specify different meshes and numerical settings.
 
 ```
  "cases": {
@@ -158,46 +150,41 @@ In the ```"cases"``` section, you can specify different case setups for the scri
       }
 ```
 
-First, you must specify different general case parameters, such as the final ```"caseFilename"```
-and the initial ```"meshFilename"```.
+First, specify different general case parameters, such as the final ```"caseFilename"``` and the initial ```"meshFilename"```.
 
-Supported file types for meshes are DEF, CGNS, MSH, and CAS. Make sure that the mesh file
-is located in the Fluent working directory.
+Supported file types for meshes are DEF, CGNS, MSH, and CAS. Make sure that the mesh file is located in the Fluent working directory.
 
-You can provide MSH and CAS files as a list like this: ```"meshFilename": ["mesh1.msh","mesh2.msh"]```.
-When a list is used, the files are imported in the order in which they are specified.
+You can provide MSH and CAS files as a list like this: ```"meshFilename": ["mesh1.msh","mesh2.msh"]```. When a list is used, the files are imported in the order in which they are specified.
 
 Optional objects are:
 
-- ```"functions"```: Special functions for the specific case. If no special functions are defined, the default or global functions are used (if defined in
-the root path of your configuration file). For more information, see [Functions](#functions).
-- ```"gravity_vector"```:  Vector defining gravity, such as ```[0.0, 0.0, -9.81]```. By default,
-  no vector is set, which means that gravity is turned off.
+- ```"functions"```: Special functions for the specific case. If no special functions are defined, the default or global functions are used (if defined in the root path of your configuration file). For more information, see [Functions](#functions).
+- ```"gravity_vector"```: Vector defining gravity, such as ```[0.0, 0.0, -9.81]```. By default, no vector is set, which means that gravity is turned off.
 - ```"rotation_axis_direction"```: Vector defining the axis direction. The default is ```[0.0, 0.0, 1.0]```.
 - ```"rotation_axis_origin"```: Vector defining the axis origin. The default is ```[0.0, 0.0, 0.0]```.
-- ```"isentropic_efficiency_ratio"```: Calculation of isentropic efficiency. Supported arguments are
-  ```"TotalToTotal"```, ```"TotalToStatic"```, and ```"StaticToStatic"```.
+- ```"isentropic_efficiency_ratio"```: Calculation of isentropic efficiency. Supported arguments are ```"TotalToTotal"```, ```"TotalToStatic"```, and ```"StaticToStatic"```.
 - ```"skip_execution"```: Whether to skip the execution of the case. The default is ```false```.
 - ```"extsch_script"```: For running the ``extsch-script`` file use on the Linux platform only. You must supply the path to the script that extracts all rp-variables of the case file as an ascii file. The default is ```''```.
 
 You can hook additional journal files to the setup/solution procedure using the following keywords in the case dictionary. These keywords expect a list like this: ```['myJournal1.jou', 'myJournal2.jou']```.
-  - ```"post_meshimport_journal_filenames"```: Run journal files after the mesh has been imported (for example defining unsupported boundary conditions).
-  - ```"pre_init_journal_filenames"```: Run journal files before initializing the solution.
-  - ```"pre_solve_journal_filenames"```: Run journal files before the solver starts.
-  - ```"pre_exit_journal_filenames"```: Run journal files before exiting Fluent (for example for custom postprocessing).
+
+- ```"post_meshimport_journal_filenames"```: Run journal files after the mesh has been imported (for example defining unsupported boundary conditions).
+- ```"pre_init_journal_filenames"```: Run journal files before initializing the solution.
+- ```"pre_solve_journal_filenames"```: Run journal files before the solver starts.
+- ```"pre_exit_journal_filenames"```: Run journal files before exiting Fluent (for example for custom postprocessing).
 
 #### Profiles
 
-You can specify a profile for your inlet or outlet boundaries by providing the ```"profileName"``` in your Fluent working directory. Restrictions exist when using profiles:
+Specify a profile for your inlet or outlet boundaries by providing the ```"profileName"``` in your Fluent working directory. Restrictions exist when using profiles:
 
 - Inlet:
-  - You can specify profiles for total pressure, total temperature, and absolute velocity using these naming conventions:
+  - Specify profiles for total pressure, total temperature, and absolute velocity using these naming conventions:
     - Profile name: ```"inlet-bc"```
     - Total pressure: ```"pt-in"```
     - Total temperature: ```"tt-in"```
     - Velocity directions in cylindrical coordinates: ```"vrad-dir","vrad-dir","vax-dir"```
 - Outlet:
-  - You can specify a profile for static pressure using these naming conventions:
+  - Specify a profile for static pressure using these naming conventions:
     - Profile name: ```"outlet-bc"```
     - Static pressure: ```"p-out"```
 
@@ -217,11 +204,9 @@ radius, pt-in, tt-in, vax-dir, vrad-dir, vtang-dir
 
 #### Expression templates
 
-Next, you can choose your ```expressionTemplate```. There are expression templates available for
-compressors, fans, pumps, turbine and cascade setups, as well as for compressible and incompressible setups:
+Next, choose your ```expressionTemplate```. There are expression templates available for compressors, fans, pumps, turbine and cascade setups, as well as for compressible and incompressible setups:
 
-- ```expressionTemplate_cascade_comp.tsv```: For cascades or non-turbo-machinery applications, compressible
-  fluids.
+- ```expressionTemplate_cascade_comp.tsv```: For cascades or non-turbo-machinery applications, compressible fluids.
 - ```expressionTemplate_compressor_comp.tsv```: For compressors, compressible fluids.
 - ```expressionTemplate_compressor_incomp.tsv```: For compressors, incompressible fluids.
 - ```expressionTemplate_fan_comp.tsv```: For fans, compressible fluids.
@@ -252,8 +237,7 @@ compressors, fans, pumps, turbine and cascade setups, as well as for compressibl
 
 ### Boundary conditions
 
-Now, you can specify values for your boundary conditions and geometric expressions in your expression
-template. Make sure that you leave the corresponding values blank if you use profile data.
+Now, specify values for your boundary conditions and geometric expressions in your expression template. Make sure that you leave the corresponding values blank if you use profile data.
 
 Available boundary conditions follow.
 
@@ -283,15 +267,13 @@ Available boundary conditions follow.
   - ```"BC_OUT_VolumeFlow"```: Volume flow outlet boundary condition (mass flow inlet).
     - ```"BC_OUT_VolumeFlowDensity"```: Fluid density of outlet volume flow.
 
-**Note**: If you want to use profile data for the inlet or outlet, you must still
-define a corresponding expression. However, you can specify a dummy value. For example, you
-might specify a profile for outlet pressure like this:
+**Note:** If you want to use profile data for the inlet or outlet, you must still define a corresponding expression. However, you can specify a dummy value. For example, you might specify a profile for outlet pressure like this:
 
 ```"BC_OUT_p": "-1 [Pa]"```
 
 #### Domain mapping
 
-In the ```"locations"``` section, you must map the different regions of your mesh accordingly. Note that every location input is a list, which means that you can map multiple regions. For example, ```["inlet1","inlet2"]```.
+In the ```"locations"``` section, map the different regions of your mesh accordingly. Note that every location input is a list, which means that you can map multiple regions. For example, ```["inlet1","inlet2"]```.
 
 You can also specify interfaces as follows:
 
@@ -353,11 +335,10 @@ You can also specify interfaces as follows:
 
 - ```"bz_walls"```: Change boundary condition to type walls.
 - ```"bz_walls_torque"```: All walls to account for when calculating a reference torque.
-- ```"bz_ep1_Euler"```/```"bz_ep2_Euler"```: Inlet (1) and outlet (2) evaluation planes for
-  calculating the efficiency based on the Euler turbine equation.
-- Periodic interfaces must be conformal for the turbo toplogy setup to function properly.
+- ```"bz_ep1_Euler"```/```"bz_ep2_Euler"```: Inlet (1) and outlet (2) evaluation planes for calculating the efficiency based on the Euler turbine equation.
+- Periodic interfaces must be conformal for the turbo topology setup to function properly.
 
-In the ```"locations"``` section, you can define a turbo topolgy for postprocessing in Fluent. For different mesh regions (such as rotors and stators), you must create separate topologies.
+In the ```"locations"``` section, define a turbo topology for postprocessing in Fluent. For different mesh regions (such as rotors and stators), create separate topologies.
 
 ```
 ...
@@ -382,7 +363,7 @@ In the ```"locations"``` section, you can define a turbo topolgy for postprocess
           ...
 ```
 
-**Note**:  If a periodic interface specified under ```"tz_theta_periodic_names"``` is non-conformal, it is automatically handled by the script.
+**Note;**: If a periodic interface specified under ```"tz_theta_periodic_names"``` is non-conformal, the script automatically handles it.
 
 ### Solution and results setup
 
@@ -418,15 +399,11 @@ The ```"solution"``` section specifies convergence criteria and solve settings.
 
 ##### Basic report definitions
 
-In the ```"solution"``` section, you can optionally define basic report definitions with the ```"basic_reports"``` keyword. *Basic* refers to the report definitions being created as surface,
-volume, force, drag, lift, moment, or flux reports. (For flux reports, only mass flux is supported.)
+In the ```"solution"``` section, optionally define basic report definitions with the ```"basic_reports"``` keyword. *Basic* refers to the report definitions being created as surface, volume, force, drag, lift, moment, or flux reports. (For flux reports, only mass flux is supported.)
 
-When using the GPU solver, report definitions from expressions are not yet supported. Thus,
-using the ```"basic_reports"``` keyword is the only option for monitoring desired quantities for every iteration.
+When using the GPU solver, report definitions from expressions are not yet supported. Thus, using the ```"basic_reports"``` keyword is the only option for monitoring desired quantities for every iteration.
 
 The ```"per_zone"``` keyword is optional. The default is ```false```. With this keyword, you can select if the corresponding definition is separated for all selected surfaces.
-
-The ```"per_zone"``` keyword  is optional. The default is ```false```. With this keyword, you can select if the corresponding definition is separated for all selected surfaces.
 
 ```
  "Case_1": {
@@ -500,11 +477,75 @@ The ```"per_zone"``` keyword  is optional. The default is ```false```. With this
             "definition" : "(0.433[lbm*s^-1])*SpecificHeatCapacity*((348.96[K]-298.15[K])/(76*Volume([\"passage-main_1\"])))"
         }
 },
-
 ```
+
 - ```"equation"```: Type of the source term.
 - ```"cell_zone"```: Domain to apply the source term to.
-- ```"definition"```: Expression, where its name is the subdictionary name.
+- ```"definition"```: Expression, where its name is the subdictionary.
+
+##### Basic report definitions
+
+In the ```"solution"``` section, you can optionally define basic report definitions with the ```"basic_reports"``` keyword. *Basic* refers to the report definitions being created as surface,
+volume, force, drag, lift, moment, or flux reports. (For flux reports, only mass flux is supported.)
+
+When using the GPU solver, report definitions from expressions are not yet supported. Thus, using the ```"basic_reports"``` keyword is the only option for monitoring desired quantities for
+every iteration.
+
+```
+ "Case_1": {
+       "solution": {
+           "basic_reports": {
+              "IN_massflowave_pt": {
+                "scope": "surface",
+                "type": "surface-massavg",
+                "zones": ["inblock-inflow"],
+                "variable": "total-pressure"
+              },
+              "OUT_massflowave_pt": {
+                "scope": "surface",
+                "type": "surface-massavg",
+                "zones": ["outblock-outflow"],
+                "variable": "total-pressure"
+              },
+              "Vol_Ave_pt": {
+                "scope": "volume",
+                "type": "volume-massavg",
+                "zones": ["passage"],
+                "variable": "total-pressure"
+              },
+              "Force_blades_Z": {
+                "scope": "force",
+                "zones": ["blade","bld-geo-high","bld-geo-low","bld-high"],
+                "force_vector": [0,0,1]
+              },
+              "Drag_blades_Z": {
+                "scope": "drag",
+                "zones": ["blade","bld-geo-high","bld-geo-low","bld-high"],
+                "force_vector": [0,0,1],
+                "report_output_type": "Drag Force"
+              },
+              "Lift_blades_Z": {
+                "scope": "lift",
+                "zones": ["blade","bld-geo-high","bld-geo-low","bld-high"],
+                "force_vector": [0,0,1],
+                "report_output_type": "Lift Force"
+              },
+              "Moment_blades_Z": {
+                "scope": "moment",
+                "zones": ["blade","bld-geo-high","bld-geo-low","bld-high"],
+                "mom_center": [0,0,0],
+                "mom_axis": [0,0,1],
+                "report_output_type": "Moment"
+              },
+              "Flux_Mass_In": {
+                "scope": "flux",
+                "type": "flux-massflow",
+                "zones": ["inblock-inflow"]
+              }
+            },
+      ...
+```
+ name.
 
 ##### Basic report definitions
 
@@ -571,7 +612,8 @@ every iteration.
 
 #### Results
 
-In the ```"results"``` section, you can set the simulation output data and create span-wise contour plots.
+In the ```"results"``` section, set the simulation output data and create span-wise contour plots.
+
 ```
         "results": {
           "filename_inputParameter": "inputParameters.out",
@@ -588,9 +630,7 @@ In the ```"results"``` section, you can set the simulation output data and creat
 
 - ```"filename_inputParameter"```: Names of the files containing the input parameters.
 - ```"filename_outputParameter"```: Names of the files containing the output parameters.
-- ```"span_plot_var"```: Names of the variables to create contour plots for. You can use this
-  command in the Fluent Python console to check for the correct variable names:
-  ```solver.fields.field_data.get_scalar_field_data.field_name.allowed_values()```.
+- ```"span_plot_var"```: Names of the variables to create contour plots for. You can use this command in the Fluent Python console to check for the correct variable names: ```solver.fields.field_data.get_scalar_field_data.field_name.allowed_values()```.
 - ```"span_plot_height"```: Relative channel height to create the different variable contour plots at. All variable plots are created for each respective channel height.
 - ```"pathlines_releaseSurfaces"```: Surfaces to release pathlines from when creating pathlines.
 - ```"pathlines_var"```: Names of the variable to create pathlines for.
@@ -599,7 +639,7 @@ In the ```"results"``` section, you can set the simulation output data and creat
 
 ### Additional setup specifications
 
-In the ```"setup"``` section, you can modify basic settings of your setup. All subelements are optional. If no subelements are defined, Fluent defaults are used.
+In the ```"setup"``` section, modify basic settings of your setup. All subelements are optional. If no subelements are defined, Fluent defaults are used.
 
 Available options:
 
@@ -607,28 +647,23 @@ Available options:
   - ```"BC_settings_pout_blendf"```: Pressure blending factor. For example, ```0.05```.
   - ```"BC_settings_pout_bins"```: Number of bins. For example, ```65```.
 
-  **Note:** For older Fluent versions (2023 R1 and 2023 R2), use ```"BC_settings_pout"```
-  as a keyword for the pressure blending factor and number of bins as a list. For
-  example, ```[0.05, 65]```.
+  **Note:** For older Fluent versions (2023 R1 and 2023 R2), use ```"BC_settings_pout"``` as a keyword for the pressure blending factor and number of bins as a list. For example, ```[0.05, 65]```.
 
-- ```"BC_IN_reverse"```: Whether to prevent reverse flow for pressure inlet boundary conditions.
-  The default is ```false```.
-- ```"BC_OUT_reverse"```: Whether to prevent reverse flow for pressure putlet boundary conditions.
-  The default is ```true```.
-- ```"BC_OUT_avg_p"```: Whether to use the average pressure specification for the pressure outlet
-  boundary conditions. The default is ```true```.
+- ```"BC_IN_reverse"```: Whether to prevent reverse flow for pressure inlet boundary conditions. The default is ```false```.
+- ```"BC_OUT_reverse"```: Whether to prevent reverse flow for pressure outlet boundary conditions. The default is ```true```.
+- ```"BC_OUT_avg_p"```: Whether to use the average pressure specification for the pressure outlet boundary conditions. The default is ```true```.
 - ```"turbulence_model"```: Turbulence model to use.
   - Currently only k-omega variants are supported: ```"wj-bsl-earsm"```, ```"standard"```, ```"sst"```,```"geko"```, and ```"bsl"```.
   - Additionally, the following transition models (SST-based) are supported:
     - ```"transition-sst"```: Transition SST model (&gamma;-Re<sub>&theta;</sub>-model): two additional transport equations.
     - ```"transition-gamma"```: Intermittency Transition Model (&gamma;-model): one additional transport equation.
-    - ```"transition-algebraic"```:  Algebraic Transition Model: zero additional transport equations.
+    - ```"transition-algebraic"```: Algebraic Transition Model: zero additional transport equations.
 
 ### Working with multiple cases
 
 You can easily add various cases to your configuration file. The script executes the cases step by step.
 
-If you want to copy elements from an existing case to a new case, you can use the ```"refCase"``` keyword.
+If you want to copy elements from an existing case to a new case, use the ```"refCase"``` keyword.
 
 Here´s an example for a mesh study:
 
@@ -656,14 +691,13 @@ The first case (```"Case_CoarseMesh"```) includes all setup definitions. The sec
 
 ## Parametric studies
 
-You can find the [Speedline Tutorial](../doc/examples/Speedline_Tutorial/turboConfig_axial_turbine.json)
-configuration file for a parametric study in the repository's ```examples``` folder.
+You can find the [Speedline Tutorial](../doc/examples/Speedline_Tutorial/turboConfig_axial_turbine.json) configuration file for a parametric study in the repository's ```examples``` folder.
 
-To run a parametric study, the configuration file must contain a ```launching``` object for startinga Fluent session. For more information, see [Launching options](#launching-options).
+To run a parametric study, the configuration file must contain a ```launching``` object for starting a Fluent session. For more information, see [Launching options](#launching-options).
 
 ### Study configuration
 
-In the ```"studies"``` section, you can create different study setups.
+In the ```"studies"``` section, create different study setups.
 
 ```
 ...
@@ -700,8 +734,7 @@ In the ```"studies"``` section, you can create different study setups.
 - ```"simulation_report"```: Whether to capture simulation report data for the design points. The default is ```false```.
 - ```"refCaseFilename"```: File name for the reference (base) case, which must be in the Fluent working directory.
 - ```"initMethod"```: Initialization method for design points. Options are:
-    - ```"base_ini"```: Use the initialization method of the base case. **Note:** This does not
-      work with FMG initialization.
+    - ```"base_ini"```: Use the initialization method of the base case. **Note:** This does not work with FMG initialization.
     - ```"baseDP"```: Use the solution of the base design point. This is the default.
     - ```"prevDP"```: Use the solution of the previous design point.
 
