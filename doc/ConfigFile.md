@@ -14,7 +14,7 @@ The configuration file includes the following sections:
 In the ```"launching"``` section, specify Fluent launching options, such as the version, number of processes, and whether to use a single- or double-precision solver.
 
 - ```"workingDir"```: Fluent working directory. If this option is not set, the script uses the directory of the configuration file as the Fluent working directory.
-- ```"fl_version"```: Fluent version. Supported versions are ```"23.2.0"``` and ```"24.1.0"```.
+- ```"fl_version"```: Fluent version. Supported versions are 2023 R2 and later.
 - ```"noCore"```: Number of cores/processes for the Fluent session.
 - ```"precision"```: Whether to use a double-precision solver. The default is ```true```. If ```false```, a single-precision solver is used.
 - ```"show_gui"```: Whether to show a GUI during simulation. The default is ```true```.
@@ -119,11 +119,9 @@ The following functions and corresponding options are available:
 
 ## Single case study
 
-You can find the [turboSetupConfig.json](../doc/examples/TestCases/1_Darmstadt/turboSetupConfig.json) configuration file for a single case study in the repository's ```examples``` folder.
-
 When running the script from outside Fluent, you can use the YAML file format for the configuration file.
 
-The configuration file serves as the input file for the boundary conditions and provides the numeric and simulation setups needed to run the main script. Explanations follow of the configuration file's different sections.
+The configuration file serves as the input file for the boundary conditions and provides the numeric and simulation setups needed to run the main script.
 
 To run a single case study, the configuration file must contain a ```"launching"``` object to start a Fluent session. For more information, see [Launching options](#launching-options).
 
@@ -393,7 +391,9 @@ The ```"solution"``` section specifies convergence criteria and solve settings.
 - ```"cov_crit"```: Convergence criteria for the coefficient of variation.
 - ```"conv_check_freq"```: Optional argument for defining the convergence check frequency. The default is ```5```.
 - ```"tsn"```: Optional argument for explicitly turning on turbo machinery-specific numerics (beta feature).
-- ```"time_step_factor""```: Automatic time step factor and iteration count (length-scale-method=conservative) or ```pseudo_timestep``` and ``` iter_count ``` respectively.
+- ```"time_step_factor"```: Specification of a time step factor (length-scale-method=conservative), automatic calculation of the pseudo-time step.
+- ```"pseudo_timestep"```: Direct specification of the pseudo-time step (with no usage of ```"time_step_factor```).
+- ```"iter_count"```: Maximum number of iterations.
 - ```"runSolver"```: Whether the simulation should start to run at the end of the setup. The default is ```true```.
 - ```"reorder_domain"```: Optional argument that turns on and off domain reordering before initialization. The default is ```true```.
 
@@ -691,7 +691,7 @@ The first case (```"Case_CoarseMesh"```) includes all setup definitions. The sec
 
 ## Parametric studies
 
-You can find the [Speedline Tutorial](../doc/examples/Speedline_Tutorial/turboConfig_axial_turbine.json) configuration file for a parametric study in the repository's ```examples``` folder.
+You can find the [Speedline simulation setup example](../doc/examples/Speedline_Example/speedline_example.md) in the repository's ```doc/examples/Speedline_Example``` folder.
 
 To run a parametric study, the configuration file must contain a ```launching``` object for starting a Fluent session. For more information, see [Launching options](#launching-options).
 
