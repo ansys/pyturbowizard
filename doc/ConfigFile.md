@@ -101,16 +101,21 @@ The following functions and corresponding options are available:
   - Specify the function for evaluating the parametric study results.
   - Available functions:
     - ```"study_post_01"```: Operating point maps for each monitor point (value over mass/volume flow). This is the default. For each design point, these actions are taken:
-      - Plot properties against iteration number. (Each design point starts from iteration 0.)
-      - Generate CoV-Plot for monitored properties of each design point (starting from iteration 50).
-      - Generate Residual-Plot of residual values for each design point.
-      - Generate Monitor Points plot of monitor point values for each design point.
+      - Generate Residual-Plot of residual development for each design point.
+      - Plot monitor properties against iteration number, each design point starts from iteration 0.
+        - Generate monitor-point plots of monitor-point values for each design point.
+        - Generate CoV plot for monitored properties of each design point (starting from iteration 50).
 
       Examples of plots follow.
 
-      <img src="../doc/images/operating_map_example.png" alt="operating point map example" style="height: 400px; width:500px;"/>
+      <img src="../doc/images/residual_plot_DP10.png" alt="residual plot example" style="width:700px;"/>
 
-      <img src="../doc/images/cov_plot_DP10.png" alt="cov plot" style="height: 450px; width:700px;"/>
+      <img src="../doc/images/mp_plot_rep-mp-isentropic-efficiency_DP10.png" alt="monitor plot example" style="width:700px;"/>
+
+      <img src="../doc/images/cov_plot_DP10.png" alt="cov plot example" style="width:700px;"/>
+
+      <img src="../doc/images/operating_map_example.png" alt="operating point map example" style="width:700px;"/>
+
 
 **Notes:**
 
