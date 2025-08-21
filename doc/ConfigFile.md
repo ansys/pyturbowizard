@@ -14,12 +14,12 @@ The configuration file includes the following sections:
 In the ```"launching"``` section, specify Fluent launching options, such as the version, number of processes, and whether to use a single- or double-precision solver.
 
 - ```"workingDir"```: Fluent working directory. If this option is not set, the script uses the directory of the configuration file as the Fluent working directory.
-- ```"fl_version"```: Fluent version. Supported versions are 2023 R2 and later.
+- ```"fl_version"```: Fluent version, e.g. `"25.1.0"`
 - ```"noCore"```: Number of cores/processes for the Fluent session.
 - ```"precision"```: Whether to use a double-precision solver. The default is ```true```. If ```false```, a single-precision solver is used.
 - ```"show_gui"```: Whether to show a GUI during simulation. The default is ```true```.
 - ```"py"```: Whether to enable the Python console. The default is ```false```.
-- ```"gpu"```: Whether to enable the GPU solver to check current model limitations. The default is ```false```.
+- ```"gpu"```: Whether to enable the GPU solver. Check current model limitations. The default is ```false```.
 - ```"exitatend"```: Whether to close the Fluent session after the script finishes. The default is ```true```.
 - ```"ptw_cleanup"```: Whether to remove files from the Fluent working directory after exiting the Fluent session. The default is ```false```. If ```true```,
 these files are removed: ```fluent\*.trn``` and ```\*slurm\*```. If you define
@@ -28,13 +28,13 @@ these files are removed: ```fluent\*.trn``` and ```\*slurm\*```. If you define
 To run Fluent on Linux or a cluster, you have two options:
 
 - Submit your job to a Slurm queue, such as ```"queue_slurm": "ottc01"```, with a maximum waiting time in seconds, such as ```"queue_waiting_time": 36000```. The default waiting time is ```600``` seconds. Use ```"additional_args"``` for extra launching options, such as ```"-scheduler_ppn=4 -scheduler_gpn=4"```. Other options are identical to the usual launching options.
-- Hook onto an existing Fluent session. See the **Linux/Cluster** section in the repository's [README.md](https://github.com/ansys-internal/pyturbowizard/blob/main/README.md#how-to-run). Use ```"serverfilename"``` to specify a server file name. When hooking onto an existing Fluent session, only the ```"workingDir"``` launching option is used.
+- Hook onto an existing Fluent session. See the **How to Run** section in the repository's [README.md](https://github.com/ansys-internal/pyturbowizard/blob/main/README.md#how-to-run). Use ```"serverfilename"``` to specify a server file name. When hooking onto an existing Fluent session, only the ```"workingDir"``` launching option is used.
 
 ```
 "launching":
     {
       "workingDir": "<PathToFluentWorkingDir>",
-      "fl_version": "23.2.0",
+      "fl_version": "25.1.0",
       "noCore": 8,
       "serverfilename": "server-info.txt",
       "precision": "double",
@@ -124,7 +124,7 @@ The following functions and corresponding options are available:
 
 ## Single case study
 
-When running the script from outside Fluent, you can use the YAML file format for the configuration file.
+When running the script from outside Fluent, you can also use the YAML file format for the configuration file.
 
 The configuration file serves as the input file for the boundary conditions and provides the numeric and simulation setups needed to run the main script.
 
@@ -167,7 +167,6 @@ Optional objects are:
 - ```"rotation_axis_origin"```: Vector defining the axis origin. The default is ```[0.0, 0.0, 0.0]```.
 - ```"isentropic_efficiency_ratio"```: Calculation of isentropic efficiency. Supported arguments are ```"TotalToTotal"```, ```"TotalToStatic"```, and ```"StaticToStatic"```.
 - ```"skip_execution"```: Whether to skip the execution of the case. The default is ```false```.
-- ```"extsch_script"```: For running the ``extsch-script`` file use on the Linux platform only. You must supply the path to the script that extracts all rp-variables of the case file as an ascii file. The default is ```''```.
 
 You can hook additional journal files to the setup/solution procedure using the following keywords in the case dictionary. These keywords expect a list like this: ```['myJournal1.jou', 'myJournal2.jou']```.
 
@@ -368,6 +367,29 @@ In the ```"locations"``` section, define a turbo topology for postprocessing in 
 
 **Note;**: If a periodic interface specified under ```"tz_theta_periodic_names"``` is non-conformal, the script automatically handles it.
 
+#### Volume source terms definition
+
+Definintions of volume source terms follow:
+
+```
+"source_terms" :{
+        "source_m_1":{
+            "equation" : "mass",
+            "cell_zone" : "passage-main_1",
+            "definition" : "0.433[lbm *s^-1]/ (76 * Volume([\"passage-main_1\"]))"
+        },
+        "source_e_1":{
+            "equation" : "energy",
+            "cell_zone" : "passage-main_1",
+            "definition" : "(0.433[lbm*s^-1])*SpecificHeatCapacity*((348.96[K]-298.15[K])/(76*Volume([\"passage-main_1\"])))"
+        }
+},
+```
+
+- ```"equation"```: Type of the source term.
+- ```"cell_zone"```: Domain to apply the source term to.
+- ```"definition"```: Expression, where its name is the subdictionary.
+
 ### Solution and results setup
 
 #### Solution settings
@@ -466,29 +488,6 @@ The ```"per_zone"``` keyword is optional. The default is ```false```. With this 
             },
       ...
 ```
-
-#### Volume source terms definition
-
-Definintions of volume source terms follow:
-
-```
-"source_terms" :{
-        "source_m_1":{
-            "equation" : "mass",
-            "cell_zone" : "passage-main_1",
-            "definition" : "0.433[lbm *s^-1]/ (76 * Volume([\"passage-main_1\"]))"
-        },
-        "source_e_1":{
-            "equation" : "energy",
-            "cell_zone" : "passage-main_1",
-            "definition" : "(0.433[lbm*s^-1])*SpecificHeatCapacity*((348.96[K]-298.15[K])/(76*Volume([\"passage-main_1\"])))"
-        }
-},
-```
-
-- ```"equation"```: Type of the source term.
-- ```"cell_zone"```: Domain to apply the source term to.
-- ```"definition"```: Expression, where its name is the subdictionary.
 
 #### Results
 

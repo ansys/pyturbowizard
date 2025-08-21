@@ -6,7 +6,7 @@
   "launching_external":
     {
       "workingDir": "./my_working_dir",
-      "fl_version": "23.2.0",
+      "fl_version": "24.2.0",
       "noCore": 2,
       "precision": "double",
       "show_gui":  true,
@@ -14,7 +14,7 @@
     },
   "launching_slurmQueue":
     {
-      "fl_version": "23.2.0",
+      "fl_version": "24.2.0",
       "noCore": 2,
       "precision": "double",
       "show_gui":  true,
