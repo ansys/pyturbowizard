@@ -72,4 +72,4 @@ the latest release with:
 ## Useful Documents
 
 - [Configuration File Setup](doc/ConfigFile.md)
-- [Tutorial: Speedline Simulation Setup](doc/examples/Speedline_Tutorial/speedline_tutorial.md)
+- [Tutorial: Speedline Simulation Setup](doc/examples/Speedline_Example/speedline_example.md)
