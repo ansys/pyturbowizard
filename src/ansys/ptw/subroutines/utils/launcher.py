@@ -125,7 +125,7 @@ def launch_queuing_session(launchEl: dict):
     queueEl = launchEl.get("queue_slurm")
     fl_workingDir = launchEl["workingDir"]
     additional_args = launchEl.get("additional_args", [])
-    maxtime = float(launchEl.setdefault("queue_waiting_time", 600.0))
+    maxtime = int(launchEl.setdefault("queue_waiting_time", 600))
 
     logger.info("Trying to launching new Fluent Session on queue '" + queueEl + "'")
     logger.info("Max waiting time (launching-key: 'queue_waiting_time') set to: " + str(maxtime))
