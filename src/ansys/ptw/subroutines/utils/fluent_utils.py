@@ -221,7 +221,7 @@ def create_plane_surface(solver, name: str, value: float, method: str = "xy-plan
         }
     else:
         allowed_methods = solver.settings.results.surfaces.plane_surface[
-            "bla"
+            name
         ].method.allowed_values()
         logger.warning(
             f"Could not specify prescribed method '{method}' when creating plane_surface '{name}'. "
