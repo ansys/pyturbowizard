@@ -4,17 +4,17 @@ This document explains how to adjust the configuration file for a single case st
 
 The configuration file includes the following sections:
 
-- ```"launching"```: Launching options for the Fluent session. See [Launching options](#launching-options).
+- ```"launching"```: Launching options for the Fluent session. See [Launching](#launching-options).
 - ```"functions"```: Subroutines for numerical setup, postprocessing, and parametric studies. See [Functions](#functions).
 - ```"cases"```: Definition of a single case study. See [Single case study](#single-case-study).
 - ```"studies"```: Definitions of parametric studies. See [Parametric studies](#parametric-studies).
 
-## Launching options
+## Launching
 
 In the ```"launching"``` section, specify Fluent launching options, such as the version, number of processes, and whether to use a single- or double-precision solver.
 
 - ```"workingDir"```: Fluent working directory. If this option is not set, the script uses the directory of the configuration file as the Fluent working directory.
-- ```"fl_version"```: Fluent version, e.g. `"25.1.0"`
+- ```"fl_version"```: Fluent version, such as `"25.1.0"`.
 - ```"noCore"```: Number of cores/processes for the Fluent session.
 - ```"precision"```: Whether to use a double-precision solver. The default is ```true```. If ```false```, a single-precision solver is used.
 - ```"show_gui"```: Whether to show a GUI during simulation. The default is ```true```.
@@ -28,7 +28,7 @@ these files are removed: ```fluent\*.trn``` and ```\*slurm\*```. If you define
 To run Fluent on Linux or a cluster, you have two options:
 
 - Submit your job to a Slurm queue, such as ```"queue_slurm": "ottc01"```, with a maximum waiting time in seconds, such as ```"queue_waiting_time": 36000```. The default waiting time is ```600``` seconds. Use ```"additional_args"``` for extra launching options, such as ```"-scheduler_ppn=4 -scheduler_gpn=4"```. Other options are identical to the usual launching options.
-- Hook onto an existing Fluent session. See the **How to Run** section in the repository's [README.md](https://github.com/ansys-internal/pyturbowizard/blob/main/README.md#how-to-run). Use ```"serverfilename"``` to specify a server file name. When hooking onto an existing Fluent session, only the ```"workingDir"``` launching option is used.
+- Hook onto an existing Fluent session. See **How to Run** in the repository's [README.md](https://github.com/ansys-internal/pyturbowizard/blob/main/README.md#how-to-run). Use ```"serverfilename"``` to specify a server file name. When hooking onto an existing Fluent session, only the ```"workingDir"``` launching option is used.
 
 ```
 "launching":
@@ -72,7 +72,7 @@ The following functions and corresponding options are available:
   - Specify the numeric settings.
   - Available functions:
     - ```"numerics_defaults"```: Fluent default settings.
-    - ```"numerics_bp_tn_2305"```: Turbo best practice settings from May 2023 with Fluent default discretization schemes and Green-Gauss node-based gradient discretization scheme. This is the default.
+    - ```"numerics_bp_tn_2305"```: Turbo best practice settings from May 2023 with the Fluent default discretization schemes and the Green-Gauss node-based gradient discretization scheme. This is the default.
     - ```"numerics_bp_tn_2305_lsq"```: Turbo best practice settings from May 2023 with the LSQ gradient discretization scheme.
     - ```"numerics_bp_all_2305"```: Turbo best practice settings from May 2023 with all discretization schemes explicitly set to second order.
     - ```"numerics_defaults_pseudo_timestep"```: Default numerics with pseudo-transient vp-coupling.
@@ -102,7 +102,7 @@ The following functions and corresponding options are available:
   - Available functions:
     - ```"study_post_01"```: Operating point maps for each monitor point (value over mass/volume flow). This is the default. For each design point, these actions are taken:
       - Generate Residual-Plot of residual development for each design point.
-      - Plot monitor properties against iteration number, each design point starts from iteration 0.
+      - Plot monitor properties against iteration number. Each design point starts from iteration 0.
         - Generate monitor-point plots of monitor-point values for each design point.
         - Generate CoV plot for monitored properties of each design point (starting from iteration 50).
 
@@ -128,7 +128,7 @@ When running the script from outside Fluent, you can also use the YAML file form
 
 The configuration file serves as the input file for the boundary conditions and provides the numeric and simulation setups needed to run the main script.
 
-To run a single case study, the configuration file must contain a ```"launching"``` object to start a Fluent session. For more information, see [Launching options](#launching-options).
+To run a single case study, the configuration file must contain a ```"launching"``` object to start a Fluent session. For more information, see [Launching](#launching-options).
 
 ### Cases
 
@@ -206,7 +206,7 @@ radius, pt-in, tt-in, vax-dir, vrad-dir, vtang-dir
 
 #### Expression templates
 
-Next, choose your ```expressionTemplate```. There are expression templates available for compressors, fans, pumps, turbine and cascade setups, as well as for compressible and incompressible setups:
+Next, choose your expression template. There are expression templates available for compressors, fans, pumps, turbine and cascade setups, as well as for compressible and incompressible setups:
 
 - ```expressionTemplate_cascade_comp.tsv```: For cascades or non-turbo-machinery applications, compressible fluids.
 - ```expressionTemplate_compressor_comp.tsv```: For compressors, compressible fluids.
@@ -365,7 +365,7 @@ In the ```"locations"``` section, define a turbo topology for postprocessing in 
           ...
 ```
 
-**Note;**: If a periodic interface specified under ```"tz_theta_periodic_names"``` is non-conformal, the script automatically handles it.
+**Note:**: If a periodic interface specified under ```"tz_theta_periodic_names"``` is non-conformal, the script automatically handles it.
 
 #### Volume source terms definition
 
@@ -544,7 +544,7 @@ You can easily add various cases to your configuration file. The script executes
 
 If you want to copy elements from an existing case to a new case, use the ```"refCase"``` keyword.
 
-Here´s an example for a mesh study:
+Here is an example for a mesh study:
 
 ```
 "Case_CoarseMesh": {
@@ -572,7 +572,7 @@ The first case (```"Case_CoarseMesh"```) includes all setup definitions. The sec
 
 You can find the [Speedline simulation setup example](../doc/examples/Speedline_Example/speedline_example.md) in the repository's ```doc/examples/Speedline_Example``` folder.
 
-To run a parametric study, the configuration file must contain a ```launching``` object for starting a Fluent session. For more information, see [Launching options](#launching-options).
+To run a parametric study, the configuration file must contain a ```launching``` object for starting a Fluent session. For more information, see [Launching](#launching-options).
 
 ### Study configuration
 
