@@ -1,75 +1,68 @@
 # **PyTurboWizard**
 
-## **Open-Source Software Disclaimer**
+## **OSS disclaimer**
 
-This deliverable depends on Open-Source Software (OSS), which are subject to their own terms & conditions and may
-contain vulnerabilities.
-Ansys is not responsible for such Third-Party Software.
+PyTurboWizard depends on OSS (Open Source Software), which is subject to its own terms and conditions and might contain vulnerabilities.
+Ansys is not responsible for such third-party software.
 
-Please check the [LICENSE-file](./LICENSE).
+You should consult your company’s software security department before installing any software on company hardware.
 
-It is recommended to consult your company’s Software Security department before installing any software on company
-hardware.
+PyTurboWizard is licensed under the [MIT License](./LICENSE).
 
 ## **Overview**
 
-This project aims to provide a standardized testing setup for turbomachinery-cases in Ansys Fluent through the Pythonic
-access with PyFluent.
-The functionalities are displayed in the following Feature-Matrix:
-| Case | Fluid | Inlet BC | Outlet BC | Expression Template | Stages | Interface Types | Parametric Study Support |
+PyTurboWizard provides a standardized testing setup for turbomachinery cases in Ansys Fluent through Pythonic access with PyFluent. This matrix describes functionalities:
+
+| Case | Fluid | Inlet BC | Outlet BC | Expression template | Stages | Interface types | Parametric study support |
 |---------------------------|------------|----------------------------------|------------------------------------------------|---------------------|---------------------|------------------------------------------------------|--------------------------|
-| Gas Turbine (compressible)| Ideal Air | Total Pressure, Mass Flow, Volume Flow | Static Pressure, Exit Corrected Mass
-Flow, Mass Flow, Volume Flow | yes | Unlimited | General, Periodic, No Pitch-Scale, Pitch-Scale, Mixing Plane | yes |
-| Compressor (compressible) | Ideal Air | Total Pressure, Mass Flow, Volume Flow | Static Pressure, Exit Corrected Mass
-Flow, Mass Flow, Volume Flow | yes | Unlimited | General, Periodic, No Pitch-Scale, Pitch-Scale, Mixing Plane | yes |
-| Gas Turbine (inccompressible) | Ideal Air | Total Pressure, Mass Flow, Volume Flow | Static Pressure, Exit Corrected
-Mass Flow, Mass Flow, Volume Flow | yes | Unlimited | General, Periodic, No Pitch-Scale, Pitch-Scale, Mixing Plane |
-yes |
-| Compressor (inccompressible) | Ideal Air | Total Pressure, Mass Flow, Volume Flow | Static Pressure, Exit Corrected
-Mass Flow, Mass Flow, Volume Flow | yes | Unlimited | General, Periodic, No Pitch-Scale, Pitch-Scale, Mixing Plane |
-yes |
+| Gas turbine (compressible)| Ideal air | Total pressure, mass flow, volume flow | Static pressure, exit corrected mass
+Flow, mass flow, volume Flow | Yes | Unlimited | General, periodic, no pitch-scale, pitch-scale, mixing plane | Yes |
+| Compressor (compressible) | Ideal air | Total pressure, mass flow, volume flow | Static pressure, exit corrected mass
+Flow, mass flow, volume flow | Yes | Unlimited | General, periodic, no pitch-scale, pitch-scale, mixing plane | Yes |
+| Gas turbine (incompressible) | Ideal air | Total pressure, mass flow, volume flow | Static pressure, exit corrected mass
+Flow, mass flow, volume flow | Yes | Unlimited | General, periodic, no pitch-scale, pitch-scale, mixing plane | Yes |
+Compressor (incompressible) | Ideal air | Total pressure, mass flow, volume flow | Static pressure, exit corrected mass
+Flow, mass flow, volume flow | Yes | Unlimited | General, periodic, no pitch-scale, pitch-scale, mixing plane | Yes |
 
-**Note: Default rotation axis is expected to be z-axis (0,0,1) with axis origin (0,0,0)**
+**Note:** The default rotation axis is expected to be the z-axis (0,0,1) with axis origin (0,0,0).
 
-## **Getting Started**
+## **Getting started**
 
-The PyTurboWizard has been developed for Ansys Fluent versions 2024R1 and latter versions.
-It can also be used running the Ansys GPU Solver (use '-gpu' flag in launching options), but not all features will be
-supported, though!
+PyTurboWizard is developed for Ansys Fluent 2024 R1 and later. When running the Ansys GPU Solver, you can use PyTurboWizard with the `-gpu` flag in the launching options. However, not all features
+are supported.
 
 ### Installation
 
-It is recommended to create a python virtual environment to install the PyTurboWizard.
+You should create a dedicated Python virtual environment to install
+PyTurboWizard in. To quickly create and install this environment, consider using the [Ansys Python Manager](https://github.com/ansys/python-installer-qt-gui).
 
-To create and install a virtual environment, please have a look at
-the [Ansys Python Manager](https://github.com/ansys/python-installer-qt-gui/releases)
-
-Install PyTurboWizard using `pip` in your dedicated virtual-environment:
+Use `pip` to install PyTurboWizard in this environment:
 
 `pip install ansys-ptw`
 
-All needed libraries wil be installed automatically.
+All needed libraries are installed automatically.
 
 #### For developers
 
-If you plan on doing local *development* of PyTurboWizard with Git, install
-the latest release with:
+If you plan on doing local *development* of PyTurboWizard with Git, install the latest release:
 
-- `git clone https://github.com/ansys-internal/pyturbowizard`
-- `pip install -e .`
+```bash
+git clone https://github.com/ansys-internal/pyturbowizard
+pip install -e .
+```
 
-### **How to Run**
+### **How to run**
 
-- Install latest version of PyTurboWizard, see [installation instructions](#Installation).
-- Prepare data in your working directory
-    - Copy Fluent data into the folder, e.g. mesh data, profiles, etc.
-    - Copy a Configuration File to your Fluent working directory
-    - Adjust the Configuration File to your setup ([Configuration File Setup](doc/ConfigFile.md))
-- Execute script:
+After installing the latest version of PyTurboWizard, you can prepare data in your working directory and then run it:
 
-  `ansys-ptw <PathToConfigurationFile.json/yaml>`
+1. Copy Fluent data, including mesh data and profiles, into you working directory.
+1. Copy a configuration file to your Fluent working directory.
+1. Adjust the configuration file to your setup. For more information, see [Set up the configuration file](doc/ConfigFile.md).
+1. Execute the script:
 
-## Useful Documents
+   `ansys-ptw <PathToConfigurationFile.json/yaml>`
 
-- [Configuration File Setup](doc/ConfigFile.md)
-- [Tutorial: Speedline Simulation Setup](doc/examples/Speedline_Example/speedline_example.md)
+## Useful documents
+
+- [Set up the configuration file](doc/ConfigFile.md)
+- [Speedline simulation setup example](doc/examples/Speedline_Example/speedline_example.md)
