@@ -222,6 +222,7 @@ def launch_queuing_session(launchEl: dict):
                 scheduler_options=scheduler_options,
                 additional_arguments=additional_args,
                 dimension=launchEl["dimension"],
+                start_timeout=maxtime,
             ).result(timeout=maxtime)
     return solver
 

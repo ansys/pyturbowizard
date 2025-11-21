@@ -111,7 +111,10 @@ def multiple_mesh_read(solver, meshnamelist):
 def multiple_mesh_import(solver, meshname_list: list):
     """Import multiple meshes using Turbo Workflow"""
     # using turbo-workflow to import multiple meshes
-    solver.tui.turbo_workflow.workflow.enable()
+    if Version(solver._version) < Version("252"):
+        solver.tui.turbo_workflow.workflow.enable()
+    else:
+        solver.tui.turbo_setup.workflow.enable()
     solver.workflow.InitializeWorkflow(WorkflowType=r"Turbo Workflow")
     solver.workflow.TaskObject["Describe Component"].Execute()
     solver.workflow.TaskObject["Define Blade Row Scope"].Execute()
@@ -141,5 +144,9 @@ def multiple_mesh_import(solver, meshname_list: list):
     #         }
     #     )
     # Turn off Turbo-Workflow
-    solver.tui.turbo_workflow.workflow.disable("yes")
+    if Version(solver._version) < Version("252"):
+        solver.tui.turbo_workflow.workflow.disable("yes")
+    else:
+        solver.tui.turbo_setup.workflow.disable("yes")
+
     return
