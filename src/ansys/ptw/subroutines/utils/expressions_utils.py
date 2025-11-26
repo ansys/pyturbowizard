@@ -27,6 +27,7 @@ This module provides utility functions for working with expressions in the PyTur
 application.
 """
 
+import importlib.resources as resources
 import os
 import re
 
@@ -38,7 +39,7 @@ from . import misc_utils, ptw_logger
 logger = ptw_logger.get_logger()
 
 
-def write_expression_file(data: dict, script_dir: str, working_dir: str):
+def write_expression_file(data: dict, working_dir: str):
     """write expression file from template"""
     fileName = data.get("expressionFilename")
     # if nothing is set for "expressionFilename" a default value ("expressions.tsv")
@@ -56,8 +57,9 @@ def write_expression_file(data: dict, script_dir: str, working_dir: str):
         os.remove(fileName)
     # Write new file
     with open(fileName, "w") as sf:
-        expressionTemplatePath = os.path.join(script_dir, "templates", data["expressionTemplate"])
-        with open(expressionTemplatePath, "r") as templateFile:
+        package = "ansys.ptw.templates"
+        file_name = data["expressionTemplate"]
+        with resources.files(package).joinpath(file_name).open("r") as templateFile:
             tempData = templateFile.read()
             templateFile.close()
         helperDict = data["locations"]
@@ -180,7 +182,7 @@ def check_output_parameter_expressions(caseEl: dict, solver):
         exp = solver.settings.setup.named_expressions.get(expName)
         if expName in reportlist:
             logger.info(
-                f"Expression '{expName}' found in Config-File: 'Case/Solution/reportlist'"
+                f"Expression '{expName}' found in Config-File: 'Case/Solution/reportlist' -> "
                 f"Setting expression '{expName}' as output-parameter"
             )
             exp.set_state({"output_parameter": True})

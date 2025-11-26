@@ -28,8 +28,8 @@ application.
 """
 
 import copy
+import importlib.resources as resources
 import json
-import os
 
 # Load Script Modules
 from . import ptw_logger
@@ -99,20 +99,24 @@ def merge_data_with_ref_dict(caseDict: dict, allCasesDict: dict):
     return
 
 
-def get_material_from_lib(caseDict: dict, scriptPath: str):
+def get_material_from_lib(caseDict: dict):
     """get material from ptw-library"""
+    package = "ansys.ptw.misc"
+    file_name = "material_lib.json"
+
     if isinstance(caseDict.get("fluid_properties"), str):
         materialStr = caseDict.get("fluid_properties")
-        materialFileName = os.path.join(scriptPath, "misc", "material_lib.json")
-        materialFile = open(materialFileName, "r")
-        materialDict = json.load(materialFile)
-        materialDict = materialDict.get(materialStr)
+        materialDict = None
+        # Open the file safely
+        with resources.files(package).joinpath(file_name).open("r", encoding="utf-8") as f:
+            materialDict = json.load(f)
+            materialDict = materialDict.get(materialStr)
         if materialDict is not None:
             caseDict["fluid_properties"] = materialDict
         else:
             raise Exception(
                 f"Specified material '{materialStr}' in config-file not "
-                f"found in material-lib: {materialFileName}"
+                f"found in material-lib: {package}/{file_name}"
             )
     return
 
