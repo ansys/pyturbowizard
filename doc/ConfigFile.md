@@ -28,7 +28,7 @@ these files are removed: ```fluent\*.trn``` and ```\*slurm\*```. If you define
 To run Fluent on Linux or a cluster, you have two options:
 
 - Submit your job to a Slurm queue, such as ```"queue_slurm": "ottc01"```, with a maximum waiting time in seconds, such as ```"queue_waiting_time": 36000```. The default waiting time is ```600``` seconds. Use ```"additional_args"``` for extra launching options, such as ```"-scheduler_ppn=4 -scheduler_gpn=4"```. Other options are identical to the usual launching options.
-- Hook onto an existing Fluent session. See **How to Run** in the repository's [README.md](https://github.com/ansys-internal/pyturbowizard/blob/main/README.md#how-to-run). Use ```"serverfilename"``` to specify a server file name. When hooking onto an existing Fluent session, only the ```"workingDir"``` launching option is used.
+- Hook onto an existing Fluent session. See **How to Run** in the repository's [README.md](https://github.com/ansys/pyturbowizard/blob/main/README.md#how-to-run). Use ```"serverfilename"``` to specify a server file name. When hooking onto an existing Fluent session, only the ```"workingDir"``` launching option is used.
 
 ```
 "launching":

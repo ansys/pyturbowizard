@@ -47,7 +47,7 @@ All needed libraries are installed automatically.
 If you plan on doing local *development* of PyTurboWizard with Git, install the latest release:
 
 ```bash
-git clone https://github.com/ansys-internal/pyturbowizard
+git clone https://github.com/ansys/pyturbowizard
 pip install -e .
 ```
 

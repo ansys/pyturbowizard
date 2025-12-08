@@ -50,7 +50,7 @@ Launch Fluent using one of these methods:
     }
   ```
 
-For more information, see **Linux/Cluster** in section in the [How to Run](https://github.com/ansys-internal/pyturbowizard/blob/main/README.md#how-to-run) section of the repository's ```README.md``` file.
+For more information, see **Linux/Cluster** in section in the [How to Run](https://github.com/ansys/pyturbowizard/blob/main/README.md#how-to-run) section of the repository's ```README.md``` file.
 
 For descriptions of launching options, see [Launching options](../../ConfigFile.md#launching-options) in the `ConfigFile.md` file.
 
