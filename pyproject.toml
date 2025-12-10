@@ -6,7 +6,7 @@ build-backend = "flit_core.buildapi"
 [project]
 # Check https://flit.readthedocs.io/en/latest/pyproject_toml.html for all available sections
 name = "ansys-ptw"
-version = "0.1.dev0"
+version = "0.1.0"
 description = "PyTurboWizard (PTW) provides Pythonic way to setup & run a turbomachinery simulation with Ansys Fluent."
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
