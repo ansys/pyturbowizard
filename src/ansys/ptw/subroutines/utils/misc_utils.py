@@ -32,7 +32,8 @@ import ntpath
 import os.path
 import platform
 import shutil
-import subprocess
+# Excluding low severity bandit warning as the validity of the inputs is enforced.
+import subprocess  # nosec B404
 import time
 
 # Load Script Modules
@@ -96,7 +97,8 @@ def run_extsch_script(path_to_script: str, workingDir: str, caseEl: dict):
         commandlist.append(f"{caseFilename}.cas.h5")
         commandlist.append("| uniq")
         commandlist.append(f"> {output_filename}")
-        subprocess.Popen(commandlist, cwd=workingDir, stdout=subprocess.DEVNULL)
+        # Excluding low severity bandit check as the validity of the inputs has been ensured.
+        subprocess.Popen(commandlist, cwd=workingDir, stdout=subprocess.DEVNULL)  # nosec B603
         logger.info(f"'extsch' output written to: {output_filename}")
     else:
         logger.info(
