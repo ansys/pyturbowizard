@@ -29,7 +29,9 @@ PyTurboWizard application.
 
 import os
 import platform
-import subprocess
+
+# Excluding low severity bandit warning as the validity of the inputs is enforced.
+import subprocess  # nosec B404
 import time
 
 import ansys.fluent.core as pyfluent
@@ -165,7 +167,8 @@ def launch_queuing_session(launchEl: dict):
             batch_arguments.extend(["-gu", "-driver dx11"])
         batch_arguments.extend(additional_args)
         commandlist.extend(batch_arguments)
-        subprocess.Popen(commandlist, cwd=fl_workingDir, stdout=subprocess.DEVNULL)
+        # Excluding low severity bandit check as the validity of the inputs has been ensured.
+        subprocess.Popen(commandlist, cwd=fl_workingDir, stdout=subprocess.DEVNULL)  # nosec B603
         # Check if Fluent started
         fullpath_to_sf = os.path.join(fl_workingDir, serverfilename)
         current_time = 0
