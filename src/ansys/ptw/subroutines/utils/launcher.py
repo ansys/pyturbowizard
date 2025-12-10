@@ -29,6 +29,7 @@ PyTurboWizard application.
 
 import os
 import platform
+
 # Excluding low severity bandit warning as the validity of the inputs is enforced.
 import subprocess  # nosec B404
 import time
