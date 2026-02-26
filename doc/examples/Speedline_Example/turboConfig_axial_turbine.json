@@ -23,7 +23,7 @@
       "axial_turbine_basecase": {
         "caseFilename": "axial_turbine_basecase",
         "meshFilename": "axial_turbine_mesh.def",
-        "expressionTemplate": "expressionTemplate_compressor_comp.tsv",
+        "expressionTemplate": "expressionTemplate_turbine_comp.tsv",
         "expressions": {
         "GEO_IN_No_Passages": "1",
         "GEO_IN_No_Passages_360": "60",
@@ -123,7 +123,6 @@
                 54000,
                 58000,
                 62000,
-                68000,
                 66000,
                 70000,
                 74000,
