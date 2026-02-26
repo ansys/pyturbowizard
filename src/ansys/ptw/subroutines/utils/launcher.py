@@ -1,4 +1,4 @@
-# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2025 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -126,7 +126,7 @@ def launch_queuing_session(launchEl: dict):
     solver = None
     queueEl = launchEl.get("queue_slurm")
     fl_workingDir = launchEl["workingDir"]
-    additional_args = launchEl.get("additional_args", [])
+    additional_args = launchEl.get("additional_args", "")
     maxtime = int(launchEl.setdefault("queue_waiting_time", 600))
 
     logger.info("Trying to launching new Fluent Session on queue '" + queueEl + "'")
@@ -212,6 +212,7 @@ def launch_queuing_session(launchEl: dict):
                 version=launchEl["version"],
             ).result(timeout=maxtime)
         else:
+            additional_arguments = f"-scheduler_workdir={fl_workingDir} {additional_args}"
             solver = pyfluent.launch_fluent(
                 precision=launchEl["precision"],
                 processor_count=int(launchEl["noCore"]),
@@ -223,9 +224,10 @@ def launch_queuing_session(launchEl: dict):
                 py=launchEl["py"],
                 gpu=launchEl["gpu"],
                 scheduler_options=scheduler_options,
-                additional_arguments=additional_args,
+                additional_arguments=additional_arguments,
                 dimension=launchEl["dimension"],
                 start_timeout=maxtime,
+                insecure_mode=True,
             ).result(timeout=maxtime)
     return solver
 
