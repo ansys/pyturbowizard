@@ -117,7 +117,10 @@ def set_material(data, solver, solve_energy: bool = True):
     logger.info(f"Setting Material '{fl_name}'...")
     fluid_list = list(solver.settings.setup.materials.fluid.keys())
 
-    solver.settings.setup.materials.fluid.rename(fl_name, fluid_list[0])
+    if Version(solver._version) < Version("261"):
+        solver.settings.setup.materials.fluid.rename(fl_name, fluid_list[0])
+    else:
+        solver.settings.setup.materials.fluid.rename(fluid_list[0],fl_name)
     material_object = solver.settings.setup.materials.fluid[fl_name]
     if solve_energy:
         add_material_property(
@@ -923,7 +926,11 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     "Currently, only general interfaces are supported."
                 )
 
-            solver.tui.define.turbo_model.turbo_create(key_if, side1, "()", side2, "()", "2")
+            if Version(solver._version) < Version("261"):
+                solver.tui.define.turbo_model.turbo_create(key_if, side1, "()", side2, "()", "2")
+            else:
+                solver.settings.setup.mesh_interfaces.turbo_interface.create(mesh_interface_name=key_if, zone1=side1,
+                                                                             zone2=side2, turbo_choice='Mixing-Plane')
     keyEl = data["locations"].get("bz_interfaces_no_pitchscale_names")
     if keyEl is not None:
         for key_if in keyEl:
@@ -946,7 +953,12 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     "Currently, only general interfaces are supported."
                 )
 
-            solver.tui.define.turbo_model.turbo_create(key_if, side1, "()", side2, "()", "1")
+            if Version(solver._version) < Version("261"):
+                solver.tui.define.turbo_model.turbo_create(key_if, side1, "()", side2, "()", "1")
+            else:
+                solver.settings.setup.mesh_interfaces.turbo_interface.create(mesh_interface_name=key_if, zone1=side1,
+                                                                             zone2=side2, turbo_choice='No-Pitch-Scale')
+
     keyEl = data["locations"].get("bz_interfaces_pitchscale_names")
     if keyEl is not None:
         for key_if in keyEl:
@@ -969,7 +981,11 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                     "Currently, only general interfaces are supported."
                 )
 
-            solver.tui.define.turbo_model.turbo_create(key_if, side1, "()", side2, "()", "0")
+            if Version(solver._version) < Version("261"):
+                solver.tui.define.turbo_model.turbo_create(key_if, side1, "()", side2, "()", "0")
+            else:
+                solver.settings.setup.mesh_interfaces.turbo_interface.create(mesh_interface_name=key_if, zone1=side1,
+                                                                            zone2=side2, turbo_choice='Pitch-Scale')
 
     # setup turbo topology
     keyEl = data["locations"].get("tz_turbo_topology_names")

@@ -177,14 +177,15 @@ You can hook additional journal files to the setup/solution procedure using the 
 
 #### Profiles
 
-Specify a profile for your inlet or outlet boundaries by providing the ```"profileName"``` in your Fluent working directory. Restrictions exist when using profiles:
+Specify the profiles for your inlet or outlet boundaries by providing the file names as ```"profileName_In"``` and ```"profileName_Out"``` in the case setup. The profile-files should be placed in your Fluent working directory.
+Following restrictions exist when using profiles:
 
 - Inlet:
   - Specify profiles for total pressure, total temperature, and absolute velocity using these naming conventions:
     - Profile name: ```"inlet-bc"```
     - Total pressure: ```"pt-in"```
     - Total temperature: ```"tt-in"```
-    - Velocity directions in cylindrical coordinates: ```"vrad-dir","vrad-dir","vax-dir"```
+    - Velocity directions in cylindrical coordinates: ```"vax-dir","vrad-dir","vtang-dir"```
 - Outlet:
   - Specify a profile for static pressure using these naming conventions:
     - Profile name: ```"outlet-bc"```
