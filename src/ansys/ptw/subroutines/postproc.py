@@ -280,31 +280,35 @@ def create_report_table(data: dict, fl_working_dir, solver, trn_filename, gpu):
     result_table.to_csv(reportTableFileName, index=None)
 
     # Residual Dataframe to csv
-    resiudalFileName = "residuals.csv"
-    resiudalFileName = os.path.join(caseOutPath, resiudalFileName)
-    res_df.to_csv(resiudalFileName)
+    if res_df is not None:
+        resiudalFileName = "residuals.csv"
+        resiudalFileName = os.path.join(caseOutPath, resiudalFileName)
+        res_df.to_csv(resiudalFileName)
 
-    # Plot Resiuduals
-    # Get the list of columns excluding 'Iteration'
-    y_columns = res_df.columns[2:]
-    plt.figure(figsize=(10, 6))
-    # Plot each column separately on the same plot
-    for col in y_columns:
-        plt.plot(res_df["iter"], res_df[col], label=col)
+        # Plot Resiuduals
+        # Get the list of columns excluding 'Iteration'
+        y_columns = res_df.columns[2:]
+        plt.figure(figsize=(10, 6))
+        # Plot each column separately on the same plot
+        for col in y_columns:
+            plt.plot(res_df["iter"], res_df[col], label=col)
 
-    plt.xlabel("Iteration")
-    plt.ylabel("")
-    plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
-    plt.title(f"Residuals - {caseFilename}")
-    plt.grid(True)
-    plt.yscale("log")
+        plt.xlabel("Iteration")
+        plt.ylabel("")
+        plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
+        plt.title(f"Residuals - {caseFilename}")
+        plt.grid(True)
+        plt.yscale("log")
 
-    # Save the plot in the folder
-    plot_filename = os.path.join(caseOutPath, "plots/residual_plot.png")
-    plt.tight_layout()
-    logger.info(f"Writing Residual Plot to Directory: {plot_filename}")
-    plt.savefig(plot_filename)
-    plt.close()  # Close the figure to release memory
+        # Save the plot in the folder
+        plot_filename = os.path.join(caseOutPath, "plots/residual_plot.png")
+        plt.tight_layout()
+        logger.info(f"Writing Residual Plot to Directory: {plot_filename}")
+        plt.savefig(plot_filename)
+        plt.close()  # Close the figure to release memory
+    else:
+        logger.warning(f"Could not evaluate transcript-file: {trnFilePath}, skipping residual evaluation...")
+
     return
 
 
