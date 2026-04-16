@@ -196,21 +196,23 @@ def launch_queuing_session(launchEl: dict):
             "scheduler": "slurm",
             "scheduler_queue": launchEl["queue_slurm"],
         }
-        if version.parse(pyfluent.__version__) < version.parse("0.29.0"):
+        if version.parse(pyfluent.__version__) < version.parse("0.37.0"):
+            additional_arguments = f"-scheduler_workdir={fl_workingDir} {additional_args}"
             solver = pyfluent.launch_fluent(
                 precision=launchEl["precision"],
                 processor_count=int(launchEl["noCore"]),
                 mode="solver",
-                show_gui=launchEl["show_gui"],
+                ui_mode=launchEl["ui_mode"],
                 product_version=launchEl["fl_version"],
                 cwd=fl_workingDir,
                 cleanup_on_exit=launchEl["exitatend"],
                 py=launchEl["py"],
                 gpu=launchEl["gpu"],
                 scheduler_options=scheduler_options,
-                additional_arguments=additional_args,
-                version=launchEl["version"],
-            ).result(timeout=maxtime)
+                additional_arguments=additional_arguments,
+                dimension=launchEl["dimension"],
+                start_timeout=maxtime,               
+            ).result(timeout=maxtime)    
         else:
             additional_arguments = f"-scheduler_workdir={fl_workingDir} {additional_args}"
             solver = pyfluent.launch_fluent(
