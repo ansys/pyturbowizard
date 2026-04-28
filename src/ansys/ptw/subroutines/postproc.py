@@ -307,7 +307,9 @@ def create_report_table(data: dict, fl_working_dir, solver, trn_filename, gpu):
         plt.savefig(plot_filename)
         plt.close()  # Close the figure to release memory
     else:
-        logger.warning(f"Could not evaluate transcript-file: {trnFilePath}, skipping residual evaluation...")
+        logger.warning(
+            f"Could not evaluate transcript-file: {trnFilePath}, skipping residual evaluation..."
+        )
 
     return
 

@@ -100,7 +100,7 @@ def hook_to_existing_session(fl_workingDir: str, serverfilename: str, cleanup_on
 
     fullpath_to_sf = os.path.join(fl_workingDir, serverfilename)
     logger.info("Connecting to Fluent Session...")
-    # Start Session via hook   
+    # Start Session via hook
     if version.parse(pyfluent.__version__) <= version.parse("0.18.2"):
         solver = pyfluent.connect_to_fluent(
             server_info_filepath=fullpath_to_sf,
@@ -205,8 +205,8 @@ def launch_queuing_session(launchEl: dict):
                 scheduler_options=scheduler_options,
                 additional_arguments=additional_arguments,
                 dimension=launchEl["dimension"],
-                start_timeout=maxtime,               
-            ).result(timeout=maxtime)    
+                start_timeout=maxtime,
+            ).result(timeout=maxtime)
         else:
             additional_arguments = f"-scheduler_workdir={fl_workingDir} {additional_args}"
             solver = pyfluent.launch_fluent(
