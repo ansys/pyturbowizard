@@ -324,7 +324,7 @@ class PTW_Run:
                 # Write case and ini-data & settings file
                 logger.info("Writing initial case & settings file")
                 solver.settings.file.write(file_type="case", file_name=caseFilename)
-                settingsFilename = os.path.join(caseOutPath, "settings.set")
+                settingsFilename = os.path.join(caseOutPath, "setup.set")
                 # Removing file manually, as batch options seem not to work
                 if os.path.exists(settingsFilename):
                     logger.info(f"Removing old existing settings-file: {settingsFilename} ")
@@ -338,6 +338,12 @@ class PTW_Run:
                         workingDir=fl_workingDir,
                         caseEl=caseEl,
                     )
+                # Write setup-settings to json-file
+                setup_json_file = os.path.join(caseOutPath, "setup.json")
+                logger.info(f"Exporting setup-settings to JSON file: {setup_json_file}")
+                setup_dict = solver.settings.setup()
+                with open(setup_json_file, 'w') as json_file:
+                    json.dump(setup_dict, json_file, indent=4)
 
                 if solver.fields.field_data.is_data_valid():
                     logger.info("Writing initial dat file")
