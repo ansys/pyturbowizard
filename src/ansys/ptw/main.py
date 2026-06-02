@@ -38,6 +38,8 @@ from packaging.version import Version
 # Load Script Utility-Modules
 # Load Script Functions
 from ansys.ptw import (
+    TrnSimulationConfig,
+    TrnSimulationRun,
     dict_utils,
     expressions_utils,
     fluent_utils,
@@ -58,8 +60,6 @@ from ansys.ptw import (
     set_run_calculation,
     set_source_terms,
     setup_cfd,
-    TrnSimulationConfig,
-    TrnSimulationRun,
 )
 
 ptw_version = "0.3.0"
@@ -148,8 +148,11 @@ class PTW_Run:
         logger.info("Initializing Fluent settings")
 
         # Set standard image output format to AVZ
-        #solver.execute_tui("/display/set/picture/driver avz")
-        if 'avz' in solver.settings.results.graphics.picture.driver_options.hardcopy_format.allowed_values():
+        # solver.execute_tui("/display/set/picture/driver avz")
+        supp_values = (
+            solver.settings.results.graphics.picture.driver_options.hardcopy_format.allowed_values()
+        )
+        if "avz" in supp_values:
             solver.settings.results.graphics.picture.driver_options.hardcopy_format = "avz"
 
         # Set Batch options
@@ -205,7 +208,7 @@ class PTW_Run:
                         f"Case '{casename}' is skipped: "
                         f"'skip_execution' is set to 'True' in Case-Definition"
                     )
-                    continue                  
+                    continue
                 # Update initial case-function-dict
                 caseFunctionEl = dict_utils.merge_function_dicts(
                     caseDict=caseEl, glfunctionDict=gl_function_data
@@ -342,7 +345,7 @@ class PTW_Run:
                 setup_json_file = os.path.join(caseOutPath, "setup.json")
                 logger.info(f"Exporting setup-settings to JSON file: {setup_json_file}")
                 setup_dict = solver.settings.setup()
-                with open(setup_json_file, 'w') as json_file:
+                with open(setup_json_file, "w") as json_file:
                     json.dump(setup_dict, json_file, indent=4)
 
                 if solver.fields.field_data.is_data_valid():
@@ -444,7 +447,6 @@ class PTW_Run:
 
         logger.info("Running Parametric Study... done!")
 
-
     def do_transient_solution(self, trn_solution_dict=None):
         """Run the transient solution based on the configuration."""
         # Get Data from Class
@@ -455,12 +457,14 @@ class PTW_Run:
             )
             return
         if self.turbo_data is None:
-            logger.warning("No Turbo-Dict loaded... Skipping PTW_Run-function 'do_transient_solution'!")
+            logger.warning(
+                "No Turbo-Dict loaded... Skipping PTW_Run-function 'do_transient_solution'!"
+            )
             return
 
-        logger.info("Running Transient Solution")       
+        logger.info("Running Transient Solution")
         turbo_data = self.turbo_data
-        
+
         trn_solution_dict = turbo_data.get("transient_solution")
         # Do Studies
         if trn_solution_dict is not None:
@@ -471,13 +475,12 @@ class PTW_Run:
                 # Initialize the configuration
                 trn_config = TrnSimulationConfig()
                 trn_config.update_from_dict(trn_solutionEl)
-                # Create a SimulationRun instance       
+                # Create a SimulationRun instance
                 trn_simulation = TrnSimulationRun(solver=solver, config=trn_config, gpu=gpu)
                 # Run the solution process
-                trn_simulation.run_solution()  
-  
-        logger.info("Running Transient Solution... done!")
+                trn_simulation.run_solution()
 
+        logger.info("Running Transient Solution... done!")
 
     def finalize_session(self):
         """Finalize the Fluent session and clean up resources."""

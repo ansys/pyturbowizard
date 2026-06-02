@@ -1,51 +1,81 @@
-import numpy as np
+# Copyright (C) 2025 - 2026 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+"""
+MCOV Module
+
+This module provides functionality for calculating the Mean Coefficient of Variation (MCoV)
+for convergence monitoring in transient simulations.
+It includes functions for calculating the mean, standard deviation, and MCoV,
+as well as a class for managing MCoV calculations over time.
+"""
+
 import os
+
+import numpy as np
+
 
 def calculate_stddev(numbers):
     if len(numbers) == 0:
         return None  # Return None if the array is empty
-
     # Calculate the standard deviation
     std_dev = np.std(numbers)
-
     return std_dev
 
 
 def calculate_mean(numbers):
     if len(numbers) == 0:
         return None  # Return None if the array is empty
-
     # Calculate the mean
     mean = np.mean(numbers)
-
     return mean
 
+
 def compute_surface_report(def_name: str):
-    if (
-            def_name
-            not in solver.settings.solution.report_definitions.surface.get_object_names()
-    ):
+    if def_name not in solver.settings.solution.report_definitions.surface.get_object_names():
         return None
 
-    compute_object = solver.settings.solution.report_definitions.compute(
-        report_defs=def_name
-    )[0]
+    compute_object = solver.settings.solution.report_definitions.compute(report_defs=def_name)[0]
     value = float(compute_object[def_name][0])
     return value
 
+
 def do_convergence_check(value, conv_crit):
     if isinstance(value, float) and value <= conv_crit:
-        print(
-            f"Convergence reached! |{value}| <= Convergence Criterion: {conv_crit}"
-        )
+        print(f"Convergence reached! |{value}| <= Convergence Criterion: {conv_crit}")
         solver.settings.solution.run_calculation.interrupt()
         return True
     else:
         return False
 
+
 class MCoV:
     def __init__(
-            self, def_name: str, avg_interval=5, mcov_interval=None, conv_crit=1.0e-5, log_file: str = None
+        self,
+        def_name: str,
+        avg_interval=5,
+        mcov_interval=None,
+        conv_crit=1.0e-5,
+        log_file: str = None,
     ):
         self.value_array = np.array([])
         self.mean_array = np.array([])
@@ -64,19 +94,20 @@ class MCoV:
             os.remove(self.log_file)
         # Write header if log_file is specified and it doesn't exist
         if self.log_file and not os.path.exists(self.log_file):
-            with open(self.log_file, 'w') as f:
-                f.write(
-                    "update_index, current_value, mean_value, mcov\n")
+            with open(self.log_file, "w") as f:
+                f.write("update_index, current_value, mean_value, mcov\n")
 
-    def update_data(self, current_value=None,check_convergence=True):
+    def update_data(self, current_value=None, check_convergence=True):
         mean = None
         if current_value is None:
             current_value = compute_surface_report(def_name=self.def_name)
         if current_value is not None:
-            # Removing the first element of the array if it's equal/bigger than the specified avg_interval
+            # Removing the first element of the array
+            # if it's equal/bigger than the specified avg_interval
             if len(self.value_array) >= self.avg_interval:
                 self.value_array = self.value_array[1:]
-            # Removing the first element of the array if it's equal/bigger than the specified mcov_interval
+            # Removing the first element of the array
+            # if it's equal/bigger than the specified mcov_interval
             if len(self.mean_array) >= self.mcov_interval:
                 self.mean_array = self.mean_array[1:]
             self.value_array = np.append(self.value_array, current_value)
@@ -89,13 +120,13 @@ class MCoV:
 
         # Log the process if log_file is specified
         if self.log_file:
-            with open(self.log_file, 'a') as f:
+            with open(self.log_file, "a") as f:
                 index = sum(1 for line in open(self.log_file))
                 f.write(f"{index}, {current_value}, {mean}, {mcov}\n")
 
         # Check Convergence
         if check_convergence:
-            do_convergence_check(value=mcov,conv_crit=self.conv_crit)
+            do_convergence_check(value=mcov, conv_crit=self.conv_crit)
 
         return mean
 
@@ -105,13 +136,12 @@ class MCoV:
             curr_mean = calculate_mean(self.value_array)
             prev_mean = self.mean_array[-2]
             mean_deri = (
-                (curr_mean - prev_mean) / abs(curr_mean)
-                if curr_mean != 0
-                else float("inf")
+                (curr_mean - prev_mean) / abs(curr_mean) if curr_mean != 0 else float("inf")
             )  # Handle division by zero
             # if check_convergence and (abs(mean_deri) <= self.conv_crit):
             #     print(
-            #         f"Convergence reached! Mean-Gradient: |{mean_deri}| <= Convergence Criterion: {self.conv_crit}"
+            #         f"Convergence reached! Mean-Gradient: |{mean_deri}| "
+            #         f"<= Convergence Criterion: {self.conv_crit}"
             #     )
             #     solver.settings.solution.run_calculation.interrupt()
         if mean_deri is not None and abs_value:

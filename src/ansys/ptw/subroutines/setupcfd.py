@@ -222,23 +222,26 @@ def add_material_property(material_object, fl_prop_name: str, fl_prop_data):
     else:
         logger.warning(f"Material property '{fl_prop_name}' not known or available!")
 
-def auto_detect_boundary(solver, boundary_list: list, bz_type_list: list, filter_str: str): 
+
+def auto_detect_boundary(solver, boundary_list: list, bz_type_list: list, filter_str: str):
     """Automatically detect boundary zones and store them in boundary_list.
 
     Boundary-zone names are filtered by the provided filter_str (for example: "in" for inlet zones).
     """
     for bz_type in bz_type_list:
-        if bz_type not in solver.settings.setup.boundary_conditions.get_active_child_names():           
+        if bz_type not in solver.settings.setup.boundary_conditions.get_active_child_names():
             continue
         zone_names = solver.settings.setup.boundary_conditions.find_object(bz_type)
         for bz_name in zone_names:
             if filter_str in bz_name:
                 logger.info(f"Automatically detected boundary zone: '{bz_name}'")
-                boundary_list.append(bz_name)               
-    return 
-    
+                boundary_list.append(bz_name)
+    return
 
-def auto_detect_interfaces(solver, interface_el: dict, bz_type_list: list, filter_str: str, side_str="side"):
+
+def auto_detect_interfaces(
+    solver, interface_el: dict, bz_type_list: list, filter_str: str, side_str="side"
+):
     """Automatically detect interface side pairs and store them in interface_el.
 
     Boundary-zone names are grouped by a common base name, where the only
@@ -251,7 +254,7 @@ def auto_detect_interfaces(solver, interface_el: dict, bz_type_list: list, filte
     detected_groups = {}
 
     for bz_type in bz_type_list:
-        if bz_type not in solver.settings.setup.boundary_conditions.get_active_child_names():           
+        if bz_type not in solver.settings.setup.boundary_conditions.get_active_child_names():
             continue
         zone_names = solver.settings.setup.boundary_conditions.find_object(bz_type)
         for bz_name in zone_names:
@@ -262,7 +265,9 @@ def auto_detect_interfaces(solver, interface_el: dict, bz_type_list: list, filte
             if match is None:
                 continue
 
-            interface_name = match.group("base").strip() # Remove any leading/trailing whitespace from the base name
+            interface_name = match.group(
+                "base"
+            ).strip()  # Remove any leading/trailing whitespace from the base name
             interface_name = interface_name.rstrip("-_")  # Remove trailing delimiters if any
             side_suffix = match.group("side_suffix")
             side_nr_match = re.search(r"\d+", side_suffix)
@@ -469,7 +474,9 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
             auto_detect_interfaces(
                 solver=solver,
                 interface_el=peri_if_El,
-                bz_type_list=peri_if_El["auto_detect"].get("boundary_zone_types", ["wall","interface"]),
+                bz_type_list=peri_if_El["auto_detect"].get(
+                    "boundary_zone_types", ["wall", "interface"]
+                ),
                 filter_str=peri_if_El["auto_detect"].get("filter_str", "peri"),
                 side_str=peri_if_El["auto_detect"].get("side_str", "side-"),
             )
@@ -1013,7 +1020,9 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                 auto_detect_interfaces(
                     solver=solver,
                     interface_el=keyEl,
-                    bz_type_list=keyEl["auto_detect"].get("boundary_zone_types", ["wall", "interface"]),
+                    bz_type_list=keyEl["auto_detect"].get(
+                        "boundary_zone_types", ["wall", "interface"]
+                    ),
                     filter_str=keyEl["auto_detect"].get("filter_str", "interface"),
                     side_str=keyEl["auto_detect"].get("side_str", "side-"),
                 )
@@ -1052,24 +1061,24 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                         mesh_interface_name=key_if,
                         zone1=side1,
                         zone2=side2,
-                        turbo_choice='Standard-Interface',
+                        turbo_choice="Standard-Interface",
                     )
 
     # Setup turbo-interfaces at end
     keyEl = data["locations"].get("bz_interfaces_mixingplane_names")
     if keyEl is not None:
         if "auto_detect" in keyEl:
-                logger.info("Auto-detection for 'bz_interfaces_mixingplane_names' is activated!")
-                auto_detect_interfaces(
-                    solver=solver,
-                    interface_el=keyEl,
-                    bz_type_list=keyEl["auto_detect"].get("boundary_zone_types", ["wall", "interface"]),
-                    filter_str=keyEl["auto_detect"].get("filter_str", "mixingplane"),
-                    side_str=keyEl["auto_detect"].get("side_str", "side-"),
-                )
+            logger.info("Auto-detection for 'bz_interfaces_mixingplane_names' is activated!")
+            auto_detect_interfaces(
+                solver=solver,
+                interface_el=keyEl,
+                bz_type_list=keyEl["auto_detect"].get("boundary_zone_types", ["wall", "interface"]),
+                filter_str=keyEl["auto_detect"].get("filter_str", "mixingplane"),
+                side_str=keyEl["auto_detect"].get("side_str", "side-"),
+            )
         for key_if in keyEl:
             if key_if == "auto_detect":
-                    continue
+                continue
             logger.info(f"Setting up mixing plane interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
@@ -1094,17 +1103,17 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
     keyEl = data["locations"].get("bz_interfaces_no_pitchscale_names")
     if keyEl is not None:
         if "auto_detect" in keyEl:
-                logger.info("Auto-detection for 'bz_interfaces_no_pitchscale_names' is activated!")
-                auto_detect_interfaces(
-                    solver=solver,
-                    interface_el=keyEl,
-                    bz_type_list=keyEl["auto_detect"].get("boundary_zone_types", ["wall", "interface"]),
-                    filter_str=keyEl["auto_detect"].get("filter_str", "no_pitchscale"),
-                    side_str=keyEl["auto_detect"].get("side_str", "side-"),
-                )
+            logger.info("Auto-detection for 'bz_interfaces_no_pitchscale_names' is activated!")
+            auto_detect_interfaces(
+                solver=solver,
+                interface_el=keyEl,
+                bz_type_list=keyEl["auto_detect"].get("boundary_zone_types", ["wall", "interface"]),
+                filter_str=keyEl["auto_detect"].get("filter_str", "no_pitchscale"),
+                side_str=keyEl["auto_detect"].get("side_str", "side-"),
+            )
         for key_if in keyEl:
             if key_if == "auto_detect":
-                    continue
+                continue
             logger.info(f"Setting up no pitch-scale interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
@@ -1130,17 +1139,17 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
     keyEl = data["locations"].get("bz_interfaces_pitchscale_names")
     if keyEl is not None:
         if "auto_detect" in keyEl:
-                logger.info("Auto-detection for 'bz_interfaces_pitchscale_names' is activated!")
-                auto_detect_interfaces(
-                    solver=solver,
-                    interface_el=keyEl,
-                    bz_type_list=keyEl["auto_detect"].get("boundary_zone_types", ["wall", "interface"]),
-                    filter_str=keyEl["auto_detect"].get("filter_str", "pitchscale"),
-                    side_str=keyEl["auto_detect"].get("side_str", "side-"),
-                )
+            logger.info("Auto-detection for 'bz_interfaces_pitchscale_names' is activated!")
+            auto_detect_interfaces(
+                solver=solver,
+                interface_el=keyEl,
+                bz_type_list=keyEl["auto_detect"].get("boundary_zone_types", ["wall", "interface"]),
+                filter_str=keyEl["auto_detect"].get("filter_str", "pitchscale"),
+                side_str=keyEl["auto_detect"].get("side_str", "side-"),
+            )
         for key_if in keyEl:
             if key_if == "auto_detect":
-                    continue  
+                continue
             logger.info(f"Setting up pitch-scale interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
