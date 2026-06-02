@@ -145,4 +145,3 @@ class MCoV:
 # solver.tui.solve.execute_commands.add_edit(
 #     command_name, "no", mcov_update_freq, mcov_update_method, "yes", f'"{command}"'
 # )
-
