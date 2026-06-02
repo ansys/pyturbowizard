@@ -1,8 +1,6 @@
 import numpy as np
 import os
 
-version = "1.4"
-
 def calculate_stddev(numbers):
     if len(numbers) == 0:
         return None  # Return None if the array is empty
@@ -21,7 +19,6 @@ def calculate_mean(numbers):
     mean = np.mean(numbers)
 
     return mean
-
 
 def compute_surface_report(def_name: str):
     if (

@@ -7,8 +7,6 @@ from packaging.version import Version
 # Load Script Modules
 from .utils import ptw_logger, mcov
 
-__version__ = "1.0.6"
-
 logger = ptw_logger.get_logger()
 
 ####################################### Trn Configuration Class ##########################################################

@@ -62,7 +62,7 @@ from ansys.ptw import (
     TrnSimulationRun,
 )
 
-ptw_version = "0.2.1"
+ptw_version = "0.3.0"
 
 # Set Logger
 logger = ptw_logger.init_logger()
