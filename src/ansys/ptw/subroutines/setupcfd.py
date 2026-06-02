@@ -30,6 +30,7 @@ managing solver settings, and preparing input files.
 
 import csv
 import os
+import re
 
 from packaging.version import Version
 
@@ -221,6 +222,128 @@ def add_material_property(material_object, fl_prop_name: str, fl_prop_data):
     else:
         logger.warning(f"Material property '{fl_prop_name}' not known or available!")
 
+def auto_detect_boundary(solver, boundary_list: list, bz_type_list: list, filter_str: str): 
+    """Automatically detect boundary zones and store them in boundary_list.
+
+    Boundary-zone names are filtered by the provided filter_str (for example: "in" for inlet zones).
+    """
+    for bz_type in bz_type_list:
+        if bz_type not in solver.settings.setup.boundary_conditions.get_active_child_names():           
+            continue
+        zone_names = solver.settings.setup.boundary_conditions.find_object(bz_type)
+        for bz_name in zone_names:
+            if filter_str in bz_name:
+                logger.info(f"Automatically detected boundary zone: '{bz_name}'")
+                boundary_list.append(bz_name)               
+    return 
+    
+
+def auto_detect_interfaces(solver, interface_el: dict, bz_type_list: list, filter_str: str, side_str="side"):
+    """Automatically detect interface side pairs and store them in interface_el.
+
+    Boundary-zone names are grouped by a common base name, where the only
+    difference is the trailing number after side_str (for example:
+    rotor_if_side1 and rotor_if_side2).
+    """
+    # Match names ending with "<base><side_str><suffix>".
+    # The side index is then extracted from the suffix to tolerate extra characters.
+    side_pattern = re.compile(rf"^(?P<base>.+){re.escape(side_str)}(?P<side_suffix>.+)$")
+    detected_groups = {}
+
+    for bz_type in bz_type_list:
+        if bz_type not in solver.settings.setup.boundary_conditions.get_active_child_names():           
+            continue
+        zone_names = solver.settings.setup.boundary_conditions.find_object(bz_type)
+        for bz_name in zone_names:
+            if filter_str not in bz_name or side_str not in bz_name:
+                continue
+
+            match = side_pattern.match(bz_name)
+            if match is None:
+                continue
+
+            interface_name = match.group("base").strip() # Remove any leading/trailing whitespace from the base name
+            interface_name = interface_name.rstrip("-_")  # Remove trailing delimiters if any
+            side_suffix = match.group("side_suffix")
+            side_nr_match = re.search(r"\d+", side_suffix)
+            if side_nr_match is None:
+                logger.info(
+                    f"Skipping detected side '{bz_name}' for interface '{interface_name}': "
+                    f"could not extract a numeric side index from suffix '{side_suffix}'."
+                )
+                continue
+
+            side_idx = side_nr_match.group(0)
+            side_key = {"1": "side1", "2": "side2"}.get(side_idx)
+            if side_key is None:
+                logger.info(
+                    f"Skipping detected side '{bz_name}' for interface '{interface_name}': "
+                    f"only side1 and side2 are supported for automatic detection "
+                    f"(extracted side index: {side_idx})."
+                )
+                continue
+
+            logger.info(f"Detected potential interface side: '{bz_name}'")
+
+            if interface_name not in detected_groups:
+                detected_groups[interface_name] = {"side1": [], "side2": []}
+            detected_groups[interface_name][side_key].append(bz_name)
+
+    # Collect already-defined sides for fast membership check
+    already_defined_sides = {
+        v
+        for entry in interface_el.values()
+        if isinstance(entry, dict)
+        for v in (entry.get("side1"), entry.get("side2"))
+        if v is not None
+    }
+
+    for interface_name, detected_sides in detected_groups.items():
+        side1_candidates = detected_sides.get("side1", [])
+        side2_candidates = detected_sides.get("side2", [])
+
+        if len(side1_candidates) == 1 and len(side2_candidates) == 1:
+            side1 = side1_candidates[0]
+            side2 = side2_candidates[0]
+            # Skip if the interface name or either side is already present in interface_el
+            if interface_name in interface_el:
+                logger.info(
+                    f"Interface '{interface_name}' is already defined in interface_el. "
+                    f"Skipping auto-detection."
+                )
+                continue
+            if side1 in already_defined_sides:
+                logger.info(
+                    f"Side '{side1}' is already used in interface_el. "
+                    f"Skipping auto-detection for interface '{interface_name}'."
+                )
+                continue
+            if side2 in already_defined_sides:
+                logger.info(
+                    f"Side '{side2}' is already used in interface_el. "
+                    f"Skipping auto-detection for interface '{interface_name}'."
+                )
+                continue
+
+            interface_el[interface_name] = {
+                "side1": side1,
+                "side2": side2,
+            }
+            already_defined_sides.update({side1, side2})
+            logger.info(
+                f"Automatically detected sides for interface '{interface_name}': "
+                f"side1='{side1}', side2='{side2}'"
+            )
+        else:
+            logger.warning(
+                f"Automatic detection of sides for interface '{interface_name}' failed! "
+                f"Detected side1 candidates: {side1_candidates}, "
+                f"side2 candidates: {side2_candidates}. "
+                f"Please specify the sides manually in the config file."
+            )
+
+    return
+
 
 def set_physics(data, solver, solve_energy: bool = True, gpu: bool = False):
     """Set the physics models for the CFD simulation based on the provided data and solver."""
@@ -341,7 +464,18 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
     non_conformal_list = []
     if peri_if_El is not None:
         peri_idx = 0
+        if "auto_detect" in peri_if_El:
+            logger.info("Auto-detection for 'bz_interfaces_periodic_names' is activated!")
+            auto_detect_interfaces(
+                solver=solver,
+                interface_el=peri_if_El,
+                bz_type_list=peri_if_El["auto_detect"].get("boundary_zone_types", ["wall","interface"]),
+                filter_str=peri_if_El["auto_detect"].get("filter_str", "peri"),
+                side_str=peri_if_El["auto_detect"].get("side_str", "side-"),
+            )
         for key_if in peri_if_El:
+            if key_if == "auto_detect":
+                continue
             logger.info(f"Setting up periodic BC: {key_if}")
             side1 = peri_if_El[key_if].get("side1")
             side2 = peri_if_El[key_if].get("side2")
@@ -874,7 +1008,18 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
         elif key == "bz_interfaces_general_names":
             # solver.tui.define.mesh_interfaces.one_to_one_pairing("no")
             keyEl = data["locations"].get(key)
+            if "auto_detect" in keyEl:
+                logger.info(f"Auto-detection of general interfaces for '{key}' is activated!")
+                auto_detect_interfaces(
+                    solver=solver,
+                    interface_el=keyEl,
+                    bz_type_list=keyEl["auto_detect"].get("boundary_zone_types", ["wall", "interface"]),
+                    filter_str=keyEl["auto_detect"].get("filter_str", "interface"),
+                    side_str=keyEl["auto_detect"].get("side_str", "side-"),
+                )
             for key_if in keyEl:
+                if key_if == "auto_detect":
+                    continue
                 logger.info(f"Setting up general interface: {key_if}")
                 side1 = keyEl[key_if].get("side1")
                 side2 = keyEl[key_if].get("side2")
@@ -898,15 +1043,33 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                         else:
                             key_if = key_if.replace("-", "_")
                             solver.tui.define.mesh_interfaces.create(key_if, side1, side2)
-                else:
+                elif Version(solver._version) < Version("261"):
                     solver.settings.setup.mesh_interfaces.interface.create(
                         name=key_if, zone1_list=[side1], zone2_list=[side2]
+                    )
+                else:
+                    solver.settings.setup.mesh_interfaces.turbo_interface.create(
+                        mesh_interface_name=key_if,
+                        zone1=side1,
+                        zone2=side2,
+                        turbo_choice='Standard-Interface',
                     )
 
     # Setup turbo-interfaces at end
     keyEl = data["locations"].get("bz_interfaces_mixingplane_names")
     if keyEl is not None:
+        if "auto_detect" in keyEl:
+                logger.info("Auto-detection for 'bz_interfaces_mixingplane_names' is activated!")
+                auto_detect_interfaces(
+                    solver=solver,
+                    interface_el=keyEl,
+                    bz_type_list=keyEl["auto_detect"].get("boundary_zone_types", ["wall", "interface"]),
+                    filter_str=keyEl["auto_detect"].get("filter_str", "mixingplane"),
+                    side_str=keyEl["auto_detect"].get("side_str", "side-"),
+                )
         for key_if in keyEl:
+            if key_if == "auto_detect":
+                    continue
             logger.info(f"Setting up mixing plane interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
@@ -919,13 +1082,6 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
             # solver.tui.define.boundary_conditions.zone_type(side1, "interface")
             # solver.tui.define.boundary_conditions.zone_type(side2, "interface")
             # Create Interface
-            if gpu:
-                logger.error(
-                    "GTI Interfaces are not supported in GPU solver "
-                    "and will cause the setup to fail. "
-                    "Currently, only general interfaces are supported."
-                )
-
             if Version(solver._version) < Version("261"):
                 solver.tui.define.turbo_model.turbo_create(key_if, side1, "()", side2, "()", "2")
             else:
@@ -937,7 +1093,18 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                 )
     keyEl = data["locations"].get("bz_interfaces_no_pitchscale_names")
     if keyEl is not None:
+        if "auto_detect" in keyEl:
+                logger.info("Auto-detection for 'bz_interfaces_no_pitchscale_names' is activated!")
+                auto_detect_interfaces(
+                    solver=solver,
+                    interface_el=keyEl,
+                    bz_type_list=keyEl["auto_detect"].get("boundary_zone_types", ["wall", "interface"]),
+                    filter_str=keyEl["auto_detect"].get("filter_str", "no_pitchscale"),
+                    side_str=keyEl["auto_detect"].get("side_str", "side-"),
+                )
         for key_if in keyEl:
+            if key_if == "auto_detect":
+                    continue
             logger.info(f"Setting up no pitch-scale interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
@@ -950,13 +1117,6 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
             # solver.tui.define.boundary_conditions.zone_type(side1, "interface")
             # solver.tui.define.boundary_conditions.zone_type(side2, "interface")
             # Create Interface
-            if gpu:
-                logger.error(
-                    "GTI Interfaces are not supported in GPU solver "
-                    "and will cause the setup to fail. "
-                    "Currently, only general interfaces are supported."
-                )
-
             if Version(solver._version) < Version("261"):
                 solver.tui.define.turbo_model.turbo_create(key_if, side1, "()", side2, "()", "1")
             else:
@@ -969,7 +1129,18 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
 
     keyEl = data["locations"].get("bz_interfaces_pitchscale_names")
     if keyEl is not None:
+        if "auto_detect" in keyEl:
+                logger.info("Auto-detection for 'bz_interfaces_pitchscale_names' is activated!")
+                auto_detect_interfaces(
+                    solver=solver,
+                    interface_el=keyEl,
+                    bz_type_list=keyEl["auto_detect"].get("boundary_zone_types", ["wall", "interface"]),
+                    filter_str=keyEl["auto_detect"].get("filter_str", "pitchscale"),
+                    side_str=keyEl["auto_detect"].get("side_str", "side-"),
+                )
         for key_if in keyEl:
+            if key_if == "auto_detect":
+                    continue  
             logger.info(f"Setting up pitch-scale interface: {key_if}")
             side1 = keyEl[key_if].get("side1")
             side2 = keyEl[key_if].get("side2")
@@ -982,13 +1153,6 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
             # solver.tui.define.boundary_conditions.zone_type(side1, "interface")
             # solver.tui.define.boundary_conditions.zone_type(side2, "interface")
             # Create Interface
-            if gpu:
-                logger.error(
-                    "GTI Interfaces are not supported in GPU solver "
-                    "and will cause the setup to fail. "
-                    "Currently, only general interfaces are supported."
-                )
-
             if Version(solver._version) < Version("261"):
                 solver.tui.define.turbo_model.turbo_create(key_if, side1, "()", side2, "()", "0")
             else:

@@ -32,7 +32,7 @@ from .subroutines.setupcfd import (
     set_reports,
     set_run_calculation,
     set_source_terms,
-    setup_cfd,
+    setup_cfd,  
 )
 from .subroutines.solve import initialize_run, run_solver
 from .subroutines.utils import (
@@ -42,4 +42,10 @@ from .subroutines.utils import (
     launcher,
     misc_utils,
     ptw_logger,
+    mcov,    
+)
+
+from .subroutines.transient_solution import  (
+    TrnSimulationConfig,
+    TrnSimulationRun,
 )

@@ -58,6 +58,8 @@ from ansys.ptw import (
     set_run_calculation,
     set_source_terms,
     setup_cfd,
+    TrnSimulationConfig,
+    TrnSimulationRun,
 )
 
 ptw_version = "0.2.1"
@@ -146,20 +148,15 @@ class PTW_Run:
         logger.info("Initializing Fluent settings")
 
         # Set standard image output format to AVZ
-        solver.execute_tui("/display/set/picture/driver avz")
+        #solver.execute_tui("/display/set/picture/driver avz")
+        if 'avz' in solver.settings.results.graphics.picture.driver_options.hardcopy_format.allowed_values():
+            solver.settings.results.graphics.picture.driver_options.hardcopy_format = "avz"
 
-        # Fluent Version Check
-        if Version(solver._version) < Version("241"):
-            # For version before 24.1, remove the streamhandler from the logger
-            ptw_logger.remove_handlers(streamhandlers=True, filehandlers=False)
-            # Set Batch options: Old API
-            solver.settings.file.confirm_overwrite = False
-        else:
-            # Set Batch options: API changes with v24.1
-            solver.settings.file.batch_options.confirm_overwrite = False
-            solver.settings.file.batch_options.exit_on_error = True
-            solver.settings.file.batch_options.hide_answer = True
-            solver.settings.file.batch_options.redisplay_question = False
+        # Set Batch options
+        solver.settings.file.batch_options.confirm_overwrite = False
+        solver.settings.file.batch_options.exit_on_error = True
+        solver.settings.file.batch_options.hide_answer = True
+        solver.settings.file.batch_options.redisplay_question = False
 
         logger.info("Initializing Fluent settings... done!")
 
@@ -208,7 +205,7 @@ class PTW_Run:
                         f"Case '{casename}' is skipped: "
                         f"'skip_execution' is set to 'True' in Case-Definition"
                     )
-                    continue
+                    continue                  
                 # Update initial case-function-dict
                 caseFunctionEl = dict_utils.merge_function_dicts(
                     caseDict=caseEl, glfunctionDict=gl_function_data
@@ -441,6 +438,41 @@ class PTW_Run:
 
         logger.info("Running Parametric Study... done!")
 
+
+    def do_transient_solution(self, trn_solution_dict=None):
+        """Run the transient solution based on the configuration."""
+        # Get Data from Class
+        solver = self.solver
+        if solver is None:
+            logger.warning(
+                "No Fluent solver specified... Skipping PTW_Run-function 'do_transient_solution'!"
+            )
+            return
+        if self.turbo_data is None:
+            logger.warning("No Turbo-Dict loaded... Skipping PTW_Run-function 'do_transient_solution'!")
+            return
+
+        logger.info("Running Transient Solution")       
+        turbo_data = self.turbo_data
+        
+        trn_solution_dict = turbo_data.get("transient_solution")
+        # Do Studies
+        if trn_solution_dict is not None:
+            gpu = turbo_data.get("launching")["gpu"]
+            for key in trn_solution_dict:
+                logger.info(f"Running Transient Solution for: {key}")
+                trn_solutionEl = trn_solution_dict[key]
+                # Initialize the configuration
+                trn_config = TrnSimulationConfig()
+                trn_config.update_from_dict(trn_solutionEl)
+                # Create a SimulationRun instance       
+                trn_simulation = TrnSimulationRun(solver=solver, config=trn_config, gpu=gpu)
+                # Run the solution process
+                trn_simulation.run_solution()  
+  
+        logger.info("Running Transient Solution... done!")
+
+
     def finalize_session(self):
         """Finalize the Fluent session and clean up resources."""
         # Get Data from Class
@@ -495,6 +527,7 @@ class PTW_Run:
         self.ini_fluent_settings()
         self.do_case_study()
         self.do_parametric_study()
+        self.do_transient_solution()
         self.finalize_session()
         logger.info("PTW-Script successfully finished!")
         return
