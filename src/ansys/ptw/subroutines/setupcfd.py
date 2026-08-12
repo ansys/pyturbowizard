@@ -1063,7 +1063,34 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                         zone2=side2,
                         turbo_choice="Standard-Interface",
                     )
-
+    # Setup periodic-repeat interface
+    keyEl = data["locations"].get("bz_interfaces_periodicrepeat_names")
+    if keyEl is not None:
+        if "auto_detect" in keyEl:
+            logger.info("Auto-detection for 'bz_interfaces_periodicrepeat_names' is activated!")
+            auto_detect_interfaces(
+                solver=solver,
+                interface_el=keyEl,
+                bz_type_list=keyEl["auto_detect"].get("boundary_zone_types",
+                                                      ["wall", "interface"]),
+                filter_str=keyEl["auto_detect"].get("filter_str", "periodicrepeat"),
+                side_str=keyEl["auto_detect"].get("side_str", "side-"),
+            )
+        for key_if in keyEl:
+            if key_if == "auto_detect":
+                continue
+            logger.info(f"Setting up periodic-repeat interface: {key_if}")
+            side1 = keyEl[key_if].get("side1")
+            side2 = keyEl[key_if].get("side2")
+            # Change BC-type
+            # settings api command
+            solver.settings.setup.boundary_conditions.set_zone_type(
+                zone_list=[side1, side2], new_type="interface"
+            )
+            solver.settings.setup.mesh_interfaces.create(si_name=key_if,
+                                                         zone1_list=[side1],
+                                                         zone2_list=[side2],
+                                                         periodic=True)
     # Setup turbo-interfaces at end
     keyEl = data["locations"].get("bz_interfaces_mixingplane_names")
     if keyEl is not None:

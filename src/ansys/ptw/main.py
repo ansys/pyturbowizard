@@ -62,7 +62,7 @@ from ansys.ptw import (
     setup_cfd,
 )
 
-ptw_version = "0.3.0"
+ptw_version = "0.3.1"
 
 # Set Logger
 logger = ptw_logger.init_logger()
