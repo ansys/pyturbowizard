@@ -12,7 +12,7 @@ repos:
   -   id: check-pre-commit-ci-config
 
 - repo: https://github.com/ansys/pre-commit-hooks
-  rev: v0.5.2
+  rev: v0.8.0
   hooks:
   - id: add-license-headers
     args:
