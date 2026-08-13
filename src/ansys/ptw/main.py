@@ -1,4 +1,4 @@
-# Copyright (C) 2025 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2025 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -62,7 +62,7 @@ from ansys.ptw import (
     setup_cfd,
 )
 
-ptw_version = "0.3.1"
+ptw_version = "0.3.2"
 
 # Set Logger
 logger = ptw_logger.init_logger()
