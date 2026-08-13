@@ -1,4 +1,4 @@
-# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2025 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -38,6 +38,8 @@ from packaging.version import Version
 # Load Script Utility-Modules
 # Load Script Functions
 from ansys.ptw import (
+    TrnSimulationConfig,
+    TrnSimulationRun,
     dict_utils,
     expressions_utils,
     fluent_utils,
@@ -60,7 +62,7 @@ from ansys.ptw import (
     setup_cfd,
 )
 
-ptw_version = "2.0.1"
+ptw_version = "0.3.2"
 
 # Set Logger
 logger = ptw_logger.init_logger()
@@ -146,20 +148,18 @@ class PTW_Run:
         logger.info("Initializing Fluent settings")
 
         # Set standard image output format to AVZ
-        solver.execute_tui("/display/set/picture/driver avz")
+        # solver.execute_tui("/display/set/picture/driver avz")
+        supp_values = (
+            solver.settings.results.graphics.picture.driver_options.hardcopy_format.allowed_values()
+        )
+        if "avz" in supp_values:
+            solver.settings.results.graphics.picture.driver_options.hardcopy_format = "avz"
 
-        # Fluent Version Check
-        if Version(solver._version) < Version("241"):
-            # For version before 24.1, remove the streamhandler from the logger
-            ptw_logger.remove_handlers(streamhandlers=True, filehandlers=False)
-            # Set Batch options: Old API
-            solver.settings.file.confirm_overwrite = False
-        else:
-            # Set Batch options: API changes with v24.1
-            solver.settings.file.batch_options.confirm_overwrite = False
-            solver.settings.file.batch_options.exit_on_error = True
-            solver.settings.file.batch_options.hide_answer = True
-            solver.settings.file.batch_options.redisplay_question = False
+        # Set Batch options
+        solver.settings.file.batch_options.confirm_overwrite = False
+        solver.settings.file.batch_options.exit_on_error = True
+        solver.settings.file.batch_options.hide_answer = True
+        solver.settings.file.batch_options.redisplay_question = False
 
         logger.info("Initializing Fluent settings... done!")
 
@@ -327,7 +327,7 @@ class PTW_Run:
                 # Write case and ini-data & settings file
                 logger.info("Writing initial case & settings file")
                 solver.settings.file.write(file_type="case", file_name=caseFilename)
-                settingsFilename = os.path.join(caseOutPath, "settings.set")
+                settingsFilename = os.path.join(caseOutPath, "setup.set")
                 # Removing file manually, as batch options seem not to work
                 if os.path.exists(settingsFilename):
                     logger.info(f"Removing old existing settings-file: {settingsFilename} ")
@@ -341,6 +341,12 @@ class PTW_Run:
                         workingDir=fl_workingDir,
                         caseEl=caseEl,
                     )
+                # Write setup-settings to json-file
+                setup_json_file = os.path.join(caseOutPath, "setup.json")
+                logger.info(f"Exporting setup-settings to JSON file: {setup_json_file}")
+                setup_dict = solver.settings.setup()
+                with open(setup_json_file, "w") as json_file:
+                    json.dump(setup_dict, json_file, indent=4)
 
                 if solver.fields.field_data.is_data_valid():
                     logger.info("Writing initial dat file")
@@ -441,6 +447,41 @@ class PTW_Run:
 
         logger.info("Running Parametric Study... done!")
 
+    def do_transient_solution(self, trn_solution_dict=None):
+        """Run the transient solution based on the configuration."""
+        # Get Data from Class
+        solver = self.solver
+        if solver is None:
+            logger.warning(
+                "No Fluent solver specified... Skipping PTW_Run-function 'do_transient_solution'!"
+            )
+            return
+        if self.turbo_data is None:
+            logger.warning(
+                "No Turbo-Dict loaded... Skipping PTW_Run-function 'do_transient_solution'!"
+            )
+            return
+
+        logger.info("Running Transient Solution")
+        turbo_data = self.turbo_data
+
+        trn_solution_dict = turbo_data.get("transient_solution")
+        # Do Studies
+        if trn_solution_dict is not None:
+            gpu = turbo_data.get("launching")["gpu"]
+            for key in trn_solution_dict:
+                logger.info(f"Running Transient Solution for: {key}")
+                trn_solutionEl = trn_solution_dict[key]
+                # Initialize the configuration
+                trn_config = TrnSimulationConfig()
+                trn_config.update_from_dict(trn_solutionEl)
+                # Create a SimulationRun instance
+                trn_simulation = TrnSimulationRun(solver=solver, config=trn_config, gpu=gpu)
+                # Run the solution process
+                trn_simulation.run_solution()
+
+        logger.info("Running Transient Solution... done!")
+
     def finalize_session(self):
         """Finalize the Fluent session and clean up resources."""
         # Get Data from Class
@@ -495,6 +536,7 @@ class PTW_Run:
         self.ini_fluent_settings()
         self.do_case_study()
         self.do_parametric_study()
+        self.do_transient_solution()
         self.finalize_session()
         logger.info("PTW-Script successfully finished!")
         return

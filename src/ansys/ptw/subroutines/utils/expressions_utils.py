@@ -1,4 +1,4 @@
-# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2025 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -62,7 +62,7 @@ def write_expression_file(data: dict, working_dir: str):
         with resources.files(package).joinpath(file_name).open("r") as templateFile:
             tempData = templateFile.read()
             templateFile.close()
-        helperDict = data["locations"]
+        helperDict = data["locations"].copy()
         expressionEl = data.get("expressions")
         helperDict.update(expressionEl)
         helperDict.update(data["fluid_properties"])

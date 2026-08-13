@@ -1,4 +1,4 @@
-# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2025 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -35,11 +35,16 @@ from .subroutines.setupcfd import (
     setup_cfd,
 )
 from .subroutines.solve import initialize_run, run_solver
+from .subroutines.transient_solution import (
+    TrnSimulationConfig,
+    TrnSimulationRun,
+)
 from .subroutines.utils import (
     dict_utils,
     expressions_utils,
     fluent_utils,
     launcher,
+    mcov,
     misc_utils,
     ptw_logger,
 )

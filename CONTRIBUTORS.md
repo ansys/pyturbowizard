@@ -10,4 +10,6 @@
 * [Benjamin Traut](https://github.com/benjamintraut)
 * [Manuel Helferich](https://github.com/ManuelHelferich)
 * [Tobias Danninger](https://github.com/nemti)
+* [Dipin Nair](https://github.com/dipinknair)
+* [Kathy Pippert](https://github.com/PipKat)
 

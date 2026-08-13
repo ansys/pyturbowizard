@@ -1,4 +1,4 @@
-# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2025 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -145,7 +145,7 @@ def create_iso_surface(
     if zones is None:
         zones = []
         if surfaces is None:
-            zones = solver.settings.setup.cell_zone_conditions.get_active_child_names()
+            zones = list(solver.settings.setup.cell_zone_conditions.keys())
 
     if surfaces is None:
         surfaces = []
