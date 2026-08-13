@@ -1,4 +1,4 @@
-# Copyright (C) 2025 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2025 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -1071,8 +1071,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
             auto_detect_interfaces(
                 solver=solver,
                 interface_el=keyEl,
-                bz_type_list=keyEl["auto_detect"].get("boundary_zone_types",
-                                                      ["wall", "interface"]),
+                bz_type_list=keyEl["auto_detect"].get("boundary_zone_types", ["wall", "interface"]),
                 filter_str=keyEl["auto_detect"].get("filter_str", "periodicrepeat"),
                 side_str=keyEl["auto_detect"].get("side_str", "side-"),
             )
@@ -1087,10 +1086,9 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
             solver.settings.setup.boundary_conditions.set_zone_type(
                 zone_list=[side1, side2], new_type="interface"
             )
-            solver.settings.setup.mesh_interfaces.create(si_name=key_if,
-                                                         zone1_list=[side1],
-                                                         zone2_list=[side2],
-                                                         periodic=True)
+            solver.settings.setup.mesh_interfaces.create(
+                si_name=key_if, zone1_list=[side1], zone2_list=[side2], periodic=True
+            )
     # Setup turbo-interfaces at end
     keyEl = data["locations"].get("bz_interfaces_mixingplane_names")
     if keyEl is not None:
