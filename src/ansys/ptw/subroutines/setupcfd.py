@@ -450,11 +450,25 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
         # Check if it´s a rotating cell-zone
         if (cz_rot_list is not None) and (cz_name in cz_rot_list):
             logger.info(f"Prescribing rotating cell zone: {cz_name}")
+            if gpu:
+                omega_value = fluent_utils.create_and_evaluate_expression(
+                    solver=solver,
+                    exp_name="BC_omega",
+                    definition=data["expressions"].get("BC_omega", "0 [rev/min]"),
+                    overwrite_definition=False,
+                    evaluate_value=True,
+                )
+                logger.warning(
+                    f"GPU-Solver is activated! Using value for BC_omega "
+                    f"instead of expression reference: {omega_value} [rad/s]"
+                )
+            else:
+                omega_value = "BC_omega"
             solver.settings.setup.cell_zone_conditions.fluid[cz_name].reference_frame = {
                 "reference_frame_axis_origin": rot_ax_orig,
                 "reference_frame_axis_direction": rot_ax_dir,
                 "frame_motion": True,
-                "mrf_omega": "BC_omega",
+                "mrf_omega": omega_value,
             }
         # otherwise its stationary
         else:
@@ -1055,6 +1069,10 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                 elif Version(solver._version) < Version("261"):
                     solver.settings.setup.mesh_interfaces.interface.create(
                         name=key_if, zone1_list=[side1], zone2_list=[side2]
+                    )
+                elif gpu:
+                    solver.settings.setup.mesh_interfaces.create(
+                        si_name=key_if, zone1_list=[side1], zone2_list=[side2]
                     )
                 else:
                     solver.settings.setup.mesh_interfaces.turbo_interface.create(
