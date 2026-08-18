@@ -1857,7 +1857,9 @@ def set_run_calculation(data, solver):
     # check if pseudo-time-step method is activated in setup
     if "pseudo_time_settings" in solver.settings.solution.run_calculation().keys():
         # Set Basic Solver-Solution-Settings
-        tsf = solutionDict.get("time_step_factor", 5)
+        tsf = solutionDict.get(
+            "time_scale_factor", solutionDict.get("time_step_factor", 5)
+        )  # for backward compatibility
         # Check for a pseudo-time-step-size
         pseudo_timestep = solutionDict.get("pseudo_timestep")
         if pseudo_timestep is not None:
@@ -1871,9 +1873,8 @@ def set_run_calculation(data, solver):
             (
                 solver.settings.solution.run_calculation.pseudo_time_settings.time_step_method
             ).pseudo_time_step_size = pseudo_timestep
-            # Update dict
-            if solutionDict.get("time_step_factor") is not None:
-                solutionDict.pop("time_step_factor")
+            if solutionDict.get("time_scale_factor") is not None:
+                solutionDict.pop("time_scale_factor")
         else:
             # Use timescale factor
             logger.info(
@@ -1889,7 +1890,10 @@ def set_run_calculation(data, solver):
                 solver.settings.solution.run_calculation.pseudo_time_settings.time_step_method
             ).time_step_size_scale_factor = tsf
             # Update dict
-            solutionDict["time_step_factor"] = tsf
+            solutionDict["time_scale_factor"] = tsf
+        # update dict (remove time_step_factor if it exists)
+        if solutionDict.get("time_step_factor") is not None:
+            solutionDict.pop("time_step_factor")
     else:
         logger.info("Pseudo-Time-Step Method not active, no change to timestep-settings")
 

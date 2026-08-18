@@ -284,6 +284,7 @@ You can also specify interfaces as follows:
 - Mixing-plane models under ```"bz_interfaces_mixingplane_names"```
 - No pitch-scale interfaces under ```"bz_interfaces_no_pitchscale_names"```
 - Pitch-scale interfaces under ```"bz_interfaces_pitchscale_names"```
+- Periodic-repeat interfaces under ```"bz_interfaces_periodicrepeat_names"```
 - Periodic interfaces under ```"bz_interfaces_periodic_names"```
 
 ```
@@ -408,7 +409,7 @@ The ```"solution"``` section specifies convergence criteria and solve settings.
           ],
           "cov_crit": 1.0e-4,
           "iter_count": 10,
-          "time_step_factor": 5,
+          "time_scale_factor": 5,
           "runSolver": true
         }
 ```
@@ -419,11 +420,11 @@ The ```"solution"``` section specifies convergence criteria and solve settings.
 - ```"cov_crit"```: Convergence criteria for the coefficient of variation.
 - ```"conv_check_freq"```: Optional argument for defining the convergence check frequency. The default is ```5```.
 - ```"tsn"```: Optional argument for explicitly turning on turbo machinery-specific numerics (beta feature).
-- ```"time_step_factor"```: Specification of a time step factor (length-scale-method=conservative), automatic calculation of the pseudo-time step.
-- ```"pseudo_timestep"```: Direct specification of the pseudo-time step (with no usage of ```"time_step_factor```).
+- ```"time_scale_factor"```: Specification of a time scale factor (length-scale-method=conservative), automatic calculation of the pseudo-time step.
+- ```"pseudo_timestep"```: Direct specification of the pseudo-time step (with no usage of ```"time_scale_factor```).
 - ```"iter_count"```: Maximum number of iterations.
 - ```"runSolver"```: Whether the simulation should start to run at the end of the setup. The default is ```true```.
-- ```"reorder_domain"```: Optional argument that turns on and off domain reordering before initialization. The default is ```true```.
+- ```"reorder_domain"```: Optional argument that turns on and off domain reordering before initialization. The default is ```true``` for CPU runs, ```false``` for GPU.
 
 ##### Basic report definitions
 
