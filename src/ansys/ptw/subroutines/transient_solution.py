@@ -34,6 +34,7 @@ import json
 import logging
 import math
 import os
+import re
 
 from packaging.version import Version
 
@@ -303,11 +304,11 @@ class TrnSimulationRun:
             org_file_name = rfile.file_name()
             file_path = get_valid_filepath(org_file_name)
             base_name, ext = os.path.splitext(os.path.basename(file_path))
-            for phase_suffix in ("_rans", "_p1", "_p2"):
-                if base_name.endswith(phase_suffix):
-                    base_name = base_name[: -len(phase_suffix)]
-                    break
-            report_suffix = "" if solution_phase == "rans" else f"_{solution_phase}"
+            if solution_phase != "rans":
+                base_name = re.sub(r"_p\d+$", "", base_name)
+                report_suffix = f"_{solution_phase}"
+            else:
+                report_suffix = ""
             report_filename = f"{base_name}{report_suffix}{ext}"
             rfile.file_name = get_output_filepath(config.output_dir, report_filename)
             logger.info(f"Report-File changed: {org_file_name} to {rfile.file_name()}")
@@ -325,7 +326,7 @@ class TrnSimulationRun:
             rfile_name = "report-file"
             solver.settings.solution.monitor.report_files[rfile_name] = {}
             rfile = report_files[rfile_name]
-            report_suffix = "" if solution_phase == "rans" else f"_{solution_phase}"
+            report_suffix = f"_{solution_phase}"
             rfile.file_name = get_output_filepath(config.output_dir, f"report{report_suffix}.out")
             rfile.report_defs = rfile.report_defs.allowed_values()
 
