@@ -430,7 +430,7 @@ class TrnSimulationRun:
             solver.execute_tui(rf"""(write-residuals-to-file '{filename})""")
         # Write final cas- & dat-file
         if config.rans_write_data:
-            file_name = f"{config.base_filename}_rans_fin"
+            file_name = get_output_filepath(config.output_dir, f"{config.base_filename}_rans_fin")
             logger.info(f"Writing RANS case- & dat-file: {file_name}")
             solver.settings.file.write(file_type="case-data", file_name=file_name)
         # Run RANS Postprocessing
@@ -734,7 +734,7 @@ class TrnSimulationRun:
             logger.warning(
                 f"Only creating setup-file ('create_setup_only'=True), then exiting solver..."
             )
-            file_name = f"{config.base_filename}_p1"
+            file_name = get_output_filepath(config.output_dir, f"{config.base_filename}_p1")
             logger.info(f"SP1: Writing case- & dat-file: {file_name}")
             solver.settings.file.write(file_type="case-data", file_name=file_name)
             solver.exit()
@@ -786,7 +786,7 @@ class TrnSimulationRun:
             solver.execute_tui(rf"""(write-residuals-to-file '{filename})""")
 
         if config.write_data_p1:
-            file_name = f"{config.base_filename}_p1_fin"
+            file_name = get_output_filepath(config.output_dir, f"{config.base_filename}_p1_fin")
             logger.info(f"SP1: Writing case- & dat-file: {file_name}")
             solver.settings.file.write(file_type="case-data", file_name=file_name)
 
@@ -897,7 +897,7 @@ class TrnSimulationRun:
             solver.execute_tui(rf"""(write-residuals-to-file '{filename})""")
 
         # Write final cas- & dat-file
-        file_name = f"{config.base_filename}_p2_fin"
+        file_name = get_output_filepath(config.output_dir, f"{config.base_filename}_p2_fin")
         logger.info(f"SP2: Writing case- & dat-file: {file_name}")
         solver.settings.file.write(file_type="case-data", file_name=file_name)
         logger.info("Solution Phase 2 (SP2)...done")
@@ -930,7 +930,9 @@ class TrnSimulationRun:
             solver.settings.file.read_journal(file_name_list=config.do_postprocessing)
             # Save case with pp-settings
             if config.write_case_after_pp:
-                file_name = f"{config.base_filename}_p2_fin_postprocessed"
+                file_name = get_output_filepath(
+                    config.output_dir, f"{config.base_filename}_p2_fin_postprocessed"
+                )
                 logger.info(f"SP2: Writing case-file with pp-settings: {file_name}")
                 solver.settings.file.write(file_type="case", file_name=file_name)
 
