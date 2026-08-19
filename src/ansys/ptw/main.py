@@ -475,11 +475,17 @@ class PTW_Run:
                 # Initialize the configuration
                 trn_config = TrnSimulationConfig()
                 trn_config.update_from_dict(trn_solutionEl)
+                # Set output directory for the transient solution
+                trn_output_dir = misc_utils.ptw_output(
+                    fl_workingDir=self.fl_workingDir, trn_name=key
+                )
+                trn_config.output_dir = trn_output_dir
                 # Create a SimulationRun instance
                 trn_simulation = TrnSimulationRun(solver=solver, config=trn_config, gpu=gpu)
                 # Run the solution process
                 trn_simulation.run_solution()
-
+        else:
+            logger.info("No Transient Solution defined in config-file. Skipping!")
         logger.info("Running Transient Solution... done!")
 
     def finalize_session(self):
