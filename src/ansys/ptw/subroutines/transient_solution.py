@@ -287,6 +287,23 @@ class TrnSimulationRun:
 
         logger.info("Initializing basic-settings... done")
 
+    def archive_existing_file(self, file_path: str, logger=None):
+        """Archive an existing output file and return its archive path."""
+        if logger is None:
+            logger = self.logger
+        if not os.path.isfile(file_path):
+            return None
+
+        base_name, extension = os.path.splitext(file_path)
+        archive_index = 1
+        archive_path = f"{base_name}_archive_{archive_index}{extension}"
+        while os.path.exists(archive_path):
+            archive_index += 1
+            archive_path = f"{base_name}_archive_{archive_index}{extension}"
+        os.replace(file_path, archive_path)
+        logger.info(f"Archived existing output file: {file_path} -> {archive_path}")
+        return archive_path
+
     def adjust_report_files(
         self, solver=None, solution_phase="p1", config: TrnSimulationConfig = None, logger=None
     ):
@@ -310,7 +327,9 @@ class TrnSimulationRun:
             else:
                 report_suffix = ""
             report_filename = f"{base_name}{report_suffix}{ext}"
-            rfile.file_name = get_output_filepath(config.output_dir, report_filename)
+            output_filepath = get_output_filepath(config.output_dir, report_filename)
+            self.archive_existing_file(output_filepath, logger=logger)
+            rfile.file_name = output_filepath
             logger.info(f"Report-File changed: {org_file_name} to {rfile.file_name()}")
             if not solution_phase == "rans":
                 rfile.frequency_of = "time-step"
@@ -327,7 +346,9 @@ class TrnSimulationRun:
             solver.settings.solution.monitor.report_files[rfile_name] = {}
             rfile = report_files[rfile_name]
             report_suffix = f"_{solution_phase}"
-            rfile.file_name = get_output_filepath(config.output_dir, f"report{report_suffix}.out")
+            output_filepath = get_output_filepath(config.output_dir, f"report{report_suffix}.out")
+            self.archive_existing_file(output_filepath, logger=logger)
+            rfile.file_name = output_filepath
             rfile.report_defs = rfile.report_defs.allowed_values()
 
     def run_rans(self, solver=None, config: TrnSimulationConfig = None, logger=None):
