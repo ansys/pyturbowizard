@@ -450,7 +450,7 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
         # Check if it´s a rotating cell-zone
         if (cz_rot_list is not None) and (cz_name in cz_rot_list):
             logger.info(f"Prescribing rotating cell zone: {cz_name}")
-            if gpu:
+            if gpu & (Version(solver._version) < Version("271")):
                 omega_value = fluent_utils.create_and_evaluate_expression(
                     solver=solver,
                     exp_name="BC_omega",
