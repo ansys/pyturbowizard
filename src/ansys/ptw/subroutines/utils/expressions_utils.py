@@ -59,9 +59,18 @@ def write_expression_file(data: dict, working_dir: str):
     with open(fileName, "w") as sf:
         package = "ansys.ptw.templates"
         file_name = data["expressionTemplate"]
-        with resources.files(package).joinpath(file_name).open("r") as templateFile:
-            tempData = templateFile.read()
-            templateFile.close()
+        resource = resources.files(package).joinpath(file_name)
+        if resource.is_file():
+            with resource.open("r") as template_file:
+                tempData = template_file.read()
+        elif file_name and os.path.isfile(file_name):
+            with open(file_name, "r") as template_file:
+                tempData = template_file.read()
+        else:
+            raise FileNotFoundError(
+                f"Template '{file_name}' not found in package '{package}'"
+                + (f" or '{file_name}'" if file_name else "")
+            )
         helperDict = data["locations"].copy()
         expressionEl = data.get("expressions")
         helperDict.update(expressionEl)
