@@ -118,7 +118,8 @@ class PTW_Run:
         fl_workingDir = self.launch_data.get(
             "workingDir", os.path.dirname(os.path.abspath(config_filename))
         )
-        fl_workingDir = os.path.normpath(fl_workingDir)
+        # convert to absolute path
+        fl_workingDir = os.path.abspath(os.path.normpath(fl_workingDir))
         # Reset working dir in dict
         self.launch_data["workingDir"] = fl_workingDir
         self.fl_workingDir = fl_workingDir

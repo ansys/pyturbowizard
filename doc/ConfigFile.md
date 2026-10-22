@@ -14,7 +14,7 @@ The configuration file includes the following sections:
 In the ```"launching"``` section, specify Fluent launching options, such as the version, number of processes, and whether to use a single- or double-precision solver.
 
 - ```"workingDir"```: Fluent working directory. If this option is not set, the script uses the directory of the configuration file as the Fluent working directory.
-- ```"fl_version"```: Fluent version, such as `"25.1.0"`.
+- ```"fl_version"```: Fluent version, such as `"26.1.0"`.
 - ```"noCore"```: Number of cores/processes for the Fluent session.
 - ```"precision"```: Whether to use a double-precision solver. The default is ```true```. If ```false```, a single-precision solver is used.
 - ```"show_gui"```: Whether to show a GUI during simulation. The default is ```true```.
@@ -27,7 +27,7 @@ these files are removed: ```fluent\*.trn``` and ```\*slurm\*```. If you define
 
 To run Fluent on Linux or a cluster, you have two options:
 
-- Submit your job to a Slurm queue, such as ```"queue_slurm": "ottc01"```, with a maximum waiting time in seconds, such as ```"queue_waiting_time": 36000```. The default waiting time is ```600``` seconds. Use ```"additional_args"``` for extra launching options, such as ```"-scheduler_ppn=4 -scheduler_gpn=4"```. Other options are identical to the usual launching options.
+- Submit your job to a Slurm queue, such as ```"queue_slurm": "my_queue"```, with a maximum waiting time in seconds, such as ```"queue_waiting_time": 36000```. The default waiting time is ```600``` seconds. Use ```"additional_args"``` for extra launching options, such as ```"-scheduler_ppn=4 -scheduler_gpn=4"```. Other options are identical to the usual launching options.
 - Hook onto an existing Fluent session. See **How to Run** in the repository's [README.md](https://github.com/ansys/pyturbowizard/blob/main/README.md#how-to-run). Use ```"serverfilename"``` to specify a server file name. When hooking onto an existing Fluent session, only the ```"workingDir"``` launching option is used.
 
 ```
