@@ -105,6 +105,8 @@ class TrnSimulationConfig:
         # Available options:['No Perturbations','Vortex Method','Spectral Synthesizer',
         # 'Synthetic Turbulence Generator']
         self.turb_generator_option = "No Perturbations"
+        self.turb_k = None
+        self.turb_epsilon = None
         self.use_pyUDFs = []
         self.use_zone_sampling = False
         self.skip_srs_settings = False  # Skip SRS-settings, directly jump to solution process
@@ -673,15 +675,56 @@ class TrnSimulationRun:
 
         # Specify turbulence algorithm for all inlets
         if config.les_model:
+
+            def set_turbulence_value(inlet_bc, value, field, name):
+                if value is None:
+                    logger.warning(f"{name} is not specified for inlet BC '{inlet_bc.name}'")
+                    return
+                if isinstance(value, (int, float)):
+                    resolved_value = value
+                elif isinstance(value, str):
+                    named_expressions = solver.settings.setup.named_expressions
+                    if value not in named_expressions():
+                        logger.warning(
+                            f"{name} '{value}' is not a valid named expression for inlet BC "
+                            f"'{inlet_bc.name}'"
+                        )
+                        return
+                    expression_value = named_expressions[value].get_value()
+                    resolved_value = float(
+                        expression_value.split()[0]
+                        if isinstance(expression_value, str)
+                        else expression_value
+                    )
+                else:
+                    logger.warning(f"{name} is not a valid number for inlet BC '{inlet_bc.name}'")
+                    return
+                logger.info(f"Setting turbulence value for field '{field}' to '{resolved_value}'")
+                setattr(inlet_bc.turbulence, field, resolved_value)
+
             for bc_type in solver.settings.setup.boundary_conditions.get_active_child_names():
                 if "inlet" in bc_type:
                     logger.info(f"Changing turbulent BCs of type '{bc_type}'")
                     bc_object = solver.settings.setup.boundary_conditions.find_object(bc_type)
                     for inlet_bc_name in bc_object.keys():
                         inlet_bc = bc_object[inlet_bc_name]
+                        logger.info(
+                            f"Using turbulence generator option '{config.turb_generator_option}'"
+                        )
                         inlet_bc.turbulence.fluctuating_velocity_algorithm = (
                             config.turb_generator_option
                         )
+                        if inlet_bc.turbulence.fluctuating_velocity_algorithm != "No Perturbations":
+                            inlet_bc.turbulence.turbulence_specification = "K and Epsilon"
+                            set_turbulence_value(
+                                inlet_bc, config.turb_k, "turbulent_kinetic_energy", "turb_k"
+                            )
+                            set_turbulence_value(
+                                inlet_bc,
+                                config.turb_epsilon,
+                                "turbulent_dissipation_rate",
+                                "turb_epsilon",
+                            )
 
         # Load PyUDFs
         if config.use_pyUDFs:
