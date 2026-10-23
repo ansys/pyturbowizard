@@ -1119,7 +1119,10 @@ def set_boundaries(data, solver, solve_energy: bool = True, gpu: bool = False):
                 filter_str=keyEl["auto_detect"].get("filter_str", "mixingplane"),
                 side_str=keyEl["auto_detect"].get("side_str", "side-"),
             )
-        for key_if in keyEl:
+        for iter_num, key_if in enumerate(keyEl):
+            if iter_num == 0 and gpu:
+                logger.info("Flow scheme set to 'Coupled', as required for GPU mode.")
+                solver.settings.solution.methods.p_v_coupling.flow_scheme = "Coupled"
             if key_if == "auto_detect":
                 continue
             logger.info(f"Setting up mixing plane interface: {key_if}")

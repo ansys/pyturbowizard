@@ -32,7 +32,6 @@ import json
 import os
 import sys
 
-import ansys.fluent.core as pyfluent
 from packaging.version import Version
 
 # Load Script Utility-Modules
@@ -86,7 +85,7 @@ class PTW_Run:
     launch_data: dict = None
     gl_function_data: dict = None
 
-    solver: pyfluent.session_solver.Solver = None
+    solver = None
 
     def load_config_file(self, config_filename: str):
         """Load the configuration file and initialize the PTW_Run object."""

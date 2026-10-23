@@ -31,6 +31,8 @@ and handling results.
 
 import os
 
+import ansys.fluent.core as pyfluent
+from packaging import version
 from packaging.version import Version
 
 # Load Script Modules
@@ -80,7 +82,11 @@ def prepost_01(data, solver, launchEl):
     # Save 3D file of the mesh and domain
 
     # Get walls of domain
-    surfaces = solver.fields.field_info.get_surfaces_info()
+    surfaces = dict()
+    if version.parse(pyfluent.__version__) < version.parse("0.40.0"):
+        surfaces = solver.fields.field_info.get_surfaces_info()
+    else:
+        surfaces = solver.fields.field_data.surfaces()
     wall_surfaces = [key for key, value in surfaces.items() if value.get("zone_type") == "wall"]
 
     solver.settings.results.graphics.mesh["Mesh"] = {}
