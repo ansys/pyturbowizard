@@ -250,20 +250,27 @@ def export_solver_monitor(
 def create_and_evaluate_expression(
     solver,
     exp_name: str,
-    definition: str,
+    definition: str = None,
     overwrite_definition=True,
     evaluate_value=False,
 ):
     """Create and evaluate a named expression"""
+    if definition:
+        if exp_name not in solver.settings.setup.named_expressions.get_object_names():
+            solver.settings.setup.named_expressions.create(name=exp_name)
+            solver.settings.setup.named_expressions[exp_name] = {"definition": definition}
+        if overwrite_definition:
+            solver.settings.setup.named_expressions[exp_name] = {"definition": definition}
     if exp_name not in solver.settings.setup.named_expressions.get_object_names():
-        solver.settings.setup.named_expressions.create(name=exp_name)
-        solver.settings.setup.named_expressions[exp_name] = {"definition": definition}
-    if overwrite_definition:
-        solver.settings.setup.named_expressions[exp_name] = {"definition": definition}
+        raise ValueError(
+            f"Named expression '{exp_name}' does not exist and no definition provided."
+        )
     value = None
     if evaluate_value:
         value = solver.settings.setup.named_expressions[exp_name].get_value()
-    if isinstance(value, str):
-        str_value = value.split()[0]
-        value = float(str_value)
+        if isinstance(value, str):
+            str_value = value.split()[0]
+            value = float(str_value)
+        else:
+            value = float(value)
     return value

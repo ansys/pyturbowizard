@@ -223,7 +223,7 @@ def launch_queuing_session(launchEl: dict):
                 additional_arguments=additional_arguments,
                 dimension=launchEl["dimension"],
                 start_timeout=maxtime,
-                insecure_mode=True,
+                insecure_mode=launchEl["insecure_mode"],
             ).result(timeout=maxtime)
     return solver
 
@@ -258,6 +258,7 @@ def get_launcher_defaults(launchEl: dict):
     launchEl.setdefault("precision", True)
     launchEl.setdefault("py", True)
     launchEl.setdefault("gpu", False)
+    launchEl.setdefault("insecure_mode", True)
     if version.parse(pyfluent.__version__) < version.parse("0.29.0"):
         launchEl.setdefault("version", "3d")
         launchEl.setdefault("show_gui", True)

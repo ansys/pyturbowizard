@@ -51,7 +51,8 @@ def initialize_run(data, solver, functionEl, gpu):
 
     # Reordering Domain
     # Can have influence on convergence, but can lead to freeze on some cases
-    reorder = data["solution"].setdefault("reorder_domain", True)
+    # Reordering not set as default for GPU runs
+    reorder = data["solution"].setdefault("reorder_domain", (not gpu))
     if reorder:
         logger.info("Reordering domain to reduce bandwidth according to the setup")
         solver.settings.mesh.reorder.reorder_domain()
