@@ -32,7 +32,6 @@ import json
 import os
 import sys
 
-import ansys.fluent.core as pyfluent
 from packaging.version import Version
 
 # Load Script Utility-Modules
@@ -62,7 +61,7 @@ from ansys.ptw import (
     setup_cfd,
 )
 
-ptw_version = "0.3.3"
+ptw_version = "0.3.4"
 
 # Set Logger
 logger = ptw_logger.init_logger()
@@ -86,7 +85,7 @@ class PTW_Run:
     launch_data: dict = None
     gl_function_data: dict = None
 
-    solver: pyfluent.session_solver.Solver = None
+    solver = None
 
     def load_config_file(self, config_filename: str):
         """Load the configuration file and initialize the PTW_Run object."""
@@ -118,7 +117,8 @@ class PTW_Run:
         fl_workingDir = self.launch_data.get(
             "workingDir", os.path.dirname(os.path.abspath(config_filename))
         )
-        fl_workingDir = os.path.normpath(fl_workingDir)
+        # convert to absolute path
+        fl_workingDir = os.path.abspath(os.path.normpath(fl_workingDir))
         # Reset working dir in dict
         self.launch_data["workingDir"] = fl_workingDir
         self.fl_workingDir = fl_workingDir
@@ -475,11 +475,17 @@ class PTW_Run:
                 # Initialize the configuration
                 trn_config = TrnSimulationConfig()
                 trn_config.update_from_dict(trn_solutionEl)
+                # Set output directory for the transient solution
+                trn_output_dir = misc_utils.ptw_output(
+                    fl_workingDir=self.fl_workingDir, trn_name=key
+                )
+                trn_config.output_dir = trn_output_dir
                 # Create a SimulationRun instance
                 trn_simulation = TrnSimulationRun(solver=solver, config=trn_config, gpu=gpu)
                 # Run the solution process
                 trn_simulation.run_solution()
-
+        else:
+            logger.info("No Transient Solution defined in config-file. Skipping!")
         logger.info("Running Transient Solution... done!")
 
     def finalize_session(self):

@@ -108,7 +108,7 @@ def run_extsch_script(path_to_script: str, workingDir: str, caseEl: dict):
         )
 
 
-def ptw_output(fl_workingDir, study_name=None, case_name=None):
+def ptw_output(fl_workingDir, study_name=None, case_name=None, trn_name=None):
     """Define a PTW output folder in the Fluent working directory."""
     ptw_output_path = ""
     if os.path.exists(fl_workingDir):
@@ -131,6 +131,13 @@ def ptw_output(fl_workingDir, study_name=None, case_name=None):
         if not os.path.exists(case_path):
             os.makedirs(case_path)
         return case_path
+
+    if trn_name is not None:
+        trn_name = "transient_" + trn_name
+        trn_path = os.path.join(ptw_output_path, trn_name)
+        if not os.path.exists(trn_path):
+            os.makedirs(trn_path)
+        return trn_path
 
     return ptw_output_path
 

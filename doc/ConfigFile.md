@@ -1,6 +1,6 @@
 # Set up the configuration file
 
-This document explains how to adjust the configuration file for a single case study or parametric studies.
+This document explains how to adjust the configuration file for single case studies, parametric studies, and transient simulations.
 
 The configuration file includes the following sections:
 
@@ -8,13 +8,14 @@ The configuration file includes the following sections:
 - ```"functions"```: Subroutines for numerical setup, postprocessing, and parametric studies. See [Functions](#functions).
 - ```"cases"```: Definition of a single case study. See [Single case study](#single-case-study).
 - ```"studies"```: Definitions of parametric studies. See [Parametric studies](#parametric-studies).
+- ```"transient_solution"```: Definitions for transient simulation runs. See [Transient solution](#transient-solution).
 
 ## Launching
 
 In the ```"launching"``` section, specify Fluent launching options, such as the version, number of processes, and whether to use a single- or double-precision solver.
 
 - ```"workingDir"```: Fluent working directory. If this option is not set, the script uses the directory of the configuration file as the Fluent working directory.
-- ```"fl_version"```: Fluent version, such as `"25.1.0"`.
+- ```"fl_version"```: Fluent version, such as `"26.1.0"`.
 - ```"noCore"```: Number of cores/processes for the Fluent session.
 - ```"precision"```: Whether to use a double-precision solver. The default is ```true```. If ```false```, a single-precision solver is used.
 - ```"show_gui"```: Whether to show a GUI during simulation. The default is ```true```.
@@ -27,7 +28,7 @@ these files are removed: ```fluent\*.trn``` and ```\*slurm\*```. If you define
 
 To run Fluent on Linux or a cluster, you have two options:
 
-- Submit your job to a Slurm queue, such as ```"queue_slurm": "ottc01"```, with a maximum waiting time in seconds, such as ```"queue_waiting_time": 36000```. The default waiting time is ```600``` seconds. Use ```"additional_args"``` for extra launching options, such as ```"-scheduler_ppn=4 -scheduler_gpn=4"```. Other options are identical to the usual launching options.
+- Submit your job to a Slurm queue, such as ```"queue_slurm": "my_queue"```, with a maximum waiting time in seconds, such as ```"queue_waiting_time": 36000```. The default waiting time is ```600``` seconds. Use ```"additional_args"``` for extra launching options, such as ```"-scheduler_ppn=4 -scheduler_gpn=4"```. Other options are identical to the usual launching options.
 - Hook onto an existing Fluent session. See **How to Run** in the repository's [README.md](https://github.com/ansys/pyturbowizard/blob/main/README.md#how-to-run). Use ```"serverfilename"``` to specify a server file name. When hooking onto an existing Fluent session, only the ```"workingDir"``` launching option is used.
 
 ```
@@ -284,6 +285,7 @@ You can also specify interfaces as follows:
 - Mixing-plane models under ```"bz_interfaces_mixingplane_names"```
 - No pitch-scale interfaces under ```"bz_interfaces_no_pitchscale_names"```
 - Pitch-scale interfaces under ```"bz_interfaces_pitchscale_names"```
+- Periodic-repeat interfaces under ```"bz_interfaces_periodicrepeat_names"```
 - Periodic interfaces under ```"bz_interfaces_periodic_names"```
 
 ```
@@ -408,7 +410,7 @@ The ```"solution"``` section specifies convergence criteria and solve settings.
           ],
           "cov_crit": 1.0e-4,
           "iter_count": 10,
-          "time_step_factor": 5,
+          "time_scale_factor": 5,
           "runSolver": true
         }
 ```
@@ -419,11 +421,11 @@ The ```"solution"``` section specifies convergence criteria and solve settings.
 - ```"cov_crit"```: Convergence criteria for the coefficient of variation.
 - ```"conv_check_freq"```: Optional argument for defining the convergence check frequency. The default is ```5```.
 - ```"tsn"```: Optional argument for explicitly turning on turbo machinery-specific numerics (beta feature).
-- ```"time_step_factor"```: Specification of a time step factor (length-scale-method=conservative), automatic calculation of the pseudo-time step.
-- ```"pseudo_timestep"```: Direct specification of the pseudo-time step (with no usage of ```"time_step_factor```).
+- ```"time_scale_factor"```: Specification of a time scale factor (length-scale-method=conservative), automatic calculation of the pseudo-time step.
+- ```"pseudo_timestep"```: Direct specification of the pseudo-time step (with no usage of ```"time_scale_factor```).
 - ```"iter_count"```: Maximum number of iterations.
 - ```"runSolver"```: Whether the simulation should start to run at the end of the setup. The default is ```true```.
-- ```"reorder_domain"```: Optional argument that turns on and off domain reordering before initialization. The default is ```true```.
+- ```"reorder_domain"```: Optional argument that turns on and off domain reordering before initialization. The default is ```true``` for CPU runs, ```false``` for GPU.
 
 ##### Basic report definitions
 
@@ -622,3 +624,84 @@ In the ```"studies"``` section, create different study setups.
 - ```"inputparameters"```: Expressions to vary for the different design points.
 - ```"useScaleFactor"```: Whether to use a scale factor from the base case value. You can set this to ```true``` for each selected input parameter.
 - ```"valueList"```: List of either the scale factors or specific values to use for the different design points.
+
+## Transient solution
+
+The root-level ```"transient_solution"``` section defines one or more transient simulation runs. Each entry is named by the user and contains the settings for that run.
+
+```
+"transient_solution": {
+    "Transient_1": {
+        "base_filename": "BaseCase",
+        "mesh_filename": "BaseCase.msh.h5",
+        "rans_iterations": 5000,
+        "reference_time": 0.0282,
+        "time_step_size_p1": 1.0e-5,
+        "num_ref_times_p1": 20,
+        "time_step_size_p2": 1.0e-5,
+        "num_ref_times_p2": 10,
+        "max_iter_per_step": 5
+    }
+}
+```
+
+The following options are available:
+
+#### Input and RANS setup
+
+- ```"base_filename"```: Base name for generated case, data, transcript, and setup files. The default is ```"BaseCase"```.
+- ```"mesh_filename"```: Mesh file to read when no restart file is specified. Set to an empty string to skip reading a mesh. The default is ```"BaseCase.msh.h5"```.
+- ```"restart_filename"```: Existing case/data file to load. When set, the mesh file is not read. The default is an empty string.
+- ```"rans_iterations"```: Number of steady RANS iterations before transient phases. Set to ```0``` to skip this phase. The default is ```5000```.
+- ```"rans_settings_file"```: Fluent settings file to read for the RANS phase. The default is ```"BaseCase_RANS.set"```.
+- ```"bc_file"```: JSON file with boundary-condition adjustments for RANS; leave empty if none are needed. The default is an empty string.
+- ```"rans_postprocessing"```: Journal files to run after the RANS phase. The default is an empty list.
+- ```"rans_write_data"```: Whether to write case and data files after the RANS phase. The default is ```true```.
+
+#### Time and solution phases
+
+- ```"reference_time"```: Reference time, such as a through-flow time or blade-passing period, in seconds. The default is ```0.0282```.
+- ```"skip_p1"```: Whether to skip phase 1, the periodic-signal run. The default is ```false```.
+- ```"time_step_size_p1"```: Time-step size for phase 1, in seconds. The default is ```1.0e-5```.
+- ```"num_ref_times_p1"```: Number of reference times to run in phase 1. The default is ```20```.
+- ```"write_data_p1"```: Whether to save case and data files after phase 1. The default is ```true```.
+- ```"read_journal_p1"```: Journal files to run before solving phase 1. The default is an empty list.
+- ```"ramp_up_p1"```: Optional mapping of ramp-up time-step sizes in seconds to the number of steps to run at each size. The default is an empty dictionary.
+- ```"time_step_size_p2"```: Time-step size for phase 2, the transient sampling run, in seconds. The default is ```1.0e-5```.
+- ```"num_ref_times_p2"```: Number of reference times to run in phase 2. The default is ```10```.
+- ```"ramp_up_p2"```: Optional mapping of ramp-up time-step sizes in seconds to the number of steps to run at each size. The default is an empty dictionary.
+- ```"max_iter_per_step"```: Maximum solver iterations per transient time step. The default is ```5```.
+
+#### Transient solver and SRS settings
+
+- ```"skip_srs_settings"```: Whether to skip transient/SRS solver setup and proceed directly to the solution phases. The default is ```false```.
+- ```"les_model"```: LES model selection. ```"sbes"``` selects stress-blended eddy simulation; other values select a supported LES subgrid-scale model. The default is ```"sbes"```.
+- ```"time_discretization"```: Unsteady time-discretization scheme. The default is ```"unsteady-2nd-order-bounded"```.
+- ```"use_limiter_time"```: Whether to enable the limiter for the second-order unsteady scheme. The default is ```true```.
+- ```"residual_convergence"```: Whether to enable residual convergence criteria for transient runs. The default is ```false```.
+- ```"auto_save_frequency"```: Fluent autosave frequency; values greater than zero enable autosaving. The default is ```0```.
+- ```"copy_frame_to_mesh_motion"```: Whether to copy frame motion to mesh motion for fluid cell zones. May be set to a list of zone names to limit which zones are changed. The default is ```false```.
+- ```"disable_temp_sec_grad"```: Whether to disable temperature secondary gradients. The default is ```false```.
+- ```"central_scheme_pure"```: Whether to use the central scheme with zero diffusion coefficient when supported. The default is ```false```.
+- ```"wall_use_second_cell"```: Whether to use second-cell values for near-wall treatment when supported. The default is ```false```.
+- ```"near_wall_rans_layer"```: Whether to enable a near-wall RANS layer for LES. The default is ```false```.
+- ```"turb_generator_option"```: Inlet turbulence generator option. Supported options include ```"No Perturbations"```, ```"Vortex Method"```, ```"Spectral Synthesizer"```, and ```"Synthetic Turbulence Generator"```. The default is ```"No Perturbations"```.
+- ```"turb_k"``` and ```"turb_epsilon"```: Inlet turbulent kinetic energy and dissipation-rate values, or names of valid named expressions. The default is ```null``` for both.
+- ```"use_pyUDFs"```: Python UDF files to load. The default is an empty list.
+- ```"use_zone_sampling"```: Declared configuration option; it is not currently applied by the transient runner. The default is ```false```.
+
+#### Monitoring, output, and postprocessing
+
+- ```"mcov_def_names"```: Report definitions used for the MCOV convergence controller. The default is ```["my_report_definition"]```.
+- ```"mcov_updates_per_rt"```: MCOV updates per reference time. The default is ```20```.
+- ```"mcov_avg_interval"```: MCOV averaging interval. The default is ```40```.
+- ```"mcov_con_crit"```: MCOV convergence criterion. The default is ```5.0e-5```.
+- ```"mcov_command_name"```: Name of the MCOV execute command. The default is ```"mcov_update"```.
+- ```"solver_monitor"```: Whether to capture solver monitor data for batch runs. The default is ```false```.
+- ```"logger_file_name"```: Log file name. The default is ```"srs_solution.log"```.
+- ```"create_setup_only"```: Whether to create and save the phase 1 setup without running its solver iterations. The default is ```false```.
+- ```"do_postprocessing"```: Journal files to run after phase 2. The default is an empty list.
+- ```"write_case_after_pp"```: Whether to save a case file after postprocessing journals run. The default is ```false```.
+- ```"export_cfdpost"```: Whether to export phase 2 statistical data for CFD-Post. The default is ```false```.
+
+The transient runner uses the Fluent session and solver created by the usual ```"launching"``` configuration. Phase 2 always runs; use ```"skip_p1"``` only when phase 1 should be omitted and the loaded or existing solution is ready for sampling.
